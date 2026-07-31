@@ -23,7 +23,15 @@ export const arcadePresets = {
       desktop: 1100,
     },
   },
-  dragStrip: { prizeReactionMs: 650 },
+  crossword: {
+    wordsPerPuzzle: 8,
+    maxGrid: 13,
+  },
+  serviceSearch: {
+    gridSize: 10,
+    wordsPerPuzzle: 6,
+    prizeWords: 4,
+  },
   shoreRun: { coinsToWin: 4 },
   towChain: { carsToWin: 4, tickMs: 175 },
 } as const;
@@ -37,11 +45,18 @@ export const arcadeGames: ArcadeGame[] = [
     glyph: "☰",
   },
   {
-    slug: "drag-strip",
-    name: "Drag Strip",
-    tagline: "Watch the tree, launch on green.",
-    classic: "Reaction timer",
-    glyph: "⚡",
+    slug: "crossword",
+    name: "Garage Crossword",
+    tagline: "Fresh clues from under the hood.",
+    classic: "Crossword",
+    glyph: "#",
+  },
+  {
+    slug: "service-search",
+    name: "Service Search",
+    tagline: "Find the shop words in the morning paper.",
+    classic: "Word search",
+    glyph: "A",
   },
   {
     slug: "shore-run",
