@@ -14,11 +14,14 @@ export default function ArcadeLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <>
+    // `is-arcade` retires the fixed call dock for these pages: it sits over
+    // the right edge of the play area, which is exactly where the runner's
+    // obstacles arrive from. The header's call button stays put.
+    <div className="is-arcade">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">{children}</main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { services } from "@/lib/services";
+import { shop } from "@/lib/shop";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://oceanheightsautorepair.com";
+  const baseUrl = shop.siteUrl;
   const servicePages = services.map((service) => ({
     url: `${baseUrl}/services/${service.slug}`,
     changeFrequency: "monthly" as const,

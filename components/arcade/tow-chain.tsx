@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
+import { PrizeBanner } from "./prize";
 
 const BEST_KEY = "ohat-towchain-best";
+// Five pickups is a couple of laps of the lot — reachable on a first shift.
+const CARS_TO_WIN = 5;
 const GRID = 13;
 const CELL = 24;
 const SIZE = GRID * CELL;
@@ -41,6 +44,7 @@ export function TowChain() {
   const [over, setOver] = useState(false);
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
+  const [won, setWon] = useState(false);
   const [sound, setSound] = useState(true);
   const soundOn = useRef(true);
   const state = useRef({
@@ -134,7 +138,9 @@ export function TowChain() {
       s.chain.unshift(head);
       if (head.x === s.pickup.x && head.y === s.pickup.y) {
         if (soundOn.current) garageAudio.horn();
-        setScore(s.chain.length - 1);
+        const towed = s.chain.length - 1;
+        setScore(towed);
+        if (towed >= CARS_TO_WIN) setWon(true);
         s.pickup = randomCell(s.chain);
       } else {
         s.chain.pop();
@@ -184,11 +190,12 @@ export function TowChain() {
       </div>
       <p className="match-game-status" role="status">
         {running
-          ? "Hook the stranded cars — arrows or swipe. Don't hit the fence or your own chain."
+          ? `Hook the stranded cars — arrows or swipe. ${Math.max(0, CARS_TO_WIN - score)} more for the prize.`
           : over
             ? `Shift over: ${score} car${score === 1 ? "" : "s"} towed back to the shop.`
-            : "Every pickup makes the tow chain longer. How long can you run the lot?"}
+            : `Every pickup makes the chain longer. Tow ${CARS_TO_WIN} to win a coupon.`}
       </p>
+      {won ? <PrizeBanner achievement={`${CARS_TO_WIN} cars towed in one shift.`} /> : null}
       <canvas
         ref={canvasRef}
         className="tow-chain-lot"

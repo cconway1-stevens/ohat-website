@@ -4,7 +4,7 @@ import { ShoreRun } from "@/components/arcade/shore-run";
 
 export const metadata: Metadata = {
   title: "Shore Run — Garage Arcade",
-  description: "Dodge the Shore traffic in the family sedan for as many miles as you can.",
+  description: "An endless run down the Shore: jump the tire stacks, duck the traffic signals.",
   alternates: { canonical: "/arcade/shore-run" },
 };
 
@@ -12,7 +12,7 @@ export default function ShoreRunPage() {
   return (
     <ArcadeFrame
       slug="shore-run"
-      lede="Summer on the Shore roads: three lanes, plenty of traffic, and a family sedan that handles better than it looks. Arrow keys or taps."
+      lede="The road never ends and it only gets faster. Hop the stacked tires, duck under the traffic signals, and keep the family sedan in one piece — stay out long enough and the sun goes down."
     >
       <ShoreRun />
     </ArcadeFrame>

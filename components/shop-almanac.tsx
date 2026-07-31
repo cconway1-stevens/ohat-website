@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { shop } from "@/lib/shop";
 
 // The shop's own coordinates, so the reading is the weather at the garage
 // rather than wherever the visitor happens to be.
-const LATITUDE = 39.3776;
-const LONGITUDE = -74.5946;
 const FORECAST_URL =
-  `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}` +
+  `https://api.open-meteo.com/v1/forecast?latitude=${shop.geo.latitude}&longitude=${shop.geo.longitude}` +
   "&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FNew_York";
 
 // Where the reading points when clicked — the data source's own site, which
@@ -121,7 +120,7 @@ export function ShopAlmanac() {
 
   return (
     <span className="garage-almanac">
-      <span className="garage-almanac-place">Egg Harbor Township, New Jersey</span>
+      <span className="garage-almanac-place">{shop.address.region}</span>
       {initial ? (
         <>
           <span className="garage-almanac-rule" aria-hidden="true">·</span>

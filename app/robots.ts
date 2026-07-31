@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { shop } from "@/lib/shop";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://oceanheightsautorepair.com/sitemap.xml",
+    sitemap: `${shop.siteUrl}/sitemap.xml`,
   };
 }

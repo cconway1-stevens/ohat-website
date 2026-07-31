@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DirectionsTrigger } from "./directions-dialog";
 import { MakerRibbon } from "./maker-ribbon";
+import { shop } from "@/lib/shop";
 import { BrandMark, phoneDisplay, phoneHref } from "./site-header";
 
 import { profileLinks } from "@/lib/business";
@@ -58,15 +59,15 @@ export function SiteFooter() {
           <div>
             <strong>Visit</strong>
             <DirectionsTrigger className="footer-address-trigger">
-              1178 Ocean Heights Avenue
+              {shop.address.street}
               <br />
-              Egg Harbor Township, NJ 08234
+              {shop.address.cityLine}
             </DirectionsTrigger>
           </div>
           <div>
             <strong>Call</strong>
             <a href={phoneHref}>{phoneDisplay}</a>
-            <span>Monday–Friday, 8:00 AM–5:00 PM</span>
+            <span>{shop.hours.display}</span>
           </div>
           <div>
             <strong>Connect</strong>
@@ -80,7 +81,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="shell footer-bottom">
-          <span>© {new Date().getFullYear()} Ocean Heights Auto &amp; Tire</span>
+          <span>© {new Date().getFullYear()} {shop.name}</span>
           <span>All makes &amp; models · Gas · Diesel · Hybrid · Electric</span>
         </div>
         <MakerRibbon />

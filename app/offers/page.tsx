@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 
@@ -27,6 +28,26 @@ export default function OffersPage() {
             <a className="button button-primary" href={phoneHref}>
               Call {phoneDisplay}
             </a>
+          </div>
+        </section>
+
+        <section className="section arcade-offer-section">
+          <div className="shell">
+            <p className="eyebrow dark">Won in the back room</p>
+            <h2>The arcade coupon.</h2>
+            <p>
+              Beat any game in our little garage arcade and it hands you the
+              code <b>PIT-STOP</b>. Mention it when you book or drop the car
+              off and we&rsquo;ll take care of you.
+            </p>
+            <p className="offer-terms">
+              One per visit. Terms and conditions may apply, and what it
+              applies to is at the shop&rsquo;s discretion — ask us when you
+              call and we&rsquo;ll tell you straight.
+            </p>
+            <Link className="button button-primary" href="/arcade">
+              Find the arcade →
+            </Link>
           </div>
         </section>
 

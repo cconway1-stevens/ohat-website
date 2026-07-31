@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { serviceBySlug, services } from "@/lib/services";
+import { autoRepairSchema, shop } from "@/lib/shop";
 
 export function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }));
@@ -42,20 +43,9 @@ export default async function ServicePage({
     description: service.intro,
     areaServed: {
       "@type": "City",
-      name: "Egg Harbor Township",
+      name: shop.address.city,
     },
-    provider: {
-      "@type": "AutoRepair",
-      name: "Ocean Heights Auto & Tire",
-      telephone: "+1-609-241-1546",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "1178 Ocean Heights Avenue",
-        addressLocality: "Egg Harbor Township",
-        addressRegion: "NJ",
-        postalCode: "08234",
-      },
-    },
+    provider: autoRepairSchema(),
   };
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -65,19 +55,19 @@ export default async function ServicePage({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://oceanheightsautorepair.com",
+        item: `${shop.siteUrl}/`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Services",
-        item: "https://oceanheightsautorepair.com/services",
+        item: `${shop.siteUrl}/services`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: service.name,
-        item: `https://oceanheightsautorepair.com/services/${service.slug}`,
+        item: `${shop.siteUrl}/services/${service.slug}`,
       },
     ],
   };
@@ -111,7 +101,7 @@ export default async function ServicePage({
               <Link className="back-link" href="/services">← Service board</Link>
               <p className="ticket-status">Now writing repair orders</p>
               <h1>
-                {service.name} <span className="ticket-locale">in Egg Harbor Township, NJ</span>
+                {service.name}{" "}<span className="ticket-locale">in {shop.address.city}, {shop.address.state}</span>
               </h1>
               <p>{service.intro}</p>
               <div className="ticket-actions">

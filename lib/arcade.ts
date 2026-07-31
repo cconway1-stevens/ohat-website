@@ -25,9 +25,9 @@ export const arcadeGames: ArcadeGame[] = [
   {
     slug: "shore-run",
     name: "Shore Run",
-    tagline: "Three lanes, one sedan, endless traffic.",
-    classic: "Lane dodger",
-    glyph: "⇡",
+    tagline: "Hop the tires, duck the signals, don't stop.",
+    classic: "endless runner",
+    glyph: "⇢",
   },
   {
     slug: "tow-chain",
