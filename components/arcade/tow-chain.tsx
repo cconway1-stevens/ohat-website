@@ -3,14 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
 import { PrizeBanner } from "./prize";
+import { arcadePresets } from "@/lib/arcade";
 
 const BEST_KEY = "ohat-towchain-best";
 // Five pickups is a couple of laps of the lot — reachable on a first shift.
-const CARS_TO_WIN = 5;
+const CARS_TO_WIN = arcadePresets.towChain.carsToWin;
 const GRID = 13;
 const CELL = 24;
 const SIZE = GRID * CELL;
-const TICK_MS = 160;
+const TICK_MS = arcadePresets.towChain.tickMs;
 
 type Point = { x: number; y: number };
 
@@ -98,17 +99,34 @@ export function TowChain() {
         ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, SIZE); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(SIZE, i * CELL); ctx.stroke();
       }
-      // Stranded car
+      // Stranded car: pale body, dark windows, red hazard marker.
+      const pickupX = s.pickup.x * CELL;
+      const pickupY = s.pickup.y * CELL;
       ctx.fillStyle = "#dff0f3";
-      ctx.beginPath();
-      ctx.roundRect(s.pickup.x * CELL + 4, s.pickup.y * CELL + 4, CELL - 8, CELL - 8, 5);
-      ctx.fill();
-      // Chain, truck at the head
+      ctx.fillRect(pickupX + 3, pickupY + 7, 18, 11);
+      ctx.fillStyle = "#171412";
+      ctx.fillRect(pickupX + 7, pickupY + 4, 9, 5);
+      ctx.fillStyle = "#f6bd38";
+      ctx.fillRect(pickupX + 10, pickupY + 1, 4, 3);
+
+      // Tow truck at the head, then a visible chain of recovered cars.
       s.chain.forEach((cell, index) => {
-        ctx.fillStyle = index === 0 ? "#f6bd38" : index % 2 ? "#a8161c" : "#8c1217";
-        ctx.beginPath();
-        ctx.roundRect(cell.x * CELL + 2, cell.y * CELL + 2, CELL - 4, CELL - 4, index === 0 ? 7 : 4);
-        ctx.fill();
+        const x = cell.x * CELL;
+        const y = cell.y * CELL;
+        ctx.fillStyle = index === 0 ? "#f6bd38" : index % 2 ? "#a8161c" : "#1a7183";
+        ctx.fillRect(x + 2, y + 7, 20, 12);
+        ctx.fillStyle = "#171412";
+        ctx.fillRect(x + 6, y + 4, index === 0 ? 11 : 10, 6);
+        ctx.fillRect(x + 4, y + 18, 5, 3);
+        ctx.fillRect(x + 15, y + 18, 5, 3);
+        if (index === 0) {
+          ctx.strokeStyle = "#f7efd9";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x + 18, y + 6);
+          ctx.lineTo(x + 22, y + 2);
+          ctx.stroke();
+        }
       });
     };
 
@@ -152,18 +170,24 @@ export function TowChain() {
     return () => window.clearInterval(id);
   }, [running]);
 
-  function start() {
+  function start(initialDirection: Point = { x: 1, y: 0 }) {
     state.current = {
       chain: [{ x: 6, y: 6 }],
-      dir: { x: 1, y: 0 },
-      nextDir: { x: 1, y: 0 },
+      dir: initialDirection,
+      nextDir: initialDirection,
       pickup: randomCell([{ x: 6, y: 6 }]),
     };
     setBest(readBest());
     setScore(0);
     setOver(false);
     if (soundOn.current) garageAudio.ignition();
+    runningRef.current = true;
     setRunning(true);
+  }
+
+  function drive(direction: Point) {
+    if (!runningRef.current) start(direction);
+    else turn(direction);
   }
 
   return (
@@ -184,7 +208,7 @@ export function TowChain() {
             {sound ? "Sound on" : "Sound off"}
           </button>
           {!running ? (
-            <button type="button" onClick={start}>{over ? "New shift" : "Start the shift"}</button>
+            <button type="button" onClick={() => start()}>{over ? "New shift" : "Start the shift"}</button>
           ) : null}
         </div>
       </div>
@@ -219,6 +243,13 @@ export function TowChain() {
           else turn({ x: 0, y: dy > 0 ? 1 : -1 });
         }}
       />
+      <div className="tow-controls" aria-label="Tow truck steering controls">
+        <button type="button" className="tow-up" onPointerDown={() => drive({ x: 0, y: -1 })} aria-label="Drive up">↑</button>
+        <button type="button" className="tow-left" onPointerDown={() => drive({ x: -1, y: 0 })} aria-label="Drive left">←</button>
+        <span aria-hidden="true">OHAT</span>
+        <button type="button" className="tow-right" onPointerDown={() => drive({ x: 1, y: 0 })} aria-label="Drive right">→</button>
+        <button type="button" className="tow-down" onPointerDown={() => drive({ x: 0, y: 1 })} aria-label="Drive down">↓</button>
+      </div>
     </div>
   );
 }
