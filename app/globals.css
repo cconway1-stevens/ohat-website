@@ -3696,47 +3696,52 @@ body.is-play-locked {
 .silver-radio {
   --dash: #7d1620; --plate: #ded7c2; --bezel: #cfcabb; --ink-on: #f6bd38;
   --btn: #17140f; --label: #3a3630;
-  display: grid; gap: .7rem;
-  padding: .9rem;
+  position: relative; display: grid; gap: .75rem;
+  padding: 1rem;
   border: 4px solid #1a1714;
-  background: var(--dash);
-  box-shadow: 6px 6px 0 var(--ink);
+  border-radius: 6px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--dash), #fff 8%), var(--dash) 42%, color-mix(in srgb, var(--dash), #000 20%));
+  box-shadow: 7px 8px 0 var(--ink), inset 0 1px 0 rgba(255,255,255,.18);
 }
+.silver-radio::before, .silver-radio::after { content: ""; position: absolute; bottom: -11px; width: 52px; height: 9px; border: 3px solid #15120f; border-top: 0; background: #24211d; }
+.silver-radio::before { left: 7%; } .silver-radio::after { right: 7%; }
 .silver-radio.is-sixties { --dash: #4a3524; --plate: #c9b08a; --bezel: #d8d2c4; --ink-on: #ffd77a; }
 .silver-radio.is-seventies { --dash: #6b4a1e; --plate: #cbaa63; --bezel: #e0c98d; --ink-on: #ffcf5c; }
 .silver-radio.is-eighties { --dash: #22232a; --plate: #33343c; --bezel: #4a4c56; --ink-on: #6ef0a0; --label: #cfd4dd; }
 .silver-radio.is-nineties { --dash: #1b1d22; --plate: #2a2d34; --bezel: #3c4049; --ink-on: #79c8ff; --label: #d3dae4; }
 .silver-radio.is-modern { --dash: #20252a; --plate: #adb4b9; --bezel: #59636b; --ink-on: #8fd9ff; --label: #eef3f5; }
 
-.silver-decades { display: flex; flex-wrap: wrap; gap: .3rem; }
-.silver-decades button { display: grid; padding: .3rem .55rem; border: 2px solid #1a1714; background: rgba(255,255,255,.75); color: #1a1714; font: inherit; cursor: pointer; }
+.silver-decades { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .25rem; padding: .35rem; border: 2px solid #15120f; background: rgba(0,0,0,.24); }
+.silver-decades button { display: grid; min-height: 44px; place-content: center; padding: .3rem .4rem; border: 1px solid rgba(21,18,15,.8); background: linear-gradient(#f4efe2, #b9b2a4); box-shadow: inset 0 1px 0 rgba(255,255,255,.75); color: #1a1714; font: inherit; cursor: pointer; }
 .silver-decades button b { font-size: .64rem; }
 .silver-decades button small { font-size: .46rem; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
-.silver-decades button.is-on { background: var(--ink-on); }
+.silver-decades button.is-on { transform: translateY(2px); background: var(--ink-on); box-shadow: inset 0 2px 5px rgba(0,0,0,.22); }
 
 /* The faceplate: fluted metal with a chrome bezel across the middle. */
 .silver-top {
-  display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: .7rem; align-items: center;
-  padding: .7rem;
+  display: grid; grid-template-columns: minmax(230px, 1.3fr) minmax(150px, .7fr) auto; gap: .9rem; align-items: center;
+  padding: .9rem;
   background:
     repeating-linear-gradient(90deg, rgba(255,255,255,.42) 0 2px, rgba(0,0,0,.10) 2px 5px),
     var(--plate);
   border: 3px solid rgba(26,23,20,.85);
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.24), inset 0 -5px 12px rgba(0,0,0,.2);
 }
-.silver-grille { display: none; }
-.silver-dial { min-width: 0; display: grid; gap: .3rem; }
+.silver-grille { grid-column: 2; grid-row: 1; align-self: stretch; min-height: 104px; border: 3px solid var(--bezel); border-radius: 3px; background: repeating-radial-gradient(circle at 4px 4px, #24211d 0 1.5px, transparent 1.7px 5px), rgba(35,31,27,.2); box-shadow: inset 0 0 12px rgba(0,0,0,.4); }
+.silver-dial { grid-column: 1; grid-row: 1; min-width: 0; display: grid; gap: .35rem; }
 .silver-brand { margin: 0; color: var(--label); font-family: Georgia, serif; font-size: .68rem; font-weight: 900; letter-spacing: .16em; }
 .silver-brand small { font-size: .46rem; opacity: .7; }
 /* The lit dial window, chrome-framed like the original. */
 .silver-window {
-  padding: .4rem .6rem;
+  min-height: 72px; display: grid; align-content: center; padding: .55rem .7rem;
   border: 4px solid var(--bezel);
   border-radius: 3px;
   background: #241f18;
   box-shadow: inset 0 0 14px rgba(0,0,0,.7), 0 1px 0 rgba(255,255,255,.5);
 }
 .silver-radio.is-on .silver-window { background: linear-gradient(#6e5417, #33280d); box-shadow: inset 0 0 18px rgba(246,189,56,.55); }
-.silver-station { margin: 0; color: var(--ink-on); font-family: Georgia, serif; font-size: .92rem; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.silver-station { margin: 0; color: var(--ink-on); font-family: Georgia, serif; font-size: 1.05rem; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 0 8px color-mix(in srgb, var(--ink-on), transparent 45%); }
 .silver-station-line { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: .45rem; align-items: center; }
 .silver-station-line img, .silver-station-line > span { width: 26px; height: 26px; border: 1px solid rgba(247,239,217,.45); background: #eee8d8; object-fit: contain; }
 .silver-station-line > span { display: grid; place-items: center; color: #241f18; font-family: Georgia, serif; font-size: .54rem; font-weight: 950; }
@@ -3755,7 +3760,7 @@ body.is-play-locked {
 .silver-tuner b { position: absolute; top: 3px; bottom: 3px; width: 2px; background: #ff5656; box-shadow: 0 0 6px #ff5656; transition: left .28s ease; }
 
 /* Big round knobs with engraved rings, like VOLUME and SELECTOR. */
-.silver-knob-col { display: grid; justify-items: center; gap: .2rem; }
+.silver-knob-col { grid-column: 3; grid-row: 1; display: grid; justify-items: center; gap: .3rem; }
 .silver-knob-col small { color: var(--label); font-size: .44rem; font-weight: 950; letter-spacing: .16em; text-transform: uppercase; }
 .silver-knob {
   position: relative; width: 58px; height: 58px;
@@ -3770,9 +3775,9 @@ body.is-play-locked {
 .silver-knob:focus-visible { outline: 3px solid var(--ink-on); outline-offset: 3px; }
 
 /* The row of black push keys under the dial. */
-.silver-bands { display: flex; flex-wrap: wrap; gap: .25rem; justify-content: center; }
+.silver-bands { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .3rem; padding: 0 .5rem; }
 .silver-bands button {
-  min-width: 62px; min-height: 40px; padding: .3rem .5rem;
+  min-width: 0; min-height: 42px; padding: .3rem .4rem;
   border: 2px solid #0d0b09; border-radius: 2px;
   background: linear-gradient(#3a3630, var(--btn));
   box-shadow: 0 4px 0 #0d0b09, inset 0 2px 0 rgba(255,255,255,.14);
@@ -3780,7 +3785,7 @@ body.is-play-locked {
 }
 .silver-bands button.is-down { transform: translateY(3px); box-shadow: 0 1px 0 #0d0b09; background: linear-gradient(#1d1a16, #0d0b09); color: var(--ink-on); }
 
-.silver-transport { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; justify-content: center; }
+.silver-transport { display: grid; grid-template-columns: 64px minmax(110px, 160px) 64px auto; gap: .4rem; align-items: center; justify-content: center; }
 .silver-transport button { min-width: 58px; min-height: 44px; border: 2px solid #0d0b09; border-radius: 2px; background: linear-gradient(#e6e0d4, #a49d90); color: #15120f; font: inherit; font-size: .7rem; font-weight: 950; box-shadow: 0 4px 0 #0d0b09; cursor: pointer; }
 .silver-transport button:active { transform: translateY(3px); box-shadow: 0 1px 0 #0d0b09; }
 .silver-transport button:disabled { opacity: .4; }
@@ -3794,6 +3799,14 @@ body.is-play-locked {
 .silver-tone input { accent-color: var(--ink-on); }
 .silver-note { margin: 0; color: rgba(255,255,255,.72); font-size: .56rem; line-height: 1.45; }
 @media (max-width: 700px) {
-  .silver-top { grid-template-columns: minmax(0,1fr) auto; }
-  .silver-brand { grid-column: 1 / -1; }
+  .silver-radio { padding: .65rem; box-shadow: 4px 5px 0 var(--ink); }
+  .silver-decades { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .silver-top { grid-template-columns: minmax(0,1fr) 64px; gap: .55rem; padding: .65rem; }
+  .silver-dial { grid-column: 1 / -1; grid-row: 1; }
+  .silver-grille { grid-column: 1; grid-row: 2; min-height: 66px; }
+  .silver-knob-col { grid-column: 2; grid-row: 2; }
+  .silver-bands { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; }
+  .silver-transport { grid-template-columns: 56px minmax(100px, 1fr) 56px; }
+  .silver-count { grid-column: 1 / -1; text-align: center; }
+  .silver-tone label { flex-basis: 100%; }
 }
