@@ -149,6 +149,8 @@ export function ServiceSearch() {
     setMessage(
       nextFound.length === puzzle.words.length
         ? "Every service word found."
+        : nextFound.length >= CONFIG.prizeWords
+          ? `Prize earned. ${puzzle.words.length - nextFound.length} word${puzzle.words.length - nextFound.length === 1 ? "" : "s"} left in the grid.`
         : `${match.word} found. ${puzzle.words.length - nextFound.length} left in the grid.`,
     );
     if (sound) garageAudio.horn();
@@ -220,7 +222,9 @@ export function ServiceSearch() {
         </aside>
       </div>
 
-      {won ? <PrizeBanner achievement={`${CONFIG.prizeWords} service words found in the morning paper.`} /> : null}
+      {won && complete ? (
+        <PrizeBanner achievement={`${CONFIG.prizeWords} service words found in the morning paper.`} />
+      ) : null}
     </div>
   );
 }
