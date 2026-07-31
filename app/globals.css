@@ -2213,6 +2213,13 @@ img { max-width: 100%; }
 .garage-blackjack-game { width: min(100%, 680px); }
 .garage-blackjack-intro { margin: 0; color: var(--muted); line-height: 1.5; }
 .garage-blackjack-header-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .55rem; }
+.garage-blackjack-score { display: flex; min-height: 42px; margin: 0; border: 3px solid var(--ink); background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.garage-blackjack-score div { display: grid; min-width: 43px; place-items: center; padding: .22rem .35rem; border-left: 2px solid var(--ink); }
+.garage-blackjack-score div:first-child { border-left: 0; }
+.garage-blackjack-score dt { color: var(--muted); font-size: .45rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
+.garage-blackjack-score dd { margin: .05rem 0 0; font-family: Georgia, serif; font-size: 1rem; font-weight: 900; line-height: 1; }
+.garage-blackjack-score div:first-child dd { color: #4d7c39; }
+.garage-blackjack-score div:nth-child(2) dd { color: var(--red); }
 .garage-blackjack-lobby {
   min-height: 42px;
   padding: .45rem .7rem;
