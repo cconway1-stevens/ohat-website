@@ -156,8 +156,16 @@ const routes = htmlFiles
   .filter((route) => !(route.slice(1) in LEGACY_REDIRECTS))
   .sort((a, b) => a.length - b.length || a.localeCompare(b));
 
+// /links is a utility hub for social-profile bios rather than a page meant to
+// rank, so it sits below the service pages instead of level with /contact.
 const priority = (route) =>
-  route === "/" ? "1.0" : route.includes("/services/") ? "0.7" : "0.8";
+  route === "/"
+    ? "1.0"
+    : route === "/links"
+      ? "0.5"
+      : route.includes("/services/")
+        ? "0.7"
+        : "0.8";
 
 writeFileSync(
   join(OUT_DIR, "sitemap.xml"),
