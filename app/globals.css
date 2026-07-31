@@ -2209,6 +2209,49 @@ img { max-width: 100%; }
 .garage-guess-legend .is-present { background: var(--yellow); color: var(--ink); }
 .garage-guess-legend .is-absent { background: var(--ink); color: #fff; }
 .garage-guess-keys { display: grid; gap: .35rem; width: min(100%, 440px); }
+.thirteen-unlucky-game { width: min(100%, 680px); }
+.thirteen-unlucky-intro { margin: 0; color: var(--muted); line-height: 1.5; }
+.thirteen-unlucky-reset {
+  min-height: 42px;
+  padding: .45rem .7rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: .68rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.thirteen-unlucky-score { display: flex; gap: .45rem; justify-content: center; }
+.thirteen-unlucky-score span { color: #d6ccba; font-size: 1.4rem; line-height: 1; }
+.thirteen-unlucky-score .is-safe { color: var(--blue); }
+.thirteen-unlucky-deck { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .55rem; }
+.thirteen-unlucky-deck button {
+  display: grid;
+  place-items: center;
+  min-height: 64px;
+  padding: .35rem;
+  border: 3px solid var(--ink);
+  background: var(--red);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: #fff;
+  font: inherit;
+  font-size: clamp(.58rem, 2vw, .75rem);
+  font-weight: 950;
+  letter-spacing: .06em;
+  cursor: pointer;
+}
+.thirteen-unlucky-deck button:hover:not(:disabled) { transform: translateY(-2px); background: var(--blue); }
+.thirteen-unlucky-deck button:disabled { cursor: default; }
+.thirteen-unlucky-deck button.is-revealed { background: var(--yellow); color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+.thirteen-unlucky-deck button.is-unlucky { background: var(--ink); color: #fff; }
+@media (max-width: 480px) {
+  .thirteen-unlucky-deck { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .thirteen-unlucky-deck button { min-height: 58px; }
+}
 .garage-guess-keys > div { display: flex; justify-content: center; gap: .26rem; }
 .garage-guess-keys button { display: grid; place-items: center; min-width: 0; flex: 1 1 0; min-height: 42px; padding: .35rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 2px 2px 0 var(--ink); color: var(--ink); font: inherit; font-size: clamp(.6rem, 2vw, .76rem); font-weight: 950; cursor: pointer; }
 .garage-guess-keys button:hover { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
