@@ -105,6 +105,36 @@ Notes:
 - The remote Sites builder runs `npm run build` against the pushed commit —
   don't repeat install/build as a routine pre-push step.
 
+## Static site (GitHub Pages)
+
+Alongside the Cloudflare Worker build, the whole site can be emitted as plain
+pre-rendered HTML:
+
+```bash
+npm run build:static   # -> dist/client, servable by any static host
+```
+
+`.github/workflows/deploy-pages.yml` runs this on every push to `main` and
+publishes to GitHub Pages (enable it once under **Settings → Pages → Source:
+GitHub Actions**).
+
+`scripts/build-static.mjs` closes the gaps a bare export leaves: it rewrites
+the Worker-only `/_vinext/image` URLs to the original assets, writes
+`contact-card.vcf`, `sitemap.xml` (derived from the pages actually emitted, so
+it cannot drift) and `robots.txt`, turns the legacy server redirects into
+meta-refresh pages with canonicals, reshapes `about.html` into
+`about/index.html` so every host resolves URLs identically, and adds
+`.nojekyll`.
+
+**The Pages site must be served from the root of a domain** — either a custom
+domain or a `<owner>.github.io` repo. vinext cannot pre-render the dynamic
+service routes when `basePath` is set, so a project-site subpath
+(`user.github.io/repo/`) will not build; the workflow fails early with that
+message rather than publishing a broken site.
+
+Canonical URLs still point at `oceanheightsautorepair.com`, so a Pages copy
+will not compete with the production domain in search results.
+
 ## Content guardrails
 
 - Keep the phone number `(609) 241-1546` consistent everywhere (see the
