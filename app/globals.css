@@ -3618,7 +3618,7 @@ body.is-play-locked {
 
 /* Two sound sources: the quiet mixer, or the dash unit. */
 .radio-panel { display: grid; gap: .6rem; }
-.radio-mode { display: inline-grid; grid-template-columns: repeat(2, minmax(96px, auto)); gap: 2px; border: 3px solid var(--ink); background: var(--ink); justify-self: start; }
+.radio-mode { display: inline-grid; grid-template-columns: repeat(3, minmax(90px, auto)); gap: 2px; border: 3px solid var(--ink); background: var(--ink); justify-self: start; }
 .radio-mode button { min-height: 40px; padding: .4rem .8rem; border: 0; background: var(--paper); color: var(--ink); font: inherit; font-size: .64rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .radio-mode button.is-on { background: var(--yellow); }
 .ambience-deck { padding: .8rem; border: 3px solid var(--ink); background: var(--cream, #f7efd9); box-shadow: 5px 5px 0 var(--ink); }
@@ -3628,3 +3628,138 @@ body.is-play-locked {
 .ambience-slider span { font-size: .56rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
 .ambience-slider input { accent-color: var(--red); }
 .ambience-slider small { grid-column: 2; color: var(--muted); font-size: .54rem; }
+
+/* ---- POS and receipt ---------------------------------------------- */
+.pos { display: grid; gap: .6rem; padding: .85rem; border: 3px solid var(--ink); background: #1f2a24; color: #cfe8d6; box-shadow: 5px 5px 0 var(--ink); }
+.pos-head { margin: 0; color: #8fe0a0; font-size: .6rem; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; }
+.pos-lines, .pos-totals { margin: 0; padding: 0; list-style: none; }
+.pos-lines li, .pos-totals > div { display: flex; justify-content: space-between; gap: 1rem; padding: .18rem 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .78rem; }
+.pos-lines li.is-void { opacity: .55; text-decoration: line-through; }
+.pos-totals { border-top: 1px dashed rgba(207,232,214,.4); padding-top: .3rem; }
+.pos-totals dt, .pos-totals dd { margin: 0; }
+.pos-totals .is-off dd { color: #f6bd38; }
+.pos-totals .is-total { border-top: 1px solid rgba(207,232,214,.5); margin-top: .2rem; padding-top: .3rem; font-size: 1rem; font-weight: 900; color: #8fe0a0; }
+.pos-prompt { margin: 0; font-size: .74rem; }
+.pos-change { margin: 0; font-family: ui-monospace, monospace; font-size: .9rem; }
+.pos-change b { color: #f6bd38; }
+.pos .cozy-actions button { background: #cfe8d6; }
+.pos .cozy-actions button.is-on { background: #8fe0a0; }
+
+.receipt { display: flex; justify-content: center; }
+.receipt-body {
+  width: min(100%, 300px);
+  padding: 1rem .9rem 1.4rem;
+  background: #f9f6ec;
+  color: #2a2620;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: .68rem;
+  line-height: 1.5;
+  box-shadow: 0 6px 14px rgba(0,0,0,.18);
+  /* Torn bottom edge, like paper off a spool. */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), 96% 100%, 92% calc(100% - 7px), 88% 100%, 84% calc(100% - 7px), 80% 100%, 76% calc(100% - 7px), 72% 100%, 68% calc(100% - 7px), 64% 100%, 60% calc(100% - 7px), 56% 100%, 52% calc(100% - 7px), 48% 100%, 44% calc(100% - 7px), 40% 100%, 36% calc(100% - 7px), 32% 100%, 28% calc(100% - 7px), 24% 100%, 20% calc(100% - 7px), 16% 100%, 12% calc(100% - 7px), 8% 100%, 4% calc(100% - 7px), 0 100%);
+  animation: receipt-feed .5s ease-out both;
+}
+@keyframes receipt-feed { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
+.receipt-body p { margin: 0; text-align: center; }
+.receipt-shop { font-size: 1rem; font-weight: 900; letter-spacing: .06em; line-height: 1.2; }
+.receipt-addr, .receipt-meta { margin-top: .3rem !important; font-size: .6rem; }
+.receipt-rule { margin: .5rem 0 !important; opacity: .6; letter-spacing: .08em; }
+.receipt-body ul { margin: 0; padding: 0; list-style: none; }
+.receipt-body li { display: flex; justify-content: space-between; gap: .8rem; }
+.receipt-body li.is-void { opacity: .6; }
+.receipt-body li.is-total { margin-top: .2rem; padding-top: .2rem; border-top: 1px solid rgba(42,38,32,.5); font-weight: 900; }
+.receipt-thanks { margin-top: .4rem !important; font-weight: 900; }
+.receipt-note { margin-top: .7rem !important; font-size: .52rem; opacity: .6; }
+
+/* ---- Live radio: one set, five dashboards -------------------------- */
+.silver-radio {
+  --dash: #7d1620; --plate: #ded7c2; --bezel: #cfcabb; --ink-on: #f6bd38;
+  --btn: #17140f; --label: #3a3630;
+  display: grid; gap: .7rem;
+  padding: .9rem;
+  border: 4px solid #1a1714;
+  background: var(--dash);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.silver-radio.is-sixties { --dash: #4a3524; --plate: #c9b08a; --bezel: #d8d2c4; --ink-on: #ffd77a; }
+.silver-radio.is-seventies { --dash: #6b4a1e; --plate: #cbaa63; --bezel: #e0c98d; --ink-on: #ffcf5c; }
+.silver-radio.is-eighties { --dash: #22232a; --plate: #33343c; --bezel: #4a4c56; --ink-on: #6ef0a0; --label: #cfd4dd; }
+.silver-radio.is-nineties { --dash: #1b1d22; --plate: #2a2d34; --bezel: #3c4049; --ink-on: #79c8ff; --label: #d3dae4; }
+
+.silver-decades { display: flex; flex-wrap: wrap; gap: .3rem; }
+.silver-decades button { display: grid; padding: .3rem .55rem; border: 2px solid #1a1714; background: rgba(255,255,255,.75); color: #1a1714; font: inherit; cursor: pointer; }
+.silver-decades button b { font-size: .64rem; }
+.silver-decades button small { font-size: .46rem; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
+.silver-decades button.is-on { background: var(--ink-on); }
+
+/* The faceplate: fluted metal with a chrome bezel across the middle. */
+.silver-top {
+  display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: .7rem; align-items: center;
+  padding: .7rem;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.42) 0 2px, rgba(0,0,0,.10) 2px 5px),
+    var(--plate);
+  border: 3px solid rgba(26,23,20,.85);
+}
+.silver-grille { display: none; }
+.silver-dial { min-width: 0; display: grid; gap: .3rem; }
+.silver-brand { margin: 0; color: var(--label); font-family: Georgia, serif; font-size: .68rem; font-weight: 900; letter-spacing: .16em; }
+.silver-brand small { font-size: .46rem; opacity: .7; }
+/* The lit dial window, chrome-framed like the original. */
+.silver-window {
+  padding: .4rem .6rem;
+  border: 4px solid var(--bezel);
+  border-radius: 3px;
+  background: #241f18;
+  box-shadow: inset 0 0 14px rgba(0,0,0,.7), 0 1px 0 rgba(255,255,255,.5);
+}
+.silver-radio.is-on .silver-window { background: linear-gradient(#6e5417, #33280d); box-shadow: inset 0 0 18px rgba(246,189,56,.55); }
+.silver-station { margin: 0; color: var(--ink-on); font-family: Georgia, serif; font-size: .92rem; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.silver-meta { margin: .1rem 0 0 !important; display: flex; gap: .5rem; align-items: center; color: rgba(247,239,217,.7); font-size: .52rem; letter-spacing: .06em; text-transform: uppercase; }
+.silver-meta em { margin-left: auto; padding: .05rem .3rem; border: 1px solid rgba(247,239,217,.35); font-style: normal; font-weight: 900; opacity: .45; }
+.silver-meta em.is-lit { border-color: #ff6b60; background: rgba(255,107,96,.2); color: #ffb3ad; opacity: 1; box-shadow: 0 0 8px rgba(255,107,96,.6); }
+.silver-status { margin: 0; color: var(--label); font-size: .58rem; line-height: 1.4; }
+
+/* Big round knobs with engraved rings, like VOLUME and SELECTOR. */
+.silver-knob-col { display: grid; justify-items: center; gap: .2rem; }
+.silver-knob-col small { color: var(--label); font-size: .44rem; font-weight: 950; letter-spacing: .16em; text-transform: uppercase; }
+.silver-knob {
+  position: relative; width: 58px; height: 58px;
+  border: 4px solid #15120f; border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #f2ede0 0 26%, #b9b2a2 27% 33%, #6f6a5e 34%),
+    radial-gradient(circle at 38% 32%, #fff 0 22%, #9d9686 60%, #4c473f 100%);
+  box-shadow: inset 0 -4px 8px rgba(0,0,0,.5), 2px 3px 0 #15120f;
+  cursor: ns-resize; touch-action: none;
+}
+.silver-knob i { position: absolute; top: 5px; left: 50%; width: 3px; height: 16px; margin-left: -1.5px; border-radius: 2px; background: #7d1620; transform-origin: 50% 24px; transform: rotate(var(--turn, 0deg)); }
+.silver-knob:focus-visible { outline: 3px solid var(--ink-on); outline-offset: 3px; }
+
+/* The row of black push keys under the dial. */
+.silver-bands { display: flex; flex-wrap: wrap; gap: .25rem; justify-content: center; }
+.silver-bands button {
+  min-width: 62px; min-height: 40px; padding: .3rem .5rem;
+  border: 2px solid #0d0b09; border-radius: 2px;
+  background: linear-gradient(#3a3630, var(--btn));
+  box-shadow: 0 4px 0 #0d0b09, inset 0 2px 0 rgba(255,255,255,.14);
+  color: #e8e2d2; font: inherit; font-size: .58rem; font-weight: 900; cursor: pointer; touch-action: manipulation;
+}
+.silver-bands button.is-down { transform: translateY(3px); box-shadow: 0 1px 0 #0d0b09; background: linear-gradient(#1d1a16, #0d0b09); color: var(--ink-on); }
+
+.silver-transport { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; justify-content: center; }
+.silver-transport button { min-width: 58px; min-height: 44px; border: 2px solid #0d0b09; border-radius: 2px; background: linear-gradient(#e6e0d4, #a49d90); color: #15120f; font: inherit; font-size: .7rem; font-weight: 950; box-shadow: 0 4px 0 #0d0b09; cursor: pointer; }
+.silver-transport button:active { transform: translateY(3px); box-shadow: 0 1px 0 #0d0b09; }
+.silver-transport button:disabled { opacity: .4; }
+.silver-transport .is-play { min-width: 96px; background: linear-gradient(#f6bd38, #d59a1c); }
+.silver-count { color: var(--label); font-family: ui-monospace, monospace; font-size: .64rem; }
+
+.silver-tone { display: flex; flex-wrap: wrap; gap: .4rem 1rem; padding: .5rem .6rem; background: rgba(0,0,0,.22); }
+.silver-tone label { display: grid; grid-template-columns: 46px minmax(70px, 1fr) 28px; align-items: center; gap: .35rem; flex: 1 1 170px; }
+.silver-tone span { color: #f2ede0; font-size: .5rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.silver-tone small { color: rgba(242,237,224,.7); font-family: ui-monospace, monospace; font-size: .54rem; }
+.silver-tone input { accent-color: var(--ink-on); }
+.silver-note { margin: 0; color: rgba(255,255,255,.72); font-size: .56rem; line-height: 1.45; }
+@media (max-width: 700px) {
+  .silver-top { grid-template-columns: minmax(0,1fr) auto; }
+  .silver-brand { grid-column: 1 / -1; }
+}
