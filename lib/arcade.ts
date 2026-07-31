@@ -24,13 +24,20 @@ export const arcadePresets = {
     },
   },
   crossword: {
-    wordsPerPuzzle: 8,
-    maxGrid: 13,
+    defaultDifficulty: "easy",
+    difficulties: {
+      kids: { label: "Kids", wordsPerPuzzle: 5, maxGrid: 9, minLength: 3, maxLength: 6 },
+      easy: { label: "Easy", wordsPerPuzzle: 8, maxGrid: 13, minLength: 3, maxLength: 9 },
+      advanced: { label: "Advanced", wordsPerPuzzle: 10, maxGrid: 15, minLength: 5, maxLength: 20 },
+    },
   },
   serviceSearch: {
-    gridSize: 10,
-    wordsPerPuzzle: 6,
-    prizeWords: 4,
+    defaultDifficulty: "easy",
+    difficulties: {
+      kids: { label: "Kids", gridSize: 8, wordsPerPuzzle: 4, prizeWords: 3, directionCount: 2 },
+      easy: { label: "Easy", gridSize: 10, wordsPerPuzzle: 6, prizeWords: 4, directionCount: 4 },
+      advanced: { label: "Advanced", gridSize: 12, wordsPerPuzzle: 9, prizeWords: 6, directionCount: 8 },
+    },
   },
   shoreRun: { coinsToWin: 4 },
   towChain: { carsToWin: 4, tickMs: 175 },
