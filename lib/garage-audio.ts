@@ -83,6 +83,9 @@ export const garageAudio = {
       voice(audio, "square", [[0, 55], [0.1, 50], [0.22, 90]], 0.3, 0.05);
       noise(audio, 0.22, 700, 0.02);
     }),
+  /** A low, unobtrusive engine pulse for a car that is already moving. */
+  cruise: () =>
+    safely((audio) => voice(audio, "sawtooth", [[0, 72], [0.28, 94], [0.72, 78]], 0.78, 0.018)),
   /** Friendly two-tone horn — a successful match. */
   horn: () =>
     safely((audio) => {
