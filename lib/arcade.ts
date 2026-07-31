@@ -23,20 +23,26 @@ export const arcadePresets = {
       desktop: 1100,
     },
   },
+  // `level` picks the vocabulary tier (see lib/arcade-words.ts); the length
+  // bounds only keep a word physically fittable in the grid. Difficulty used
+  // to be length alone, which is how "Kids" ended up asking for TPMS.
   crossword: {
     defaultDifficulty: "easy",
     difficulties: {
-      kids: { label: "Kids", wordsPerPuzzle: 5, maxGrid: 9, minLength: 3, maxLength: 6 },
-      easy: { label: "Easy", wordsPerPuzzle: 8, maxGrid: 13, minLength: 3, maxLength: 9 },
-      advanced: { label: "Advanced", wordsPerPuzzle: 10, maxGrid: 15, minLength: 5, maxLength: 20 },
+      kids: { label: "Kids", level: "kids", wordsPerPuzzle: 5, maxGrid: 9, minLength: 3, maxLength: 6 },
+      easy: { label: "Easy", level: "easy", wordsPerPuzzle: 7, maxGrid: 12, minLength: 3, maxLength: 8 },
+      advanced: { label: "Advanced", level: "advanced", wordsPerPuzzle: 10, maxGrid: 15, minLength: 4, maxLength: 13 },
     },
   },
+  // `directions` counts into the DIRECTIONS list in service-search.tsx, which
+  // is ordered easiest-first: forward and downward before any reversals or
+  // diagonals, so Kids never gets a word spelled backwards.
   serviceSearch: {
     defaultDifficulty: "easy",
     difficulties: {
-      kids: { label: "Kids", gridSize: 8, wordsPerPuzzle: 4, prizeWords: 3, directionCount: 2 },
-      easy: { label: "Easy", gridSize: 10, wordsPerPuzzle: 6, prizeWords: 4, directionCount: 4 },
-      advanced: { label: "Advanced", gridSize: 12, wordsPerPuzzle: 9, prizeWords: 6, directionCount: 8 },
+      kids: { label: "Kids", level: "kids", gridSize: 8, wordsPerPuzzle: 4, prizeWords: 3, directions: 2 },
+      easy: { label: "Easy", level: "easy", gridSize: 10, wordsPerPuzzle: 6, prizeWords: 4, directions: 4 },
+      advanced: { label: "Advanced", level: "advanced", gridSize: 12, wordsPerPuzzle: 9, prizeWords: 6, directions: 8 },
     },
   },
   garageGuess: { wordLength: 5, maxGuesses: 6 },
@@ -92,10 +98,22 @@ export const arcadeGames: ArcadeGame[] = [
 // Five-letter automotive words used by Garage Guess for both answers and
 // accepted guesses. Keeping the word bank beside the game presets makes the
 // vocabulary straightforward to tune without touching the game logic.
+//
+// Every entry must be exactly `garageGuess.wordLength` letters — a short one
+// slipping in makes the round unwinnable, since the player can never type a
+// guess that equals the answer. `assertGarageGuessWords` guards that.
 export const garageGuessWords = [
   "ALIGN", "AXLES", "BELTS", "BRAKE", "CABIN", "CLAMP", "COUPE",
-  "FRAME", "FUEL", "FUSES", "GAUGE", "GEARS", "GRILL", "HATCH",
-  "HITCH", "HOODS", "MOTOR", "RELAY", "ROTOR", "SEDAN", "SHAFT",
-  "SHOCK", "SPARK", "STRUT", "TIRES", "TOWED", "TREAD", "TRUCK",
-  "TRUNK", "VALVE", "WAGON", "WHEEL", "WINCH", "WIPER",
+  "FLUID", "FRAME", "FUELS", "FUSES", "GAUGE", "GEARS", "GRILL",
+  "HATCH", "HITCH", "HOODS", "LIGHT", "MOTOR", "PEDAL", "RELAY",
+  "ROTOR", "SEDAN", "SHAFT", "SHOCK", "SPARK", "SPARE", "STRUT",
+  "TIRES", "TOWED", "TREAD", "TRUCK", "TRUNK", "VALVE", "WAGON",
+  "WHEEL", "WINCH", "WIPER",
 ] as const;
+
+// Exported so a test can assert it, rather than trusting the list by eye.
+export function badGarageGuessWords() {
+  return garageGuessWords.filter(
+    (word) => word.length !== arcadePresets.garageGuess.wordLength,
+  );
+}

@@ -66,11 +66,21 @@ function Confetti() {
  * Shown the moment a game's (deliberately easy) target is met: confetti, the
  * prize note, and a route to the offers page.
  */
-export function PrizeBanner({ achievement }: { achievement: string }) {
+export function PrizeBanner({
+  achievement,
+  sound = true,
+}: {
+  achievement: string;
+  // Every game has a Sound on/off toggle; the celebration has to honour it
+  // too, or turning sound off still gets you a fanfare.
+  sound?: boolean;
+}) {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    garageAudio.fanfare();
+    if (sound) garageAudio.fanfare();
+    // Deliberately fires once, on the win — not again if the toggle flips.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (dismissed) return null;

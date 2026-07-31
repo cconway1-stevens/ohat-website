@@ -147,8 +147,14 @@ export function ShoreRun() {
     if (!canvas || !ctx) return;
 
     let raf = 0;
+    // The score used to be pushed into React state on every single frame,
+    // re-rendering the whole game ~60x a second just to move a counter. The
+    // readout only needs to keep up with the eye, so it refreshes ~10x a
+    // second instead; the crash still reports the exact final figure.
+    let frame = 0;
     const step = () => {
       const g = game.current;
+      frame += 1;
 
       g.distance += g.speed;
       // Gentler ramp than the original dino: this is a waiting-room game.
@@ -278,7 +284,7 @@ export function ShoreRun() {
         }
       }
 
-      setScore(Math.floor(g.distance / 12));
+      if (frame % 6 === 0) setScore(Math.floor(g.distance / 12));
       draw(ctx, g, false);
       raf = requestAnimationFrame(step);
     };
@@ -313,7 +319,21 @@ export function ShoreRun() {
   }
 
   return (
-    <div className="shore-run">
+    <div className="paper-game shore-run">
+      <header className="paper-game-header">
+        <div>
+          <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
+          <h2>Shore run</h2>
+        </div>
+        <div className="match-game-controls">
+          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
+            {sound ? "Sound on" : "Sound off"}
+          </button>
+          {!running ? (
+            <button type="button" onClick={start}>{over ? "Run again" : "Start the run"}</button>
+          ) : null}
+        </div>
+      </header>
       <div className="match-game-bar">
         <dl className="match-game-score">
           <div>
@@ -329,14 +349,6 @@ export function ShoreRun() {
             <dd>{coins}/{COINS_TO_WIN}</dd>
           </div>
         </dl>
-        <div className="match-game-controls">
-          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
-            {sound ? "Sound on" : "Sound off"}
-          </button>
-          {!running ? (
-            <button type="button" onClick={start}>{over ? "Run again" : "Start the run"}</button>
-          ) : null}
-        </div>
       </div>
       <p className="match-game-status" role="status">
         {running
@@ -349,6 +361,7 @@ export function ShoreRun() {
       </p>
       {(won || reachedNight) && over ? (
         <PrizeBanner
+          sound={sound}
           achievement={won
             ? `${COINS_TO_WIN} coins collected on the Shore Run.`
             : "You drove the Shore Run all the way into night."}

@@ -47,3 +47,4 @@ next-env.d.ts
 # generated responsive image variants + manifest
 /public/media/rs/
 /lib/image-manifest.json
+tsconfig.tsbuildinfo

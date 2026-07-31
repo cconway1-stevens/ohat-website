@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { arcadeGames } from "@/lib/arcade";
 
+// Derived, not typed out: the copy said "five" long after a sixth cabinet
+// was added.
+const COUNT = ["zero","one","two","three","four","five","six","seven","eight"][arcadeGames.length] ?? String(arcadeGames.length);
+
 export const metadata: Metadata = {
   title: "The Garage Arcade",
   description:
-    "You found the Ocean Heights garage arcade — five little car games for the waiting room.",
+    `You found the Ocean Heights garage arcade — ${COUNT} little car games for the waiting room.`,
   alternates: { canonical: "/arcade" },
 };
 
@@ -17,7 +21,7 @@ export default function ArcadePage() {
           <p className="eyebrow">You found the back room</p>
           <h1>The garage arcade.</h1>
           <p>
-            Five little games for the waiting room — all car, all free, no
+            {COUNT[0].toUpperCase() + COUNT.slice(1)} little games for the waiting room — all car, all free, no
             countdowns breathing down your neck. High scores stay on your own
             device.
           </p>
@@ -30,7 +34,7 @@ export default function ArcadePage() {
               <p className="eyebrow">Choose a cabinet</p>
               <h2>Pick a game. Park for a minute.</h2>
             </div>
-            <p>Five quick car games, built for a short wait and a little friendly competition.</p>
+            <p>{COUNT[0].toUpperCase() + COUNT.slice(1)} quick car games, built for a short wait and a little friendly competition.</p>
           </div>
           <div className="arcade-cabinets">
             {arcadeGames.map((game, index) => (
