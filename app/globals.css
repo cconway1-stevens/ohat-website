@@ -1745,6 +1745,24 @@ img { max-width: 100%; }
   color: var(--muted);
   line-height: 1.5;
 }
+/* Lobby aisles: one band per kind of game. */
+.arcade-aisle + .arcade-aisle { margin-top: 2.4rem; }
+.arcade-aisle-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .3rem .9rem;
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 5px double var(--ink);
+}
+.arcade-aisle-heading h3 { margin: 0; font-family: Georgia, serif; font-size: clamp(1.25rem, 3vw, 1.7rem); letter-spacing: -.02em; }
+.arcade-aisle-heading p { flex: 1 1 260px; margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+.arcade-aisle-heading > span { padding: .18rem .5rem; border: 2px solid var(--ink); background: var(--yellow); font-size: .58rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+@media (max-width: 700px) {
+  .arcade-aisle-heading { gap: .25rem .6rem; }
+  .arcade-aisle-heading p { font-size: .74rem; }
+}
 .arcade-cabinets {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -2134,10 +2152,34 @@ img { max-width: 100%; }
   border: 3px solid var(--ink);
   background: var(--cream, #f7efd9);
 }
-/* No fixed positioning while locked either: freezing holds the view exactly
-   where it was, and the player had just tapped this button, so it is still on
-   screen. Staying in flow means it can never cover the board or the keyboard. */
-.arcade-lock-bar.is-locked { background: var(--yellow-tint, #fdf1cf); }
+/* Frozen = the game takes the whole screen and scrolls inside itself.
+   Pinning the page at the current offset alone was not enough: on the taller
+   boards you ended up frozen with half the grid off screen and no way to
+   reach it. The stage gets its own scroller instead, so the whole board is
+   always available while the page behind it cannot move. */
+body.is-play-locked .arcade-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 3.6rem .75rem 1.5rem;
+  background: var(--cream, #f7efd9);
+}
+/* Exit sits top-right — the far corner from every on-screen keyboard and
+   thumb pad, which all live along the bottom edge. */
+body.is-play-locked .arcade-lock-bar {
+  position: fixed;
+  top: .5rem;
+  right: .5rem;
+  z-index: 210;
+  width: auto;
+  margin: 0;
+  padding: .3rem .5rem;
+  background: var(--yellow);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+body.is-play-locked .arcade-lock-bar small { display: none; }
 .arcade-lock-bar small { flex: 1 1 200px; color: var(--muted); font-size: .68rem; line-height: 1.4; }
 .arcade-lock-button {
   display: inline-flex;
