@@ -94,8 +94,8 @@ export default function Home() {
               </p>
 
               <h1>
-                We know cars.
-                <em>We know families.</em>
+                Car care, done right.
+                <em>No detours.</em>
               </h1>
               <p className="cover-lede">
                 Dealer-level diagnostics. Family-garage honesty. From
