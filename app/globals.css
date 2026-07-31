@@ -2617,7 +2617,11 @@ img { max-width: 100%; }
   .cover-index strong { font-size: 1rem; }
   .cover-index small { grid-column: 2; font-size: .68rem; }
   .cover-plate { border-top-width: 3px; }
-  .cover-plate-image { min-height: 168px; }
+  .cover-plate-image {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+  }
   .cover-stamp {
     top: -22px;
     right: 12px;
@@ -2644,9 +2648,7 @@ img { max-width: 100%; }
     flex-direction: column;
   }
   .garage-locator-address {
-    display: grid;
-    gap: .2rem;
-    padding: .8rem 14px;
+    display: none;
   }
   .garage-locator-address strong { font-size: .68rem; }
   .garage-locator-address em {
@@ -2655,9 +2657,10 @@ img { max-width: 100%; }
     font-size: .72rem;
   }
   .garage-locator-trigger {
+    width: 100%;
     min-width: 0;
     min-height: 48px;
-    border-top: 3px solid var(--ink);
+    border-top: 0;
     border-left: 0;
     font-size: .75rem;
   }

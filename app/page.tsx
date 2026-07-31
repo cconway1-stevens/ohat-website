@@ -104,7 +104,6 @@ export default function Home() {
                 </span>
                 <figcaption>
                   <span>Fig. 1 — Classics, dailies &amp; EVs, one driveway</span>
-                  <strong>{shop.address.street}</strong>
                 </figcaption>
               </figure>
             </article>

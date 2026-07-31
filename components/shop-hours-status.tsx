@@ -12,7 +12,11 @@ export function ShopHoursStatus() {
   return (
     <span className="shop-hours-status-wrap">
       <span className={`shop-hours-status is-${status.status}`}><span aria-hidden="true" />{status.label}</span>
-      {status.holiday ? <span className="shop-hours-holiday">Facility may be closed for {status.holiday} — call for details.</span> : null}
+      {status.holiday ? (
+        <span className="shop-hours-holiday">
+          Facility may be closed for {status.holiday}. Please call for more information.
+        </span>
+      ) : null}
     </span>
   );
 }
