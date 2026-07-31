@@ -368,15 +368,10 @@ export default function Home() {
               <p>Bring us the commuter, the family hauler, the workhorse, or the keeper.</p>
             </div>
             <MakeGrid />
-            <div className="make-note-row">
-              <p className="make-note">
-                Representative makes shown. We service virtually all makes and
-                models. Brand marks belong to their respective owners.
-              </p>
-              <Link className="make-note" href="/logo-match">
-                Play the logo match in full screen →
-              </Link>
-            </div>
+            <p className="make-note">
+              Representative makes shown. We service virtually all makes and
+              models. Brand marks belong to their respective owners.
+            </p>
           </div>
         </section>
 

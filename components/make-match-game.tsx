@@ -1,22 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { brandSrc, makes } from "@/lib/makes";
+import { useEffect, useRef, useState } from "react";
+import { garageAudio } from "@/lib/garage-audio";
+import { brandSrc, makes, shuffle } from "@/lib/makes";
 
-const PAIRS = 8;
+const PAIRS = 10;
 const BEST_KEY = "ohat-match-best";
 
 type Tile = { id: number; name: string; matched: boolean };
-
-function shuffle<T>(items: T[]): T[] {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
 
 // A fresh subset of the brand list every round, then a shuffle of the
 // positions, so no two games present the same board.
@@ -35,45 +27,6 @@ function readBest(): number | null {
   }
 }
 
-// Small synthesised horn and engine blips. Generating them with the Web Audio
-// API keeps the page self-contained — no audio files to ship or fail to load.
-function useGarageSounds(enabled: boolean) {
-  const ctxRef = useRef<AudioContext | null>(null);
-
-  useEffect(() => {
-    return () => void ctxRef.current?.close();
-  }, []);
-
-  return useCallback(
-    (freqs: number[], duration: number, type: OscillatorType = "square") => {
-      if (!enabled) return;
-      try {
-        ctxRef.current ??= new AudioContext();
-        const ctx = ctxRef.current;
-        // Browsers hold the context suspended until a user gesture; every call
-        // here follows a tap, so resuming is allowed.
-        if (ctx.state === "suspended") void ctx.resume();
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-        gain.connect(ctx.destination);
-        for (const freq of freqs) {
-          const osc = ctx.createOscillator();
-          osc.type = type;
-          osc.frequency.setValueAtTime(freq, ctx.currentTime);
-          osc.connect(gain);
-          osc.start();
-          osc.stop(ctx.currentTime + duration);
-        }
-      } catch {
-        // A blocked or unavailable AudioContext must never break the game.
-      }
-    },
-    [enabled],
-  );
-}
-
 function formatClock(seconds: number) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
@@ -90,8 +43,16 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
   const [running, setRunning] = useState(false);
   const [best, setBest] = useState<number | null>(null);
   const [sound, setSound] = useState(true);
-  const play = useGarageSounds(sound);
+  // The mismatch flip-back timer, held so dealing a new board can cancel it —
+  // left running it would wipe the first pick of the next game.
+  const flipBack = useRef<number | null>(null);
   const Heading = heading;
+
+  useEffect(() => {
+    return () => {
+      if (flipBack.current !== null) window.clearTimeout(flipBack.current);
+    };
+  }, []);
 
   const won = deck.length > 0 && deck.every((tile) => tile.matched);
   const matched = deck.filter((tile) => tile.matched).length / 2;
@@ -102,7 +63,14 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
     return () => window.clearInterval(id);
   }, [running]);
 
+  function play(effect: keyof typeof garageAudio) {
+    if (sound) garageAudio[effect]();
+  }
+
   function deal() {
+    if (flipBack.current !== null) window.clearTimeout(flipBack.current);
+    flipBack.current = null;
+    play("ignition");
     setDeck(buildDeck());
     setPicked([]);
     setMoves(0);
@@ -114,9 +82,9 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
   function choose(tile: Tile) {
     // Two tiles already face up means a mismatch is still being shown.
     if (picked.length === 2 || tile.matched || picked.includes(tile.id)) return;
-    play([180], 0.09, "sawtooth");
 
     if (picked.length === 0) {
+      play("rev");
       setPicked([tile.id]);
       setRunning(true);
       return;
@@ -137,7 +105,7 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
 
       if (nextDeck.every((candidate) => candidate.matched)) {
         setRunning(false);
-        play([523, 659, 784], 0.55);
+        play("fanfare");
         const previous = readBest();
         if (previous === null || nextMoves < previous) {
           try {
@@ -148,14 +116,17 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
           setBest(nextMoves);
         }
       } else {
-        play([440, 554], 0.28);
+        play("horn");
       }
       return;
     }
 
     setPicked([picked[0], tile.id]);
-    play([120], 0.16, "sawtooth");
-    window.setTimeout(() => setPicked([]), 800);
+    play("skid");
+    flipBack.current = window.setTimeout(() => {
+      flipBack.current = null;
+      setPicked([]);
+    }, 800);
   }
 
   if (deck.length === 0) {

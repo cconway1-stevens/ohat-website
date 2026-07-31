@@ -1414,7 +1414,12 @@ img { max-width: 100%; }
 }
 .make-game-toggle:hover { color: var(--red-dark); }
 .make-note-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .6rem 1.4rem; }
-.make-grid-tools { display: flex; justify-content: flex-end; margin-bottom: .55rem; }
+.make-grid-tools { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.2rem; margin-bottom: .55rem; }
+.make-order { display: inline-flex; gap: 1rem; }
+.make-order .make-game-toggle[aria-pressed="true"] { color: var(--ink); text-decoration-color: var(--yellow); }
+/* Tiles deal onto the wall with a short cascade whenever the order changes. */
+@keyframes tile-deal { from { opacity: 0; transform: scale(.86); } to { opacity: 1; transform: none; } }
+.make-grid li { animation: tile-deal .34s ease-out both; animation-delay: var(--tile-delay, 0ms); }
 
 .match-game { display: grid; gap: 1rem; }
 .match-game-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1.2rem; }
@@ -1517,15 +1522,88 @@ img { max-width: 100%; }
 .match-grid-won li:nth-child(3n) .match-tile { animation-delay: .14s; }
 
 @media (min-width: 720px) {
-  .match-grid { grid-template-columns: repeat(8, 1fr); gap: .6rem; }
+  /* Five columns: 20 tiles land in four complete rows. */
+  .match-grid { grid-template-columns: repeat(5, 1fr); gap: .6rem; }
   .match-tile-face img { width: 40px; height: 40px; }
   .match-tile-face small { font-size: .55rem; }
 }
 
 .game-hero { background: linear-gradient(120deg, rgba(23,20,18,.97), rgba(105,12,17,.95)); }
+.game-hero .back-link { margin-bottom: 1rem; }
 .game-board { background: var(--cream); }
 .game-board-note { margin-top: 1.6rem; }
 .game-board-note a { color: var(--red); font-weight: 900; }
+
+/* Arcade hub cabinets */
+.arcade-cabinets { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.1rem; }
+.arcade-cabinet {
+  position: relative;
+  display: grid;
+  gap: .45rem;
+  justify-items: start;
+  padding: 1.6rem 1.5rem 1.4rem;
+  border: 4px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 8px 8px 0 var(--ink);
+  color: inherit;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.arcade-cabinet:nth-child(2) { background: var(--yellow); }
+.arcade-cabinet:nth-child(3) { background: var(--blue); color: #fff; }
+.arcade-cabinet:nth-child(4) { background: var(--red); color: #fff; }
+.arcade-cabinet:hover { transform: translateY(-6px) rotate(-.6deg); box-shadow: 12px 12px 0 var(--red); }
+.arcade-cabinet:nth-child(4):hover { box-shadow: 12px 12px 0 var(--yellow); }
+.arcade-cabinet-number { font-size: .65rem; font-weight: 950; letter-spacing: .16em; color: currentColor; opacity: .6; }
+.arcade-cabinet-glyph { display: grid; place-items: center; width: 46px; height: 46px; border: 3px solid currentColor; border-radius: 50%; font-size: 1.3rem; font-weight: 900; }
+.arcade-cabinet strong { font-family: Georgia, serif; font-size: 1.75rem; letter-spacing: -.02em; }
+.arcade-cabinet p { margin: 0; opacity: .82; line-height: 1.45; }
+.arcade-cabinet small { font-size: .62rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; opacity: .65; }
+.arcade-cabinet b { margin-top: .4rem; font-size: .78rem; font-weight: 950; text-decoration: underline; text-underline-offset: 4px; }
+
+/* Rail to the other cabinets under each game */
+.arcade-rail { display: flex; flex-wrap: wrap; align-items: baseline; gap: .7rem 1.1rem; margin-top: 2rem; padding-top: 1.2rem; border-top: 3px double rgba(23,20,18,.25); }
+.arcade-rail span { font-size: .64rem; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.arcade-rail a { padding: .45rem .8rem; border: 3px solid var(--ink); background: var(--paper); box-shadow: 3px 3px 0 var(--ink); color: var(--ink); font-size: .78rem; font-weight: 900; transition: transform .15s ease, box-shadow .15s ease; }
+.arcade-rail a:hover { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+/* Drag strip */
+.drag-strip { display: grid; gap: 1rem; }
+.drag-strip-stage {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  width: min(100%, 460px);
+  margin-inline: auto;
+  padding: clamp(1.6rem, 5vw, 2.6rem);
+  border: 4px solid var(--ink);
+  background: #211d1b;
+  box-shadow: 8px 8px 0 var(--ink);
+  color: var(--paper);
+  font: inherit;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.drag-strip-green { background: #14320f; }
+.drag-strip-jumped { background: #47090d; }
+.drag-strip-stage strong { font-family: Georgia, serif; font-size: 1.4rem; letter-spacing: -.01em; }
+.drag-strip-stage small { color: var(--yellow-tint); font-size: .72rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.drag-tree { display: grid; gap: .55rem; padding: .9rem .8rem; border: 3px solid rgba(255,255,255,.25); border-radius: 999px; background: #171412; }
+.drag-tree i { width: 34px; height: 34px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; background: #2b2725; transition: background .1s ease, box-shadow .1s ease; }
+.drag-tree i.is-amber { background: var(--yellow); box-shadow: 0 0 18px rgba(246,189,56,.75); }
+.drag-tree i.is-green { background: #3fae4c; box-shadow: 0 0 22px rgba(63,174,76,.8); }
+
+/* Canvas games share a frame */
+.shore-run, .tow-chain { display: grid; gap: 1rem; }
+.shore-run-road, .tow-chain-lot {
+  justify-self: center;
+  width: min(100%, 340px);
+  height: auto;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: #2b2725;
+  touch-action: none;
+  cursor: pointer;
+}
 
 .award-section { position: relative; padding: 9rem 0 7rem; background: var(--red); color: #fff; }
 .award-grid { display: grid; grid-template-columns: .7fr 1.3fr; gap: clamp(3rem, 8vw, 8rem); align-items: center; }
@@ -2090,7 +2168,12 @@ img { max-width: 100%; }
   background: repeating-linear-gradient(90deg, var(--yellow) 0 55px, transparent 55px 92px);
   animation: road-lines 1.1s linear infinite;
 }
-.classic-car { position: absolute; z-index: 2; left: 8%; bottom: 38px; width: 180px; height: 78px; animation: car-drive 9s ease-in-out infinite alternate; }
+.classic-car { position: absolute; z-index: 2; left: 8%; bottom: 38px; display: block; width: 180px; height: 78px; animation: car-drive 9s ease-in-out infinite alternate; }
+/* The car is a link (the arcade easter egg): give it a focus ring and a
+   little bounce when caught, but no cursor giveaway beyond the pointer. */
+.classic-car:hover, .classic-car:focus-visible { animation-play-state: paused; }
+.classic-car:hover .classic-car-shell { transform: translateY(-4px); }
+.classic-car-shell { position: static; display: block; width: 100%; height: 100%; transition: transform .18s ease; }
 .car-body { position: absolute; left: 5px; right: 0; bottom: 6px; height: 40px; background: var(--red); border: 4px solid var(--ink); border-radius: 33px 50px 8px 7px; }
 .car-roof { position: absolute; left: 47px; bottom: 41px; width: 85px; height: 34px; background: var(--red); border: 4px solid var(--ink); border-bottom: 0; border-radius: 50px 50px 0 0; transform: skewX(-10deg); }
 .car-wheel { position: absolute; z-index: 3; bottom: -5px; width: 36px; height: 36px; border: 8px solid var(--ink); border-radius: 50%; background: #aaa; animation: slow-spin .55s linear infinite; }
@@ -2441,7 +2524,8 @@ img { max-width: 100%; }
   }
   .driveway-callout > span { width: 40px; height: 40px; border-width: 3px; outline-width: 2px; }
   .driveway-callout p { grid-column: 1 / -1; justify-self: start; }
-  .make-grid { grid-template-columns: repeat(3,1fr); }
+  /* Four columns so the 28-tile wall lands in seven complete rows. */
+  .make-grid { grid-template-columns: repeat(4,1fr); }
   .make-grid li { min-height: 78px; gap: .3rem; padding: .35rem .15rem; }
   .make-grid li img { width: 28px; height: 28px; }
   .make-grid span { font-size: .48rem; letter-spacing: -.01em; }

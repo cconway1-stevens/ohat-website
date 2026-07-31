@@ -91,6 +91,7 @@ test("legacy URLs export redirect stubs that point somewhere real", () => {
     "tire-rotation",
     "alignments",
     "services/tires-alignments",
+    "logo-match",
   ];
 
   for (const from of legacy) {
@@ -104,6 +105,23 @@ test("legacy URLs export redirect stubs that point somewhere real", () => {
     assert.ok(
       existsSync(join(outDir, target, "index.html")),
       `/${from} redirects to ${target}, which did not export`,
+    );
+  }
+});
+
+test("arcade pages are noindex and stay out of the sitemap", () => {
+  // The arcade is an easter egg with no service intent; indexed game pages
+  // would compete with the pages that earn calls.
+  const sitemap = readFileSync(join(outDir, "sitemap.xml"), "utf8");
+  assert.doesNotMatch(sitemap, /\/arcade/, "sitemap should not list arcade routes");
+
+  const arcadeDir = join(outDir, "arcade");
+  assert.ok(existsSync(join(arcadeDir, "index.html")), "arcade hub did not export");
+  for (const page of walk(arcadeDir).filter((file) => file.endsWith(".html"))) {
+    assert.match(
+      readFileSync(page, "utf8"),
+      /<meta name="robots" content="noindex/,
+      `${page.slice(outDir.length)} should carry noindex`,
     );
   }
 });
