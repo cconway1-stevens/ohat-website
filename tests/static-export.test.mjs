@@ -92,6 +92,7 @@ test("legacy URLs export redirect stubs that point somewhere real", () => {
     "alignments",
     "services/tires-alignments",
     "logo-match",
+    "arcade/drag-strip",
   ];
 
   for (const from of legacy) {

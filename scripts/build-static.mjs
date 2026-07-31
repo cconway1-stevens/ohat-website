@@ -34,6 +34,8 @@ const LEGACY_REDIRECTS = {
   "services/tires-alignments": "/services/tires",
   // The single game page grew into the arcade.
   "logo-match": "/arcade/logo-match",
+  // The reaction cabinet was replaced by the garage crossword.
+  "arcade/drag-strip": "/arcade/crossword",
 };
 
 function walk(dir) {
