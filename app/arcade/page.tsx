@@ -5,7 +5,7 @@ import { arcadeGames } from "@/lib/arcade";
 export const metadata: Metadata = {
   title: "The Garage Arcade",
   description:
-    "You found the Ocean Heights garage arcade — five little car games for the waiting room.",
+    `You found the Ocean Heights garage arcade — ${arcadeGames.length} little car games for the waiting room.`,
   alternates: { canonical: "/arcade" },
 };
 
@@ -17,7 +17,7 @@ export default function ArcadePage() {
           <p className="eyebrow">You found the back room</p>
           <h1>The garage arcade.</h1>
           <p>
-            Five little games for the waiting room — all car, all free, no
+            {arcadeGames.length} little games for the waiting room — all car, all free, no
             countdowns breathing down your neck. High scores stay on your own
             device.
           </p>
@@ -30,7 +30,7 @@ export default function ArcadePage() {
               <p className="eyebrow">Choose a cabinet</p>
               <h2>Pick a game. Park for a minute.</h2>
             </div>
-            <p>Five quick car games, built for a short wait and a little friendly competition.</p>
+            <p>{arcadeGames.length} quick car games, built for a short wait and a little friendly competition.</p>
           </div>
           <div className="arcade-cabinets">
             {arcadeGames.map((game, index) => (

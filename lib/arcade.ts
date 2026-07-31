@@ -40,6 +40,7 @@ export const arcadePresets = {
     },
   },
   garageGuess: { wordLength: 5, maxGuesses: 6 },
+  treadStack: { rows: 18, columns: 10, linesToWin: 3 },
   shoreRun: { coinsToWin: 4 },
   towChain: { carsToWin: 4, tickMs: 175 },
 } as const;
@@ -86,6 +87,13 @@ export const arcadeGames: ArcadeGame[] = [
     tagline: "Find the five-letter shop word in six tries.",
     classic: "word puzzle",
     glyph: "G",
+  },
+  {
+    slug: "tread-stack",
+    name: "Tread Stack",
+    tagline: "Stack the tire loads and clear the rack.",
+    classic: "falling-block puzzle",
+    glyph: "●",
   },
 ];
 
