@@ -106,17 +106,17 @@ export function DirectionsTrigger({
             <a href={appleMapsDirections} target="_blank" rel="noreferrer">
               <span aria-hidden="true">A</span>
               <strong>Apple Maps</strong>
-              <small>Open route ↗</small>
+              <small>Open route ↗︎</small>
             </a>
             <a href={googleMapsDirections} target="_blank" rel="noreferrer">
               <span aria-hidden="true">G</span>
               <strong>Google Maps</strong>
-              <small>Open route ↗</small>
+              <small>Open route ↗︎</small>
             </a>
             <a href={wazeDirections} target="_blank" rel="noreferrer">
               <span aria-hidden="true">W</span>
               <strong>Waze</strong>
-              <small>Open route ↗</small>
+              <small>Open route ↗︎</small>
             </a>
             <button type="button" onClick={copyAddress}>
               <span aria-hidden="true">

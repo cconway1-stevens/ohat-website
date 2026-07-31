@@ -90,7 +90,7 @@ export default function ReviewsPage() {
                 <span>View on</span>
                 <strong>{profile.name}</strong>
                 <p>{profile.detail}</p>
-                <b>Open profile ↗<span className="sr-only"> (opens in a new tab)</span></b>
+                <b>Open profile ↗︎<span className="sr-only"> (opens in a new tab)</span></b>
               </a>
             ))}
           </div>

@@ -43,7 +43,7 @@ export function SiteHeader({ inner = false }: { inner?: boolean }) {
         </DirectionsTrigger>
         <span>Egg Harbor Township, New Jersey</span>
         <a className="garage-strip-phone" href={phoneHref}>
-          <span aria-hidden="true">☎</span> {phoneDisplay}
+          <span aria-hidden="true">☎︎</span> {phoneDisplay}
         </a>
       </div>
       <div className="shell nav-wrap">
@@ -56,7 +56,7 @@ export function SiteHeader({ inner = false }: { inner?: boolean }) {
           ))}
         </nav>
         <a className="button button-small retro-call-button" href={phoneHref}>
-          <span className="retro-phone-mark" aria-hidden="true">☎</span>
+          <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
           <span>
             <small>Mechanic on the line</small>
             <strong>Call the garage</strong>
@@ -76,7 +76,7 @@ export function SiteHeader({ inner = false }: { inner?: boolean }) {
               <em>Add the garage to your phone</em>
             </a>
             <a className="mobile-menu-call" href={phoneHref}>
-              <span className="retro-phone-mark" aria-hidden="true">☎</span>
+              <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
               <span><small>Mechanic on the line</small><strong>{phoneDisplay}</strong></span>
             </a>
           </nav>
@@ -84,7 +84,7 @@ export function SiteHeader({ inner = false }: { inner?: boolean }) {
       </div>
       <aside className="booking-dock" aria-label="Quick shop actions">
         <a className="booking-phone" href={phoneHref} aria-label={`Call Ocean Heights Auto and Tire at ${phoneDisplay}`}>
-          <span className="retro-phone-mark" aria-hidden="true">☎</span>
+          <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
           <span><small>Mechanic on the line</small><strong>{phoneDisplay}</strong></span>
         </a>
         <Link className="booking-links" href="/links">
