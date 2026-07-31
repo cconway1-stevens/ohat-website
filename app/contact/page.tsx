@@ -16,7 +16,7 @@ export default function ContactPage() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <section className="inner-hero contact-hero">
           <div className="shell contact-hero-grid">

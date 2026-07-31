@@ -15,7 +15,7 @@ export default function ServicesPage() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <section className="services-board">
           <div className="shell services-board-grid">

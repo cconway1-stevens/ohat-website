@@ -42,7 +42,7 @@ export default function VehicleDropOffPage() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <section className="dropoff-arrival">
           <div className="shell dropoff-hero-grid">
