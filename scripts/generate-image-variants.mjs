@@ -5,8 +5,9 @@
 // phone downloading the 2004px hero. Instead the build pre-renders a width
 // ladder here and `image-loader.mjs` points `next/image` at it, so the normal
 // srcset behaviour works on a plain static host.
-import { execFileSync } from "node:child_process";
-import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import sharp from "sharp";
 
 const SOURCE_DIR = "public/media";
 const OUT_DIR = "public/media/rs";
@@ -18,42 +19,35 @@ const sources = readdirSync(SOURCE_DIR).filter((file) =>
 
 mkdirSync(OUT_DIR, { recursive: true });
 
-// Pillow is available in the build image; shelling out keeps this script free
-// of a node image dependency.
-const python = `
-import json, os, sys
-from PIL import Image
+const manifest = {};
+for (const name of sources) {
+  const path = join(SOURCE_DIR, name);
+  let width;
+  try {
+    ({ width } = await sharp(path).metadata());
+  } catch {
+    continue;
+  }
+  const stem = name.replace(/\.[^.]+$/, "");
+  const available = [];
+  for (const w of WIDTHS) {
+    if (w >= width) continue;
+    const out = join(OUT_DIR, `${stem}-${w}.jpg`);
+    if (!existsSync(out)) {
+      await sharp(path)
+        .resize(w)
+        .jpeg({ quality: 78, progressive: true, mozjpeg: true })
+        .toFile(out);
+    }
+    available.push(w);
+  }
+  if (available.length) {
+    manifest[`/media/${name}`] = { stem, widths: available, full: width };
+  }
+}
 
-widths = ${JSON.stringify(WIDTHS)}
-manifest = {}
-for name in ${JSON.stringify(sources)}:
-    path = os.path.join(${JSON.stringify(SOURCE_DIR)}, name)
-    try:
-        im = Image.open(path)
-    except Exception:
-        continue
-    stem = os.path.splitext(name)[0]
-    available = []
-    for w in widths:
-        if w >= im.width:
-            continue
-        out = os.path.join(${JSON.stringify(OUT_DIR)}, f"{stem}-{w}.jpg")
-        if not os.path.exists(out):
-            copy = im.convert("RGB")
-            copy = copy.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
-            copy.save(out, "JPEG", quality=78, optimize=True, progressive=True)
-        available.append(w)
-    if available:
-        manifest[f"/media/{name}"] = {"stem": stem, "widths": available, "full": im.width}
-print(json.dumps(manifest))
-`;
+writeFileSync("lib/image-manifest.json", `${JSON.stringify(manifest)}\n`);
 
-const manifest = execFileSync("python3", ["-c", python], {
-  encoding: "utf8",
-  maxBuffer: 32 * 1024 * 1024,
-}).trim();
-
-writeFileSync("lib/image-manifest.json", `${manifest}\n`);
-
-const count = Object.keys(JSON.parse(manifest)).length;
-console.log(`Responsive variants ready for ${count} images (${WIDTHS.join(", ")}px).`);
+console.log(
+  `Responsive variants ready for ${Object.keys(manifest).length} images (${WIDTHS.join(", ")}px).`,
+);
