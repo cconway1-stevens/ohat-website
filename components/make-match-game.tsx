@@ -324,7 +324,14 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
               >
                 <span className="match-tile-inner">
                   <span className="match-tile-back" aria-hidden="true">
-                    <span className="match-card-car" />
+                    <Image
+                      className="match-card-logo"
+                      src="/media/logo-transparent.png"
+                      width={160}
+                      height={116}
+                      alt=""
+                      unoptimized
+                    />
                   </span>
                   <span className="match-tile-face">
                     {tile.free ? (
