@@ -28,11 +28,73 @@ const CUSTOMERS = [
   "A guy still in his fishing waders", "A nurse coming off nights",
 ];
 
-const BILLS = [20, 50, 100];
+// Tendered amounts, not necessarily one physical bill: $200 and $300 represent
+// two or three hundreds for larger parts-counter orders.
+const BILLS = [20, 50, 100, 200, 300];
+const DENOMINATIONS = [
+  { cents: 10000, label: "$100" },
+  { cents: 5000, label: "$50" },
+  { cents: 2000, label: "$20" },
+  { cents: 1000, label: "$10" },
+  { cents: 500, label: "$5" },
+  { cents: 100, label: "$1" },
+  { cents: 25, label: "25¢" },
+  { cents: 10, label: "10¢" },
+  { cents: 5, label: "5¢" },
+  { cents: 1, label: "1¢" },
+] as const;
+
 type Phase = "browsing" | "register" | "receipt";
 type Order = { items: string[]; outOfStock: string | null; coupon: boolean; customer: string; slip: number };
+type Drawer = Record<number, number>;
 
 const money = (value: number) => `$${value.toFixed(2)}`;
+const moneyFromCents = (value: number) => money(value / 100);
+
+const STARTING_DRAWER: Drawer = {
+  10000: 0, 5000: 0, 2000: 2, 1000: 3, 500: 4,
+  100: 8, 25: 12, 10: 10, 5: 8, 1: 20,
+};
+
+function randomDrawer(): Drawer {
+  const ranges: Record<number, [number, number]> = {
+    10000: [0, 1], 5000: [0, 1], 2000: [0, 3], 1000: [0, 4], 500: [0, 5],
+    100: [2, 12], 25: [0, 16], 10: [0, 12], 5: [0, 10], 1: [0, 30],
+  };
+  return Object.fromEntries(DENOMINATIONS.map(({ cents }) => {
+    const [min, max] = ranges[cents];
+    return [cents, min + Math.floor(Math.random() * (max - min + 1))];
+  }));
+}
+
+// Bounded change-making: only use bills and coins physically in the drawer.
+// The first solution keeps the larger denominations because the list is
+// descending, while still finding exact combinations greedy change can miss.
+function countChange(target: number, drawer: Drawer): number[] | null {
+  const ways = new Map<number, number[]>([[0, []]]);
+  for (const { cents } of DENOMINATIONS) {
+    const existing = [...ways.entries()];
+    for (const [amount, picks] of existing) {
+      for (let count = 1; count <= (drawer[cents] ?? 0); count += 1) {
+        const next = amount + cents * count;
+        if (next > target) break;
+        if (!ways.has(next)) ways.set(next, [...picks, ...Array(count).fill(cents)]);
+      }
+    }
+  }
+  return ways.get(target) ?? null;
+}
+
+function depositCash(drawer: Drawer, dollars: number): Drawer {
+  const next = { ...drawer };
+  let centsLeft = dollars * 100;
+  for (const cents of [10000, 5000, 2000, 1000, 500, 100]) {
+    const count = Math.floor(centsLeft / cents);
+    if (count > 0) next[cents] = (next[cents] ?? 0) + count;
+    centsLeft -= count * cents;
+  }
+  return next;
+}
 
 function nextOrder(): Order {
   const pool = [...STOCK].sort(() => Math.random() - 0.5);
@@ -66,11 +128,17 @@ export function PartsCounter() {
   const [served, setServed] = useState(0);
   const [takings, setTakings] = useState(0);
   const [tender, setTender] = useState<{ kind: "cash" | "card"; bill?: number } | null>(null);
+  const [drawer, setDrawer] = useState<Drawer>(STARTING_DRAWER);
+  const [changePicks, setChangePicks] = useState<number[]>([]);
+  const [changeNote, setChangeNote] = useState("");
 
   useAmbience(sound, { fluorescent: 0.012, shopHum: 0.012, traffic: 0.006 });
 
   useEffect(() => {
-    const id = window.setTimeout(() => setOrder(nextOrder()), 0);
+    const id = window.setTimeout(() => {
+      setOrder(nextOrder());
+      setDrawer(randomDrawer());
+    }, 0);
     return () => window.clearTimeout(id);
   }, []);
 
@@ -84,6 +152,10 @@ export function PartsCounter() {
   const taxed = (subtotal - discount) * TAX;
   const total = subtotal - discount + taxed;
   const change = tender?.bill ? tender.bill - total : 0;
+  const changeDueCents = Math.max(0, Math.round(change * 100));
+  const changePickedCents = changePicks.reduce((sum, cents) => sum + cents, 0);
+  const changeReady = tender?.kind !== "cash" || changePickedCents === changeDueCents;
+  const drawerTotalCents = DENOMINATIONS.reduce((sum, { cents }) => sum + cents * (drawer[cents] ?? 0), 0);
 
   const canvasRef = useSceneCanvas((ctx, frame) => {
     ctx.fillStyle = "#d9d2bd";
@@ -201,7 +273,51 @@ export function PartsCounter() {
     setNote("Onto the counter it goes.");
   }
 
+  function chooseTender(next: { kind: "cash" | "card"; bill?: number }) {
+    cozyAudio.coin();
+    setTender(next);
+    setChangePicks([]);
+    setChangeNote(next.kind === "cash" ? "Count the change from what is actually in the drawer." : "Card approved. Ready to print the slip.");
+  }
+
+  function addChange(cents: number) {
+    const alreadyPicked = changePicks.filter((value) => value === cents).length;
+    if (alreadyPicked >= (drawer[cents] ?? 0) || changePickedCents + cents > changeDueCents) return;
+    cozyAudio.coin();
+    setChangePicks((current) => [...current, cents]);
+    setChangeNote("");
+  }
+
+  function autoCountChange() {
+    const solution = countChange(changeDueCents, drawer);
+    if (!solution) {
+      setChangePicks([]);
+      setChangeNote("The drawer cannot make exact change. Ask the manager for a change bank.");
+      return;
+    }
+    cozyAudio.printer();
+    setChangePicks(solution);
+    setChangeNote("The register counted out an exact combination.");
+  }
+
+  function restockDrawer() {
+    cozyAudio.drawer();
+    setDrawer((current) => Object.fromEntries(
+      DENOMINATIONS.map(({ cents }) => [cents, (current[cents] ?? 0) + (STARTING_DRAWER[cents] ?? 0)]),
+    ));
+    setChangePicks([]);
+    setChangeNote("The manager brought a fresh change bank. Count it again when ready.");
+  }
+
   function ringUp() {
+    if (!tender || (tender.kind === "cash" && !changeReady)) return;
+    if (tender.kind === "cash" && tender.bill) {
+      setDrawer((current) => {
+        const next = { ...current };
+        for (const cents of changePicks) next[cents] = Math.max(0, (next[cents] ?? 0) - 1);
+        return depositCash(next, tender.bill!);
+      });
+    }
     cozyAudio.printer();
     setTakings((value) => value + total);
     setServed((count) => count + 1);
@@ -214,6 +330,8 @@ export function PartsCounter() {
     setTray([]);
     setBackOrdered([]);
     setTender(null);
+    setChangePicks([]);
+    setChangeNote("");
     setNote("");
     setPhase("browsing");
   }
@@ -299,20 +417,74 @@ export function PartsCounter() {
 
           <p className="pos-prompt">How are they paying?</p>
           <div className="cozy-actions">
-            <button type="button" className={tender?.kind === "card" ? "is-on" : ""} onClick={() => { cozyAudio.coin(); setTender({ kind: "card" }); }}>
+            <button type="button" className={tender?.kind === "card" ? "is-on" : ""} onClick={() => chooseTender({ kind: "card" })}>
               Card
             </button>
             {BILLS.filter((bill) => bill >= total).map((bill) => (
-              <button key={bill} type="button" className={tender?.bill === bill ? "is-on" : ""} onClick={() => { cozyAudio.coin(); setTender({ kind: "cash", bill }); }}>
+              <button key={bill} type="button" className={tender?.bill === bill ? "is-on" : ""} onClick={() => chooseTender({ kind: "cash", bill })}>
                 Cash ${bill}
               </button>
             ))}
           </div>
-          {tender?.kind === "cash" ? <p className="pos-change">Change due <b>{money(change)}</b></p> : null}
+          {tender?.kind === "cash" ? (
+            <section className="cash-drawer" aria-labelledby="cash-drawer-title">
+              <div className="cash-drawer-head">
+                <div>
+                  <p id="cash-drawer-title">Cash drawer</p>
+                  <span>Drawer total {moneyFromCents(drawerTotalCents)}</span>
+                </div>
+                <p className="pos-change">Change due <b>{moneyFromCents(changeDueCents)}</b></p>
+              </div>
+
+              <div className="cash-slots" aria-label="Money available in the cash drawer">
+                {DENOMINATIONS.map(({ cents, label }) => {
+                  const picked = changePicks.filter((value) => value === cents).length;
+                  const remaining = (drawer[cents] ?? 0) - picked;
+                  return (
+                    <button
+                      key={cents}
+                      type="button"
+                      disabled={remaining <= 0 || changePickedCents + cents > changeDueCents}
+                      onClick={() => addChange(cents)}
+                      aria-label={`Give ${label}; ${remaining} left in drawer`}
+                    >
+                      <b>{label}</b><span>{remaining} left</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className={`change-tray${changeReady ? " is-exact" : ""}`} aria-live="polite">
+                <span>On the counter</span>
+                <b>{moneyFromCents(changePickedCents)}</b>
+                <small>{changeReady ? "Exact change ready" : `${moneyFromCents(changeDueCents - changePickedCents)} still due`}</small>
+              </div>
+              {changePicks.length > 0 ? (
+                <p className="change-breakdown">
+                  {DENOMINATIONS.filter(({ cents }) => changePicks.includes(cents)).map(({ cents, label }) => (
+                    <span key={cents}>{changePicks.filter((value) => value === cents).length} × {label}</span>
+                  ))}
+                </p>
+              ) : null}
+              {changeNote ? <p className="cash-note">{changeNote}</p> : null}
+
+              <div className="cozy-actions cash-actions">
+                <button type="button" onClick={autoCountChange}>Count automatically</button>
+                <button
+                  type="button"
+                  disabled={changePicks.length === 0}
+                  onClick={() => { setChangePicks((current) => current.slice(0, -1)); setChangeNote(""); }}
+                >
+                  Undo last
+                </button>
+                <button type="button" onClick={restockDrawer}>Ask manager to restock</button>
+              </div>
+            </section>
+          ) : null}
 
           <div className="cozy-actions">
-            <button type="button" onClick={() => setPhase("browsing")}>Back to the shelf</button>
-            <button type="button" disabled={!tender} onClick={ringUp}>Ring it up</button>
+            <button type="button" onClick={() => { setTender(null); setChangePicks([]); setChangeNote(""); setPhase("browsing"); }}>Back to the shelf</button>
+            <button type="button" disabled={!tender || !changeReady} onClick={ringUp}>Ring it up</button>
           </div>
         </div>
       ) : null}
