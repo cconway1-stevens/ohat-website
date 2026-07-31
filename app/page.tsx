@@ -43,7 +43,8 @@ export default function Home() {
     "@type": "AutoRepair",
     name: "Ocean Heights Auto & Tire",
     url: "https://oceanheightsautorepair.com",
-    image: "https://oceanheightsautorepair.com/media/ocean-heights-cover.jpg",
+    image:
+      "https://oceanheightsautorepair.com/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png",
     logo: "https://oceanheightsautorepair.com/ohat-logo.jpg",
     telephone: "+1-609-241-1546",
     address: {
@@ -132,7 +133,7 @@ export default function Home() {
               <figure className="cover-plate">
                 <div className="cover-plate-image">
                   <Image
-                    src="/media/ocean-heights-cover.jpg"
+                    src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
                     alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
                     fill
                     priority
