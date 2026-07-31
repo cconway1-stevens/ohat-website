@@ -276,6 +276,32 @@ img { max-width: 100%; }
 .shop-hours-status > span { width: .48rem; height: .48rem; border-radius: 50%; background: currentColor; }
 .shop-hours-status.is-open { color: #187a42; }
 .shop-hours-status.is-opening-soon, .shop-hours-status.is-closing-soon { color: #a65d00; }
+.shop-hours-status.is-opening-soon {
+  position: relative;
+  padding: .24rem .48rem .22rem;
+  border: 1.5px solid currentColor;
+  background: var(--paper);
+  box-shadow: 1px 2px 0 rgba(23,20,18,.16);
+  transform-origin: 50% -7px;
+  animation: door-sign-sway 3.6s ease-in-out infinite;
+}
+.shop-hours-status.is-opening-soon::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 18px;
+  height: 9px;
+  background:
+    linear-gradient(32deg, transparent 45%, currentColor 47% 53%, transparent 55%) left / 50% 100% no-repeat,
+    linear-gradient(-32deg, transparent 45%, currentColor 47% 53%, transparent 55%) right / 50% 100% no-repeat;
+  transform: translateX(-50%);
+  opacity: .72;
+}
+@keyframes door-sign-sway {
+  0%, 100% { transform: rotate(-1.4deg); }
+  50% { transform: rotate(1.4deg); }
+}
 .shop-hours-status.is-closed { color: var(--red); }
 .shop-hours-holiday { flex-basis: 100%; color: var(--red); font-size: .72rem; font-weight: 800; line-height: 1.35; }
 .directions-dialog-options {
