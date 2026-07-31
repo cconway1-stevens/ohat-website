@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cozyAudio } from "@/lib/garage-audio";
 import { CozyShell, useAmbience, useSceneCanvas } from "./cozy-shell";
-import { RadioSet } from "./radio-set";
+import { RadioPanel } from "./radio-panel";
 
 const W = 480;
 const H = 250;
@@ -23,7 +23,6 @@ const MAGAZINES = [
  */
 export function GarageRadio() {
   const [sound, setSound] = useState(false);
-  const [radioOn, setRadioOn] = useState(false);
   const [note, setNote] = useState("Somebody's car is up on the lift out there. You have a chair and a coffee machine.");
   const [magazine, setMagazine] = useState(-1);
   const [coffees, setCoffees] = useState(0);
@@ -141,7 +140,7 @@ export function GarageRadio() {
 
       <p className="cozy-note" aria-live="polite">{note}</p>
 
-      <RadioSet on={radioOn} onPowerChange={setRadioOn} />
+      <RadioPanel />
 
       <div className="cozy-actions">
         <button

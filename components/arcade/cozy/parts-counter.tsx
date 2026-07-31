@@ -29,9 +29,9 @@ const CUSTOMERS = ["A regular in a work jacket", "Somebody's dad", "A woman with
  */
 export function PartsCounter() {
   const [sound, setSound] = useState(false);
-  // Fixed for the first render and shuffled on mount: picking randomly in the
-  // initialiser makes the server and the browser disagree, which React reports
-  // as a hydration error.
+  // Deliberately not random on the first render: the server and the browser
+  // must agree or React reports a hydration error. `shuffled` flips once, in
+  // an event-free effect, and only then does the queue randomise.
   const [wanted, setWanted] = useState(0);
   const [customer, setCustomer] = useState(0);
   const [bagged, setBagged] = useState<string[]>([]);
@@ -44,8 +44,12 @@ export function PartsCounter() {
   useAmbience(sound, { fluorescent: 0.012, shopHum: 0.012, traffic: 0.006 });
 
   useEffect(() => {
-    setWanted(Math.floor(Math.random() * STOCK.length));
-    setCustomer(Math.floor(Math.random() * CUSTOMERS.length));
+    // Deferred a frame so it is a fresh render pass, not a cascading one.
+    const id = window.setTimeout(() => {
+      setWanted(Math.floor(Math.random() * STOCK.length));
+      setCustomer(Math.floor(Math.random() * CUSTOMERS.length));
+    }, 0);
+    return () => window.clearTimeout(id);
   }, []);
 
   const canvasRef = useSceneCanvas((ctx, frame) => {

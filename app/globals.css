@@ -3512,93 +3512,119 @@ body.is-play-locked {
 .cozy-actions button.is-on { background: var(--yellow); }
 .cozy-actions button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 
-/* The radio set ----------------------------------------------------- */
-.radio-set {
-  display: grid;
-  gap: .7rem;
-  padding: .8rem;
-  border: 4px solid var(--ink);
-  background: linear-gradient(#3b332c, #241f1b);
-  box-shadow: 6px 6px 0 var(--ink);
-}
-.radio-face { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .8rem; align-items: center; }
-.radio-dial { display: grid; gap: .4rem; min-width: 0; }
-.radio-dial-glass {
-  position: relative;
-  height: 62px;
-  border: 3px solid #0f0d0c;
-  border-radius: 3px;
-  background: #2a2622;
-  overflow: hidden;
-  transition: background .3s ease;
-}
-.radio-set.is-on .radio-dial-glass { background: linear-gradient(#5c4a1f, #2f2716); box-shadow: inset 0 0 22px rgba(246,189,56,.45); }
-.radio-dial-glass > span { position: absolute; top: 0; width: 1px; height: 9px; background: rgba(247,239,217,.5); }
-.radio-dial-glass > span.is-major { height: 15px; background: rgba(247,239,217,.85); }
-.radio-dial-glass > span b {
-  position: absolute; top: 17px; left: 50%;
-  transform: translateX(-50%);
-  color: rgba(247,239,217,.8);
-  font-family: Georgia, serif; font-size: .6rem; font-weight: 900;
-}
-.radio-station-mark { position: absolute; bottom: 6px; width: 5px; height: 5px; margin-left: -2px; border-radius: 50%; background: var(--red); }
-.radio-set.is-on .radio-station-mark { background: #ff6b60; box-shadow: 0 0 6px #ff6b60; }
-.radio-needle { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--red); box-shadow: 0 0 8px rgba(224,85,90,.9); transition: left .12s linear; }
-.radio-tune-track { width: 100%; accent-color: var(--red); cursor: ew-resize; }
-.radio-readout { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; margin: 0; color: #f7efd9; }
-.radio-readout b { font-family: Georgia, serif; font-size: 1.3rem; color: var(--yellow); }
-.radio-readout span { font-size: .64rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; opacity: .82; }
-
-.radio-knobs { display: flex; gap: .7rem; }
-.radio-knob-wrap { display: grid; justify-items: center; gap: .25rem; }
-.radio-knob-wrap small { color: #cfc6b2; font-size: .5rem; font-weight: 950; letter-spacing: .12em; text-transform: uppercase; }
-.radio-knob {
-  position: relative;
-  width: 52px; height: 52px;
-  border: 3px solid #0f0d0c;
-  border-radius: 50%;
-  background: radial-gradient(circle at 36% 30%, #6d6257 0 34%, #3a332c 62%, #221d19 100%);
-  box-shadow: inset 0 -3px 6px rgba(0,0,0,.6), 2px 2px 0 var(--ink);
-  cursor: ns-resize;
-  touch-action: none;
-}
-/* The pointer line shows the knob's position, driven by --turn. */
-.radio-knob i {
-  position: absolute; top: 5px; left: 50%;
-  width: 3px; height: 17px;
-  margin-left: -1.5px;
-  border-radius: 2px;
-  background: var(--yellow);
-  transform-origin: 50% 21px;
-  transform: rotate(var(--turn, 0deg));
-}
-.radio-knob:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
-
-.radio-presets { display: flex; flex-wrap: wrap; gap: .35rem; }
-.radio-presets button {
-  min-height: 40px;
-  padding: .3rem .6rem;
-  border: 2px solid #0f0d0c;
-  border-radius: 2px;
-  background: linear-gradient(#cfc9b8, #8d8676);
-  box-shadow: 0 3px 0 #17140f;
-  color: #17140f;
-  font: inherit; font-size: .64rem; font-weight: 950;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.radio-presets button:active { transform: translateY(2px); box-shadow: 0 1px 0 #17140f; }
-.radio-presets button.is-tuned { background: linear-gradient(#f6bd38, #d59a1c); }
-.radio-presets .radio-power { background: linear-gradient(#8d8676, #5c564b); color: #f7efd9; }
-.radio-presets .radio-power.is-on { background: linear-gradient(#e0555a, #a8161c); color: #fff; }
-@media (max-width: 700px) {
-  .radio-face { grid-template-columns: minmax(0, 1fr); }
-  .radio-knobs { justify-content: center; }
-}
-
 /* Parts counter: the request slip and the shelf of boxes. */
 .counter-ticket { padding: .8rem .9rem; border: 3px solid var(--ink); background: var(--yellow-tint, #fdf1cf); }
 .counter-who { margin: 0 0 .25rem; color: var(--red); font-size: .6rem; font-weight: 950; letter-spacing: .12em; text-transform: uppercase; }
 .counter-ask { margin: 0; font-family: Georgia, serif; font-size: clamp(.95rem, 2.4vw, 1.2rem); line-height: 1.4; }
 .counter-reply { margin: .5rem 0 0; color: var(--muted); font-size: .78rem; }
 .counter-shelf button { flex: 1 1 130px; }
+
+/* ---- Vintage dash radio ------------------------------------------- */
+.car-radio {
+  display: grid;
+  gap: .6rem;
+  padding: .7rem;
+  border: 4px solid #1a1714;
+  border-radius: 4px;
+  background: linear-gradient(#c9c4ba 0 6%, #8f8a80 7% 12%, #5d5750 13% 88%, #38332e 89%);
+  box-shadow: 6px 6px 0 var(--ink), inset 0 0 0 2px rgba(255,255,255,.18);
+}
+.car-radio-face { display: grid; grid-template-columns: auto auto minmax(0,1fr) auto; gap: .6rem; align-items: center; }
+.car-radio-brand { display: grid; justify-items: center; padding-right: .3rem; }
+.car-radio-brand b { color: #f0ead8; font-family: Georgia, serif; font-size: .9rem; letter-spacing: .06em; }
+.car-radio-brand small { color: rgba(240,234,216,.55); font-size: .38rem; font-weight: 950; letter-spacing: .16em; }
+.car-radio-stalk { display: grid; justify-items: center; gap: .2rem; }
+.car-radio-stalk small { color: rgba(240,234,216,.6); font-size: .44rem; font-weight: 950; letter-spacing: .13em; text-transform: uppercase; }
+/* Ribbed chrome knob on a stalk. */
+.car-knob {
+  position: relative;
+  width: 46px; height: 46px;
+  border: 3px solid #15120f;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, #d8d2c6 0 6deg, #8a8479 6deg 12deg),
+    radial-gradient(circle at 36% 30%, #eee 0 30%, #7d776c 70%);
+  background-blend-mode: multiply;
+  box-shadow: inset 0 -3px 7px rgba(0,0,0,.55), 2px 3px 0 #15120f;
+  cursor: ns-resize; touch-action: none;
+}
+.car-knob i {
+  position: absolute; top: 4px; left: 50%;
+  width: 3px; height: 15px; margin-left: -1.5px;
+  border-radius: 2px; background: #a8161c;
+  transform-origin: 50% 19px; transform: rotate(var(--turn, 0deg));
+}
+.car-knob:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+
+.car-radio-middle { display: grid; gap: .3rem; min-width: 0; }
+.car-dial {
+  position: relative; height: 46px;
+  border: 3px solid #15120f; border-radius: 2px;
+  background: #241f18; overflow: hidden;
+  transition: background .35s ease, box-shadow .35s ease;
+}
+.car-radio.is-on .car-dial { background: linear-gradient(#7a5c14, #3a2c0c); box-shadow: inset 0 0 20px rgba(246,189,56,.55); }
+.car-dial > span { position: absolute; top: 0; width: 1px; height: 8px; background: rgba(247,239,217,.45); }
+.car-dial > span.is-major { height: 13px; background: rgba(247,239,217,.85); }
+.car-dial > span b { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); color: rgba(247,239,217,.8); font-family: Georgia, serif; font-size: .52rem; }
+.car-dial-mark { position: absolute; bottom: 5px; width: 5px; height: 5px; margin-left: -2px; border-radius: 50%; background: #7a3a3a; }
+.car-radio.is-on .car-dial-mark { background: #ff6b60; box-shadow: 0 0 6px #ff6b60; }
+.car-needle { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: #e0555a; box-shadow: 0 0 9px rgba(224,85,90,.95); transition: left .1s linear; }
+.car-readout { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem; }
+.car-readout b { color: var(--yellow); font-family: Georgia, serif; font-size: 1.15rem; }
+.car-band, .car-stereo { padding: .05rem .3rem; border: 1px solid rgba(240,234,216,.4); color: rgba(240,234,216,.7); font-size: .48rem; font-weight: 950; letter-spacing: .1em; }
+.car-stereo.is-lit { border-color: #68d07a; background: rgba(104,208,122,.2); color: #b6f0c2; box-shadow: 0 0 8px rgba(104,208,122,.6); }
+.car-readout em { flex: 1 1 120px; color: rgba(240,234,216,.8); font-size: .6rem; font-style: normal; font-weight: 700; letter-spacing: .05em; }
+.car-tune-track { width: 100%; accent-color: #a8161c; cursor: ew-resize; }
+
+/* Mechanical push buttons. */
+.car-presets { display: flex; flex-wrap: wrap; gap: .3rem; align-items: stretch; }
+.car-push {
+  display: grid; place-items: center; gap: 0;
+  min-width: 50px; min-height: 46px; padding: .25rem .4rem;
+  border: 2px solid #15120f; border-radius: 2px;
+  background: linear-gradient(#e6e0d4, #a49d90);
+  box-shadow: 0 4px 0 #15120f;
+  color: #15120f; font: inherit; cursor: pointer; touch-action: manipulation;
+}
+.car-push span { font-size: .62rem; font-weight: 950; }
+.car-push em { font-size: .48rem; font-style: normal; opacity: .72; }
+/* Latched down, the way a real preset stays in. */
+.car-push.is-down { transform: translateY(3px); box-shadow: 0 1px 0 #15120f; background: linear-gradient(#f6bd38, #d59a1c); }
+.car-push.is-holding { background: linear-gradient(#e0555a, #a8161c); color: #fff; }
+.car-power { background: linear-gradient(#8d8676, #55504a); color: #f0ead8; }
+.car-power.is-down { background: linear-gradient(#e0555a, #a8161c); color: #fff; }
+.car-band-switch { display: flex; margin-left: auto; border: 2px solid #15120f; border-radius: 2px; overflow: hidden; }
+.car-band-switch button { min-width: 40px; min-height: 46px; border: 0; background: #6d675e; color: rgba(240,234,216,.75); font: inherit; font-size: .6rem; font-weight: 950; cursor: pointer; }
+.car-band-switch button.is-on { background: var(--yellow); color: #15120f; }
+.car-hint { margin: 0; color: rgba(240,234,216,.72); font-size: .6rem; line-height: 1.4; }
+
+.car-sliders { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; }
+.car-sliders label { display: grid; grid-template-columns: auto minmax(90px, 1fr) auto; align-items: center; gap: .4rem; flex: 1 1 190px; }
+.car-sliders span, .car-noise-slider span { color: rgba(240,234,216,.8); font-size: .52rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.car-sliders small { color: rgba(240,234,216,.6); font-size: .5rem; }
+.car-sliders input, .car-noise-slider input { accent-color: var(--yellow); }
+
+.car-noise { border-top: 2px solid rgba(240,234,216,.2); padding-top: .4rem; }
+.car-noise summary { color: var(--yellow); font-size: .58rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.car-noise p { margin: .4rem 0; color: rgba(240,234,216,.65); font-size: .58rem; line-height: 1.45; }
+.car-noise > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .35rem .8rem; }
+.car-noise-slider { display: grid; grid-template-columns: 74px minmax(0,1fr); align-items: center; gap: .4rem; }
+@media (max-width: 700px) {
+  .car-radio-face { grid-template-columns: auto minmax(0,1fr); }
+  .car-radio-brand { grid-column: 1 / -1; justify-items: start; }
+  .car-radio-middle { grid-column: 1 / -1; order: -1; }
+}
+
+/* Two sound sources: the quiet mixer, or the dash unit. */
+.radio-panel { display: grid; gap: .6rem; }
+.radio-mode { display: inline-grid; grid-template-columns: repeat(2, minmax(96px, auto)); gap: 2px; border: 3px solid var(--ink); background: var(--ink); justify-self: start; }
+.radio-mode button { min-height: 40px; padding: .4rem .8rem; border: 0; background: var(--paper); color: var(--ink); font: inherit; font-size: .64rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.radio-mode button.is-on { background: var(--yellow); }
+.ambience-deck { padding: .8rem; border: 3px solid var(--ink); background: var(--cream, #f7efd9); box-shadow: 5px 5px 0 var(--ink); }
+.ambience-deck-note { margin: 0 0 .6rem; color: var(--muted); font-size: .74rem; line-height: 1.45; }
+.ambience-deck > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .45rem 1rem; }
+.ambience-slider { display: grid; grid-template-columns: 74px minmax(0,1fr); align-items: center; gap: .3rem .5rem; }
+.ambience-slider span { font-size: .56rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.ambience-slider input { accent-color: var(--red); }
+.ambience-slider small { grid-column: 2; color: var(--muted); font-size: .54rem; }
