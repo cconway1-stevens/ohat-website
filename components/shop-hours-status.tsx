@@ -14,7 +14,7 @@ export function ShopHoursStatus() {
       <span className={`shop-hours-status is-${status.status}`}><span aria-hidden="true" />{status.label}</span>
       {status.holiday ? (
         <span className="shop-hours-holiday">
-          Facility may be closed for {status.holiday}. Please call for more information.
+          Holiday hours may vary for {status.holiday}. Please give us a call before stopping by.
         </span>
       ) : null}
     </span>
