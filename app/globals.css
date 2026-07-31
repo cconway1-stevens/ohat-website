@@ -1685,9 +1685,19 @@ img { max-width: 100%; }
 .arcade-offer-section .button { margin-top: 1.2rem; }
 
 /* Arcade prize + confetti */
+.prize-popup-backdrop {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background: rgba(23,20,18,.42);
+}
 .prize-banner {
   position: relative;
   overflow: hidden;
+  width: min(520px, 100%);
   padding: clamp(1.2rem, 4vw, 2rem);
   border: 4px solid var(--ink);
   background:
@@ -1701,19 +1711,21 @@ img { max-width: 100%; }
 .prize-banner-body { position: relative; display: grid; gap: .5rem; }
 .prize-banner-kicker { margin: 0; color: var(--red-dark); font-size: .66rem; font-weight: 950; letter-spacing: .17em; text-transform: uppercase; }
 .prize-banner h3 { margin: 0; font-family: Georgia, serif; font-size: clamp(1.4rem, 4vw, 2rem); line-height: 1.05; }
-.prize-code { margin: 0; font-size: .95rem; }
-.prize-code b {
-  display: inline-block;
-  margin-left: .3rem;
-  padding: .18rem .6rem;
-  border: 3px dashed var(--ink);
-  background: var(--paper);
-  font-family: Georgia, serif;
-  font-size: 1.1rem;
-  letter-spacing: .12em;
-}
 .prize-terms { margin: 0; max-width: 60ch; color: var(--red-dark); font-size: .76rem; line-height: 1.55; }
-.prize-terms a { color: var(--red-dark); font-weight: 900; text-decoration: underline; text-underline-offset: 3px; }
+.prize-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: .35rem; }
+.prize-actions .button { min-height: 48px; }
+.prize-dismiss {
+  min-height: 48px;
+  padding: .75rem 1rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 950;
+}
+.prize-dismiss:hover { transform: translateY(-2px); box-shadow: 6px 6px 0 var(--red); }
 
 /* Drag strip */
 .drag-strip { display: grid; gap: 1rem; }

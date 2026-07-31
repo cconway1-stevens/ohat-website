@@ -36,9 +36,9 @@ export default function OffersPage() {
             <p className="eyebrow dark">Won in the back room</p>
             <h2>The arcade coupon.</h2>
             <p>
-              Beat any game in our little garage arcade and it hands you the
-              code <b>PIT-STOP</b>. Mention it when you book or drop the car
-              off and we&rsquo;ll take care of you.
+              Beat any game in our little garage arcade and it sends you here.
+              Ask us what current arcade offer can apply when you book or drop
+              the car off.
             </p>
             <p className="offer-terms">
               One per visit. Terms and conditions may apply, and what it
