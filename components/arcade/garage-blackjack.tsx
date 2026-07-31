@@ -203,17 +203,17 @@ export function GarageBlackjack() {
       } else if (key === "q" && round && !round.over) {
         event.preventDefault();
         leaveTable();
-      } else if (key === "l") {
+      } else if (key === "l" && termsAcknowledged) {
         event.preventDefault();
         toggleCasinoLobby();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [canDeal, deal, leaveTable, play, round, toggleCasinoLobby]);
+  }, [canDeal, deal, leaveTable, play, round, termsAcknowledged, toggleCasinoLobby]);
 
   return (
-    <section className="paper-game garage-blackjack-game" aria-labelledby="garage-blackjack-title">
+    <section className={`paper-game garage-blackjack-game${termsAcknowledged ? "" : " is-terms-pending"}`} aria-labelledby="garage-blackjack-title">
       {/* Lobby ambience: Casino Ambiance by freesound_community, via Pixabay Content License. */}
       <audio ref={lobbyAudio} src="/media/casino-ambiance-19130.mp3" preload="metadata" loop aria-hidden="true" />
       <header className="paper-game-header">
@@ -227,7 +227,7 @@ export function GarageBlackjack() {
             <div><dt>Losses</dt><dd>{score.losses}</dd></div>
             <div><dt>Pushes</dt><dd>{score.pushes}</dd></div>
           </dl>
-          <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby} title="Press L to toggle lobby sound">
+          <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby} disabled={!termsAcknowledged} title="Press L to toggle lobby sound">
             {casinoLobby ? "Lobby sound on" : "Lobby sound off"}
           </button>
           <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal} title="Press D to deal">Deal hand</button>
@@ -252,9 +252,9 @@ export function GarageBlackjack() {
       </div> : <div className="garage-blackjack-table is-empty" aria-hidden="true"><span>YOU PLAY THE HOUSE</span><small>Deal a hand to start</small></div>}
       <p className="match-game-status" role="status">{status}</p>
       <div className="garage-blackjack-controls">
-        <button type="button" onClick={() => play("hit")} disabled={!round || round.over} title="Press H to hit">Hit</button>
-        <button type="button" onClick={() => play("stand")} disabled={!round || round.over} title="Press S to stand">Stand</button>
-        <button type="button" onClick={leaveTable} disabled={!round || round.over} title="Press Q to quit">Quit table</button>
+        <button type="button" onClick={() => play("hit")} disabled={!termsAcknowledged || !round || round.over} title="Press H to hit">Hit</button>
+        <button type="button" onClick={() => play("stand")} disabled={!termsAcknowledged || !round || round.over} title="Press S to stand">Stand</button>
+        <button type="button" onClick={leaveTable} disabled={!termsAcknowledged || !round || round.over} title="Press Q to quit">Quit table</button>
         {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
         {quit ? <button type="button" onClick={resetSession}>New table</button> : null}
       </div>
