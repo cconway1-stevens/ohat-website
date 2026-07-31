@@ -440,14 +440,14 @@ export default function Home() {
               </DirectionsTrigger>
               <div>
                 <small>Shop hours</small>
-                <strong>Monday–Friday</strong>
+                <strong>{shop.hours.weekdayLabel}</strong>
                 <span>{shop.hours.display.split(", ")[1]}</span>
                 <ShopHoursStatus />
               </div>
               <div>
                 <small>Service area</small>
-                <strong>Egg Harbor Township</strong>
-                <span>Mays Landing · Linwood · nearby communities</span>
+                <strong>{shop.areaServed[0]}</strong>
+                <span>{shop.areaServed.slice(1).join(" · ")} · nearby communities</span>
               </div>
             </div>
           </div>

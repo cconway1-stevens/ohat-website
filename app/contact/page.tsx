@@ -145,12 +145,12 @@ export default function ContactPage() {
                   <p className="eyebrow dark">Shop hours</p>
                   <dl className="hours-list">
                     <div>
-                      <dt>Monday-Friday</dt>
+                      <dt>{shop.hours.weekdayLabel}</dt>
                       <dd>{shop.hours.display.split(", ")[1]}</dd>
                     </div>
                     <div>
-                      <dt>Saturday-Sunday</dt>
-                      <dd>Closed</dd>
+                      <dt>{shop.hours.weekendLabel}</dt>
+                      <dd>{shop.hours.weekendValue}</dd>
                     </div>
                   </dl>
                   <ShopHoursStatus />
@@ -215,7 +215,7 @@ export default function ContactPage() {
             <div>
               <p className="eyebrow">Serving South Jersey drivers</p>
               <h2>Right here in Egg Harbor Township.</h2>
-              <p>Mays Landing, Linwood, and nearby communities are welcome.</p>
+              <p>{shop.areaServed.slice(1).join(", ")}, and nearby communities are welcome.</p>
             </div>
             <DirectionsTrigger className="button button-primary">
               Get directions
