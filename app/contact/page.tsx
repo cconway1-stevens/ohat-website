@@ -12,10 +12,17 @@ import { autoRepairSchema, shop } from "@/lib/shop";
 // inside it come from the config so a number or address change can't leave a
 // stale value sitting in a meta description.
 export const metadata: Metadata = {
-  title: "Contact Us & Directions",
+  title: "Contact Ocean Heights Auto & Tire in Egg Harbor Township, NJ",
   description:
-    `Call ${shop.phone.display}, email the shop, or get directions to ${shop.name} at ${shop.address.full}. Hours, map, parking and after-hours drop-off.`,
+    `Call ${shop.phone.display}, email the shop, or get directions to ${shop.name}, an auto repair and tire shop at ${shop.address.full}. See hours, parking and after-hours drop-off details.`,
   alternates: { canonical: "/contact" },
+  openGraph: {
+    title: `Contact ${shop.name}`,
+    description:
+      `Call ${shop.phone.display}, email the shop, or get directions to our Egg Harbor Township auto repair and tire shop.`,
+    url: "/contact",
+    type: "website",
+  },
 };
 
 const ways = [
@@ -69,12 +76,12 @@ export default function ContactPage() {
         <section className="inner-hero contact-hero">
           <div className="shell contact-hero-grid">
             <div>
-              <p className="eyebrow">Call the crew</p>
-              <h1>Contact {shop.name}.</h1>
+              <p className="eyebrow">Egg Harbor Township auto repair</p>
+              <h1>Contact {shop.name}</h1>
               <p>
-                No perfect diagnosis needed—just tell us what you&apos;re hearing,
-                seeing, or feeling behind the wheel. We&apos;ll talk it through
-                and find a time that works.
+                Call, email, or stop by the shop on Ocean Heights Avenue. Tell
+                us what you&apos;re hearing, seeing, or feeling behind the wheel
+                and we&apos;ll find the right next step.
               </p>
               <div className="contact-hero-actions">
                 <a className="button button-primary" href={phoneHref}>
@@ -82,6 +89,13 @@ export default function ContactPage() {
                 </a>
                 <a className="button button-ghost" href={`mailto:${contactEmail}`}>
                   Email the shop
+                </a>
+                <a
+                  className="button button-contact-card"
+                  href="/contact-card.vcf"
+                  download
+                >
+                  Add us to contacts
                 </a>
               </div>
             </div>
@@ -120,79 +134,77 @@ export default function ContactPage() {
         </section>
 
         <section className="section contact-facts">
-          <div className="shell contact-facts-grid">
-            <div className="contact-fact-card">
-              <p className="eyebrow dark">Shop hours</p>
-              <dl className="hours-list">
-                <div>
-                  <dt>Monday – Friday</dt>
-                  <dd>{shop.hours.display.split(", ")[1]}</dd>
+          <div className="shell contact-dashboard">
+            <div className="contact-dashboard-copy">
+              <p className="eyebrow dark">Before you come by</p>
+              <h2>Hours, parking, drop-off, and receipts in one place.</h2>
+
+              <div className="contact-facts-grid">
+                <div className="contact-fact-card">
+                  <p className="eyebrow dark">Shop hours</p>
+                  <dl className="hours-list">
+                    <div>
+                      <dt>Monday-Friday</dt>
+                      <dd>{shop.hours.display.split(", ")[1]}</dd>
+                    </div>
+                    <div>
+                      <dt>Saturday-Sunday</dt>
+                      <dd>Closed</dd>
+                    </div>
+                  </dl>
+                  <p>
+                    {shop.hours.closedNote} The{" "}
+                    <Link href="/vehicle-drop-off">secure night drop</Link>
+                    {" "}runs around the clock.
+                  </p>
                 </div>
-                <div>
-                  <dt>Saturday &amp; Sunday</dt>
-                  <dd>Closed</dd>
+
+                <div className="contact-fact-card">
+                  <p className="eyebrow dark">Good to know</p>
+                  <ul className="contact-checklist">
+                    <li>Customer parking is right out front.</li>
+                    <li>Comfortable waiting area if you stay.</li>
+                    <li>We call with findings before work begins.</li>
+                    <li>Gas, diesel, hybrid, EV and classic vehicles welcome.</li>
+                  </ul>
                 </div>
-              </dl>
-              <p>
-                {shop.hours.closedNote} Dropping off outside those
-                hours? The{" "}
-                <Link href="/vehicle-drop-off">secure night drop</Link> runs
-                around the clock.
-              </p>
-            </div>
 
-            <div className="contact-fact-card">
-              <p className="eyebrow dark">Good to know</p>
-              <ul className="contact-checklist">
-                <li>Customer parking right out front—no garage maze, no meters.</li>
-                <li>A clean, comfortable waiting area if you stay with the car.</li>
-                <li>We call with findings and pricing before any work is done.</li>
-                <li>Gas, diesel, hybrid, EV and classic vehicles all welcome.</li>
-              </ul>
-            </div>
-
-            {/* The POS address is outbound-only. Naming it here keeps
-                receipts out of spam without inviting mail nobody reads. */}
-            <div className="contact-fact-card contact-receipts">
-              <p className="eyebrow dark">About your receipt</p>
-              <h2>Digital receipts arrive from a different address.</h2>
-              <p>
-                Our point-of-sale system sends receipts from{" "}
-                <strong>{receiptsEmail}</strong>. It&rsquo;s an automated
-                outbound mailbox—nobody reads replies sent there—so add it to
-                your contacts to keep receipts out of your spam folder.
-              </p>
-              <p className="contact-receipts-note">
-                For anything you need answered, write to{" "}
-                <a href={`mailto:${contactEmail}`}>{contactEmail}</a> or call
-                the shop.
-              </p>
-              <CopyButton value={receiptsEmail} label="receipt address" />
-            </div>
-          </div>
-        </section>
-
-        <section className="shop-map-section" aria-labelledby="shop-map-title">
-          <div className="shell">
-            <p className="eyebrow dark">Find the garage</p>
-            <h2 id="shop-map-title">Look for the sign on Ocean Heights Avenue.</h2>
-            <figure className="shop-map">
-              <div className="shop-map-frame">
-                <iframe
-                  title={`Map showing ${shop.name} at ${shop.address.full}`}
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(shop.address.full)}&z=15&output=embed`}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
+                {/* The POS address is outbound-only. Naming it here keeps
+                    receipts out of spam without inviting mail nobody reads. */}
+                <div className="contact-fact-card contact-receipts">
+                  <p className="eyebrow dark">Receipts</p>
+                  <h3>Digital receipts come from {receiptsEmail}.</h3>
+                  <p>
+                    That mailbox is automated. For replies, write to{" "}
+                    <a href={`mailto:${contactEmail}`}>{contactEmail}</a> or
+                    call the shop.
+                  </p>
+                  <CopyButton value={receiptsEmail} label="receipt address" />
+                </div>
               </div>
-              <figcaption>
-                <span>Map · {shop.address.street}</span>
-                <DirectionsTrigger className="shop-map-cta">
-                  Open in your maps app <span aria-hidden="true">↗︎</span>
-                </DirectionsTrigger>
-              </figcaption>
-            </figure>
+            </div>
+
+            <aside className="contact-map-panel" aria-labelledby="shop-map-title">
+              <p className="eyebrow dark">Find the garage</p>
+              <h2 id="shop-map-title">Look for the sign on Ocean Heights Avenue.</h2>
+              <figure className="shop-map">
+                <div className="shop-map-frame">
+                  <iframe
+                    title={`Map showing ${shop.name} at ${shop.address.full}`}
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(shop.address.full)}&z=15&output=embed`}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                </div>
+                <figcaption>
+                  <span>Map · {shop.address.street}</span>
+                  <DirectionsTrigger className="shop-map-cta">
+                    Open in your maps app <span aria-hidden="true">↗︎</span>
+                  </DirectionsTrigger>
+                </figcaption>
+              </figure>
+            </aside>
           </div>
         </section>
 
