@@ -7,9 +7,12 @@ import {
   DirectionsTrigger,
 } from "./directions-dialog";
 import { ShopAlmanac } from "./shop-almanac";
+import { shop } from "@/lib/shop";
 
-export const phoneDisplay = "(609) 241-1546";
-export const phoneHref = "tel:+16092411546";
+// Re-exported from the shared config so the many components already importing
+// these names keep working, while the values live in exactly one place.
+export const phoneDisplay = shop.phone.display;
+export const phoneHref = shop.phone.href;
 
 const primaryLinks = [
   { number: "01", label: "Service catalog", href: "/services", note: "Repairs, tires & diagnostics" },
@@ -17,7 +20,10 @@ const primaryLinks = [
   { number: "03", label: "Night drop", href: "/vehicle-drop-off", note: "After-hours key drop" },
   { number: "04", label: "Shore reviews", href: "/reviews", note: "What local drivers say" },
   { number: "05", label: "Deals", href: "/offers", note: "Current shop offers" },
-  { number: "06", label: "Link tree", href: "/links", note: "Every useful shop link" },
+  // Contact earns the last nav slot over the link tree: it is what people
+  // come looking for. The link tree stays reachable from the footer and its
+  // QR page, which is where a bio link points anyway.
+  { number: "06", label: "Contact us", href: "/contact", note: "Call, email, map & hours" },
 ];
 
 export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {

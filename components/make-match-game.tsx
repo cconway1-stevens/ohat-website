@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
+import { PrizeBanner } from "./arcade/prize";
 import { brandSrc, makes, shuffle } from "@/lib/makes";
 
 const PAIRS = 10;
@@ -219,6 +220,8 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
           );
         })}
       </ul>
+
+      {won ? <PrizeBanner achievement="Every pair matched — the whole board cleared." /> : null}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { CallTracking } from "@/components/analytics";
+import { shop } from "@/lib/shop";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -9,7 +10,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://oceanheightsautorepair.com"),
+  metadataBase: new URL(shop.siteUrl),
   title: {
     default: "Auto Repair & Tire Shop in Egg Harbor Township, NJ | Ocean Heights",
     template: "%s | Ocean Heights Auto & Tire",

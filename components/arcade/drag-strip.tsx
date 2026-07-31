@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
+import { PrizeBanner } from "./prize";
 
 const BEST_KEY = "ohat-dragstrip-best";
+// A clean launch, not a professional one — most people clear this first try.
+const WIN_MS = 600;
 
 type Phase = "ready" | "staging" | "green" | "jumped" | "done";
 
@@ -26,6 +29,7 @@ export function DragStrip() {
   const [lights, setLights] = useState(0);
   const [reaction, setReaction] = useState<number | null>(null);
   const [best, setBest] = useState<number | null>(null);
+  const [won, setWon] = useState(false);
   const [sound, setSound] = useState(true);
   const timers = useRef<number[]>([]);
   const greenAt = useRef(0);
@@ -80,6 +84,7 @@ export function DragStrip() {
     const ms = Math.round(performance.now() - greenAt.current);
     setReaction(ms);
     setPhase("done");
+    if (ms <= WIN_MS) setWon(true);
     if (soundOn.current) garageAudio.horn();
     const previous = readBest();
     if (previous === null || ms < previous) {
@@ -136,6 +141,9 @@ export function DragStrip() {
         </strong>
         {best !== null ? <small>Personal best: {best} ms</small> : null}
       </button>
+      {won ? (
+        <PrizeBanner achievement={`Clean launch — under ${WIN_MS} ms off the line.`} />
+      ) : null}
     </div>
   );
 }

@@ -11,37 +11,17 @@ import { services } from "@/lib/services";
 import { MakeGrid } from "@/components/make-grid";
 import { brandSrc, heroMakes } from "@/lib/makes";
 
-import { carfaxUrl, sameAs } from "@/lib/business";
+import { carfaxUrl } from "@/lib/business";
+import { autoRepairSchema, shop } from "@/lib/shop";
 
 export default function Home() {
   const localBusinessSchema = {
     "@context": "https://schema.org",
-    "@type": "AutoRepair",
-    name: "Ocean Heights Auto & Tire",
-    url: "https://oceanheightsautorepair.com",
-    image:
-      "https://oceanheightsautorepair.com/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png",
-    logo: "https://oceanheightsautorepair.com/ohat-logo.jpg",
-    telephone: "+1-609-241-1546",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "1178 Ocean Heights Avenue",
-      addressLocality: "Egg Harbor Township",
-      addressRegion: "NJ",
-      postalCode: "08234",
-      addressCountry: "US",
-    },
-    areaServed: ["Egg Harbor Township", "Mays Landing", "Linwood"],
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "08:00",
-        closes: "17:00",
-      },
-    ],
-    priceRange: "$$",
-    sameAs,
+    ...autoRepairSchema({
+      image: `${shop.siteUrl}/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png`,
+      logo: `${shop.siteUrl}/ohat-logo.jpg`,
+      priceRange: "$$",
+    }),
   };
 
   return (
@@ -123,7 +103,7 @@ export default function Home() {
                 </span>
                 <figcaption>
                   <span>Fig. 1 — Classics, dailies &amp; EVs, one driveway</span>
-                  <strong>1178 Ocean Heights Avenue</strong>
+                  <strong>{shop.address.street}</strong>
                 </figcaption>
               </figure>
             </article>
@@ -137,11 +117,11 @@ export default function Home() {
             <div className="garage-locator">
               <DirectionsTrigger
                 className="garage-locator-address"
-                label="Choose a directions app for 1178 Ocean Heights Avenue"
+                label={`Choose a directions app for ${shop.address.street}`}
               >
                 <span>Find us down the Shore</span>
-                <strong>1178 Ocean Heights Avenue</strong>
-                <em>Egg Harbor Township, New Jersey</em>
+                <strong>{shop.address.street}</strong>
+                <em>{shop.address.region}</em>
               </DirectionsTrigger>
               <DirectionsTrigger className="garage-locator-trigger">
                 Get directions <span aria-hidden="true">↗︎</span>
@@ -455,13 +435,13 @@ export default function Home() {
             <div className="visit-card">
               <DirectionsTrigger className="visit-card-location">
                 <small>Address</small>
-                <strong>1178 Ocean Heights Avenue</strong>
-                <span>Egg Harbor Township, NJ 08234</span>
+                <strong>{shop.address.street}</strong>
+                <span>{shop.address.cityLine}</span>
               </DirectionsTrigger>
               <div>
                 <small>Shop hours</small>
                 <strong>Monday–Friday</strong>
-                <span>8:00 AM–5:00 PM</span>
+                <span>{shop.hours.display.split(", ")[1]}</span>
               </div>
               <div>
                 <small>Service area</small>

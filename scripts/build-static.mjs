@@ -13,10 +13,11 @@ import {
 } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 import { contactCard } from "../lib/contact-card.mjs";
+import { shop } from "../lib/shop.mjs";
 import imageManifest from "../lib/image-manifest.json" with { type: "json" };
 
 const OUT_DIR = "dist/client";
-const SITE_URL = "https://oceanheightsautorepair.com";
+const SITE_URL = shop.siteUrl;
 const basePath = process.env.BASE_PATH ?? "";
 
 // Legacy URLs from the previous website. The app serves these with a server

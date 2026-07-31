@@ -7,6 +7,7 @@ import {
   phoneHref,
 } from "@/components/site-header";
 import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/business";
+import { shop } from "@/lib/shop";
 
 // Deliberately not chasing "auto repair Egg Harbor Township" here — /contact
 // and the service pages own those queries, and a second page competing for
@@ -56,7 +57,7 @@ export default function LinksPage() {
             </a>
             <DirectionsTrigger className="link-hub-directions">
               <span aria-hidden="true">↗︎</span>
-              <span><strong>Get directions</strong><small>1178 Ocean Heights Avenue</small></span>
+              <span><strong>Get directions</strong><small>{shop.address.street}</small></span>
             </DirectionsTrigger>
             <a href="/contact-card.vcf" download>
               <span aria-hidden="true">＋</span>
@@ -103,7 +104,7 @@ export default function LinksPage() {
           </div>
         </nav>
 
-        <p className="link-hub-hours">Monday–Friday · 8:00 AM–5:00 PM</p>
+        <p className="link-hub-hours">{shop.hours.compact}</p>
         <p className="link-hub-share">
           <Link href="/links/qr">Share this page — QR code &amp; link →</Link>
         </p>

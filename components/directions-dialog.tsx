@@ -7,17 +7,17 @@ import {
   useRef,
   useState,
 } from "react";
+import { shop } from "@/lib/shop";
 
-export const addressDisplay = "1178 Ocean Heights Avenue";
-export const addressFull =
-  "1178 Ocean Heights Avenue, Egg Harbor Township, NJ 08234";
+export const addressDisplay = shop.address.street;
+export const addressFull = shop.address.full;
 
-const googleMapsDirections =
-  "https://www.google.com/maps/dir/?api=1&destination=1178+Ocean+Heights+Ave+Egg+Harbor+Township+NJ+08234";
-const appleMapsDirections =
-  "https://maps.apple.com/?daddr=1178+Ocean+Heights+Avenue,+Egg+Harbor+Township,+NJ+08234";
-const wazeDirections =
-  "https://www.waze.com/ul?q=1178%20Ocean%20Heights%20Avenue%2C%20Egg%20Harbor%20Township%2C%20NJ%2008234&navigate=yes";
+// Every routing URL is built from the one address, so a move only needs the
+// config edited — no hand-encoded links to hunt down.
+const destination = encodeURIComponent(addressFull);
+const googleMapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+const appleMapsDirections = `https://maps.apple.com/?daddr=${destination}`;
+const wazeDirections = `https://www.waze.com/ul?q=${destination}&navigate=yes`;
 
 type DirectionsTriggerProps = {
   children: ReactNode;
@@ -109,7 +109,7 @@ export function DirectionsTrigger({
           <h2 id={titleId}>Get directions</h2>
           <address>
             <strong>{addressDisplay}</strong>
-            <span>Egg Harbor Township, NJ 08234</span>
+            <span>{shop.address.cityLine}</span>
           </address>
           <div className="directions-dialog-options">
             <a href={appleMapsDirections} target="_blank" rel="noreferrer">
@@ -136,8 +136,8 @@ export function DirectionsTrigger({
             </button>
           </div>
           <p className="directions-dialog-hours">
-            Open Monday–Friday · 8:00 AM–5:00 PM · Lost?{" "}
-            <a href="tel:+16092411546">Call (609) 241-1546</a>
+            Open {shop.hours.compact} · Lost?{" "}
+            <a href={shop.phone.href}>Call {shop.phone.display}</a>
           </p>
         </div>
       </dialog>
