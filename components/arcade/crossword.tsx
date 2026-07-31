@@ -22,6 +22,7 @@ type CrosswordPuzzle = {
 };
 
 const CONFIG = arcadePresets.crossword;
+type Difficulty = keyof typeof CONFIG.difficulties;
 const CLUE_BANK: ClueWord[] = [
   { answer: "ALIGN", clue: "Make all four wheels point true" },
   { answer: "AXLE", clue: "Shaft that helps the wheels turn" },
@@ -227,11 +228,15 @@ function cellsFor(entry: WorkingEntry) {
   }));
 }
 
-function createCrossword(): CrosswordPuzzle {
+function createCrossword(difficulty: Difficulty): CrosswordPuzzle {
+  const settings = CONFIG.difficulties[difficulty];
+  const availableWords = CLUE_BANK.filter((word) =>
+    word.answer.length >= settings.minLength && word.answer.length <= settings.maxLength,
+  );
   let best: WorkingEntry[] = [];
 
   for (let attempt = 0; attempt < 40; attempt += 1) {
-    const words = shuffled(CLUE_BANK);
+    const words = shuffled(availableWords);
     const entries: WorkingEntry[] = [
       { ...words[0], row: 0, col: 0, direction: "across" },
     ];
@@ -250,7 +255,7 @@ function createCrossword(): CrosswordPuzzle {
     addEntry(entries[0]);
 
     for (const word of words.slice(1)) {
-      if (entries.length >= CONFIG.wordsPerPuzzle) break;
+      if (entries.length >= settings.wordsPerPuzzle) break;
       const options: WorkingEntry[] = [];
 
       for (const [cellKey, existingLetter] of letters) {
@@ -307,8 +312,8 @@ function createCrossword(): CrosswordPuzzle {
             const rows = allPositions.map((position) => position.row);
             const cols = allPositions.map((position) => position.col);
             if (
-              Math.max(...rows) - Math.min(...rows) + 1 <= CONFIG.maxGrid &&
-              Math.max(...cols) - Math.min(...cols) + 1 <= CONFIG.maxGrid
+              Math.max(...rows) - Math.min(...rows) + 1 <= settings.maxGrid &&
+              Math.max(...cols) - Math.min(...cols) + 1 <= settings.maxGrid
             ) {
               options.push(candidate);
             }
@@ -324,7 +329,7 @@ function createCrossword(): CrosswordPuzzle {
     }
 
     if (entries.length > best.length) best = entries;
-    if (entries.length >= CONFIG.wordsPerPuzzle) break;
+    if (entries.length >= settings.wordsPerPuzzle) break;
   }
 
   const occupied = best.flatMap(cellsFor);
@@ -366,6 +371,7 @@ function createCrossword(): CrosswordPuzzle {
 
 export function GarageCrossword() {
   const [puzzle, setPuzzle] = useState<CrosswordPuzzle | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty>(CONFIG.defaultDifficulty);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [activeId, setActiveId] = useState("");
   const [checked, setChecked] = useState(false);
@@ -376,14 +382,31 @@ export function GarageCrossword() {
     puzzle && Object.entries(puzzle.cells).every(([key, cell]) => answers[key] === cell.letter),
   );
 
-  function startPuzzle() {
-    const next = createCrossword();
+  function startPuzzle(nextDifficulty = difficulty) {
+    setDifficulty(nextDifficulty);
+    const next = createCrossword(nextDifficulty);
     setPuzzle(next);
     setAnswers({});
     setActiveId(next.entries[0]?.id ?? "");
     setChecked(false);
     if (sound) garageAudio.ignition();
   }
+
+  const difficultyControls = (
+    <div className="paper-game-difficulty" aria-label="Crossword difficulty">
+      {(Object.keys(CONFIG.difficulties) as Difficulty[]).map((level) => (
+        <button
+          key={level}
+          type="button"
+          className={difficulty === level ? "is-active" : ""}
+          aria-pressed={difficulty === level}
+          onClick={() => puzzle ? startPuzzle(level) : setDifficulty(level)}
+        >
+          {CONFIG.difficulties[level].label}
+        </button>
+      ))}
+    </div>
+  );
 
   function focusCell(key: string) {
     document.querySelector<HTMLInputElement>(`[data-crossword-cell="${key}"]`)?.focus();
@@ -410,8 +433,9 @@ export function GarageCrossword() {
       <div className="paper-game paper-game-start">
         <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
         <h2>Garage crossword</h2>
-        <p>A fresh set of shop clues is assembled every time you open the paper.</p>
-        <button type="button" className="button button-primary" onClick={startPuzzle}>
+        <p>Choose a difficulty, then open a fresh set of shop clues.</p>
+        {difficultyControls}
+        <button type="button" className="button button-primary" onClick={() => startPuzzle()}>
           Open the puzzle
         </button>
       </div>
@@ -424,12 +448,13 @@ export function GarageCrossword() {
         <div>
           <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
           <h2>Garage crossword</h2>
+          {difficultyControls}
         </div>
         <div className="match-game-controls">
           <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
             {sound ? "Sound on" : "Sound off"}
           </button>
-          <button type="button" onClick={startPuzzle}>New puzzle</button>
+          <button type="button" onClick={() => startPuzzle()}>New puzzle</button>
         </div>
       </header>
 

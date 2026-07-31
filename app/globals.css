@@ -1963,6 +1963,10 @@ img { max-width: 100%; }
 .paper-game-start > p:not(.paper-game-edition) { max-width: 52ch; margin: 0; color: var(--muted); line-height: 1.55; }
 .paper-game-edition { margin: 0 0 .25rem; color: var(--red); font-size: .62rem; font-weight: 950; letter-spacing: .16em; text-transform: uppercase; }
 .paper-game-header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: .8rem 1.2rem; padding-bottom: .8rem; border-bottom: 5px double var(--ink); }
+.paper-game-difficulty { display: inline-grid; grid-template-columns: repeat(3, minmax(70px, auto)); margin-top: .8rem; border: 3px solid var(--ink); background: var(--ink); gap: 2px; }
+.paper-game-difficulty button { min-height: 38px; padding: .4rem .65rem; border: 0; background: var(--paper); color: var(--ink); font: inherit; font-size: .65rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.paper-game-difficulty button:hover, .paper-game-difficulty button.is-active { background: var(--yellow); }
+.paper-game-difficulty button:focus-visible { outline: 3px solid var(--blue); outline-offset: -4px; }
 .paper-game-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .6rem; padding-top: .85rem; border-top: 2px solid var(--ink); }
 .paper-game-actions button {
   min-height: 46px;

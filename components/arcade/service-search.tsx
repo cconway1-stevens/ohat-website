@@ -10,6 +10,7 @@ type HiddenWord = { word: string; cells: string[] };
 type SearchPuzzle = { grid: string[][]; words: HiddenWord[] };
 
 const CONFIG = arcadePresets.serviceSearch;
+type Difficulty = keyof typeof CONFIG.difficulties;
 const SEARCH_WORDS = [
   "ALIGN", "AXLE", "BRAKE", "CLUTCH", "ENGINE", "FILTER", "FUEL",
   "GARAGE", "GEAR", "HOOD", "MIRROR", "OIL", "PISTON", "ROTOR",
@@ -56,15 +57,16 @@ function shuffled<T>(items: readonly T[]) {
   return copy;
 }
 
-function createSearch(): SearchPuzzle {
-  const size = CONFIG.gridSize;
+function createSearch(difficulty: Difficulty): SearchPuzzle {
+  const settings = CONFIG.difficulties[difficulty];
+  const size = settings.gridSize;
   const grid = Array.from({ length: size }, () => Array<string>(size).fill(""));
   const words: HiddenWord[] = [];
 
   for (const word of shuffled(SEARCH_WORDS)) {
-    if (words.length >= CONFIG.wordsPerPuzzle) break;
+    if (words.length >= settings.wordsPerPuzzle) break;
     const options: Point[][] = [];
-    for (const direction of DIRECTIONS) {
+    for (const direction of DIRECTIONS.slice(0, settings.directionCount)) {
       for (let row = 0; row < size; row += 1) {
         for (let col = 0; col < size; col += 1) {
           const cells = Array.from({ length: word.length }, (_, index) => ({
@@ -104,24 +106,43 @@ function lineBetween(start: Point, end: Point) {
 
 export function ServiceSearch() {
   const [puzzle, setPuzzle] = useState<SearchPuzzle | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty>(CONFIG.defaultDifficulty);
   const [start, setStart] = useState<Point | null>(null);
   const [found, setFound] = useState<string[]>([]);
   const [message, setMessage] = useState("Tap the first letter, then the last letter. Skip the letters in between.");
   const [sound, setSound] = useState(true);
 
-  const won = found.length >= CONFIG.prizeWords;
+  const prizeWords = CONFIG.difficulties[difficulty].prizeWords;
+  const won = found.length >= prizeWords;
   const complete = puzzle && found.length === puzzle.words.length;
   const foundCells = new Set(
     puzzle?.words.filter((entry) => found.includes(entry.word)).flatMap((entry) => entry.cells) ?? [],
   );
 
-  function startPuzzle() {
-    setPuzzle(createSearch());
+  function startPuzzle(nextDifficulty = difficulty) {
+    setDifficulty(nextDifficulty);
+    setPuzzle(createSearch(nextDifficulty));
     setStart(null);
     setFound([]);
     setMessage("Tap the first letter, then the last letter. Skip the letters in between.");
     if (sound) garageAudio.ignition();
   }
+
+  const difficultyControls = (
+    <div className="paper-game-difficulty" aria-label="Service search difficulty">
+      {(Object.keys(CONFIG.difficulties) as Difficulty[]).map((level) => (
+        <button
+          key={level}
+          type="button"
+          className={difficulty === level ? "is-active" : ""}
+          aria-pressed={difficulty === level}
+          onClick={() => puzzle ? startPuzzle(level) : setDifficulty(level)}
+        >
+          {CONFIG.difficulties[level].label}
+        </button>
+      ))}
+    </div>
+  );
 
   function chooseCell(row: number, col: number) {
     if (!puzzle || complete) return;
@@ -149,7 +170,7 @@ export function ServiceSearch() {
     setMessage(
       nextFound.length === puzzle.words.length
         ? "Every service word found."
-        : nextFound.length >= CONFIG.prizeWords
+        : nextFound.length >= prizeWords
           ? `Prize earned. ${puzzle.words.length - nextFound.length} word${puzzle.words.length - nextFound.length === 1 ? "" : "s"} left in the grid.`
         : `${match.word} found. ${puzzle.words.length - nextFound.length} left in the grid.`,
     );
@@ -161,9 +182,10 @@ export function ServiceSearch() {
       <div className="paper-game paper-game-start">
         <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
         <h2>Service search</h2>
-        <p>Six shop words are hidden across, down, backward, and diagonally.</p>
+        <p>Choose a difficulty, then find the shop words hidden in the paper.</p>
+        {difficultyControls}
         <SearchExample />
-        <button type="button" className="button button-primary" onClick={startPuzzle}>
+        <button type="button" className="button button-primary" onClick={() => startPuzzle()}>
           Print a puzzle
         </button>
       </div>
@@ -176,12 +198,13 @@ export function ServiceSearch() {
         <div>
           <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
           <h2>Service search</h2>
+          {difficultyControls}
         </div>
         <div className="match-game-controls">
           <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
             {sound ? "Sound on" : "Sound off"}
           </button>
-          <button type="button" onClick={startPuzzle}>New puzzle</button>
+          <button type="button" onClick={() => startPuzzle()}>New puzzle</button>
         </div>
       </header>
 
@@ -223,7 +246,7 @@ export function ServiceSearch() {
       </div>
 
       {won && complete ? (
-        <PrizeBanner achievement={`${CONFIG.prizeWords} service words found in the morning paper.`} />
+        <PrizeBanner achievement={`${prizeWords} service words found in the morning paper.`} />
       ) : null}
     </div>
   );
