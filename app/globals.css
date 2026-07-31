@@ -2213,21 +2213,6 @@ img { max-width: 100%; }
 .garage-blackjack-game { width: min(100%, 680px); }
 .garage-blackjack-intro { margin: 0; color: var(--muted); line-height: 1.5; }
 .garage-blackjack-header-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .55rem; }
-.garage-blackjack-bank { display: flex; align-items: center; gap: .55rem; min-height: 42px; padding: .32rem .55rem; border: 3px solid var(--ink); background: var(--blue); color: #fff; }
-.garage-lug-nut-tray { display: grid; grid-template-columns: repeat(5, 12px); gap: 3px; }
-.garage-lug-nut-tray i {
-  position: relative;
-  width: 12px;
-  height: 12px;
-  clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
-  background: #4b6e7d;
-}
-.garage-lug-nut-tray i::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: #1b2d35; }
-.garage-lug-nut-tray i.is-available { background: #d8d5ca; }
-.garage-lug-nut-tray i.is-available::after { background: #5d5b55; }
-.garage-lug-nut-copy { display: grid; line-height: 1; text-transform: uppercase; }
-.garage-lug-nut-copy b { font-family: Georgia, serif; font-size: 1.05rem; }
-.garage-lug-nut-copy small { margin-top: .1rem; font-size: .48rem; font-weight: 950; letter-spacing: .1em; }
 .garage-blackjack-lobby {
   min-height: 42px;
   padding: .45rem .7rem;

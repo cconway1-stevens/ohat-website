@@ -116,6 +116,25 @@ export const garageAudio = {
         osc.stop(start + 0.5);
       }
     }),
+  /** A short, bright table-win cue. It is generated locally, not a casino recording. */
+  blackjackWin: () =>
+    safely((audio) => {
+      const notes: Array<[number, number]> = [[523, 0], [659, 0.1], [784, 0.2], [1047, 0.32]];
+      for (const [hz, delay] of notes) {
+        const gain = audio.createGain();
+        const start = audio.currentTime + delay;
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.035, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
+        gain.connect(audio.destination);
+        const osc = audio.createOscillator();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(hz, start);
+        osc.connect(gain);
+        osc.start(start);
+        osc.stop(start + 0.28);
+      }
+    }),
   /** Soft shop ambience, used by the no-pressure arcade scenes. */
   hum: () => safely((audio) => voice(audio, "sine", [[0, 92], [.55, 87]], .62, .025)),
   /** A short wash-bay burst. */
