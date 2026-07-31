@@ -9,7 +9,13 @@ import type { NextConfig } from "next";
 // `assetPrefix` at all. The static site must be served from a domain root.
 const nextConfig: NextConfig =
   process.env.STATIC_EXPORT === "1"
-    ? { output: "export", images: { unoptimized: true } }
+    ? {
+        output: "export",
+        // vinext honours neither a custom loader nor `unoptimized` here, so
+        // the emitted srcset entries are repointed at the width ladder from
+        // scripts/generate-image-variants.mjs in scripts/build-static.mjs.
+        images: { unoptimized: true },
+      }
     : {};
 
 export default nextConfig;

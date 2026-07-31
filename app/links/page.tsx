@@ -14,8 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/links" },
 };
 
-const carfax =
-  "https://www.carfax.com/Reviews-Ocean-Heights-Auto-And-Tire-Egg-Harbor-Township-NJ_BLQLOZM001";
+import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/business";
 
 export default function LinksPage() {
   return (
@@ -59,15 +58,19 @@ export default function LinksPage() {
             <span aria-hidden="true">⚙</span>
             <span><strong>Browse services</strong><small>Repairs, maintenance, tires &amp; diagnostics</small></span>
           </Link>
-          <a href={carfax} target="_blank" rel="noreferrer">
+          <a href={googleUrl} target="_blank" rel="noreferrer">
+            <span aria-hidden="true">G</span>
+            <span><strong>Google reviews<span className="sr-only"> (opens in a new tab)</span></strong><small>Rate us or read the listing</small></span>
+          </a>
+          <a href={carfaxUrl} target="_blank" rel="noreferrer">
             <span aria-hidden="true">★</span>
             <span><strong>CARFAX reviews<span className="sr-only"> (opens in a new tab)</span></strong><small>Verified customer feedback</small></span>
           </a>
-          <a href="https://www.facebook.com/OceanHeightsAuto/" target="_blank" rel="noreferrer">
+          <a href={facebookUrl} target="_blank" rel="noreferrer">
             <span aria-hidden="true">f</span>
             <span><strong>Facebook<span className="sr-only"> (opens in a new tab)</span></strong><small>Follow the garage</small></span>
           </a>
-          <a href="https://www.yelp.com/biz/ocean-heights-auto-and-tire-egg-harbor-township-2" target="_blank" rel="noreferrer">
+          <a href={yelpUrl} target="_blank" rel="noreferrer">
             <span aria-hidden="true">Y</span>
             <span><strong>Yelp<span className="sr-only"> (opens in a new tab)</span></strong><small>Find our business profile</small></span>
           </a>

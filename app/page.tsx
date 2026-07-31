@@ -9,11 +9,7 @@ import {
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { services } from "@/lib/services";
 
-const carfaxUrl =
-  "https://www.carfax.com/Reviews-Ocean-Heights-Auto-And-Tire-Egg-Harbor-Township-NJ_BLQLOZM001";
-const yelpUrl =
-  "https://www.yelp.com/biz/ocean-heights-auto-and-tire-egg-harbor-township-2";
-const facebookUrl = "https://www.facebook.com/OceanHeightsAuto/";
+import { carfaxUrl, sameAs } from "@/lib/business";
 
 const makes = [
   "Toyota", "Ford", "Honda", "Chevrolet", "Jeep", "Nissan", "Subaru",
@@ -68,7 +64,7 @@ export default function Home() {
       },
     ],
     priceRange: "$$",
-    sameAs: [carfaxUrl, yelpUrl, facebookUrl],
+    sameAs,
   };
 
   return (
@@ -267,7 +263,8 @@ export default function Home() {
             <p>
               From routine maintenance to difficult diagnostics, our family
               takes the time to find the real problem, explain your options,
-              and fix it right.
+              and fix it right. That includes recall work, so a notice in the
+              mail doesn&rsquo;t have to mean a trip to the dealership.
             </p>
             <div className="service-preview">
               {[

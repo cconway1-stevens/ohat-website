@@ -108,6 +108,25 @@ export const services: Service[] = [
     includes: ["Filters and fluids", "Engine diagnostics", "Cooling and intake", "Light-duty diesel maintenance"],
   },
   {
+    slug: "recall-work",
+    name: "Recall Work",
+    short: "Recall repairs handled here, without a trip to the dealership.",
+    intro:
+      "If a recall notice arrives in the mail, bring it to us. We will go over what the notice covers, take care of the work we are able to perform, and tell you plainly when a repair has to be done by a franchised dealer so nothing sits unaddressed.",
+    signs: [
+      "A recall notice arrived for your vehicle",
+      "You are not sure whether a recall applies",
+      "A recall repair you would rather not take to the dealer",
+      "Buying a used vehicle with unknown history",
+    ],
+    includes: [
+      "Review of your recall notice",
+      "Recall repair work we can perform",
+      "Straight answers on dealer-only repairs",
+      "Documentation for your records",
+    ],
+  },
+  {
     slug: "exhaust-emissions",
     name: "Exhaust & Emissions",
     short: "Quiet operation, clean performance, and exhaust-system repair.",

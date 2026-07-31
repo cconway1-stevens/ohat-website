@@ -1027,6 +1027,9 @@ img { max-width: 100%; }
 .link-hub-list button > span:nth-child(2) { display: grid; gap: .15rem; }
 .link-hub-list small { color: var(--muted); font-size: .7rem; }
 .link-hub-list .link-hub-primary { background: var(--red); color: #fff; }
+/* The icon disc stays yellow on this red tile, so it must not inherit the
+   tile's white text colour. */
+.link-hub-list .link-hub-primary > span:first-child { color: var(--ink); }
 .link-hub-list .link-hub-primary small { color: #ffe9bb; }
 .link-hub-hours { margin: 1.5rem 0 .7rem; font-size: .7rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
 .link-hub-home { font-size: .75rem; font-weight: 900; text-decoration: underline; text-underline-offset: .25rem; }
@@ -1668,6 +1671,7 @@ img { max-width: 100%; }
 .dropoff-grid article > span { width: 72px; height: 72px; display: grid; place-items: center; background: var(--red); color: #fff; border: 4px solid var(--ink); border-radius: 50%; font-family: Georgia, serif; font-size: 2rem; font-weight: 900; }
 .dropoff-grid h3 { margin-top: 2rem; font-family: Georgia, serif; font-size: 1.8rem; }
 .dropoff-grid p { color: var(--muted); line-height: 1.55; }
+.dropoff-grid article:nth-child(even) p { color: #4c3c2d; }
 .dropoff-location { position: relative; padding: 8rem 0; background: var(--paper); }
 .dropoff-location-grid { display: grid; grid-template-columns: 1fr .85fr; gap: clamp(3rem, 8vw, 8rem); align-items: center; }
 .dropoff-location img { border: 7px solid var(--cream); outline: 4px solid var(--ink); box-shadow: 13px 13px 0 var(--blue); transform: rotate(-2deg); }
@@ -1733,6 +1737,61 @@ img { max-width: 100%; }
 }
 .contact-grid p { opacity: .76; line-height: 1.55; }
 .contact-grid article:nth-child(3) p { opacity: 1; color: var(--blue-tint); }
+/* Contact-page shop map */
+.shop-map-section { padding: 0 0 clamp(4rem, 8vw, 7rem); background: var(--cream); }
+.shop-map-section h2 { margin-bottom: 2rem; }
+.shop-map {
+  margin: 0;
+  border: 4px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 14px 14px 0 var(--red);
+}
+.shop-map-frame {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  min-height: 300px;
+  border-bottom: 4px solid var(--ink);
+  background: #dfe4d8;
+}
+.shop-map-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* Warm the stock map tiles toward the catalog palette. */
+  filter: sepia(.28) saturate(.92) contrast(1.04);
+}
+.shop-map figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .9rem clamp(1rem, 3vw, 1.6rem);
+  background: var(--yellow);
+  text-transform: uppercase;
+}
+.shop-map figcaption > span {
+  font-size: .66rem;
+  font-weight: 950;
+  letter-spacing: .13em;
+}
+.shop-map-cta {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--red-dark);
+  cursor: pointer;
+  font: inherit;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: .92rem;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.shop-map-cta:hover { color: var(--ink); }
+
 .directions-band { padding: 7rem 0; background: var(--blue); color: #fff; }
 .directions-band .shell { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
 .directions-band p:not(.eyebrow) { color: #dceff1; }
