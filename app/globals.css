@@ -272,11 +272,11 @@ img { max-width: 100%; }
 .directions-dialog-hours a { color: var(--red); }
 .directions-dialog-hours a:hover { text-decoration: underline; }
 .shop-hours-status-wrap { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .35rem .65rem; }
-.shop-hours-status { display: inline-flex; align-items: center; gap: .35rem; font-size: .7rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
+.shop-hours-status { display: inline-flex; align-items: center; gap: .35rem; font-size: .7rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; user-select: none; touch-action: manipulation; }
 .shop-hours-status > span { width: .48rem; height: .48rem; border-radius: 50%; background: currentColor; }
 .shop-hours-status.is-open { color: #187a42; }
 .shop-hours-status.is-opening-soon, .shop-hours-status.is-closing-soon { color: #a65d00; }
-.shop-hours-status.is-opening-soon {
+.shop-hours-status:is(.is-opening-soon, .is-sign-preview) {
   position: relative;
   padding: .24rem .48rem .22rem;
   border: 1.5px solid currentColor;
@@ -285,7 +285,7 @@ img { max-width: 100%; }
   transform-origin: 50% -7px;
   animation: door-sign-sway 3.6s ease-in-out infinite;
 }
-.shop-hours-status.is-opening-soon::before {
+.shop-hours-status:is(.is-opening-soon, .is-sign-preview)::before {
   content: "";
   position: absolute;
   left: 50%;
@@ -298,9 +298,18 @@ img { max-width: 100%; }
   transform: translateX(-50%);
   opacity: .72;
 }
+.shop-hours-status:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.shop-hours-status.is-sign-preview { animation: door-sign-flutter .9s ease-in-out infinite; }
 @keyframes door-sign-sway {
   0%, 100% { transform: rotate(-1.4deg); }
   50% { transform: rotate(1.4deg); }
+}
+@keyframes door-sign-flutter {
+  0%, 100% { transform: rotate(-1deg); }
+  18% { transform: rotate(4deg); }
+  38% { transform: rotate(-3deg); }
+  58% { transform: rotate(2deg); }
+  78% { transform: rotate(-1.5deg); }
 }
 .shop-hours-status.is-closed { color: var(--red); }
 .shop-hours-holiday { flex-basis: 100%; color: var(--red); font-size: .72rem; font-weight: 800; line-height: 1.35; }
