@@ -2274,6 +2274,12 @@ img { max-width: 100%; }
 .garage-blackjack-hand > span b { padding: .22rem .42rem; background: var(--yellow); color: var(--ink); font-size: .61rem; letter-spacing: .1em; }
 .garage-blackjack-hand.is-player > span b { background: var(--blue); color: #fff; }
 .garage-blackjack-hand > div { display: flex; flex-wrap: wrap; gap: .55rem; min-height: 94px; }
+.garage-blackjack-table.is-player-win .garage-blackjack-hand.is-player,
+.garage-blackjack-table.is-house-win .garage-blackjack-hand.is-house,
+.garage-blackjack-table.is-push-win .garage-blackjack-hand { animation: blackjack-hand-result .7s ease-in-out 2; }
+.garage-blackjack-table.is-player-win .garage-blackjack-hand.is-player > span b { background: #b9e252; }
+.garage-blackjack-table.is-house-win .garage-blackjack-hand.is-house > span b { background: var(--red); color: #fff; }
+.garage-blackjack-table.is-push-win .garage-blackjack-hand > span b { background: var(--paper); color: var(--ink); }
 .garage-blackjack-card {
   display: grid;
   align-content: space-between;
@@ -2292,7 +2298,15 @@ img { max-width: 100%; }
 .garage-blackjack-card.is-red { color: var(--red); }
 .garage-blackjack-card.is-hidden { place-items: center; background: repeating-linear-gradient(45deg, var(--red) 0 6px, #8d1115 6px 12px); color: var(--yellow); font-family: inherit; font-size: .72rem; letter-spacing: .1em; }
 .garage-blackjack-marker { justify-self: center; padding: .55rem 1rem; border: 2px solid rgba(255,255,255,.7); color: var(--yellow); font-size: .6rem; font-weight: 950; letter-spacing: .13em; line-height: 1.45; text-align: center; }
+.garage-blackjack-marker strong { display: block; font-size: .9rem; letter-spacing: .1em; text-transform: uppercase; }
+.garage-blackjack-table.is-player-win .garage-blackjack-marker { background: #b9e252; border-color: #b9e252; color: var(--ink); animation: blackjack-marker-result .7s ease-in-out 2; }
+.garage-blackjack-table.is-house-win .garage-blackjack-marker { background: var(--red); border-color: var(--red); color: #fff; animation: blackjack-marker-result .7s ease-in-out 2; }
+.garage-blackjack-table.is-push-win .garage-blackjack-marker { background: var(--paper); border-color: var(--paper); color: var(--ink); animation: blackjack-marker-result .7s ease-in-out 2; }
 .garage-blackjack-marker small { display: block; margin-top: .25rem; color: #fff; font-size: .5rem; letter-spacing: .12em; }
+.garage-blackjack-table.is-player-win .garage-blackjack-marker small,
+.garage-blackjack-table.is-push-win .garage-blackjack-marker small { color: var(--ink); }
+@keyframes blackjack-hand-result { 50% { transform: translateX(8px) scale(1.015); filter: brightness(1.18); } }
+@keyframes blackjack-marker-result { 50% { transform: scale(1.1); } }
 .garage-blackjack-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; }
 .garage-blackjack-controls button {
   min-width: 100px;
