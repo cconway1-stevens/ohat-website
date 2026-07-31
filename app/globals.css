@@ -1962,6 +1962,12 @@ img { max-width: 100%; }
 .crossword-clues button:hover { color: var(--red); }
 
 .service-search-layout { display: grid; grid-template-columns: minmax(280px, 520px) minmax(170px, 1fr); gap: clamp(1.2rem, 4vw, 2.5rem); align-items: start; justify-content: center; }
+.service-search-example { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.2rem; padding: .75rem 0; border-block: 1px solid var(--ink); }
+.service-search-example p { flex: 1 1 250px; margin: 0; color: var(--muted); font-size: .76rem; line-height: 1.45; }
+.service-search-example-word { display: grid; grid-template-columns: repeat(4, 42px); gap: 3px; padding-top: 18px; }
+.service-search-example-word > span { position: relative; display: grid; place-items: center; width: 42px; height: 42px; border: 2px solid var(--ink); background: #fffdf5; font-family: Georgia, serif; font-size: 1.15rem; font-weight: 900; }
+.service-search-example-word > span:is(.is-start,.is-end) { background: var(--yellow); outline: 2px solid var(--red); outline-offset: -4px; }
+.service-search-example-word small { position: absolute; bottom: calc(100% + 3px); left: 50%; width: max-content; color: var(--red); font-family: var(--font-geist-sans), Arial, sans-serif; font-size: .5rem; font-weight: 950; text-transform: uppercase; transform: translateX(-50%); }
 .service-search-grid {
   display: grid;
   grid-template-columns: repeat(var(--search-size), minmax(0, 1fr));

@@ -13,7 +13,13 @@ const CONFIG = arcadePresets.serviceSearch;
 const SEARCH_WORDS = [
   "ALIGN", "AXLE", "BRAKE", "CLUTCH", "ENGINE", "FILTER", "FUEL",
   "GARAGE", "GEAR", "HOOD", "MIRROR", "OIL", "PISTON", "ROTOR",
-  "SPARK", "TIRE", "TRUNK", "WHEEL", "WIPER",
+  "SPARK", "TIRE", "TRUNK", "WHEEL", "WIPER", "AIRBAG", "BEARING",
+  "BUMPER", "CALIPER", "CAMBER", "CASTER", "CHASSIS", "COOLANT",
+  "DAMPER", "EXHAUST", "FENDER", "FUSE", "GASKET", "GRILLE", "HORN",
+  "INJECTOR", "KEYFOB", "LUGNUT", "MILEAGE", "MOTOR", "OCTANE",
+  "PICKUP", "PULLEY", "RELAY", "REVERSE", "SENSOR", "SHIFTER", "SHOCK",
+  "SPARE", "STARTER", "STRUT", "SUNROOF", "TAILPIPE", "TOW", "TREAD",
+  "TURBO", "VALVE", "VOLTAGE", "WAGON", "WINCH",
 ];
 const DIRECTIONS: Point[] = [
   { row: 0, col: 1 }, { row: 0, col: -1 },
@@ -23,6 +29,23 @@ const DIRECTIONS: Point[] = [
 ];
 const FILLERS = "AAAABCDEEEEFGHIIIIKLLMMNNNOOOOPRRRSSTTTTUWY";
 const keyFor = (row: number, col: number) => `${row},${col}`;
+
+function SearchExample() {
+  return (
+    <div className="service-search-example" aria-label="Example: tap T first, then E, to select TIRE">
+      <div className="service-search-example-word" aria-hidden="true">
+        {Array.from("TIRE").map((letter, index) => (
+          <span key={letter} className={index === 0 ? "is-start" : index === 3 ? "is-end" : ""}>
+            {letter}
+            {index === 0 ? <small>1 Start</small> : null}
+            {index === 3 ? <small>2 End</small> : null}
+          </span>
+        ))}
+      </div>
+      <p><strong>Example:</strong> For TIRE, tap <b>T</b> first, then <b>E</b>. Skip I and R; the game selects the whole word.</p>
+    </div>
+  );
+}
 
 function shuffled<T>(items: readonly T[]) {
   const copy = [...items];
@@ -83,7 +106,7 @@ export function ServiceSearch() {
   const [puzzle, setPuzzle] = useState<SearchPuzzle | null>(null);
   const [start, setStart] = useState<Point | null>(null);
   const [found, setFound] = useState<string[]>([]);
-  const [message, setMessage] = useState("Tap the first and last letter of a word.");
+  const [message, setMessage] = useState("Tap the first letter, then the last letter. Skip the letters in between.");
   const [sound, setSound] = useState(true);
 
   const won = found.length >= CONFIG.prizeWords;
@@ -96,7 +119,7 @@ export function ServiceSearch() {
     setPuzzle(createSearch());
     setStart(null);
     setFound([]);
-    setMessage("Tap the first and last letter of a word.");
+    setMessage("Tap the first letter, then the last letter. Skip the letters in between.");
     if (sound) garageAudio.ignition();
   }
 
@@ -137,6 +160,7 @@ export function ServiceSearch() {
         <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
         <h2>Service search</h2>
         <p>Six shop words are hidden across, down, backward, and diagonally.</p>
+        <SearchExample />
         <button type="button" className="button button-primary" onClick={startPuzzle}>
           Print a puzzle
         </button>
@@ -160,6 +184,7 @@ export function ServiceSearch() {
       </header>
 
       <p className="match-game-status" role="status">{message}</p>
+      <SearchExample />
       <div className="service-search-layout">
         <div
           className="service-search-grid"
