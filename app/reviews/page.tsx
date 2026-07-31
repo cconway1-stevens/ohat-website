@@ -115,12 +115,12 @@ export default function ReviewsPage() {
         <section className="profile-section" id="review-profiles">
           <div className="shell profile-grid">
             {profileLinks.map((profile, index) => (
-              <a key={profile.name} href={profile.href} target="_blank" rel="noreferrer" className="profile-plate">
-                <span className="profile-plate-bolts" aria-hidden="true"><i /><i /><i /><i /></span>
-                <span className="profile-plate-serial">Review source / {String(index + 1).padStart(2, "0")}</span>
+              <a key={profile.name} href={profile.href} target="_blank" rel="noreferrer" className="review-source-card">
+                <span className="review-source-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <span className="review-source-label">Review source</span>
                 <strong>{profile.name}</strong>
                 <p>{profile.detail}</p>
-                <b>Open profile <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></b>
+                <b>Open {profile.name} <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></b>
               </a>
             ))}
           </div>
