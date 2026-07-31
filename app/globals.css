@@ -2211,6 +2211,8 @@ img { max-width: 100%; }
 .garage-guess-keys { display: grid; gap: .35rem; width: min(100%, 440px); }
 .garage-blackjack-game { width: min(100%, 680px); }
 .garage-blackjack-intro { margin: 0; color: var(--muted); line-height: 1.5; }
+.garage-blackjack-header-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .55rem; }
+.garage-blackjack-bank { display: inline-grid; place-items: center; min-height: 42px; padding: .45rem .7rem; border: 3px solid var(--ink); background: var(--blue); color: #fff; font-size: .68rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
 .garage-blackjack-deal {
   min-height: 42px;
   padding: .45rem .7rem;
@@ -2225,6 +2227,7 @@ img { max-width: 100%; }
   text-transform: uppercase;
   cursor: pointer;
 }
+.garage-blackjack-deal:disabled { cursor: not-allowed; opacity: .45; }
 .garage-blackjack-table {
   display: grid;
   gap: 1.1rem;
@@ -2234,6 +2237,7 @@ img { max-width: 100%; }
   box-shadow: inset 0 0 0 7px #17412c, 7px 7px 0 var(--ink);
   color: #fff;
 }
+.garage-blackjack-table.is-empty { min-height: 240px; place-items: center; color: var(--yellow); font-family: Georgia, serif; font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 900; letter-spacing: .05em; text-align: center; }
 .garage-blackjack-hand { display: grid; gap: .55rem; }
 .garage-blackjack-hand > span { font-size: .68rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
 .garage-blackjack-hand > div { display: flex; flex-wrap: wrap; gap: .55rem; min-height: 94px; }
@@ -2273,6 +2277,7 @@ img { max-width: 100%; }
 }
 .garage-blackjack-controls button:nth-child(2) { background: var(--blue); color: #fff; }
 .garage-blackjack-controls button:disabled { cursor: not-allowed; opacity: .45; }
+.garage-blackjack-notice { margin: 0; padding: .65rem .8rem; border-left: 4px solid var(--red); background: var(--yellow-tint); color: var(--ink); font-size: .7rem; font-weight: 800; line-height: 1.45; }
 .garage-guess-keys > div { display: flex; justify-content: center; gap: .26rem; }
 .garage-guess-keys button { display: grid; place-items: center; min-width: 0; flex: 1 1 0; min-height: 42px; padding: .35rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 2px 2px 0 var(--ink); color: var(--ink); font: inherit; font-size: clamp(.6rem, 2vw, .76rem); font-weight: 950; cursor: pointer; }
 .garage-guess-keys button:hover { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }

@@ -5,6 +5,8 @@ import { Game, GameStep } from "@blackjacktrainer/blackjack-simulator";
 
 const HIT = 2;
 const STAND = 5;
+const STARTING_LUG_NUTS = 50;
+const HAND_COST = 5;
 
 type Card = { id: string; rank: string; suit: string; showingFace: boolean };
 type Hand = { cards: Card[]; cardTotal: number; blackjack: boolean };
@@ -46,10 +48,10 @@ function suitSymbol(suit: string) {
 function roundMessage(round: Round) {
   if (!round.over) return "Hit for another card or stand and let the dealer play.";
   if (round.player.cardTotal > 21) return "Busted. The service bay takes this hand.";
-  if (round.dealer.cardTotal > 21) return "Dealer busted. You win the garage bragging rights.";
-  if (round.player.cardTotal > round.dealer.cardTotal) return "You win. Clean pull into the service bay.";
-  if (round.player.cardTotal === round.dealer.cardTotal) return "Push. Nobody has to sweep up the chips.";
-  return "Dealer wins this hand. Deal another one.";
+  if (round.dealer.cardTotal > 21) return "Dealer busted. Clean pull into the service bay.";
+  if (round.player.cardTotal > round.dealer.cardTotal) return "You beat the dealer. No prize is awarded.";
+  if (round.player.cardTotal === round.dealer.cardTotal) return "Push. Nobody has to sweep up the lug nuts.";
+  return "Dealer takes this hand. Deal another one.";
 }
 
 function PlayingCard({ card }: { card: Card }) {
@@ -64,21 +66,48 @@ function PlayingCard({ card }: { card: Card }) {
 }
 
 export function GarageBlackjack() {
-  const [engine, setEngine] = useState<Engine>(() => newGame());
-  const [round, setRound] = useState<Round>(() => readRound(engine));
+  const [engine, setEngine] = useState<Engine | null>(null);
+  const [round, setRound] = useState<Round | null>(null);
+  const [lugNuts, setLugNuts] = useState(STARTING_LUG_NUTS);
+  const [quit, setQuit] = useState(false);
 
   function deal() {
+    if (lugNuts < HAND_COST || (!round?.over && round)) return;
     const game = newGame();
     setEngine(game);
     setRound(readRound(game));
+    setLugNuts((current) => current - HAND_COST);
+    setQuit(false);
   }
 
   function play(move: number) {
-    if (round.over) return;
+    if (!engine || !round || round.over) return;
     engine.step(move);
     runToPlayerChoice(engine);
     setRound(readRound(engine));
   }
+
+  function leaveTable() {
+    setEngine(null);
+    setRound(null);
+    setQuit(true);
+  }
+
+  function resetSession() {
+    setEngine(null);
+    setRound(null);
+    setLugNuts(STARTING_LUG_NUTS);
+    setQuit(false);
+  }
+
+  const canDeal = lugNuts >= HAND_COST && (round === null || round.over);
+  const status = quit
+    ? `You left the table with ${lugNuts} Lug Nuts.`
+    : round
+      ? roundMessage(round)
+      : lugNuts < HAND_COST
+        ? "Out of Lug Nuts. This play session is finished."
+        : `Each hand uses ${HAND_COST} Lug Nuts. You have ${lugNuts}.`;
 
   return (
     <section className="paper-game garage-blackjack-game" aria-labelledby="garage-blackjack-title">
@@ -87,10 +116,13 @@ export function GarageBlackjack() {
           <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
           <h2 id="garage-blackjack-title">Garage Blackjack</h2>
         </div>
-        <button type="button" className="garage-blackjack-deal" onClick={deal}>Deal hand</button>
+        <div className="garage-blackjack-header-actions">
+          <span className="garage-blackjack-bank" aria-label={`${lugNuts} Lug Nuts remaining`}>{lugNuts} Lug Nuts</span>
+          <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal}>Deal hand</button>
+        </div>
       </header>
       <p className="garage-blackjack-intro">A no-money service-bay table. Beat the dealer without going over 21.</p>
-      <div className="garage-blackjack-table">
+      {round ? <div className="garage-blackjack-table">
         <div className="garage-blackjack-hand">
           <span>Dealer {round.over ? round.dealer.cardTotal : "showing"}</span>
           <div>{round.dealer.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
@@ -100,13 +132,18 @@ export function GarageBlackjack() {
           <span>Your hand {round.player.cardTotal}</span>
           <div>{round.player.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
         </div>
-      </div>
-      <p className="match-game-status" role="status">{roundMessage(round)}</p>
+      </div> : <div className="garage-blackjack-table is-empty" aria-hidden="true">SERVICE BAY 21</div>}
+      <p className="match-game-status" role="status">{status}</p>
       <div className="garage-blackjack-controls">
-        <button type="button" onClick={() => play(HIT)} disabled={round.over}>Hit</button>
-        <button type="button" onClick={() => play(STAND)} disabled={round.over}>Stand</button>
-        {round.over ? <button type="button" onClick={deal}>Deal again</button> : null}
+        <button type="button" onClick={() => play(HIT)} disabled={!round || round.over}>Hit</button>
+        <button type="button" onClick={() => play(STAND)} disabled={!round || round.over}>Stand</button>
+        <button type="button" onClick={leaveTable} disabled={!round || round.over}>Quit table</button>
+        {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
+        {(quit || lugNuts < HAND_COST) ? <button type="button" onClick={resetSession}>New play session</button> : null}
       </div>
+      <p className="garage-blackjack-notice">
+        For entertainment only. Lug Nuts are free session-only play tokens with no cash value. They cannot be bought, sold, transferred, exchanged, redeemed, or used for any prize or real-world reward. No betting, wagering, winnings, or payouts.
+      </p>
     </section>
   );
 }
