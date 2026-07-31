@@ -51,12 +51,12 @@ function cardRank(rank: string) {
 }
 
 function roundMessage(round: Round) {
-  if (!round.over) return "Hit for another card or stand and let the dealer play.";
-  if (round.player.cardTotal > 21) return "Busted. The service bay takes this hand.";
-  if (round.dealer.cardTotal > 21) return "Dealer busted. Clean pull into the service bay.";
-  if (round.player.cardTotal > round.dealer.cardTotal) return "You beat the dealer. No prize is awarded.";
-  if (round.player.cardTotal === round.dealer.cardTotal) return "Push. Nobody has to sweep up the lug nuts.";
-  return "Dealer takes this hand. Deal another one.";
+  if (!round.over) return `You have ${round.player.cardTotal}. The house is showing ${round.dealer.cardTotal}; choose Hit or Stand.`;
+  if (round.player.cardTotal > 21) return "You went over 21. The house wins this hand.";
+  if (round.dealer.cardTotal > 21) return "The house went over 21. You win this hand, with no real-world prize.";
+  if (round.player.cardTotal > round.dealer.cardTotal) return "You beat the house. No prize is awarded.";
+  if (round.player.cardTotal === round.dealer.cardTotal) return "Push: you and the house tied. Nobody wins this hand.";
+  return "The house wins this hand. Deal another one when ready.";
 }
 
 function PlayingCard({ card }: { card: Card }) {
@@ -174,18 +174,18 @@ export function GarageBlackjack() {
           <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal} title="Press D to deal">Deal hand</button>
         </div>
       </header>
-      <p className="garage-blackjack-intro">A no-money service-bay table. Beat the dealer without going over 21.</p>
+      <p className="garage-blackjack-intro">You are the player. The house is the dealer. Finish closer to 21 than the house without going over.</p>
       {round ? <div className="garage-blackjack-table">
-        <div className="garage-blackjack-hand">
-          <span>Dealer {round.over ? round.dealer.cardTotal : "showing"}</span>
+        <div className="garage-blackjack-hand is-house">
+          <span><b>House</b> Dealer {round.over ? `total ${round.dealer.cardTotal}` : `showing ${round.dealer.cardTotal}`}</span>
           <div>{round.dealer.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
         </div>
-        <div className="garage-blackjack-marker" aria-hidden="true">OCEAN HEIGHTS<br />SERVICE BAY 21</div>
-        <div className="garage-blackjack-hand">
-          <span>Your hand {round.player.cardTotal}</span>
+        <div className="garage-blackjack-marker" aria-hidden="true">YOU PLAY<br />THE HOUSE<br /><small>GET CLOSE TO 21</small></div>
+        <div className="garage-blackjack-hand is-player">
+          <span><b>You</b> Player total {round.player.cardTotal}</span>
           <div>{round.player.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
         </div>
-      </div> : <div className="garage-blackjack-table is-empty" aria-hidden="true">SERVICE BAY 21</div>}
+      </div> : <div className="garage-blackjack-table is-empty" aria-hidden="true"><span>YOU PLAY THE HOUSE</span><small>Deal a hand to start</small></div>}
       <p className="match-game-status" role="status">{status}</p>
       <div className="garage-blackjack-controls">
         <button type="button" onClick={() => play(HIT)} disabled={!round || round.over} title="Press H to hit">Hit</button>
@@ -194,6 +194,7 @@ export function GarageBlackjack() {
         {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
         {(quit || lugNuts < HAND_COST) ? <button type="button" onClick={resetSession}>New play session</button> : null}
       </div>
+      <p className="garage-blackjack-keys"><b>Keys:</b> D deal, H hit, S stand, Q leave table, L lobby sound.</p>
       <p className="garage-blackjack-notice">
         For entertainment only. Lug Nuts are free session-only play tokens with no cash value. They cannot be bought, sold, transferred, exchanged, redeemed, or used for any prize or real-world reward. No betting, wagering, winnings, or payouts.
       </p>

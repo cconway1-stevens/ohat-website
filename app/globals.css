@@ -2267,9 +2267,12 @@ img { max-width: 100%; }
   box-shadow: inset 0 0 0 7px #17412c, 7px 7px 0 var(--ink);
   color: #fff;
 }
-.garage-blackjack-table.is-empty { min-height: 240px; place-items: center; color: var(--yellow); font-family: Georgia, serif; font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 900; letter-spacing: .05em; text-align: center; }
+.garage-blackjack-table.is-empty { min-height: 240px; place-items: center; align-content: center; color: var(--yellow); font-family: Georgia, serif; font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 900; letter-spacing: 0; text-align: center; }
+.garage-blackjack-table.is-empty small { color: #fff; font-family: inherit; font-size: .62rem; font-weight: 950; letter-spacing: .13em; text-transform: uppercase; }
 .garage-blackjack-hand { display: grid; gap: .55rem; }
-.garage-blackjack-hand > span { font-size: .68rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.garage-blackjack-hand > span { display: flex; align-items: center; gap: .55rem; color: rgba(255,255,255,.9); font-size: .68rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.garage-blackjack-hand > span b { padding: .22rem .42rem; background: var(--yellow); color: var(--ink); font-size: .61rem; letter-spacing: .1em; }
+.garage-blackjack-hand.is-player > span b { background: var(--blue); color: #fff; }
 .garage-blackjack-hand > div { display: flex; flex-wrap: wrap; gap: .55rem; min-height: 94px; }
 .garage-blackjack-card {
   display: grid;
@@ -2289,6 +2292,7 @@ img { max-width: 100%; }
 .garage-blackjack-card.is-red { color: var(--red); }
 .garage-blackjack-card.is-hidden { place-items: center; background: repeating-linear-gradient(45deg, var(--red) 0 6px, #8d1115 6px 12px); color: var(--yellow); font-family: inherit; font-size: .72rem; letter-spacing: .1em; }
 .garage-blackjack-marker { justify-self: center; padding: .55rem 1rem; border: 2px solid rgba(255,255,255,.7); color: var(--yellow); font-size: .6rem; font-weight: 950; letter-spacing: .13em; line-height: 1.45; text-align: center; }
+.garage-blackjack-marker small { display: block; margin-top: .25rem; color: #fff; font-size: .5rem; letter-spacing: .12em; }
 .garage-blackjack-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; }
 .garage-blackjack-controls button {
   min-width: 100px;
@@ -2307,6 +2311,8 @@ img { max-width: 100%; }
 }
 .garage-blackjack-controls button:nth-child(2) { background: var(--blue); color: #fff; }
 .garage-blackjack-controls button:disabled { cursor: not-allowed; opacity: .45; }
+.garage-blackjack-keys { margin: 1rem 0 0; color: var(--muted); font-size: .7rem; line-height: 1.45; text-align: center; }
+.garage-blackjack-keys b { color: var(--ink); font-weight: 950; text-transform: uppercase; }
 .garage-blackjack-notice { margin: 0; padding: .65rem .8rem; border-left: 4px solid var(--red); background: var(--yellow-tint); color: var(--ink); font-size: .7rem; font-weight: 800; line-height: 1.45; }
 .garage-guess-keys > div { display: flex; justify-content: center; gap: .26rem; }
 .garage-guess-keys button { display: grid; place-items: center; min-width: 0; flex: 1 1 0; min-height: 42px; padding: .35rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 2px 2px 0 var(--ink); color: var(--ink); font: inherit; font-size: clamp(.6rem, 2vw, .76rem); font-weight: 950; cursor: pointer; }
