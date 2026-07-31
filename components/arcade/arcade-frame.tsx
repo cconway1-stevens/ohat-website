@@ -38,7 +38,7 @@ export function ArcadeFrame({
               so the board is always completely reachable while the page
               behind it stays put. */}
           <div className="arcade-stage">
-            {children}
+            <div className="arcade-play-surface">{children}</div>
             <PlayLock />
           </div>
           <nav className="arcade-rail" aria-label="More arcade games">
