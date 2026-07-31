@@ -33,6 +33,9 @@ export function DirectionsTrigger({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const [copyLabel, setCopyLabel] = useState("Copy address");
+  // Held so rapid copies restart the one reset timer instead of stacking
+  // several, where an early timer would clear a later copy's confirmation.
+  const copyResetTimer = useRef<number | null>(null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -71,7 +74,11 @@ export function DirectionsTrigger({
     }
 
     setCopyLabel("Address copied!");
-    window.setTimeout(() => setCopyLabel("Copy address"), 2200);
+    if (copyResetTimer.current !== null) window.clearTimeout(copyResetTimer.current);
+    copyResetTimer.current = window.setTimeout(() => {
+      copyResetTimer.current = null;
+      setCopyLabel("Copy address");
+    }, 2200);
   }
 
   return (

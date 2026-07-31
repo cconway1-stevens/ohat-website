@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { DirectionsTrigger } from "./directions-dialog";
+import { MakerRibbon } from "./maker-ribbon";
 import { BrandMark, phoneDisplay, phoneHref } from "./site-header";
 
 import { profileLinks } from "@/lib/business";
@@ -19,16 +21,27 @@ export function SiteFooter() {
               Call the crew · {phoneDisplay}
             </a>
           </div>
-          <div className="car-track" aria-hidden="true">
-            <div className="classic-car">
-              <div className="car-roof" />
-              <div className="car-body">
-                <i className="headlight" />
-                <i className="bumper" />
-              </div>
-              <div className="car-wheel car-wheel-back"><span /></div>
-              <div className="car-wheel car-wheel-front"><span /></div>
-            </div>
+          <div className="car-track">
+            {/* Easter egg: the little car that drives across the footer is
+                also the door to the garage arcade — catch it to find out. */}
+            <Link
+              className="classic-car"
+              href="/arcade"
+              title="Where's this car headed?"
+            >
+              <span className="sr-only">
+                Follow the little car to the garage arcade
+              </span>
+              <span aria-hidden="true" className="classic-car-shell">
+                <span className="car-roof" />
+                <span className="car-body">
+                  <i className="headlight" />
+                  <i className="bumper" />
+                </span>
+                <span className="car-wheel car-wheel-back"><span /></span>
+                <span className="car-wheel car-wheel-front"><span /></span>
+              </span>
+            </Link>
           </div>
         </div>
       </section>
@@ -68,6 +81,7 @@ export function SiteFooter() {
         </div>
         <div className="shell footer-bottom">
           <span>© {new Date().getFullYear()} Ocean Heights Auto &amp; Tire</span>
+          <MakerRibbon />
           <span>All makes &amp; models · Gas · Diesel · Hybrid · Electric</span>
         </div>
       </footer>

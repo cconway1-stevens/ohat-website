@@ -15,3 +15,18 @@ export const heroMakes = [
 ];
 
 export const brandSrc = (name: string) => `/brands/${name.toLowerCase()}.svg`;
+
+export function shuffle<T>(items: readonly T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+// The wall renders in complete rows only. 28 fills both layouts exactly —
+// four rows of 7 on desktop, seven rows of 4 on phones — so with 29 brands
+// on file, each load randomly benches one brand instead of showing a gap.
+export const WALL_SIZE = 28;
+

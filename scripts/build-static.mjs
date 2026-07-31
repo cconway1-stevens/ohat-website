@@ -31,6 +31,8 @@ const LEGACY_REDIRECTS = {
   // Split into /services/tires and /services/wheel-alignment; tires is the
   // closer match for the combined page's primary content.
   "services/tires-alignments": "/services/tires",
+  // The single game page grew into the arcade.
+  "logo-match": "/arcade/logo-match",
 };
 
 function walk(dir) {
@@ -144,7 +146,8 @@ copyFileSync(join(OUT_DIR, "index.rsc"), join(OUT_DIR, ".rsc"));
 // the routes that exist. Legacy redirects and the 404 stay out of it.
 // Pages that deliberately carry `noindex`. Listing a noindex URL in the
 // sitemap asks Google to crawl something it is then told not to index.
-const NOINDEX_ROUTES = new Set(["/logo-match"]);
+const isNoindexRoute = (route) =>
+  route === "/arcade" || route.startsWith("/arcade/");
 
 const routes = htmlFiles
   .map(
@@ -157,7 +160,7 @@ const routes = htmlFiles
         .replace(/\.html$/, ""),
   )
   .filter((route) => route !== "/404")
-  .filter((route) => !NOINDEX_ROUTES.has(route))
+  .filter((route) => !isNoindexRoute(route))
   .filter((route) => !(route.slice(1) in LEGACY_REDIRECTS))
   .sort((a, b) => a.length - b.length || a.localeCompare(b));
 
