@@ -4,16 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
 import { PrizeBanner } from "./prize";
 import { arcadePresets } from "@/lib/arcade";
+import {
+  type BonusKind,
+  type ChainState,
+  freshState,
+  GRID,
+  type Point,
+  tick,
+  turn as turnState,
+} from "@/lib/tow-chain";
 
 const BEST_KEY = "ohat-towchain-best";
 // Five pickups is a couple of laps of the lot — reachable on a first shift.
 const CARS_TO_WIN = arcadePresets.towChain.carsToWin;
-const GRID = 13;
 const CELL = 24;
 const SIZE = GRID * CELL;
 const TICK_MS = arcadePresets.towChain.tickMs;
 
-type Point = { x: number; y: number };
+// Service calls: the optional pickup that shows up alongside the stranded car.
 
 function readBest(): number {
   try {
@@ -21,20 +29,6 @@ function readBest(): number {
   } catch {
     return 0;
   }
-}
-
-// Picks from the cells the chain isn't sitting on. The old version guessed at
-// random in a `while (true)`, which slows to a crawl — and never returns at
-// all — as the lot fills up.
-function randomCell(exclude: Point[]): Point {
-  const taken = new Set(exclude.map((point) => `${point.x},${point.y}`));
-  const free: Point[] = [];
-  for (let x = 0; x < GRID; x += 1) {
-    for (let y = 0; y < GRID; y += 1) {
-      if (!taken.has(`${x},${y}`)) free.push({ x, y });
-    }
-  }
-  return free[Math.floor(Math.random() * free.length)] ?? { x: 0, y: 0 };
 }
 
 /**
@@ -52,12 +46,8 @@ export function TowChain() {
   const [won, setWon] = useState(false);
   const [sound, setSound] = useState(true);
   const soundOn = useRef(true);
-  const state = useRef({
-    chain: [{ x: 6, y: 6 }] as Point[],
-    dir: { x: 1, y: 0 } as Point,
-    nextDir: { x: 1, y: 0 } as Point,
-    pickup: { x: 9, y: 6 } as Point,
-  });
+  const [active, setActive] = useState<BonusKind | null>(null);
+  const state = useRef<ChainState>(freshState());
   const runningRef = useRef(false);
   const touchStart = useRef<Point | null>(null);
 
@@ -66,10 +56,7 @@ export function TowChain() {
   }, [sound]);
 
   function turn(direction: Point) {
-    const s = state.current;
-    // No U-turns — the chain is right behind the truck.
-    if (direction.x === -s.dir.x && direction.y === -s.dir.y) return;
-    s.nextDir = direction;
+    turnState(state.current, direction);
   }
 
   useEffect(() => {
@@ -113,7 +100,26 @@ export function TowChain() {
       ctx.fillStyle = "#f6bd38";
       ctx.fillRect(pickupX + 10, pickupY + 1, 4, 3);
 
+      // Service call: a lit beacon on the lot, marked with what it does.
+      if (s.bonus) {
+        const bx = s.bonus.x * CELL;
+        const by = s.bonus.y * CELL;
+        // Blinks out as the caller loses patience.
+        if (s.bonus.ticksLeft > 12 || s.bonus.ticksLeft % 2 === 0) {
+          ctx.fillStyle = s.bonus.kind === "ghost" ? "#8fb7c4" : s.bonus.kind === "slow" ? "#68a56f" : "#f6bd38";
+          ctx.beginPath();
+          ctx.arc(bx + 12, by + 12, 9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#171412";
+          ctx.font = "900 11px Georgia, serif";
+          ctx.textAlign = "center";
+          ctx.fillText(s.bonus.kind === "ghost" ? "G" : s.bonus.kind === "slow" ? "S" : "T", bx + 12, by + 16);
+        }
+      }
+
       // Tow truck at the head, then a visible chain of recovered cars.
+      // A ghost run shows the whole rig translucent while it lasts.
+      ctx.globalAlpha = s.ghost > 0 ? 0.55 : 1;
       s.chain.forEach((cell, index) => {
         const x = cell.x * CELL;
         const y = cell.y * CELL;
@@ -132,24 +138,20 @@ export function TowChain() {
           ctx.stroke();
         }
       });
+      ctx.globalAlpha = 1;
     };
 
     const id = window.setInterval(() => {
       const s = state.current;
-      s.dir = s.nextDir;
-      const head = { x: s.chain[0].x + s.dir.x, y: s.chain[0].y + s.dir.y };
-      const hitFence = head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID;
-      // The last car in the chain moves out of its cell on this same tick
-      // (unless we're about to grow), so driving into it isn't a crash.
-      const grows = head.x === s.pickup.x && head.y === s.pickup.y;
-      const body = grows ? s.chain : s.chain.slice(0, -1);
-      const hitChain = body.some((cell) => cell.x === head.x && cell.y === head.y);
-      if (hitFence || hitChain) {
+      const outcome = tick(s);
+      if (outcome.skipped) return;
+
+      if (outcome.dead) {
         runningRef.current = false;
         setRunning(false);
         setOver(true);
         if (soundOn.current) garageAudio.skid();
-        const total = s.chain.length - 1;
+        const total = s.towed;
         setBest((current) => {
           if (total <= current) return current;
           try {
@@ -161,16 +163,22 @@ export function TowChain() {
         });
         return;
       }
-      s.chain.unshift(head);
-      if (grows) {
+
+      if (outcome.ate) {
         if (soundOn.current) garageAudio.horn();
-        const towed = s.chain.length - 1;
-        setScore(towed);
-        if (towed >= CARS_TO_WIN) setWon(true);
-        s.pickup = randomCell(s.chain);
-      } else {
-        s.chain.pop();
+        setScore(s.towed);
+        if (s.towed >= CARS_TO_WIN) setWon(true);
       }
+      if (outcome.took) {
+        setActive(outcome.took);
+        if (soundOn.current) garageAudio.rev();
+        // A one-off like the drop-off has no timer to run out, so clear the
+        // badge on a delay instead.
+        if (outcome.took === "trim") window.setTimeout(() => setActive(null), 1400);
+      } else if (s.ghost === 0 && s.slow === 0) {
+        setActive(null);
+      }
+
       draw();
     }, TICK_MS);
 
@@ -179,12 +187,8 @@ export function TowChain() {
   }, [running]);
 
   function start(initialDirection: Point = { x: 1, y: 0 }) {
-    state.current = {
-      chain: [{ x: 6, y: 6 }],
-      dir: initialDirection,
-      nextDir: initialDirection,
-      pickup: randomCell([{ x: 6, y: 6 }]),
-    };
+    state.current = freshState(initialDirection);
+    setActive(null);
     setBest(readBest());
     setScore(0);
     setOver(false);
@@ -226,6 +230,9 @@ export function TowChain() {
             <dd>{best}</dd>
           </div>
         </dl>
+        {active ? (
+          <p className="tow-chain-bonus" role="status">{BONUS_LABEL[active]}</p>
+        ) : null}
       </div>
       <p className="match-game-status" role="status">
         {running

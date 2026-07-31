@@ -2157,29 +2157,34 @@ img { max-width: 100%; }
    boards you ended up frozen with half the grid off screen and no way to
    reach it. The stage gets its own scroller instead, so the whole board is
    always available while the page behind it cannot move. */
+/* Two rows, not an overlay. `column-reverse` puts the lock bar (the last
+   child) along the top as a real toolbar and gives the game the rest of the
+   screen with its own scroller. A floating pill looked fine at rest but slid
+   straight over the board as soon as you scrolled inside play mode — a
+   toolbar row cannot overlap the board at any scroll position. */
 body.is-play-locked .arcade-stage {
   position: fixed;
   inset: 0;
   z-index: 100;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 3.6rem .75rem 1.5rem;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
   background: var(--cream, #f7efd9);
 }
-/* Exit sits top-right — the far corner from every on-screen keyboard and
-   thumb pad, which all live along the bottom edge. */
-body.is-play-locked .arcade-lock-bar {
-  position: fixed;
-  top: .5rem;
-  right: .5rem;
-  z-index: 210;
-  width: auto;
+body.is-play-locked .arcade-stage > :first-child {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   margin: 0;
-  padding: .3rem .5rem;
-  background: var(--yellow);
-  box-shadow: 3px 3px 0 var(--ink);
+  padding: .75rem;
 }
-body.is-play-locked .arcade-lock-bar small { display: none; }
+body.is-play-locked .arcade-lock-bar {
+  flex: 0 0 auto;
+  margin: 0;
+  border-width: 0 0 3px;
+  background: var(--yellow);
+}
 .arcade-lock-bar small { flex: 1 1 200px; color: var(--muted); font-size: .68rem; line-height: 1.4; }
 .arcade-lock-button {
   display: inline-flex;
@@ -2308,6 +2313,8 @@ body.is-play-locked {
   user-select: none;
 }
 .lot-defender-controls .is-fire { background: var(--blue); color: #fff; font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; }
+.lot-defender-powers { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.lot-defender-powers li { padding: .2rem .5rem; border: 2px solid var(--ink); background: var(--blue); color: #fff; font-size: .56rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase; }
 .lot-defender-controls button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
 
 /* Canvas games share a frame */
@@ -2357,6 +2364,7 @@ body.is-play-locked {
 }
 .shore-run-touch-controls button:last-child { background: var(--blue); color: #fff; }
 .shore-run-touch-controls span { display: inline-block; margin-right: .35rem; font-size: 1rem; }
+.tow-chain-bonus { margin: 0; padding: .22rem .55rem; border: 2px solid var(--ink); background: var(--blue); color: #fff; font-size: .58rem; font-weight: 950; letter-spacing: .09em; text-transform: uppercase; }
 .tow-controls {
   display: grid;
   grid-template-columns: repeat(3, 58px);
