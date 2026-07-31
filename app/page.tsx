@@ -260,15 +260,19 @@ export default function Home() {
 
         <section className="section services-intro" id="services">
           <div className="shell">
-            <p className="eyebrow dark">Complete auto care</p>
-            <h2>One trusted shop. Every mile covered.</h2>
-            <p>
-              From routine maintenance to difficult diagnostics, our family
-              takes the time to find the real problem, explain your options,
-              and fix it right. And if a recall notice shows up in the mail,
-              we&rsquo;ll help you check it against the official NHTSA lookup
-              and explain exactly what to do next.
-            </p>
+            <div className="section-heading-row">
+              <div>
+                <p className="eyebrow dark">Complete auto care</p>
+                <h2>One trusted shop. Every mile covered.</h2>
+              </div>
+              <p>
+                From routine maintenance to difficult diagnostics, our family
+                takes the time to find the real problem, explain your options,
+                and fix it right. And if a recall notice shows up in the mail,
+                we&rsquo;ll help you check it against the official NHTSA lookup
+                and explain exactly what to do next.
+              </p>
+            </div>
             <div className="service-preview">
               {[
                 ["Diagnostics", "Check-engine lights & complex electrical", "/services/advanced-diagnostics"],

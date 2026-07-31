@@ -1059,7 +1059,9 @@ img { max-width: 100%; }
   font-weight: 900;
   letter-spacing: .18em;
 }
-.services-intro > .shell > p:not(.eyebrow) { max-width: 660px; color: var(--muted); font-size: 1.12rem; line-height: 1.7; }
+/* This lede runs longer than the other section intros, so it gets more room
+   than the shared 400px before the column turns into a narrow ribbon. */
+.services-intro .section-heading-row > p { max-width: 480px; font-size: 1.05rem; }
 .service-preview {
   display: grid;
   grid-template-columns: 1.12fr .92fr .86fr;
@@ -1633,7 +1635,9 @@ img { max-width: 100%; }
 .ticket-number { display: grid; justify-items: center; padding: 1.25rem; background: var(--yellow); color: var(--ink); border: 4px solid var(--ink); box-shadow: 8px 8px 0 #fff; transform: rotate(-4deg); }
 .ticket-number span { font-size: .75rem; font-weight: 950; letter-spacing: .15em; text-transform: uppercase; }
 .ticket-number strong { font-family: Georgia, serif; font-size: clamp(5rem, 10vw, 8rem); line-height: .85; }
-.back-link { display: inline-block; margin-bottom: 1.5rem; color: var(--yellow-tint); font-weight: 900; }
+/* Block, not inline-block: the status badge below is itself inline-block (it
+   carries a text-width underline), so an inline back link shared its line. */
+.back-link { display: block; width: fit-content; margin-bottom: 1.5rem; color: var(--yellow-tint); font-weight: 900; }
 .ticket-copy > p:not(.ticket-status) { max-width: 680px; color: #eaded0; line-height: 1.7; }
 .part-stamp {
   aspect-ratio: 1;
