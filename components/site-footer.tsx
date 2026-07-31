@@ -81,9 +81,9 @@ export function SiteFooter() {
         </div>
         <div className="shell footer-bottom">
           <span>© {new Date().getFullYear()} Ocean Heights Auto &amp; Tire</span>
-          <MakerRibbon />
           <span>All makes &amp; models · Gas · Diesel · Hybrid · Electric</span>
         </div>
+        <MakerRibbon />
       </footer>
     </>
   );
