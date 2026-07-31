@@ -29,16 +29,15 @@ const GENRES: Genre[] = [
   { id: "news", label: "News talk", tag: "news" },
 ];
 
-type Station = { id: string; name: string; url: string; country: string; bitrate: number };
+type Station = { id: string; name: string; url: string; country: string; bitrate: number; codec: string; favicon: string };
 
-// Same set, five different dashboards. Purely a skin — the electronics behind
-// every one of them is identical.
 const DECADES = [
-  { id: "fifties", label: "1950s", sub: "Chrome & ivory" },
-  { id: "sixties", label: "1960s", sub: "Woodgrain" },
-  { id: "seventies", label: "1970s", sub: "Brushed gold" },
-  { id: "eighties", label: "1980s", sub: "Matte black" },
-  { id: "nineties", label: "1990s", sub: "DIN slot" },
+  { id: "fifties", label: "'50s", sub: "Doo-wop", tag: "50s" },
+  { id: "sixties", label: "'60s", sub: "Motown", tag: "60s" },
+  { id: "seventies", label: "'70s", sub: "Classic rock", tag: "70s" },
+  { id: "eighties", label: "'80s", sub: "New wave", tag: "80s" },
+  { id: "nineties", label: "'90s", sub: "Alt radio", tag: "90s" },
+  { id: "modern", label: "2000+", sub: "Modern hits", tag: "2000s" },
 ] as const;
 type Decade = (typeof DECADES)[number]["id"];
 
@@ -57,6 +56,7 @@ export function LiveRadio() {
   const [treble, setTreble] = useState(0);
   const [dragging, setDragging] = useState<"volume" | null>(null);
   const [decade, setDecade] = useState<Decade>("fifties");
+  const [signal, setSignal] = useState(0);
 
   const station = list[index];
 
@@ -111,15 +111,18 @@ export function LiveRadio() {
     };
   }, [dragging]);
 
-  async function loadGenre(next: Genre) {
+  async function loadStations(label: string, tag: string, nextGenre?: Genre, nextDecade?: Decade) {
     cozyAudio.click();
-    setGenre(next);
-    setStatus(`Warming up… looking for ${next.label.toLowerCase()} stations.`);
+    if (nextGenre) setGenre(nextGenre);
+    if (nextDecade) setDecade(nextDecade);
+    pause(false);
+    setSignal(1);
+    setStatus(`Scanning the dial for ${label.toLowerCase()}…`);
     setList([]);
     try {
       const params = new URLSearchParams({
-        tag: next.tag, hidebroken: "true", order: "clickcount",
-        reverse: "true", limit: "12", codec: "MP3",
+        tag, hidebroken: "true", order: "clickcount",
+        reverse: "true", limit: "24",
       });
       const response = await fetch(`${DIRECTORY}?${params}`);
       if (!response.ok) throw new Error("directory said no");
@@ -128,22 +131,34 @@ export function LiveRadio() {
         .filter((entry: { name?: string; url_resolved?: string }) => entry.name && entry.url_resolved)
         // Only https, so the browser will not block it as mixed content.
         .filter((entry: { url_resolved: string }) => entry.url_resolved.startsWith("https://"))
-        .slice(0, 8)
-        .map((entry: { stationuuid: string; name: string; url_resolved: string; country: string; bitrate: number }) => ({
+        .filter((entry: { codec?: string }) => !entry.codec || /mp3|aac/i.test(entry.codec))
+        .slice(0, 12)
+        .map((entry: { stationuuid: string; name: string; url_resolved: string; country: string; bitrate: number; codec?: string; favicon?: string }) => ({
           id: entry.stationuuid,
           name: entry.name.trim().slice(0, 42),
           url: entry.url_resolved,
           country: entry.country || "—",
           bitrate: entry.bitrate || 0,
+          codec: entry.codec || "stream",
+          favicon: entry.favicon?.startsWith("https://") ? entry.favicon : "",
         }));
       setList(usable);
       setIndex(0);
       setStatus(usable.length
-        ? `${usable.length} stations found. Press PLAY.`
+        ? `${usable.length} stations found. Press play or turn the tuning knob.`
         : "Nothing came back for that band. Try another.");
+      setSignal(usable.length ? 3 : 0);
     } catch {
       setStatus("The station directory is not answering. It is someone else's server — try again in a minute, or use the dash radio.");
     }
+  }
+
+  function loadGenre(next: Genre) {
+    void loadStations(next.label, next.tag, next);
+  }
+
+  function loadDecade(next: (typeof DECADES)[number]) {
+    void loadStations(`${next.label} ${next.sub}`, next.tag, undefined, next.id);
   }
 
   async function play(entry = station) {
@@ -156,17 +171,19 @@ export function LiveRadio() {
     try {
       await element.play();
       setPlaying(true);
+      setSignal(Math.max(2, Math.min(5, Math.round((entry.bitrate || 96) / 48))));
       setStatus(`On air: ${entry.name}`);
     } catch {
       setPlaying(false);
+      setSignal(0);
       setStatus("That stream would not start here. Press SEEK for the next one.");
     }
   }
 
-  function pause() {
+  function pause(withMessage = true) {
     audioRef.current?.pause();
     setPlaying(false);
-    setStatus(station ? `Paused — ${station.name}` : "Paused.");
+    if (withMessage) setStatus(station ? `Paused — ${station.name}` : "Paused.");
   }
 
   function seek(step: number) {
@@ -180,7 +197,14 @@ export function LiveRadio() {
 
   return (
     <div className={`silver-radio is-${decade}${playing ? " is-on" : ""}`}>
-      <audio ref={audioRef} preload="none" crossOrigin="anonymous" />
+      <audio
+        ref={audioRef}
+        preload="none"
+        crossOrigin="anonymous"
+        onWaiting={() => { setSignal(1); setStatus("Signal fading… buffering the station."); }}
+        onPlaying={() => setSignal((value) => Math.max(value, 3))}
+        onError={() => { setPlaying(false); setSignal(0); setStatus("Signal lost. Press SEEK for the next station."); }}
+      />
 
       <div className="silver-decades" role="group" aria-label="Dashboard era">
         {DECADES.map((entry) => (
@@ -189,7 +213,7 @@ export function LiveRadio() {
             type="button"
             className={decade === entry.id ? "is-on" : ""}
             aria-pressed={decade === entry.id}
-            onClick={() => { cozyAudio.click(); setDecade(entry.id); }}
+            onClick={() => loadDecade(entry)}
           >
             <b>{entry.label}</b>
             <small>{entry.sub}</small>
@@ -202,11 +226,17 @@ export function LiveRadio() {
         <div className="silver-dial">
           <p className="silver-brand">OHAT <small>DE LUXE</small></p>
           <div className="silver-window">
-            <p className="silver-station">{station ? station.name : "— — —"}</p>
+            <div className="silver-station-line">
+              {station?.favicon ? <img src={station.favicon} alt="" /> : <span aria-hidden="true">OH</span>}
+              <p className="silver-station">{station ? station.name : "— — —"}</p>
+            </div>
             <p className="silver-meta">
-              {station ? `${station.country} · ${station.bitrate || "?"} kbps` : "no station"}
+              {station ? `${station.country} · ${station.codec} · ${station.bitrate || "?"} kbps` : "no station"}
               <em className={playing ? "is-lit" : ""}>ON AIR</em>
             </p>
+            <div className="silver-signal" aria-label={`Signal strength ${signal} of 5`}>
+              {[1, 2, 3, 4, 5].map((bar) => <i key={bar} className={bar <= signal ? "is-lit" : ""} />)}
+            </div>
           </div>
           <p className="silver-status" aria-live="polite">{status}</p>
         </div>
@@ -226,6 +256,11 @@ export function LiveRadio() {
           </button>
           <small>Volume</small>
         </div>
+      </div>
+
+      <div className="silver-tuner" aria-hidden="true">
+        <span>88</span><i /><span>92</span><i /><span>96</span><i /><span>100</span><i /><span>104</span><i /><span>108</span>
+        <b style={{ left: list.length ? `${8 + (index / Math.max(1, list.length - 1)) * 84}%` : "8%" }} />
       </div>
 
       <div className="silver-bands" role="group" aria-label="Band">
