@@ -2151,6 +2151,23 @@ img { max-width: 100%; }
 .garage-guess-game { justify-items: center; }
 .garage-guess-game .paper-game-header,
 .garage-guess-game .match-game-status { width: 100%; }
+.garage-guess-progress {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .45rem .6rem;
+  width: 100%;
+  color: var(--ink);
+  font-size: .7rem;
+  font-weight: 950;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.garage-guess-progress span {
+  padding: .28rem .5rem;
+  border: 2px solid var(--ink);
+  background: #fffdf5;
+}
 .garage-guess-clue { width: 100%; margin: 0; min-height: 1.6rem; color: var(--muted); font-size: .78rem; line-height: 1.45; }
 .garage-guess-clue b { color: var(--red); }
 .garage-guess-clue button { padding: 0; border: 0; background: none; color: var(--red); font: inherit; font-size: .74rem; font-weight: 950; letter-spacing: .04em; text-decoration: underline 2px; text-underline-offset: 3px; text-transform: uppercase; cursor: pointer; }
@@ -2162,6 +2179,35 @@ img { max-width: 100%; }
 .garage-guess-row .is-correct, .garage-guess-keys .is-correct { background: var(--blue); color: #fff; }
 .garage-guess-row .is-present, .garage-guess-keys .is-present { background: var(--yellow); color: var(--ink); }
 .garage-guess-row .is-absent, .garage-guess-keys .is-absent { background: var(--ink); color: #fff; }
+.garage-guess-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .4rem .7rem;
+  width: 100%;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 800;
+}
+.garage-guess-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: .32rem;
+  white-space: nowrap;
+}
+.garage-guess-legend b {
+  display: grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 2px solid var(--ink);
+  font-family: Georgia, serif;
+  font-size: .85rem;
+  font-weight: 900;
+}
+.garage-guess-legend .is-correct { background: var(--blue); color: #fff; }
+.garage-guess-legend .is-present { background: var(--yellow); color: var(--ink); }
+.garage-guess-legend .is-absent { background: var(--ink); color: #fff; }
 .garage-guess-keys { display: grid; gap: .35rem; width: min(100%, 440px); }
 .garage-guess-keys > div { display: flex; justify-content: center; gap: .26rem; }
 .garage-guess-keys button { display: grid; place-items: center; min-width: 0; flex: 1 1 0; min-height: 42px; padding: .35rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 2px 2px 0 var(--ink); color: var(--ink); font: inherit; font-size: clamp(.6rem, 2vw, .76rem); font-weight: 950; cursor: pointer; }
