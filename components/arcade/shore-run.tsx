@@ -21,9 +21,22 @@ const DUCK_GRAVITY = 1.5;
 // at easy heights and come along often.
 const COINS_TO_WIN = arcadePresets.shoreRun.coinsToWin;
 
+// The car's roof sits at GROUND-38 standing and GROUND-24 ducking. Anything
+// hanging overhead therefore has to reach below the first to threaten a
+// standing car, and stop above the second to let a ducking one through. The
+// signals used to stop 46px short of even the standing roof, so nothing
+// overhead could ever hit you and ducking did nothing at all.
+const ROOF_STANDING = GROUND - 38;
+const ROOF_DUCKING = GROUND - 24;
+const OVERHEAD_LOW = ROOF_DUCKING - 3;
+const OVERHEAD_HIGH = ROOF_STANDING + 5;
+
 type Obstacle =
   | { kind: "tires"; x: number; count: number }
-  | { kind: "signal"; x: number; low: boolean };
+  | { kind: "signal"; x: number; low: boolean }
+  // A shore underpass: wide enough that you duck going in and hold it all
+  // the way through, rather than tapping duck for a single frame.
+  | { kind: "tunnel"; x: number; width: number };
 
 type Coin = { x: number; y: number; taken: boolean };
 
@@ -176,9 +189,16 @@ export function ShoreRun() {
       g.spawnIn -= 1;
       if (g.spawnIn <= 0) {
         const roll = Math.random();
-        // Signals only start showing up once you have some speed, so the
-        // opening stretch stays friendly.
-        if (roll > 0.68 && g.distance > 1600) {
+        let extraGap = 0;
+        // Tunnels come later than signals — by then you have met the duck.
+        if (roll > 0.86 && g.distance > 3000) {
+          const width = 108 + Math.round(Math.random() * 74);
+          g.obstacles.push({ kind: "tunnel", x: W + 40, width });
+          // Hold the next obstacle until the whole underpass has gone by.
+          extraGap = Math.round(width / g.speed);
+        } else if (roll > 0.62 && g.distance > 1600) {
+          // Signals only start showing up once you have some speed, so the
+          // opening stretch stays friendly.
           g.obstacles.push({ kind: "signal", x: W + 40, low: Math.random() > 0.45 });
         } else {
           g.obstacles.push({
@@ -188,16 +208,21 @@ export function ShoreRun() {
           });
         }
         // Gap scales with speed so it stays clearable at any pace.
-        g.spawnIn = Math.round((58 + Math.random() * 46) * (7.4 / g.speed));
+        g.spawnIn = Math.round((58 + Math.random() * 46) * (7.4 / g.speed)) + extraGap;
       }
       for (const ob of g.obstacles) ob.x -= g.speed;
-      g.obstacles = g.obstacles.filter((ob) => ob.x > -80);
+      g.obstacles = g.obstacles.filter((ob) => ob.x > -obstacleWidth(ob) - 40);
 
       // Coins float at heights the car reaches with an ordinary hop, and
       // never right on top of an obstacle.
       g.coinSpawnIn -= 1;
       if (g.coinSpawnIn <= 0) {
-        const clear = g.obstacles.every((ob) => Math.abs(ob.x - (W + 30)) > 90);
+        // Width-aware: a coin under a tunnel deck sits above the ducking roof
+        // and could never be taken.
+        const clear = g.obstacles.every((ob) => {
+          const spawnX = W + 30;
+          return spawnX < ob.x - 90 || spawnX > ob.x + obstacleWidth(ob) + 90;
+        });
         if (clear) {
           g.coins.push({ x: W + 30, y: GROUND - 52 - Math.random() * 34, taken: false });
           g.coinSpawnIn = 110 + Math.random() * 90;
@@ -384,7 +409,7 @@ export function ShoreRun() {
           else start();
         }}
         role="img"
-        aria-label="Side-scrolling driving game: jump the car over stacked tires and duck under traffic signals"
+        aria-label="Side-scrolling driving game: jump the car over stacked tires, and duck under traffic signals and low underpasses"
       />
       <div className="shore-run-touch-controls" aria-label="Driving controls">
         <button type="button" onPointerDown={() => (runningRef.current ? jump() : start())}>
@@ -403,6 +428,7 @@ export function ShoreRun() {
       <p className="shore-run-keys">
         <span><b>Space</b> / <b>↑</b> jump</span>
         <span><b>↓</b> duck</span>
+        <span>Hold the duck through an underpass</span>
         <span>On a phone: tap to jump, hold low to duck</span>
       </p>
     </div>
@@ -416,13 +442,21 @@ function carBox(g: Game) {
   return { x: 62, y: GROUND - h + g.y, w: 62, h };
 }
 
+function obstacleWidth(ob: Obstacle) {
+  return ob.kind === "tunnel" ? ob.width : 40;
+}
+
 function obstacleBoxes(ob: Obstacle) {
   if (ob.kind === "tires") {
     const h = ob.count * 20;
     return [{ x: ob.x + 4, y: GROUND - h, w: 26, h }];
   }
-  // Signals hang from an overhead arm; the low ones force a duck.
-  const h = ob.low ? 74 : 58;
+  if (ob.kind === "tunnel") {
+    return [{ x: ob.x, y: 0, w: ob.width, h: OVERHEAD_LOW }];
+  }
+  // Both signal heights now sit inside the duck band: they strike a standing
+  // car and clear a ducking one.
+  const h = ob.low ? OVERHEAD_LOW : OVERHEAD_HIGH;
   return [{ x: ob.x + 8, y: 0, w: 22, h }];
 }
 
@@ -479,6 +513,7 @@ function draw(ctx: CanvasRenderingContext2D, g: Game, crashed: boolean) {
   // Obstacles
   for (const ob of g.obstacles) {
     if (ob.kind === "tires") drawTires(ctx, ob.x, ob.count, ink, paper);
+    else if (ob.kind === "tunnel") drawTunnel(ctx, ob.x, ob.width, ink, paper, gold, g.night);
     else drawSignal(ctx, ob.x, ob.low, ink, paper, red, gold, g.night);
   }
 
@@ -512,6 +547,47 @@ function drawTires(
   }
 }
 
+/** A shore underpass. The deck fills the top of the strip and the lit lip
+ *  marks exactly how low you have to be to get through. */
+function drawTunnel(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  width: number,
+  ink: string,
+  paper: string,
+  gold: string,
+  night: boolean,
+) {
+  const lip = OVERHEAD_LOW - 7;
+
+  ctx.fillStyle = ink;
+  ctx.fillRect(x, 0, width, lip);
+
+  // Recessed lamps, so the underpass reads as something you drive through.
+  ctx.fillStyle = night ? gold : paper;
+  for (let lamp = x + 16; lamp < x + width - 14; lamp += 32) {
+    ctx.fillRect(lamp, lip - 13, 12, 4);
+  }
+
+  // Portal edges catch the light at both ends.
+  ctx.fillStyle = paper;
+  ctx.fillRect(x + 3, 0, 3, lip);
+  ctx.fillRect(x + width - 6, 0, 3, lip);
+
+  // Hazard stripe along the lip — the line your roof has to clear.
+  ctx.fillStyle = gold;
+  ctx.fillRect(x, lip, width, 7);
+  ctx.fillStyle = ink;
+  for (let stripe = x; stripe < x + width; stripe += 14) {
+    ctx.fillRect(stripe, lip, 7, 7);
+  }
+
+  ctx.fillStyle = paper;
+  ctx.font = "900 9px Georgia, serif";
+  ctx.textAlign = "center";
+  ctx.fillText("LOW CLEARANCE", x + width / 2, 26);
+}
+
 function drawSignal(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -522,7 +598,7 @@ function drawSignal(
   gold: string,
   night: boolean,
 ) {
-  const h = low ? 74 : 58;
+  const h = low ? OVERHEAD_LOW : OVERHEAD_HIGH;
   ctx.fillStyle = ink;
   ctx.fillRect(x - 6, 0, 4, h - 26); // hanger
   ctx.fillRect(x - 22, 0, 40, 4); // arm

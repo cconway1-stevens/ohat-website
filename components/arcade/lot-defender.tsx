@@ -23,6 +23,18 @@ const TRUCK_W = 30;
 type Hazard = { x: number; y: number; kind: number; alive: boolean };
 type Shot = { x: number; y: number };
 
+// Shop crates a cleared hazard sometimes leaves behind.
+type PowerKind = "spare" | "rapid" | "twin" | "slow";
+type Crate = { x: number; y: number; kind: PowerKind };
+
+const POWER_FRAMES = 420; // ~7 seconds of a timed upgrade
+const POWER_BADGE: Record<PowerKind, { mark: string; label: string; tint: string }> = {
+  spare: { mark: "+", label: "Spare sweeper", tint: "#68a56f" },
+  rapid: { mark: "R", label: "Rapid magnet", tint: "#f6bd38" },
+  twin: { mark: "W", label: "Twin pulse", tint: "#8fb7c4" },
+  slow: { mark: "S", label: "Slow drift", tint: "#e0555a" },
+};
+
 type Run = {
   truckX: number;
   moving: -1 | 0 | 1;
@@ -37,6 +49,11 @@ type Run = {
   lives: number;
   cleared: number;
   flash: number;
+  crates: Crate[];
+  // Frames remaining on each timed upgrade.
+  rapid: number;
+  twin: number;
+  slow: number;
 };
 
 function buildWave(level: Intensity, wave: number): Hazard[] {
@@ -79,6 +96,10 @@ function freshRun(
     lives,
     cleared,
     flash: 0,
+    crates: [],
+    rapid: 0,
+    twin: 0,
+    slow: 0,
   };
 }
 
@@ -102,7 +123,12 @@ export function LotDefender() {
   const [running, setRunning] = useState(false);
   const [over, setOver] = useState(false);
   const [won, setWon] = useState(false);
-  const [hud, setHud] = useState({ cleared: 0, lives: 0, wave: 1 });
+  const [hud, setHud] = useState<{
+    cleared: number;
+    lives: number;
+    wave: number;
+    powers: readonly PowerKind[];
+  }>({ cleared: 0, lives: 0, wave: 1, powers: [] });
   const [best, setBest] = useState(0);
   const [sound, setSound] = useState(true);
   const soundOn = useRef(true);
@@ -116,16 +142,22 @@ export function LotDefender() {
   const fire = useCallback(() => {
     const r = run.current;
     if (!runningRef.current || r.cooldown > 0) return;
-    r.shots.push({ x: r.truckX, y: TRUCK_Y - 8 });
-    r.cooldown = CONFIG.levels[levelRef.current].shotCooldown;
-    if (soundOn.current) garageAudio.beep(880);
+    // Twin pulse throws a magnet either side of the head.
+    if (r.twin > 0) {
+      r.shots.push({ x: r.truckX - 8, y: TRUCK_Y - 8 }, { x: r.truckX + 8, y: TRUCK_Y - 8 });
+    } else {
+      r.shots.push({ x: r.truckX, y: TRUCK_Y - 8 });
+    }
+    const base = CONFIG.levels[levelRef.current].shotCooldown;
+    r.cooldown = r.rapid > 0 ? Math.max(4, Math.round(base / 2)) : base;
+    if (soundOn.current) garageAudio.beep(r.twin > 0 ? 990 : 880);
   }, []);
 
   const start = useCallback((nextLevel = levelRef.current) => {
     levelRef.current = nextLevel;
     setLevel(nextLevel);
     run.current = freshRun(nextLevel);
-    setHud({ cleared: 0, lives: CONFIG.levels[nextLevel].lives, wave: 1 });
+    setHud({ cleared: 0, lives: CONFIG.levels[nextLevel].lives, wave: 1, powers: [] });
     setBest(readBest());
     setOver(false);
     setWon(false);
@@ -191,6 +223,23 @@ export function LotDefender() {
       r.truckX = Math.max(TRUCK_W / 2, Math.min(W - TRUCK_W / 2, r.truckX + r.moving * settings.truckSpeed));
       if (r.cooldown > 0) r.cooldown -= 1;
       if (r.flash > 0) r.flash -= 1;
+      if (r.rapid > 0) r.rapid -= 1;
+      if (r.twin > 0) r.twin -= 1;
+      if (r.slow > 0) r.slow -= 1;
+
+      // Crates fall to the sweeper's lane and are picked up by driving into them.
+      for (const crate of r.crates) crate.y += 1.3;
+      for (const crate of r.crates) {
+        if (Math.abs(crate.x - r.truckX) < TRUCK_W / 2 + 4 && crate.y > TRUCK_Y - 12 && crate.y < TRUCK_Y + 12) {
+          crate.y = H + 99;
+          if (crate.kind === "spare") r.lives = Math.min(6, r.lives + 1);
+          if (crate.kind === "rapid") r.rapid = POWER_FRAMES;
+          if (crate.kind === "twin") r.twin = POWER_FRAMES;
+          if (crate.kind === "slow") r.slow = POWER_FRAMES;
+          if (soundOn.current) garageAudio.rev();
+        }
+      }
+      r.crates = r.crates.filter((crate) => crate.y < H);
 
       // March: the swarm steps sideways, then drops a row at the edge.
       r.marchIn -= 1;
@@ -205,7 +254,7 @@ export function LotDefender() {
         }
         // Fewer left = faster, the pressure everyone remembers from the original.
         const pace = Math.max(6, Math.round(settings.marchFrames * (alive.length / r.hazards.length)));
-        r.marchIn = pace;
+        r.marchIn = r.slow > 0 ? Math.round(pace * 1.75) : pace;
         if (soundOn.current && frame > 30) garageAudio.beep(120 + alive.length);
       }
 
@@ -233,6 +282,10 @@ export function LotDefender() {
             h.alive = false;
             shot.y = -99;
             r.cleared += 1;
+            if (Math.random() < settings.powerChance) {
+              const pool = settings.powers;
+              r.crates.push({ x: h.x, y: h.y, kind: pool[Math.floor(Math.random() * pool.length)] as PowerKind });
+            }
             if (soundOn.current) garageAudio.horn();
             break;
           }
@@ -263,13 +316,23 @@ export function LotDefender() {
           endRun(true);
           return;
         }
-        run.current = freshRun(levelRef.current, r.wave + 1, r.lives, r.cleared);
-        run.current.truckX = r.truckX;
+        const next = freshRun(levelRef.current, r.wave + 1, r.lives, r.cleared);
+        // An upgrade you just earned should survive into the next wave.
+        next.truckX = r.truckX;
+        next.rapid = r.rapid;
+        next.twin = r.twin;
+        next.slow = r.slow;
+        run.current = next;
         if (soundOn.current) garageAudio.fanfare();
       }
 
       if (frame % 6 === 0) {
-        setHud({ cleared: r.cleared, lives: r.lives, wave: r.wave });
+        setHud({
+          cleared: r.cleared,
+          lives: r.lives,
+          wave: r.wave,
+          powers: (["rapid", "twin", "slow"] as const).filter((key) => r[key] > 0),
+        });
       }
       draw(ctx, run.current, false, false);
       raf = requestAnimationFrame(step);
@@ -343,6 +406,13 @@ export function LotDefender() {
           <div><dt>Sweeper</dt><dd>{"●".repeat(Math.max(0, hud.lives)) || "—"}</dd></div>
           <div><dt>Best</dt><dd>{best}</dd></div>
         </dl>
+        {hud.powers.length > 0 ? (
+          <ul className="lot-defender-powers" aria-label="Active upgrades">
+            {hud.powers.map((key) => (
+              <li key={key}>{POWER_BADGE[key].label}</li>
+            ))}
+          </ul>
+        ) : null}
       </div>
 
       <p className="match-game-status" role="status">
@@ -463,6 +533,20 @@ function draw(ctx: CanvasRenderingContext2D, r: Run, ended: boolean, didWin: boo
   ctx.fillStyle = "#e0555a";
   for (const drop of r.falling) ctx.fillRect(drop.x - 1.5, drop.y, 3, 7);
 
+  // Shop crates on the way down, each marked with what it gives you.
+  for (const crate of r.crates) {
+    const badge = POWER_BADGE[crate.kind];
+    ctx.fillStyle = badge.tint;
+    ctx.fillRect(crate.x - 7, crate.y - 7, 14, 14);
+    ctx.fillStyle = "#171412";
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#171412";
+    ctx.strokeRect(crate.x - 7.5, crate.y - 7.5, 15, 15);
+    ctx.font = "900 10px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText(badge.mark, crate.x, crate.y + 4);
+  }
+
   // The sweeper truck
   const x = r.truckX;
   ctx.fillStyle = "#f6bd38";
@@ -472,8 +556,9 @@ function draw(ctx: CanvasRenderingContext2D, r: Run, ended: boolean, didWin: boo
   ctx.fillRect(x - 11, TRUCK_Y + 5, 7, 4);
   ctx.fillRect(x + 5, TRUCK_Y + 5, 7, 4);
   // Magnet head
-  ctx.fillStyle = "#1a7183";
-  ctx.fillRect(x - 5, TRUCK_Y - 14, 10, 5);
+  // Magnet head — wider and lit while the twin pulse is running.
+  ctx.fillStyle = r.twin > 0 ? "#8fb7c4" : "#1a7183";
+  ctx.fillRect(x - (r.twin > 0 ? 11 : 5), TRUCK_Y - 14, r.twin > 0 ? 22 : 10, 5);
 
   if (ended) {
     ctx.fillStyle = "rgba(23,20,18,.72)";

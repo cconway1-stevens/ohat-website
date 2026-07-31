@@ -215,3 +215,94 @@ test("kids word search never hides a word backwards or diagonally", () => {
     assert.ok(option.row === 0 || option.col === 0, `kids direction ${JSON.stringify(option)} is diagonal`);
   }
 });
+
+/* ------------------------- Tow Chain service calls ---------------------- */
+
+import { freshState, tick } from "../lib/tow-chain.ts";
+
+test("Tow Chain: a pickup grows the chain and counts a car", () => {
+  const state = freshState();
+  state.chain = [{ x: 2, y: 2 }];
+  state.dir = { x: 1, y: 0 };
+  state.nextDir = { x: 1, y: 0 };
+  state.pickup = { x: 3, y: 2 };
+  const outcome = tick(state);
+  assert.equal(outcome.ate, true);
+  assert.equal(state.towed, 1);
+  assert.equal(state.chain.length, 2, "the chain should be one car longer");
+});
+
+test("Tow Chain: a service call is dispatched every few cars", () => {
+  const config = arcadePresets.towChain;
+  const state = freshState();
+  for (let car = 1; car <= config.bonusEvery; car += 1) {
+    // Reset the truck to a known spot each time so the test exercises the
+    // dispatch rule, not my ability to drive a snake.
+    state.chain = [{ x: 2, y: 2 }];
+    state.dir = { x: 1, y: 0 };
+    state.nextDir = { x: 1, y: 0 };
+    state.pickup = { x: 3, y: 2 };
+    assert.equal(tick(state).ate, true, `car ${car} was not picked up`);
+  }
+  assert.equal(state.towed, config.bonusEvery);
+  assert.ok(state.bonus, "no service call after the third car");
+  assert.ok(["ghost", "slow", "trim"].includes(state.bonus.kind));
+});
+
+test("Tow Chain: a ghost run passes through the chain, and normally you crash", () => {
+  // (6,7) has to be a middle segment: the tail vacates its cell on the same
+  // tick, so driving into the last car is legitimately not a crash.
+  const layout = [
+    { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 },
+    { x: 4, y: 7 }, { x: 5, y: 7 }, { x: 6, y: 7 }, { x: 7, y: 7 },
+  ];
+  const rig = (ghost) => {
+    const state = freshState();
+    state.chain = layout.map((cell) => ({ ...cell }));
+    state.pickup = { x: 0, y: 0 };
+    state.dir = { x: 0, y: 1 };
+    state.nextDir = { x: 0, y: 1 };
+    state.ghost = ghost;
+    return state;
+  };
+  assert.equal(tick(rig(0)).dead, true, "driving into the chain should end the shift");
+  assert.equal(tick(rig(20)).dead, false, "a ghost run should pass straight through");
+});
+
+test("Tow Chain: a drop-off shortens the chain but never the score", () => {
+  const config = arcadePresets.towChain;
+  const state = freshState();
+  state.chain = Array.from({ length: 8 }, (_, i) => ({ x: 8 - i, y: 6 }));
+  state.towed = 7;
+  state.pickup = { x: 0, y: 11 };
+  state.bonus = { x: 9, y: 6, kind: "trim", ticksLeft: 30 };
+  state.dir = { x: 1, y: 0 };
+  state.nextDir = { x: 1, y: 0 };
+  const outcome = tick(state);
+  assert.equal(outcome.took, "trim");
+  // Moved without eating, so the chain is still 8 before the drop-off.
+  assert.equal(state.chain.length, 8 - config.trimBy, "chain should be shorter");
+  assert.equal(state.towed, 7, "cars towed must survive a drop-off");
+});
+
+test("Tow Chain: easy-does-it halves the pace by idling alternate ticks", () => {
+  const state = freshState();
+  state.slow = 10;
+  state.pickup = { x: 0, y: 12 };
+  const first = tick(state);
+  const second = tick(state);
+  assert.notEqual(first.skipped, second.skipped, "exactly one of two ticks should move");
+});
+
+test("Tow Chain: an unanswered service call expires", () => {
+  const config = arcadePresets.towChain;
+  const state = freshState();
+  state.pickup = { x: 0, y: 12 };
+  state.bonus = { x: 11, y: 11, kind: "ghost", ticksLeft: 3 };
+  state.chain = [{ x: 1, y: 1 }];
+  state.dir = { x: 0, y: 1 };
+  state.nextDir = { x: 0, y: 1 };
+  for (let i = 0; i < 4; i += 1) tick(state);
+  assert.equal(state.bonus, null, "the caller should give up eventually");
+  assert.ok(config.bonusLifeTicks > 0);
+});

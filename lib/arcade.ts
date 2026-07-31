@@ -69,26 +69,43 @@ export const arcadePresets = {
   lotDefender: {
     defaultLevel: "easy",
     levels: {
+      // `powers` is the shop-crate pool a cleared hazard can leave behind.
+      // Kids gets only the two obviously-good ones so the screen never turns
+      // into a puzzle about which badge does what.
       kids: {
         label: "Kids", brief: "A slow drift, nothing falls back at you, and five sweeps in hand.",
         rows: 2, cols: 5, marchFrames: 46, dropStep: 6, dropSpeed: 1.1,
         fireFrames: 9999, shotCooldown: 10, truckSpeed: 3, lives: 5, wavesToWin: 1,
+        powerChance: 0.24, powers: ["spare", "rapid"],
       },
       easy: {
         label: "Easy", brief: "A steady drift with the odd bolt shaking loose. Two waves to clear.",
         rows: 3, cols: 6, marchFrames: 34, dropStep: 8, dropSpeed: 1.6,
         fireFrames: 110, shotCooldown: 12, truckSpeed: 3, lives: 3, wavesToWin: 2,
+        powerChance: 0.16, powers: ["spare", "rapid", "twin", "slow"],
       },
       advanced: {
         label: "Advanced", brief: "A full lot, hardware raining down, three waves. Keep moving.",
         rows: 4, cols: 8, marchFrames: 24, dropStep: 10, dropSpeed: 2.2,
         fireFrames: 62, shotCooldown: 14, truckSpeed: 3.4, lives: 3, wavesToWin: 3,
+        powerChance: 0.12, powers: ["spare", "rapid", "twin", "slow"],
       },
     },
   },
   treadStack: { rows: 18, columns: 10, linesToWin: 3 },
   shoreRun: { coinsToWin: 4 },
-  towChain: { carsToWin: 4, tickMs: 175 },
+  // A service call shows up every few pickups and waits a while before the
+  // driver gives up on it. `ghost` lets the chain pass through itself, `slow`
+  // eases the pace, `trim` drops cars off back at the shop.
+  towChain: {
+    carsToWin: 4,
+    tickMs: 175,
+    bonusEvery: 3,
+    bonusLifeTicks: 46,
+    bonusTicks: 40,
+    slowTickMs: 260,
+    trimBy: 3,
+  },
 } as const;
 
 export const arcadeGames: ArcadeGame[] = [
