@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
-import { arcadePresets, garageGuessWords } from "@/lib/arcade";
+import { arcadePresets, garageGuessClues, garageGuessWords } from "@/lib/arcade";
 import { PrizeBanner } from "./prize";
 
 const CONFIG = arcadePresets.garageGuess;
@@ -41,16 +41,30 @@ export function GarageGuess() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [message, setMessage] = useState("Pick a word from the shop word bank.");
   const [sound, setSound] = useState(true);
+  const [showClue, setShowClue] = useState(false);
+  // Gave up and asked to see the word. Ends the round without the coupon.
+  const [gaveUp, setGaveUp] = useState(false);
   const won = answer.length > 0 && guesses.at(-1) === answer;
-  const over = won || (answer.length > 0 && guesses.length === CONFIG.maxGuesses);
+  const over = won || gaveUp || (answer.length > 0 && guesses.length === CONFIG.maxGuesses);
 
   function start() {
     const next = chooseWord(answer);
     setAnswer(next);
     setDraft("");
     setGuesses([]);
+    setShowClue(false);
+    setGaveUp(false);
     setMessage("Six tries. Green is exact; yellow is elsewhere in the word.");
     if (sound) garageAudio.ignition();
+  }
+
+  function revealWord() {
+    if (!answer || over) return;
+    setGaveUp(true);
+    setShowClue(true);
+    setDraft("");
+    setMessage(`The word was ${answer}. Start a new one to play for the coupon.`);
+    if (sound) garageAudio.skid();
   }
 
   const submit = useCallback(() => {
@@ -60,7 +74,7 @@ export function GarageGuess() {
       if (sound) garageAudio.skid();
       return;
     }
-    if (!garageGuessWords.includes(draft as (typeof garageGuessWords)[number])) {
+    if (!garageGuessWords.includes(draft)) {
       setMessage("Try a five-letter shop word from the garage word bank.");
       if (sound) garageAudio.skid();
       return;
@@ -141,6 +155,16 @@ export function GarageGuess() {
         </div>
       </header>
       <p className="match-game-status" role="status">{message}</p>
+      {/* Hidden until asked for, so it never spoils the puzzle by accident. */}
+      <p className="garage-guess-clue">
+        {showClue ? (
+          <span><b>Clue:</b> {garageGuessClues[answer]}</span>
+        ) : (
+          <button type="button" onClick={() => { setShowClue(true); if (sound) garageAudio.beep(300); }}>
+            Need a clue?
+          </button>
+        )}
+      </p>
       <div className="garage-guess-grid" aria-label="Five-letter garage word puzzle">
         {Array.from({ length: CONFIG.maxGuesses }, (_, row) => {
           const guess = guesses[row] ?? (row === guesses.length && !over ? draft : "");
@@ -168,6 +192,11 @@ export function GarageGuess() {
           <button type="button" className="is-wide" onClick={() => press("ENTER")}>Enter</button>
           <button type="button" className="is-wide" onClick={() => press("BACKSPACE")}>Delete</button>
         </div>
+      </div>
+      <div className="paper-game-actions">
+        <button type="button" onClick={revealWord} disabled={over}>
+          Show me the word
+        </button>
       </div>
       {won ? <PrizeBanner sound={sound} achievement="Garage Guess solved in six tries or less." /> : null}
     </div>

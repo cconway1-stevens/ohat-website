@@ -22,8 +22,12 @@ export function PlayLock() {
   useEffect(() => {
     if (!locked) return;
     const { body } = document;
-    // Remember where we were so unfreezing doesn't jump the reader elsewhere.
-    restoreTo.current = window.scrollY;
+    // Freezing with `overflow: hidden` alone drops the scroll position and the
+    // page jumps. Pinning the body at a negative offset instead holds the view
+    // exactly where it was, and putting it back is a plain scrollTo.
+    const y = window.scrollY;
+    restoreTo.current = y;
+    body.style.top = `-${y}px`;
     body.classList.add("is-play-locked");
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -33,29 +37,17 @@ export function PlayLock() {
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       body.classList.remove("is-play-locked");
+      body.style.top = "";
       window.scrollTo({ top: restoreTo.current, behavior: "instant" });
     };
   }, [locked, unlock]);
-
-  function toggle() {
-    if (locked) {
-      unlock();
-      return;
-    }
-    // Centre the board first, so freezing never strands the player looking at
-    // the page header.
-    document
-      .querySelector(".paper-game, .match-game, .shore-run, .tow-chain")
-      ?.scrollIntoView({ block: "center", behavior: "instant" });
-    setLocked(true);
-  }
 
   return (
     <div className={`arcade-lock-bar${locked ? " is-locked" : ""}`}>
       <button
         type="button"
         className="arcade-lock-button"
-        onClick={toggle}
+        onClick={() => setLocked((on) => !on)}
         aria-pressed={locked}
       >
         <span aria-hidden="true">{locked ? "🔓" : "🔒"}</span>

@@ -110,14 +110,53 @@ export const arcadeGames: ArcadeGame[] = [
 // Every entry must be exactly `garageGuess.wordLength` letters — a short one
 // slipping in makes the round unwinnable, since the player can never type a
 // guess that equals the answer. `assertGarageGuessWords` guards that.
-export const garageGuessWords = [
-  "ALIGN", "AXLES", "BELTS", "BRAKE", "CABIN", "CLAMP", "COUPE",
-  "FLUID", "FRAME", "FUELS", "FUSES", "GAUGE", "GEARS", "GRILL",
-  "HATCH", "HITCH", "HOODS", "LIGHT", "MOTOR", "PEDAL", "RELAY",
-  "ROTOR", "SEDAN", "SHAFT", "SHOCK", "SPARK", "SPARE", "STRUT",
-  "TIRES", "TOWED", "TREAD", "TRUCK", "TRUNK", "VALVE", "WAGON",
-  "WHEEL", "WINCH", "WIPER",
-] as const;
+// Each word carries a clue, so a stuck player can ask for a nudge instead of
+// burning guesses. A clue never contains its own answer — the test checks.
+const GARAGE_GUESS: [word: string, clue: string][] = [
+  ["ALIGN", "What the wheels need when the car pulls to one side"],
+  ["AXLES", "Shafts the wheels ride on"],
+  ["BELTS", "Rubber loops the engine drives"],
+  ["BRAKE", "The pedal that stops you"],
+  ["CABIN", "Where the driver and passengers sit"],
+  ["CLAMP", "Tool that grips a hose tight"],
+  ["COUPE", "Two-door body style"],
+  ["FLUID", "Brake ___ or transmission ___"],
+  ["FRAME", "Steel skeleton under the body"],
+  ["FUELS", "Gasoline and diesel, for two"],
+  ["FUSES", "Little blade protectors in the box under the dash"],
+  ["GAUGE", "Dial that reads fuel or temperature"],
+  ["GEARS", "The transmission shifts through them"],
+  ["GRILL", "Front opening that lets cooling air in"],
+  ["HATCH", "Rear door that lifts up"],
+  ["HITCH", "You bolt a trailer to it"],
+  ["HOODS", "Panels you lift to reach the engine"],
+  ["LIGHT", "Head___ or tail___"],
+  ["MOTOR", "Another word for the engine"],
+  ["PEDAL", "Gas, brake, or clutch"],
+  ["RELAY", "Clicking switch worked by a coil"],
+  ["ROTOR", "Disc a caliper squeezes"],
+  ["SEDAN", "Four-door body style"],
+  ["SHAFT", "Drive___ sends power to the wheels"],
+  ["SHOCK", "___ absorber, which smooths the bumps"],
+  ["SPARE", "The tire hiding in the trunk"],
+  ["SPARK", "The plug makes one to light the fuel"],
+  ["STRUT", "Suspension damper built into the corner assembly"],
+  ["TIRES", "Four of them meet the road"],
+  ["TOWED", "What happened to the car on the flatbed"],
+  ["TREAD", "The grooved pattern on a tire"],
+  ["TRUCK", "Pickup, for one"],
+  ["TRUNK", "Cargo space behind the back seat"],
+  ["VALVE", "It opens and closes to let gases in or out"],
+  ["WAGON", "Long-roof car with cargo room in back"],
+  ["WHEEL", "The tire mounts onto it"],
+  ["WINCH", "Cable drum that drags a car onto a flatbed"],
+  ["WIPER", "Blade that clears the windshield"],
+];
+
+export const garageGuessWords: string[] = GARAGE_GUESS.map(([word]) => word);
+
+export const garageGuessClues: Record<string, string> =
+  Object.fromEntries(GARAGE_GUESS);
 
 // Exported so a test can assert it, rather than trusting the list by eye.
 export function badGarageGuessWords() {
