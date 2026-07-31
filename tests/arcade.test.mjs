@@ -6,7 +6,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { arcadePresets, badGarageGuessWords, garageGuessWords } from "../lib/arcade.ts";
+import {
+  arcadePresets,
+  badGarageGuessWords,
+  garageGuessClues,
+  garageGuessWords,
+} from "../lib/arcade.ts";
 import { CLUE_BANK, wordsForLevel } from "../lib/arcade-words.ts";
 import { createCrossword } from "../lib/crossword.ts";
 import { createSearch, DIRECTIONS } from "../lib/word-search.ts";
@@ -71,6 +76,20 @@ test("every Garage Guess word is exactly the puzzle's word length", () => {
 
 test("Garage Guess has enough words to keep rounds varied", () => {
   assert.ok(garageGuessWords.length >= 20, `only ${garageGuessWords.length} words`);
+});
+
+test("every Garage Guess word has a clue that doesn't give it away", () => {
+  // The clue is the hint for a stuck player, so it must exist for every word
+  // the game can pick, and must not simply contain the answer.
+  for (const word of garageGuessWords) {
+    const clue = garageGuessClues[word];
+    assert.ok(clue && clue.trim().length > 0, `${word} has no clue`);
+    assert.equal(
+      clue.toUpperCase().includes(word),
+      false,
+      `clue for ${word} contains the answer`,
+    );
+  }
 });
 
 /* ------------------------------- crossword ------------------------------ */

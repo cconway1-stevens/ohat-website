@@ -37,23 +37,54 @@ export function ServiceSearch() {
   const [difficulty, setDifficulty] = useState<Difficulty>(CONFIG.defaultDifficulty);
   const [start, setStart] = useState<Point | null>(null);
   const [found, setFound] = useState<string[]>([]);
+  // Words the player gave up on and asked to be shown. Kept apart from `found`
+  // so a revealed word still finishes the grid without quietly buying the
+  // coupon — you can always start a fresh puzzle and go for the prize again.
+  const [revealed, setRevealed] = useState<string[]>([]);
   const [message, setMessage] = useState("Tap the first letter, then the last letter. Skip the letters in between.");
   const [sound, setSound] = useState(true);
 
   const prizeWords = CONFIG.difficulties[difficulty].prizeWords;
+  const solved = [...found, ...revealed];
   const won = found.length >= prizeWords;
-  const complete = puzzle && found.length === puzzle.words.length;
-  const foundCells = new Set(
-    puzzle?.words.filter((entry) => found.includes(entry.word)).flatMap((entry) => entry.cells) ?? [],
-  );
+  const complete = Boolean(puzzle && solved.length === puzzle.words.length);
+  const remaining = puzzle ? puzzle.words.filter((entry) => !solved.includes(entry.word)) : [];
+  const cellsOf = (words: string[]) =>
+    new Set(puzzle?.words.filter((entry) => words.includes(entry.word)).flatMap((entry) => entry.cells) ?? []);
+  const foundCells = cellsOf(found);
+  const revealedCells = cellsOf(revealed);
 
   function startPuzzle(nextDifficulty = difficulty) {
     setDifficulty(nextDifficulty);
     setPuzzle(createSearch(nextDifficulty));
     setStart(null);
     setFound([]);
+    setRevealed([]);
     setMessage("Tap the first letter, then the last letter. Skip the letters in between.");
     if (sound) garageAudio.ignition();
+  }
+
+  // Shows the one word the player is most likely stuck on — whichever is left,
+  // taken in list order so it matches what they are staring at.
+  function revealOne() {
+    const next = remaining[0];
+    if (!next) return;
+    setRevealed((current) => [...current, next.word]);
+    setStart(null);
+    setMessage(
+      `${next.word} is marked on the grid. Revealed words don't count toward the coupon.`,
+    );
+    if (sound) garageAudio.beep(300);
+  }
+
+  function revealAll() {
+    if (remaining.length === 0) return;
+    setRevealed((current) => [...current, ...remaining.map((entry) => entry.word)]);
+    setStart(null);
+    setMessage(
+      `All ${remaining.length} remaining word${remaining.length === 1 ? "" : "s"} marked. Start a new puzzle to play for the coupon.`,
+    );
+    if (sound) garageAudio.skid();
   }
 
   const difficultyControls = (
@@ -83,7 +114,7 @@ export function ServiceSearch() {
 
     const selected = lineBetween(start, { row, col });
     const match = puzzle.words.find((entry) =>
-      !found.includes(entry.word) &&
+      !solved.includes(entry.word) &&
       (entry.cells.join("|") === selected.join("|") || entry.cells.join("|") === [...selected].reverse().join("|")),
     );
     setStart(null);
@@ -94,13 +125,14 @@ export function ServiceSearch() {
     }
 
     const nextFound = [...found, match.word];
+    const left = puzzle.words.length - nextFound.length - revealed.length;
     setFound(nextFound);
     setMessage(
-      nextFound.length === puzzle.words.length
+      left === 0
         ? "Every service word found."
         : nextFound.length >= prizeWords
-          ? `Prize earned. ${puzzle.words.length - nextFound.length} word${puzzle.words.length - nextFound.length === 1 ? "" : "s"} left in the grid.`
-        : `${match.word} found. ${puzzle.words.length - nextFound.length} left in the grid.`,
+          ? `Prize earned. ${left} word${left === 1 ? "" : "s"} left in the grid.`
+          : `${match.word} found. ${left} left in the grid.`,
     );
     if (sound) garageAudio.horn();
   }
@@ -156,7 +188,7 @@ export function ServiceSearch() {
               <button
                 key={key}
                 type="button"
-                className={`${foundCells.has(key) ? "is-found" : ""}${selected ? " is-selected" : ""}`}
+                className={`${foundCells.has(key) ? "is-found" : revealedCells.has(key) ? "is-revealed" : ""}${selected ? " is-selected" : ""}`}
                 onClick={() => chooseCell(row, col)}
                 aria-label={`Row ${row + 1}, column ${col + 1}, letter ${letter}`}
               >
@@ -169,13 +201,36 @@ export function ServiceSearch() {
           <h3>Find these</h3>
           <ul>
             {puzzle.words.map((entry) => (
-              <li key={entry.word} className={found.includes(entry.word) ? "is-found" : ""}>
+              <li
+                key={entry.word}
+                className={
+                  found.includes(entry.word)
+                    ? "is-found"
+                    : revealed.includes(entry.word)
+                      ? "is-revealed"
+                      : ""
+                }
+              >
                 {entry.word}
+                {revealed.includes(entry.word) ? <small> shown</small> : null}
               </li>
             ))}
           </ul>
-          <p>{found.length}/{puzzle.words.length} found</p>
+          <p>
+            {found.length}/{puzzle.words.length} found
+            {revealed.length > 0 ? ` · ${revealed.length} shown` : ""}
+          </p>
         </aside>
+      </div>
+
+      {/* Stuck is not a dead end: mark one word, or give up and see them all. */}
+      <div className="paper-game-actions">
+        <button type="button" onClick={revealOne} disabled={remaining.length === 0}>
+          Show me a word
+        </button>
+        <button type="button" onClick={revealAll} disabled={remaining.length === 0}>
+          Reveal all {remaining.length > 0 ? `(${remaining.length})` : ""}
+        </button>
       </div>
 
       {won && complete ? (
