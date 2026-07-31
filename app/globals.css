@@ -1116,6 +1116,23 @@ img { max-width: 100%; }
 .link-hub-list .link-hub-primary:hover > span:first-child { animation: phone-ring .45s ease-in-out 2; }
 
 .link-hub-hours { margin: 1.5rem 0 .7rem; font-size: .7rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.link-hub-share { margin: 0 0 .9rem; }
+.link-hub-share a { color: var(--red); font-size: .8rem; font-weight: 950; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+/* QR share page */
+.links-qr-body { display: grid; justify-items: center; gap: 1rem; margin: 1.4rem 0 1.2rem; }
+.links-qr { margin: 0; display: grid; justify-items: center; gap: .6rem; }
+.links-qr canvas { border: 4px solid var(--ink); background: var(--paper); box-shadow: 8px 8px 0 var(--yellow); image-rendering: pixelated; }
+.links-qr figcaption { font-size: .78rem; font-weight: 700; color: var(--muted); word-break: break-all; }
+.share-links-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; }
+.links-qr-print { font-size: .78rem; }
+@media print {
+  /* The printout is the QR and the address, nothing else. */
+  .site-header, .site-footer, .drive-cta, .link-hub-checker, .share-links-buttons,
+  .links-qr-print, .link-hub-home, .booking-dock, .mkr-band { display: none !important; }
+  .link-hub { background: #fff; min-height: auto; }
+  .link-hub-card { border: none; box-shadow: none; }
+}
 .link-hub-home { font-size: .75rem; font-weight: 900; text-decoration: underline; text-underline-offset: .25rem; }
 
 .services-intro { padding-top: 9rem; background: var(--cream); }

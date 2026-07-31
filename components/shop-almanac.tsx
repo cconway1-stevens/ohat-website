@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 // The shop's own coordinates, so the reading is the weather at the garage
 // rather than wherever the visitor happens to be.
@@ -14,8 +14,7 @@ const FORECAST_URL =
 // also satisfies Open-Meteo's attribution ask.
 const SOURCE_URL = "https://open-meteo.com/";
 
-// The header remounts on every navigation, so the reading is cached with a
-// TTL: one fetch per session per half hour, not one per page view. Conditions
+// One fetch per session per half hour, not one per page view. Conditions
 // don't change faster than that, and neither should our API traffic.
 const CACHE_KEY = "ohat-almanac";
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -33,8 +32,6 @@ function describe(code: number): string {
   if (code <= 86) return "Snow";
   return "Thunder";
 }
-
-type Almanac = { date: string; reading?: string };
 
 function readCache(): string | null {
   try {
@@ -59,33 +56,46 @@ function writeCache(reading: string) {
   }
 }
 
-export function ShopAlmanac() {
-  const [almanac, setAlmanac] = useState<Almanac | null>(null);
+// Computed once per page load, before the first paint, via
+// useSyncExternalStore below: the server snapshot is null (the masthead
+// renders the location alone), and the client snapshot — date plus any cached
+// reading — is applied synchronously during hydration. That is what stops
+// the dateline flickering in a frame after every navigation.
+type Snapshot = { date: string; reading: string | null };
+let snapshot: Snapshot | undefined;
 
-  useEffect(() => {
-    const controller = new AbortController();
-    let cancelled = false;
+function clientSnapshot(): Snapshot {
+  snapshot ??= {
     // Always the shop's local day, not the visitor's — this is the garage's
     // masthead, and a visitor abroad should not see tomorrow's date on it.
-    const date = new Date().toLocaleDateString("en-US", {
+    date: new Date().toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       timeZone: "America/New_York",
-    });
+    }),
+    reading: readCache(),
+  };
+  return snapshot;
+}
 
-    const cached = readCache();
-    if (cached) {
-      // Deferred a tick so the setState is asynchronous to the effect body.
-      const id = window.setTimeout(
-        () => setAlmanac({ date, reading: cached }),
-        0,
-      );
-      return () => window.clearTimeout(id);
-    }
+const serverSnapshot = () => null;
+const subscribeNever = () => () => {};
 
-    // Every state update below sits in a promise callback rather than in the
-    // effect body, so the date still lands even when the forecast is blocked
-    // or offline — the weather is an embellishment, never a dependency.
+export function ShopAlmanac() {
+  const initial = useSyncExternalStore(
+    subscribeNever,
+    clientSnapshot,
+    serverSnapshot,
+  );
+  const [fetched, setFetched] = useState<string | null>(null);
+  const reading = initial?.reading ?? fetched;
+
+  useEffect(() => {
+    // Cache hit (or snapshot not ready): nothing to fetch this page view.
+    if (!initial || initial.reading) return;
+    const controller = new AbortController();
+    let cancelled = false;
+
     fetch(FORECAST_URL, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
@@ -93,31 +103,30 @@ export function ShopAlmanac() {
         const temperature = data?.current?.temperature_2m;
         const code = data?.current?.weather_code;
         if (typeof temperature === "number" && typeof code === "number") {
-          const reading = `${Math.round(temperature)}° ${describe(code)}`;
-          writeCache(reading);
-          setAlmanac({ date, reading });
-        } else {
-          setAlmanac({ date });
+          const result = `${Math.round(temperature)}° ${describe(code)}`;
+          writeCache(result);
+          setFetched(result);
         }
       })
       .catch(() => {
-        if (!cancelled) setAlmanac({ date });
+        // The weather is an embellishment, never a dependency — the dateline
+        // stands complete without it.
       });
 
     return () => {
       cancelled = true;
       controller.abort();
     };
-  }, []);
+  }, [initial]);
 
   return (
     <span className="garage-almanac">
       <span className="garage-almanac-place">Egg Harbor Township, New Jersey</span>
-      {almanac ? (
+      {initial ? (
         <>
           <span className="garage-almanac-rule" aria-hidden="true">·</span>
-          <span className="garage-almanac-date">{almanac.date}</span>
-          {almanac.reading ? (
+          <span className="garage-almanac-date">{initial.date}</span>
+          {reading ? (
             <>
               <span className="garage-almanac-rule" aria-hidden="true">·</span>
               <a
@@ -127,7 +136,7 @@ export function ShopAlmanac() {
                 rel="noreferrer"
                 title="Current conditions at the shop — weather data by Open-Meteo"
               >
-                {almanac.reading}
+                {reading}
                 <span className="sr-only">
                   {" "}— weather data by Open-Meteo (opens in a new tab)
                 </span>

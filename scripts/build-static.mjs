@@ -147,7 +147,7 @@ copyFileSync(join(OUT_DIR, "index.rsc"), join(OUT_DIR, ".rsc"));
 // Pages that deliberately carry `noindex`. Listing a noindex URL in the
 // sitemap asks Google to crawl something it is then told not to index.
 const isNoindexRoute = (route) =>
-  route === "/arcade" || route.startsWith("/arcade/");
+  route === "/arcade" || route.startsWith("/arcade/") || route === "/links/qr";
 
 const routes = htmlFiles
   .map(
