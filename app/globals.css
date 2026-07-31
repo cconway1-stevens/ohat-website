@@ -320,6 +320,13 @@ img { max-width: 100%; }
   color: var(--muted);
   font-size: .68rem;
 }
+/* The band paints edge to edge; `.nav-wrap` only lays out its contents. Both
+   live on separate elements because `.shell` caps its own width at 1180px,
+   so a background set on it stops short of the viewport edges. */
+.nav-band {
+  background: linear-gradient(90deg, rgba(23,20,18,.98), rgba(105,12,17,.96));
+  border-bottom: 1px solid rgba(255,255,255,.28);
+}
 .nav-wrap {
   min-height: 106px;
   display: flex;
@@ -327,9 +334,7 @@ img { max-width: 100%; }
   justify-content: space-between;
   gap: 1.5rem;
   padding-block: .65rem;
-  border-bottom: 1px solid rgba(255,255,255,.28);
 }
-.inner-header .nav-wrap { background: linear-gradient(90deg, rgba(23,20,18,.98), rgba(105,12,17,.96)); }
 .brand { display: inline-flex; align-items: center; }
 .brand img {
   width: 156px;

@@ -14,7 +14,7 @@ export default function OffersPage() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <section className="inner-hero">
           <div className="shell">

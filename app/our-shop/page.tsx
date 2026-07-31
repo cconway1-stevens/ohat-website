@@ -21,7 +21,7 @@ export default function OurShopPage() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <section className="inner-hero story-hero">
           <div className="shell">

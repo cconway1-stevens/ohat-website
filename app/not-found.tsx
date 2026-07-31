@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <section className="repair-ticket repair-ticket-1">
           <div className="shell repair-ticket-grid">

@@ -42,7 +42,7 @@ export default function ReviewsPage() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <section className="inner-hero reviews-hero">
           <div className="shell reviews-hero-grid">

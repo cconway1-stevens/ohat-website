@@ -34,9 +34,12 @@ export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {
   );
 }
 
-export function SiteHeader({ inner = false }: { inner?: boolean }) {
+// One masthead for every page. The nav band spans the full viewport while its
+// contents ride the shell grid — painting the background directly on the
+// shell element left the page background bleeding down both sides.
+export function SiteHeader() {
   return (
-    <header className={`site-header${inner ? " inner-header" : ""}`}>
+    <header className="site-header">
       <div className="garage-strip">
         <DirectionsTrigger className="directions-menu-trigger">
           {addressDisplay} <span aria-hidden="true">▾</span>
@@ -46,41 +49,43 @@ export function SiteHeader({ inner = false }: { inner?: boolean }) {
           <span aria-hidden="true">☎︎</span> {phoneDisplay}
         </a>
       </div>
-      <div className="shell nav-wrap">
-        <BrandMark />
-        <nav className="desktop-nav" aria-label="Primary navigation">
-          {primaryLinks.map((item) => (
-            <Link href={item.href} key={item.href}>
-              <small>{item.number}</small> {item.label}
-            </Link>
-          ))}
-        </nav>
-        <a className="button button-small retro-call-button" href={phoneHref}>
-          <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
-          <span>
-            <small>Mechanic on the line</small>
-            <strong>Call the garage</strong>
-          </span>
-        </a>
-        <details className="mobile-menu">
-          <summary aria-label="Open navigation">Menu</summary>
-          <nav aria-label="Mobile navigation">
+      <div className="nav-band">
+        <div className="shell nav-wrap">
+          <BrandMark />
+          <nav className="desktop-nav" aria-label="Primary navigation">
             {primaryLinks.map((item) => (
               <Link href={item.href} key={item.href}>
-                <span><small>{item.number}</small>{item.label}</span>
-                <em>{item.note}</em>
+                <small>{item.number}</small> {item.label}
               </Link>
             ))}
-            <a className="mobile-menu-contact" href="/contact-card.vcf" download>
-              <span><small>07</small>Save our contact</span>
-              <em>Add the garage to your phone</em>
-            </a>
-            <a className="mobile-menu-call" href={phoneHref}>
-              <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
-              <span><small>Mechanic on the line</small><strong>{phoneDisplay}</strong></span>
-            </a>
           </nav>
-        </details>
+          <a className="button button-small retro-call-button" href={phoneHref}>
+            <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
+            <span>
+              <small>Mechanic on the line</small>
+              <strong>Call the garage</strong>
+            </span>
+          </a>
+          <details className="mobile-menu">
+            <summary aria-label="Open navigation">Menu</summary>
+            <nav aria-label="Mobile navigation">
+              {primaryLinks.map((item) => (
+                <Link href={item.href} key={item.href}>
+                  <span><small>{item.number}</small>{item.label}</span>
+                  <em>{item.note}</em>
+                </Link>
+              ))}
+              <a className="mobile-menu-contact" href="/contact-card.vcf" download>
+                <span><small>07</small>Save our contact</span>
+                <em>Add the garage to your phone</em>
+              </a>
+              <a className="mobile-menu-call" href={phoneHref}>
+                <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
+                <span><small>Mechanic on the line</small><strong>{phoneDisplay}</strong></span>
+              </a>
+            </nav>
+          </details>
+        </div>
       </div>
       <aside className="booking-dock" aria-label="Quick shop actions">
         <a className="booking-phone" href={phoneHref} aria-label={`Call Ocean Heights Auto and Tire at ${phoneDisplay}`}>

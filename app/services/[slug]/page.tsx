@@ -91,7 +91,7 @@ export default async function ServicePage({
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader inner />
+      <SiteHeader />
       <main id="main-content">
         <script
           type="application/ld+json"
