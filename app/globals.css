@@ -1682,13 +1682,6 @@ img { max-width: 100%; }
 .contact-receipts strong { word-break: break-all; }
 .contact-receipts-note { font-size: .82rem; }
 
-.arcade-offer-section { background: var(--cream); }
-.arcade-offer-section h2 { margin: .3rem 0 1rem; font-family: Georgia, serif; font-size: clamp(2rem, 5vw, 3.4rem); line-height: .98; }
-.arcade-offer-section p { max-width: 62ch; color: var(--muted); line-height: 1.65; }
-.arcade-offer-section b { padding: .1rem .45rem; border: 2px dashed var(--ink); background: var(--paper); color: var(--ink); font-family: Georgia, serif; letter-spacing: .1em; }
-.offer-terms { font-size: .8rem; }
-.arcade-offer-section .button { margin-top: 1.2rem; }
-
 /* Arcade prize + confetti */
 .prize-popup-backdrop {
   position: fixed;
