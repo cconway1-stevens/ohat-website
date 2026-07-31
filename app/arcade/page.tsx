@@ -6,6 +6,14 @@ import { arcadeCategories, arcadeGames } from "@/lib/arcade";
 // was added.
 const COUNT = ["zero","one","two","three","four","five","six","seven","eight"][arcadeGames.length] ?? String(arcadeGames.length);
 
+// Cabinets render grouped by category, so number them in that visible order
+// instead of their storage order in the game roster.
+const cabinetNumbers = new Map(
+  arcadeCategories
+    .flatMap((group) => arcadeGames.filter((game) => game.category === group.id))
+    .map((game, index) => [game.slug, String(index + 1).padStart(2, "0")]),
+);
+
 export const metadata: Metadata = {
   title: "The Garage Arcade",
   description:
@@ -56,7 +64,7 @@ export default function ArcadePage() {
                       href={`/arcade/${game.slug}`}
                     >
                       <span className="arcade-cabinet-number" aria-hidden="true">
-                        {String(arcadeGames.indexOf(game) + 1).padStart(2, "0")}
+                        {cabinetNumbers.get(game.slug)}
                       </span>
                       <span className="arcade-cabinet-glyph" aria-hidden="true">
                         {game.glyph}
