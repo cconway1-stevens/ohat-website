@@ -6,6 +6,7 @@ import {
   addressDisplay,
   DirectionsTrigger,
 } from "./directions-dialog";
+import { ShopAlmanac } from "./shop-almanac";
 
 export const phoneDisplay = "(609) 241-1546";
 export const phoneHref = "tel:+16092411546";
@@ -44,7 +45,7 @@ export function SiteHeader() {
         <DirectionsTrigger className="directions-menu-trigger">
           {addressDisplay} <span aria-hidden="true">▾</span>
         </DirectionsTrigger>
-        <span>Egg Harbor Township, New Jersey</span>
+        <ShopAlmanac />
         <a className="garage-strip-phone" href={phoneHref}>
           <span aria-hidden="true">☎︎</span> {phoneDisplay}
         </a>
