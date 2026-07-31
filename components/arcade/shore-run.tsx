@@ -111,11 +111,6 @@ export function ShoreRun() {
     soundOn.current = sound;
   }, [sound]);
 
-  useEffect(() => {
-    if (!running || !sound) return;
-    return garageAudio.startCruise();
-  }, [running, sound]);
-
   function jump() {
     const g = game.current;
     if (!runningRef.current || !g.onGround) return;
