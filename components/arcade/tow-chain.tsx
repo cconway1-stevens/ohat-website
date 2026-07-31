@@ -180,6 +180,7 @@ export function TowChain() {
     setBest(readBest());
     setScore(0);
     setOver(false);
+    setWon(false);
     if (soundOn.current) garageAudio.ignition();
     runningRef.current = true;
     setRunning(true);
@@ -214,12 +215,14 @@ export function TowChain() {
       </div>
       <p className="match-game-status" role="status">
         {running
-          ? `Hook the stranded cars — arrows or swipe. ${Math.max(0, CARS_TO_WIN - score)} more for the prize.`
+          ? won
+            ? "Prize earned - keep towing. We'll show it when the shift ends."
+            : `Hook the stranded cars — arrows or swipe. ${Math.max(0, CARS_TO_WIN - score)} more for the prize.`
           : over
             ? `Shift over: ${score} car${score === 1 ? "" : "s"} towed back to the shop.`
             : `Every pickup makes the chain longer. Tow ${CARS_TO_WIN} to win a coupon.`}
       </p>
-      {won ? <PrizeBanner achievement={`${CARS_TO_WIN} cars towed in one shift.`} /> : null}
+      {won && over ? <PrizeBanner achievement={`${CARS_TO_WIN} cars towed in one shift.`} /> : null}
       <canvas
         ref={canvasRef}
         className="tow-chain-lot"
