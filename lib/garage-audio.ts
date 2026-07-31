@@ -214,7 +214,58 @@ const BEDS: Record<AmbienceLayer, { hz: number; q: number; type: BiquadFilterTyp
 
 const live = new Map<AmbienceLayer, Bed>();
 
+// The card table needs more than a bright hiss. This is a deliberately quiet
+// room tone: muffled conversation-like movement, a low lounge chord, and no
+// borrowed casino recording or recognisable music.
+function makeCasinoBed(audio: AudioContext): Bed {
+  const master = audio.createGain();
+  master.gain.value = 0;
+  master.connect(audio.destination);
+
+  const samples = audio.sampleRate * 3;
+  const buffer = audio.createBuffer(1, samples, audio.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < samples; i += 1) data[i] = Math.random() * 2 - 1;
+  const room = audio.createBufferSource();
+  room.buffer = buffer;
+  room.loop = true;
+  const roomFilter = audio.createBiquadFilter();
+  roomFilter.type = "bandpass";
+  roomFilter.frequency.value = 720;
+  roomFilter.Q.value = 0.45;
+  const roomGain = audio.createGain();
+  roomGain.gain.value = 0.22;
+  room.connect(roomFilter).connect(roomGain).connect(master);
+
+  const voices: OscillatorNode[] = [];
+  for (const frequency of [147, 220, 294]) {
+    const voice = audio.createOscillator();
+    voice.type = "triangle";
+    voice.frequency.value = frequency;
+    const tone = audio.createBiquadFilter();
+    tone.type = "lowpass";
+    tone.frequency.value = 860;
+    const voiceGain = audio.createGain();
+    voiceGain.gain.value = 0.024;
+    voice.connect(tone).connect(voiceGain).connect(master);
+    voice.start();
+    voices.push(voice);
+  }
+
+  room.start();
+  return {
+    gain: master,
+    stop: () => {
+      try { room.stop(); } catch { /* already stopped */ }
+      for (const voice of voices) {
+        try { voice.stop(); } catch { /* already stopped */ }
+      }
+    },
+  };
+}
+
 function makeBed(audio: AudioContext, layer: AmbienceLayer): Bed {
+  if (layer === "casino") return makeCasinoBed(audio);
   const spec = BEDS[layer];
   // Two seconds of noise, looped — long enough that the loop point is
   // inaudible, short enough to build instantly.
