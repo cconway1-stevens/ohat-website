@@ -1732,31 +1732,117 @@ img { max-width: 100%; }
 .game-board-note a { color: var(--red); font-weight: 900; }
 
 /* Arcade hub cabinets */
-.arcade-cabinets { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.1rem; }
+.arcade-lobby-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: end;
+  max-width: 1080px;
+  margin: 0 auto 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 3px solid var(--ink);
+}
+.arcade-lobby-heading .eyebrow { margin: 0 0 .45rem; }
+.arcade-lobby-heading h2 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: clamp(1.85rem, 3.5vw, 3rem);
+  line-height: .98;
+  letter-spacing: -.025em;
+}
+.arcade-lobby-heading > p {
+  max-width: 365px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.arcade-cabinets {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(.9rem, 2vw, 1.3rem);
+  max-width: 1080px;
+  margin-inline: auto;
+}
 .arcade-cabinet {
   position: relative;
   display: grid;
-  gap: .45rem;
+  grid-column: span 2;
+  grid-template-rows: auto auto 1fr auto;
+  gap: .8rem;
   justify-items: start;
-  padding: 1.6rem 1.5rem 1.4rem;
+  min-height: 280px;
+  padding: 1.35rem 1.35rem 1.2rem;
   border: 4px solid var(--ink);
   background: var(--paper);
   box-shadow: 8px 8px 0 var(--ink);
   color: inherit;
+  overflow: hidden;
   transition: transform .18s ease, box-shadow .18s ease;
+}
+.arcade-cabinet::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 54px;
+  height: 10px;
+  background: var(--red);
 }
 .arcade-cabinet:nth-child(2) { background: var(--yellow); }
 .arcade-cabinet:nth-child(3) { background: var(--blue); color: #fff; }
 .arcade-cabinet:nth-child(4) { background: var(--red); color: #fff; }
 .arcade-cabinet:nth-child(5) { background: var(--yellow-tint); }
+.arcade-cabinet:nth-child(3)::before { background: var(--yellow); }
+.arcade-cabinet:nth-child(4)::before { background: var(--paper); }
+.arcade-cabinet:nth-child(5)::before { background: var(--blue); }
+.arcade-cabinet:nth-child(4) { grid-column: 2 / span 2; }
+.arcade-cabinet:nth-child(5) { grid-column: 4 / span 2; }
 .arcade-cabinet:hover { transform: translateY(-6px) rotate(-.6deg); box-shadow: 12px 12px 0 var(--red); }
 .arcade-cabinet:nth-child(4):hover { box-shadow: 12px 12px 0 var(--yellow); }
 .arcade-cabinet-number { font-size: .65rem; font-weight: 950; letter-spacing: .16em; color: currentColor; opacity: .6; }
-.arcade-cabinet-glyph { display: grid; place-items: center; width: 46px; height: 46px; border: 3px solid currentColor; border-radius: 50%; font-size: 1.3rem; font-weight: 900; }
-.arcade-cabinet strong { font-family: Georgia, serif; font-size: 1.75rem; letter-spacing: -.02em; }
+.arcade-cabinet-glyph {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+.arcade-cabinet-copy { display: grid; gap: .55rem; align-self: center; }
+.arcade-cabinet strong { font-family: Georgia, serif; font-size: clamp(1.65rem, 2.4vw, 2.1rem); line-height: .96; letter-spacing: -.025em; }
 .arcade-cabinet p { margin: 0; opacity: .82; line-height: 1.45; }
-.arcade-cabinet small { font-size: .62rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; opacity: .65; }
-.arcade-cabinet b { margin-top: .4rem; font-size: .78rem; font-weight: 950; text-decoration: underline; text-underline-offset: 4px; }
+.arcade-cabinet-footer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: .65rem;
+  align-items: end;
+  padding-top: .75rem;
+  border-top: 2px solid currentColor;
+}
+.arcade-cabinet small { font-size: .6rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; opacity: .65; }
+.arcade-cabinet b { font-size: .78rem; font-weight: 950; white-space: nowrap; }
+.arcade-cabinet b span { display: inline-block; margin-left: .2rem; transition: transform .18s ease; }
+.arcade-cabinet:hover b span { transform: translateX(4px); }
+
+@media (max-width: 900px) {
+  .arcade-cabinets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .arcade-cabinet,
+  .arcade-cabinet:nth-child(4),
+  .arcade-cabinet:nth-child(5) { grid-column: auto; }
+  .arcade-cabinet:nth-child(5) { grid-column: 1 / -1; width: min(100%, 360px); justify-self: center; }
+}
+
+@media (max-width: 600px) {
+  .arcade-lobby-heading { display: grid; gap: .75rem; align-items: start; }
+  .arcade-cabinets { grid-template-columns: minmax(0, 1fr); }
+  .arcade-cabinet,
+  .arcade-cabinet:nth-child(4),
+  .arcade-cabinet:nth-child(5) { grid-column: auto; width: 100%; }
+  .arcade-cabinet { min-height: 244px; }
+}
 
 /* Rail to the other cabinets under each game */
 .arcade-rail { display: flex; flex-wrap: wrap; align-items: baseline; gap: .7rem 1.1rem; margin-top: 2rem; padding-top: 1.2rem; border-top: 3px double rgba(23,20,18,.25); }

@@ -25,6 +25,13 @@ export default function ArcadePage() {
       </section>
       <section className="section game-board">
         <div className="shell">
+          <div className="arcade-lobby-heading">
+            <div>
+              <p className="eyebrow">Choose a cabinet</p>
+              <h2>Pick a game. Park for a minute.</h2>
+            </div>
+            <p>Five quick car games, built for a short wait and a little friendly competition.</p>
+          </div>
           <div className="arcade-cabinets">
             {arcadeGames.map((game, index) => (
               <Link
@@ -35,11 +42,17 @@ export default function ArcadePage() {
                 <span className="arcade-cabinet-number" aria-hidden="true">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <span className="arcade-cabinet-glyph" aria-hidden="true">{game.glyph}</span>
-                <strong>{game.name}</strong>
-                <p>{game.tagline}</p>
-                <small>A garage take on {game.classic}</small>
-                <b aria-hidden="true">Insert no coins →</b>
+                <span className="arcade-cabinet-glyph" aria-hidden="true">
+                  {game.glyph}
+                </span>
+                <div className="arcade-cabinet-copy">
+                  <strong>{game.name}</strong>
+                  <p>{game.tagline}</p>
+                </div>
+                <div className="arcade-cabinet-footer">
+                  <small>Garage {game.classic}</small>
+                  <b aria-hidden="true">Play now <span>→</span></b>
+                </div>
               </Link>
             ))}
           </div>
