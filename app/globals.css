@@ -131,7 +131,7 @@ img { max-width: 100%; }
    text it sits beside rather than a feature of its own. */
 .garage-almanac { display: inline-flex; align-items: baseline; gap: .42rem; white-space: nowrap; }
 .garage-almanac-rule { color: var(--red); }
-.garage-almanac-reading { font-variant-numeric: tabular-nums; }
+.garage-almanac-reading { font-variant-numeric: tabular-nums; text-decoration: underline dotted; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 .garage-strip-phone { justify-self: end; }
 .garage-strip a { transition: color .18s ease; }
 .garage-strip a:hover { color: var(--red); }
