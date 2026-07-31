@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DirectionsTrigger } from "./directions-dialog";
 import { MakerRibbon } from "./maker-ribbon";
+import { DockVisibility } from "./dock-visibility";
 import { shop } from "@/lib/shop";
 import { BrandMark, phoneDisplay, phoneHref } from "./site-header";
 
@@ -84,7 +85,11 @@ export function SiteFooter() {
           <span>© {new Date().getFullYear()} {shop.name}</span>
           <span>All makes &amp; models · Gas · Diesel · Hybrid · Electric</span>
         </div>
+        {/* Watched by DockVisibility so the floating call dock steps aside
+            once the bottom of the footer is on screen. */}
+        <div id="footer-end" aria-hidden="true" />
         <MakerRibbon />
+        <DockVisibility />
       </footer>
     </>
   );
