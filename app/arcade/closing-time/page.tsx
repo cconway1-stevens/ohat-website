@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
 import { ArcadeFrame } from "@/components/arcade/arcade-frame";
-import { CozyGarage } from "@/components/arcade/cozy-garage";
+import { ClosingTime } from "@/components/arcade/cozy/closing-time";
 
-export const metadata: Metadata = { title: "Closing Time Garage - Garage Arcade", description: "A quiet after-hours garage scene from the Ocean Heights arcade." };
+export const metadata: Metadata = {
+  title: "Closing Time Garage - Garage Arcade",
+  description: "Dim the bays, put the carts away and listen to the rain in the Ocean Heights after-hours garage.",
+  alternates: { canonical: "/arcade/closing-time" },
+};
 
 export default function ClosingTimePage() {
-  return <ArcadeFrame slug="closing-time" lede="A quiet after-hours garage scene. There is nothing to win - just settle in and tap what catches your eye."><CozyGarage scene="closing-time" /></ArcadeFrame>;
+  return (
+    <ArcadeFrame
+      slug="closing-time"
+      lede="A quiet after-hours garage. Dim the bays, roll the tool carts back, pull the door down — or leave it open and listen to the rain. Nothing here is scored."
+    >
+      <ClosingTime />
+    </ArcadeFrame>
+  );
 }
