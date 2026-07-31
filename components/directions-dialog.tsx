@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { shop } from "@/lib/shop";
+import { ShopHoursStatus } from "./shop-hours-status";
 
 export const addressDisplay = shop.address.street;
 export const addressFull = shop.address.full;
@@ -139,6 +140,7 @@ export function DirectionsTrigger({
             Open {shop.hours.compact} · Lost?{" "}
             <a href={shop.phone.href}>Call {shop.phone.display}</a>
           </p>
+          <ShopHoursStatus />
         </div>
       </dialog>
     </>
