@@ -40,11 +40,11 @@ export default function LinksPage() {
 
         <nav className="link-hub-list" aria-label="Ocean Heights quick links">
           <a className="link-hub-primary" href={phoneHref}>
-            <span aria-hidden="true">☎</span>
+            <span aria-hidden="true">☎︎</span>
             <span><strong>Call to book a bay</strong><small>{phoneDisplay}</small></span>
           </a>
           <DirectionsTrigger className="link-hub-directions">
-            <span aria-hidden="true">↗</span>
+            <span aria-hidden="true">↗︎</span>
             <span><strong>Get directions</strong><small>1178 Ocean Heights Avenue</small></span>
           </DirectionsTrigger>
           <a href="/contact-card.vcf" download>

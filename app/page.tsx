@@ -108,7 +108,7 @@ export default function Home() {
                   Call {phoneDisplay}
                 </a>
                 <DirectionsTrigger className="button button-ghost">
-                  Get directions <span aria-hidden="true">↗</span>
+                  Get directions <span aria-hidden="true">↗︎</span>
                 </DirectionsTrigger>
               </div>
 
@@ -170,7 +170,7 @@ export default function Home() {
                 <em>Egg Harbor Township, New Jersey</em>
               </DirectionsTrigger>
               <DirectionsTrigger className="garage-locator-trigger">
-                Get directions <span aria-hidden="true">↗</span>
+                Get directions <span aria-hidden="true">↗︎</span>
               </DirectionsTrigger>
             </div>
 
@@ -352,29 +352,39 @@ export default function Home() {
             </div>
             <ul className="ride-track" aria-label="Vehicle types we service">
               <li>
-                <span aria-hidden="true">⛽</span>
-                <strong>Gas</strong>
-                <small>Everyday heroes</small>
+                <Link href="/services/oil-maintenance">
+                  <span aria-hidden="true">G</span>
+                  <strong>Gas</strong>
+                  <small>Everyday heroes</small>
+                </Link>
               </li>
               <li>
-                <span aria-hidden="true">⚡</span>
-                <strong>Electric</strong>
-                <small>New-school spark</small>
+                <Link href="/services/hybrid-ev-service">
+                  <span aria-hidden="true">⌁</span>
+                  <strong>Electric</strong>
+                  <small>New-school spark</small>
+                </Link>
               </li>
               <li>
-                <span aria-hidden="true">◐</span>
-                <strong>Hybrid</strong>
-                <small>Two worlds, one shop</small>
+                <Link href="/services/hybrid-ev-service">
+                  <span aria-hidden="true">◐</span>
+                  <strong>Hybrid</strong>
+                  <small>Two worlds, one shop</small>
+                </Link>
               </li>
               <li>
-                <span aria-hidden="true">D</span>
-                <strong>Diesel</strong>
-                <small>Workday muscle</small>
+                <Link href="/services/diesel-service">
+                  <span aria-hidden="true">D</span>
+                  <strong>Diesel</strong>
+                  <small>Workday muscle</small>
+                </Link>
               </li>
               <li>
-                <span aria-hidden="true">★</span>
-                <strong>Classics</strong>
-                <small>Forever cars welcome</small>
+                <Link href="/services">
+                  <span aria-hidden="true">★</span>
+                  <strong>Classics</strong>
+                  <small>Forever cars welcome</small>
+                </Link>
               </li>
             </ul>
             <div className="driveway-callout">
@@ -410,7 +420,7 @@ export default function Home() {
                 repairs done with care.
               </p>
               <a className="button button-ghost" href={carfaxUrl}>
-                Read verified CARFAX reviews <span aria-hidden="true">↗</span>
+                Read verified CARFAX reviews <span aria-hidden="true">↗︎</span>
               </a>
             </div>
           </div>
@@ -469,7 +479,7 @@ export default function Home() {
                   Call {phoneDisplay}
                 </a>
                 <DirectionsTrigger className="button button-ghost">
-                  Get directions <span aria-hidden="true">↗</span>
+                  Get directions <span aria-hidden="true">↗︎</span>
                 </DirectionsTrigger>
               </div>
             </div>
