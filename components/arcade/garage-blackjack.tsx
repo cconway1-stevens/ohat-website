@@ -9,6 +9,7 @@ const SUITS = ["h", "d", "c", "s"];
 type Card = { id: string; rank: string; suit: string; showingFace: boolean };
 type Hand = { cards: Card[]; cardTotal: number; blackjack: boolean };
 type Round = { dealer: Hand; player: Hand; over: boolean };
+type Score = { wins: number; losses: number; pushes: number };
 
 function drawCard(showingFace = true): Card {
   return {
@@ -111,23 +112,35 @@ export function GarageBlackjack() {
   const [round, setRound] = useState<Round | null>(null);
   const [quit, setQuit] = useState(false);
   const [casinoLobby, setCasinoLobby] = useState(false);
+  const [score, setScore] = useState<Score>({ wins: 0, losses: 0, pushes: 0 });
 
   useEffect(() => () => ambience.set("casino", 0, 0.12), []);
+
+  const recordOutcome = useCallback((completedRound: Round) => {
+    const result = roundOutcome(completedRound);
+    if (!result) return;
+    setScore((current) => result === "player"
+      ? { ...current, wins: current.wins + 1 }
+      : result === "house"
+        ? { ...current, losses: current.losses + 1 }
+        : { ...current, pushes: current.pushes + 1 });
+    if (result === "player") garageAudio.blackjackWin();
+  }, []);
 
   const deal = useCallback(() => {
     if (!round?.over && round) return;
     const nextRound = dealRound();
     setRound(nextRound);
-    if (roundOutcome(nextRound) === "player") garageAudio.blackjackWin();
+    recordOutcome(nextRound);
     setQuit(false);
-  }, [round]);
+  }, [recordOutcome, round]);
 
   const play = useCallback((move: "hit" | "stand") => {
     if (!round || round.over) return;
     const nextRound = playRound(round, move);
     setRound(nextRound);
-    if (roundOutcome(nextRound) === "player") garageAudio.blackjackWin();
-  }, [round]);
+    recordOutcome(nextRound);
+  }, [recordOutcome, round]);
 
   const leaveTable = useCallback(() => {
     setRound(null);
@@ -137,6 +150,7 @@ export function GarageBlackjack() {
   function resetSession() {
     setRound(null);
     setQuit(false);
+    setScore({ wins: 0, losses: 0, pushes: 0 });
   }
 
   const toggleCasinoLobby = useCallback(() => {
@@ -189,6 +203,11 @@ export function GarageBlackjack() {
           <h2 id="garage-blackjack-title">Garage Blackjack</h2>
         </div>
         <div className="garage-blackjack-header-actions">
+          <dl className="garage-blackjack-score" aria-label={`Session score: ${score.wins} wins, ${score.losses} losses, ${score.pushes} pushes`}>
+            <div><dt>Wins</dt><dd>{score.wins}</dd></div>
+            <div><dt>Losses</dt><dd>{score.losses}</dd></div>
+            <div><dt>Pushes</dt><dd>{score.pushes}</dd></div>
+          </dl>
           <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby} title="Press L to toggle lobby sound">
             {casinoLobby ? "Lobby sound on" : "Lobby sound off"}
           </button>
@@ -222,7 +241,7 @@ export function GarageBlackjack() {
       </div>
       <p className="garage-blackjack-keys"><b>Keys:</b> D deal, H hit, S stand, Q leave table, L lobby sound.</p>
       <p className="garage-blackjack-notice">
-        For entertainment only. Every hand is free and has no cash value. There are no chips, prizes, discounts, services, rewards, betting, wagers, winnings, or payouts.
+        For entertainment only. Every hand is free and has no cash value. The session score is display-only and unlocks nothing. There are no chips, prizes, discounts, services, rewards, betting, wagers, winnings, or payouts.
       </p>
     </section>
   );
