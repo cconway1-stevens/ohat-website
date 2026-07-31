@@ -1,11 +1,9 @@
 import { DirectionsTrigger } from "./directions-dialog";
 import { BrandMark, phoneDisplay, phoneHref } from "./site-header";
 
-const socialLinks = [
-  ["Yelp", "https://www.yelp.com/biz/ocean-heights-auto-and-tire-egg-harbor-township-2"],
-  ["Facebook", "https://www.facebook.com/OceanHeightsAuto/"],
-  ["CARFAX", "https://www.carfax.com/Reviews-Ocean-Heights-Auto-And-Tire-Egg-Harbor-Township-NJ_BLQLOZM001"],
-];
+import { profileLinks } from "@/lib/business";
+
+const socialLinks = profileLinks.map(({ name, href }) => [name, href]);
 
 export function SiteFooter() {
   return (

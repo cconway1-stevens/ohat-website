@@ -43,3 +43,7 @@ next-env.d.ts
 
 # vinext build cache (font cache bakes in machine-specific absolute paths)
 /.vinext/
+
+# generated responsive image variants + manifest
+/public/media/rs/
+/lib/image-manifest.json

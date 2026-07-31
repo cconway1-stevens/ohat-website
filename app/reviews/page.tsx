@@ -9,23 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/reviews" },
 };
 
-const profiles = [
-  {
-    name: "CARFAX",
-    href: "https://www.carfax.com/Reviews-Ocean-Heights-Auto-And-Tire-Egg-Harbor-Township-NJ_BLQLOZM001",
-    detail: "5.0-star rating across hundreds of verified reviews",
-  },
-  {
-    name: "Yelp",
-    href: "https://www.yelp.com/biz/ocean-heights-auto-and-tire-egg-harbor-township-2",
-    detail: "See the current Ocean Heights business profile",
-  },
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/OceanHeightsAuto/",
-    detail: "Follow shop news and community updates",
-  },
-];
+import { profileLinks } from "@/lib/business";
 
 const reviewThemes = [
   ["Honest answers", "Drivers repeatedly mention trust, fair recommendations, and no unnecessary repairs."],
@@ -85,7 +69,7 @@ export default function ReviewsPage() {
 
         <section className="profile-section" id="review-profiles">
           <div className="shell profile-grid">
-            {profiles.map((profile) => (
+            {profileLinks.map((profile) => (
               <a key={profile.name} href={profile.href} target="_blank" rel="noreferrer">
                 <span>View on</span>
                 <strong>{profile.name}</strong>

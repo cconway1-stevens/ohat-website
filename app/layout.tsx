@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
+import { CallTracking } from "@/components/analytics";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -71,7 +72,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} antialiased`}>{children}</body>
+      <body className={`${geistSans.variable} antialiased`}>
+        {children}
+        <CallTracking />
+        {/* Vercel Web Analytics: cookieless, no consent banner needed, and a
+            404 on any other host rather than an error. */}
+        <script defer src="/_vercel/insights/script.js" />
+      </body>
     </html>
   );
 }

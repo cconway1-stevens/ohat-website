@@ -38,9 +38,11 @@ export function DirectionsTrigger({
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    function closeOnBackdrop(event: MouseEvent) {
+    // An arrow const rather than a hoisted `function`, so the null check above
+    // still narrows `dialog` inside the handler.
+    const closeOnBackdrop = (event: MouseEvent) => {
       if (event.target === dialog) dialog.close();
-    }
+    };
 
     dialog.addEventListener("click", closeOnBackdrop);
     return () => dialog.removeEventListener("click", closeOnBackdrop);

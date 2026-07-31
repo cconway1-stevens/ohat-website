@@ -67,6 +67,30 @@ export default function ContactPage() {
           </div>
         </section>
 
+        <section className="shop-map-section" aria-labelledby="shop-map-title">
+          <div className="shell">
+            <p className="eyebrow dark">Find the garage</p>
+            <h2 id="shop-map-title">Look for the sign on Ocean Heights Avenue.</h2>
+            <figure className="shop-map">
+              <div className="shop-map-frame">
+                <iframe
+                  title="Map showing Ocean Heights Auto & Tire at 1178 Ocean Heights Avenue, Egg Harbor Township, New Jersey"
+                  src="https://maps.google.com/maps?q=1178%20Ocean%20Heights%20Avenue%2C%20Egg%20Harbor%20Township%2C%20NJ%2008234&z=15&output=embed"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              </div>
+              <figcaption>
+                <span>Map · 1178 Ocean Heights Avenue</span>
+                <DirectionsTrigger className="shop-map-cta">
+                  Open in your maps app <span aria-hidden="true">↗︎</span>
+                </DirectionsTrigger>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
         <section className="directions-band">
           <div className="shell">
             <div>
