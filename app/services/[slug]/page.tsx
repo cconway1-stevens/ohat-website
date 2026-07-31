@@ -54,6 +54,30 @@ export default async function ServicePage({
       },
     },
   };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://oceanheightsautorepair.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Services",
+        item: "https://oceanheightsautorepair.com/services",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: service.name,
+        item: `https://oceanheightsautorepair.com/services/${service.slug}`,
+      },
+    ],
+  };
   const serviceNumber = String(
     services.findIndex((item) => item.slug === service.slug) + 1,
   ).padStart(2, "0");
@@ -66,6 +90,10 @@ export default async function ServicePage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
         <section className={`repair-ticket repair-ticket-${Number(serviceNumber) % 4}`}>
           <div className="shell repair-ticket-grid">

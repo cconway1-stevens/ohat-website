@@ -126,6 +126,10 @@ export function DirectionsTrigger({
               <small>Full street address</small>
             </button>
           </div>
+          <p className="directions-dialog-hours">
+            Open Monday–Friday · 8:00 AM–5:00 PM · Lost?{" "}
+            <a href="tel:+16092411546">Call (609) 241-1546</a>
+          </p>
         </div>
       </dialog>
     </>

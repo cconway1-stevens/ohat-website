@@ -13,7 +13,7 @@ const profiles = [
   {
     name: "CARFAX",
     href: "https://www.carfax.com/Reviews-Ocean-Heights-Auto-And-Tire-Egg-Harbor-Township-NJ_BLQLOZM001",
-    detail: "5.0 from 498 verified reviews, observed July 30, 2026",
+    detail: "5.0-star rating across hundreds of verified reviews",
   },
   {
     name: "Yelp",
@@ -90,7 +90,7 @@ export default function ReviewsPage() {
                 <span>View on</span>
                 <strong>{profile.name}</strong>
                 <p>{profile.detail}</p>
-                <b>Open profile ↗</b>
+                <b>Open profile ↗<span className="sr-only"> (opens in a new tab)</span></b>
               </a>
             ))}
           </div>
