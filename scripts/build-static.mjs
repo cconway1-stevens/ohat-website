@@ -142,6 +142,10 @@ copyFileSync(join(OUT_DIR, "index.rsc"), join(OUT_DIR, ".rsc"));
 
 // Derive the sitemap from what was actually emitted so it cannot drift from
 // the routes that exist. Legacy redirects and the 404 stay out of it.
+// Pages that deliberately carry `noindex`. Listing a noindex URL in the
+// sitemap asks Google to crawl something it is then told not to index.
+const NOINDEX_ROUTES = new Set(["/logo-match"]);
+
 const routes = htmlFiles
   .map(
     (file) =>
@@ -153,6 +157,7 @@ const routes = htmlFiles
         .replace(/\.html$/, ""),
   )
   .filter((route) => route !== "/404")
+  .filter((route) => !NOINDEX_ROUTES.has(route))
   .filter((route) => !(route.slice(1) in LEGACY_REDIRECTS))
   .sort((a, b) => a.length - b.length || a.localeCompare(b));
 

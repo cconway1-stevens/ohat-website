@@ -8,34 +8,10 @@ import {
 } from "@/components/site-header";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { services } from "@/lib/services";
+import { MakeGrid } from "@/components/make-grid";
+import { brandSrc, heroMakes } from "@/lib/makes";
 
 import { carfaxUrl, sameAs } from "@/lib/business";
-
-const makes = [
-  "Toyota", "Ford", "Honda", "Chevrolet", "Jeep", "Nissan", "Subaru",
-  "Volkswagen", "BMW", "Audi", "Kia", "Hyundai", "Mazda", "Volvo",
-  "Tesla", "Acura", "Cadillac", "Chrysler", "Mitsubishi", "Porsche", "Ram",
-];
-
-const heroMakes = [
-  "Toyota", "Ford", "Honda", "Chevrolet", "Jeep", "Subaru",
-  "Volkswagen", "BMW", "Audi", "Tesla", "Volvo", "Porsche",
-];
-
-function MakeLogo({ name }: { name: string }) {
-  return (
-    <li title={name}>
-      <Image
-        src={`/brands/${name.toLowerCase()}.svg`}
-        width={36}
-        height={36}
-        alt=""
-        aria-hidden="true"
-      />
-      <span>{name}</span>
-    </li>
-  );
-}
 
 export default function Home() {
   const localBusinessSchema = {
@@ -243,12 +219,7 @@ export default function Home() {
               <div className="catalog-make-track" aria-hidden="true">
                 {[...heroMakes, ...heroMakes].map((name, index) => (
                   <span className="catalog-make-logo" key={`${name}-${index}`}>
-                    <Image
-                      src={`/brands/${name.toLowerCase()}.svg`}
-                      width={40}
-                      height={40}
-                      alt=""
-                    />
+                    <Image src={brandSrc(name)} width={40} height={40} alt="" />
                     <strong>{name}</strong>
                   </span>
                 ))}
@@ -396,13 +367,16 @@ export default function Home() {
               <strong>Nearly every make. Every generation.</strong>
               <p>Bring us the commuter, the family hauler, the workhorse, or the keeper.</p>
             </div>
-            <ul className="make-grid">
-              {makes.map((name) => <MakeLogo key={name} name={name} />)}
-            </ul>
-            <p className="make-note">
-              Representative makes shown. We service virtually all makes and
-              models. Brand marks belong to their respective owners.
-            </p>
+            <MakeGrid />
+            <div className="make-note-row">
+              <p className="make-note">
+                Representative makes shown. We service virtually all makes and
+                models. Brand marks belong to their respective owners.
+              </p>
+              <Link className="make-note" href="/logo-match">
+                Play the logo match in full screen →
+              </Link>
+            </div>
           </div>
         </section>
 
