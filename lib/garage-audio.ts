@@ -116,6 +116,22 @@ export const garageAudio = {
         osc.stop(start + 0.5);
       }
     }),
+  /** Soft shop ambience, used by the no-pressure arcade scenes. */
+  hum: () => safely((audio) => voice(audio, "sine", [[0, 92], [.55, 87]], .62, .025)),
+  /** A short wash-bay burst. */
+  spray: () => safely((audio) => noise(audio, .28, 1800, .028)),
+  /** A small counter bell. */
+  chime: () =>
+    safely((audio) => {
+      voice(audio, "sine", [[0, 880]], .42, .045);
+      voice(audio, "sine", [[0, 1320]], .34, .025);
+    }),
+  /** A low radio-like flutter without shipping audio files. */
+  radio: () =>
+    safely((audio) => {
+      noise(audio, .16, 950, .018);
+      voice(audio, "triangle", [[0, 240], [.14, 310]], .18, .025);
+    }),
 };
 
 export type GarageAudio = typeof garageAudio;
