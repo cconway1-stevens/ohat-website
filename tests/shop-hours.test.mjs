@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getShopHoursStatus } from "../lib/shop-hours.mjs";
+import { getShopHoursStatus, getShopStatusLabel } from "../lib/shop-hours.mjs";
 import { shop } from "../lib/shop.mjs";
 
 test("uses configured opening and closing status windows", () => {
@@ -40,4 +40,13 @@ test("keeps ordinary weekends closed without a holiday notice", () => {
   assert.equal(status.status, "closed");
   assert.equal(status.holiday, null);
   assert.equal(status.holidayNotice, null);
+});
+
+test("configures every hold-preview sign and label", () => {
+  const preview = shop.hours.status.signPreview;
+  assert.equal(preview.holdMs, 5_000);
+  assert.ok(preview.stepMs > 0);
+  assert.ok(preview.cycles > 0);
+  assert.deepEqual(preview.states, ["opening-soon", "open", "closing-soon", "closed"]);
+  for (const state of preview.states) assert.ok(getShopStatusLabel(state));
 });
