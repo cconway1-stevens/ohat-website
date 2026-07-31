@@ -65,6 +65,14 @@ function returnsHandCost(round: Round) {
     && (round.dealer.cardTotal > 21 || round.player.cardTotal >= round.dealer.cardTotal);
 }
 
+function roundOutcome(round: Round | null) {
+  if (!round?.over) return null;
+  if (round.player.cardTotal > 21) return "house";
+  if (round.dealer.cardTotal > 21 || round.player.cardTotal > round.dealer.cardTotal) return "player";
+  if (round.player.cardTotal === round.dealer.cardTotal) return "push";
+  return "house";
+}
+
 function PlayingCard({ card }: { card: Card }) {
   const red = card.suit === "h" || card.suit === "d";
   if (!card.showingFace) return <div className="garage-blackjack-card is-hidden" aria-label="Dealer card face down">OH</div>;
@@ -128,6 +136,7 @@ export function GarageBlackjack() {
 
   const canDeal = lugNuts >= HAND_COST && (round === null || round.over);
   const availableHands = Math.ceil(lugNuts / HAND_COST);
+  const outcome = roundOutcome(round);
   const status = quit
     ? `You left the table with ${lugNuts} Lug Nuts.`
     : round
@@ -186,12 +195,17 @@ export function GarageBlackjack() {
         </div>
       </header>
       <p className="garage-blackjack-intro">You are the player. The house is the dealer. Finish closer to 21 without going over; wins and ties return the same 5 session tokens.</p>
-      {round ? <div className="garage-blackjack-table">
+      {round ? <div className={`garage-blackjack-table${outcome ? ` is-${outcome}-win` : ""}`}>
         <div className="garage-blackjack-hand is-house">
           <span><b>House</b> Dealer {round.over ? `total ${round.dealer.cardTotal}` : `showing ${round.dealer.cardTotal}`}</span>
           <div>{round.dealer.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
         </div>
-        <div className="garage-blackjack-marker" aria-hidden="true">YOU PLAY<br />THE HOUSE<br /><small>GET CLOSE TO 21</small></div>
+        <div className="garage-blackjack-marker" aria-hidden="true">
+          {outcome === "player" ? <><strong>You win</strong><small>5 Lug Nuts returned</small></> : null}
+          {outcome === "house" ? <><strong>House wins</strong><small>Try the next hand</small></> : null}
+          {outcome === "push" ? <><strong>Push</strong><small>5 Lug Nuts returned</small></> : null}
+          {!outcome ? <>YOU PLAY<br />THE HOUSE<br /><small>GET CLOSE TO 21</small></> : null}
+        </div>
         <div className="garage-blackjack-hand is-player">
           <span><b>You</b> Player total {round.player.cardTotal}</span>
           <div>{round.player.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
