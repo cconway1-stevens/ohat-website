@@ -1610,27 +1610,16 @@ img { max-width: 100%; }
   gap: .3rem;
   border: 3px solid var(--ink);
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 .match-tile-back {
-  overflow: hidden;
-  border: 0;
+  transform: rotateY(0deg);
   background: var(--red);
   color: var(--paper);
   box-shadow: none;
 }
 .match-tile .match-tile-back { box-shadow: none; }
-.match-tile-back::before,
-.match-tile-back::after {
-  display: none;
-}
-.match-card-logo {
-  position: relative;
-  z-index: 1;
-  width: min(78%, 132px);
-  height: auto;
-  object-fit: contain;
-  clip-path: ellipse(49% 47% at 50% 50%);
-}
+.match-card-mark { font-family: Georgia, serif; font-size: clamp(.72rem, 2.4vw, 1.15rem); letter-spacing: .08em; }
 .match-tile-face {
   background: var(--paper);
   color: var(--ink);
