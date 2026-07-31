@@ -116,6 +116,7 @@ export function GarageBlackjack() {
   }
 
   const canDeal = lugNuts >= HAND_COST && (round === null || round.over);
+  const availableHands = Math.ceil(lugNuts / HAND_COST);
   const status = quit
     ? `You left the table with ${lugNuts} Lug Nuts.`
     : round
@@ -132,7 +133,14 @@ export function GarageBlackjack() {
           <h2 id="garage-blackjack-title">Garage Blackjack</h2>
         </div>
         <div className="garage-blackjack-header-actions">
-          <span className="garage-blackjack-bank" aria-label={`${lugNuts} Lug Nuts remaining`}>{lugNuts} Lug Nuts</span>
+          <div className="garage-blackjack-bank" aria-label={`${lugNuts} Lug Nuts remaining, enough for ${availableHands} hand${availableHands === 1 ? "" : "s"}`}>
+            <span className="garage-lug-nut-tray" aria-hidden="true">
+              {Array.from({ length: STARTING_LUG_NUTS / HAND_COST }, (_, index) => (
+                <i className={index < availableHands ? "is-available" : ""} key={index} />
+              ))}
+            </span>
+            <span className="garage-lug-nut-copy"><b>{lugNuts}</b><small>Lug Nuts</small></span>
+          </div>
           <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby}>
             {casinoLobby ? "Lobby sound on" : "Lobby sound off"}
           </button>
