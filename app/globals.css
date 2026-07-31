@@ -1457,6 +1457,8 @@ img { max-width: 100%; }
   background: var(--paper);
   border: 3px solid var(--ink);
   box-shadow: 8px 8px 0 var(--ink);
+  /* Clearance for the hard shadow so following content never sits under it. */
+  margin-bottom: 12px;
 }
 .match-game-start p { max-width: 46ch; margin: 0; color: var(--muted); line-height: 1.6; }
 
@@ -1594,6 +1596,8 @@ img { max-width: 100%; }
 
 /* Canvas games share a frame */
 .shore-run, .tow-chain { display: grid; gap: 1rem; }
+/* Canvases keep their logical resolution but scale to the screen, capped so
+   a desktop viewport doesn't blow the pixels up. */
 .shore-run-road, .tow-chain-lot {
   justify-self: center;
   width: min(100%, 340px);
@@ -1603,6 +1607,22 @@ img { max-width: 100%; }
   background: #2b2725;
   touch-action: none;
   cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  /* Phone-size game furniture: score boxes and controls compress so the
+     board keeps the screen, and hard shadows shrink with the tiles. */
+  .match-game-bar { gap: .55rem .9rem; }
+  .match-game-score > div { min-width: 58px; padding: .28rem .45rem; }
+  .match-game-score dd { font-size: 1rem; }
+  .match-game-controls button { padding: .45rem .7rem; font-size: .64rem; }
+  .match-tile { min-height: 60px; }
+  .match-tile-back, .match-tile-face { box-shadow: 3px 3px 0 var(--ink); }
+  .match-tile-face img { width: 26px; height: 26px; }
+  .match-tile-face small { font-size: .44rem; }
+  .drag-strip-stage { padding: 1.3rem; }
+  .drag-tree i { width: 28px; height: 28px; }
+  .arcade-cabinet { box-shadow: 6px 6px 0 var(--ink); }
 }
 
 .award-section { position: relative; padding: 9rem 0 7rem; background: var(--red); color: #fff; }

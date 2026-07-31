@@ -43,26 +43,29 @@ export function MakeGrid() {
   return (
     <>
       {/* Caption-weight controls so the logo wall, not its chrome, stays the
-          point of this section. */}
+          point of this section. The ordering pair applies only to the wall,
+          so game mode hides it rather than showing dead controls. */}
       <div className="make-grid-tools">
-        <div className="make-order" role="group" aria-label="Order the logo wall">
-          <button
-            type="button"
-            className="make-game-toggle"
-            aria-pressed={order === "shuffled"}
-            onClick={() => setOrdering("shuffled")}
-          >
-            Shuffle
-          </button>
-          <button
-            type="button"
-            className="make-game-toggle"
-            aria-pressed={order === "alphabetical"}
-            onClick={() => setOrdering("alphabetical")}
-          >
-            A–Z
-          </button>
-        </div>
+        {!playing ? (
+          <div className="make-order" role="group" aria-label="Order the logo wall">
+            <button
+              type="button"
+              className="make-game-toggle"
+              aria-pressed={order === "shuffled"}
+              onClick={() => setOrdering("shuffled")}
+            >
+              Shuffle
+            </button>
+            <button
+              type="button"
+              className="make-game-toggle"
+              aria-pressed={order === "alphabetical"}
+              onClick={() => setOrdering("alphabetical")}
+            >
+              A–Z
+            </button>
+          </div>
+        ) : null}
         <button
           type="button"
           className="make-game-toggle"
@@ -90,6 +93,12 @@ export function MakeGrid() {
             ))}
           </ul>
           <p className="sr-only" aria-live="polite">Logo wall ordered {shown}.</p>
+          {/* Rendered with the wall rather than after this component, so game
+              mode never has the caption colliding with the play area. */}
+          <p className="make-note">
+            Representative makes shown. We service virtually all makes and
+            models. Brand marks belong to their respective owners.
+          </p>
         </>
       )}
     </>
