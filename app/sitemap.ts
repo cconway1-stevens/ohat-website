@@ -46,9 +46,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.85,
     },
     {
+      // A utility hub for social-profile bios, not a page meant to rank —
+      // /contact and the service pages carry those queries.
       url: `${baseUrl}/links`,
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.5,
     },
     ...servicePages,
   ];

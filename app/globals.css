@@ -1002,6 +1002,27 @@ img { max-width: 100%; }
   text-wrap: balance;
 }
 .link-hub-intro { max-width: 470px; margin: 1rem auto 1.5rem; color: var(--muted); line-height: 1.5; }
+/* Grouped sections: a labelled band per intent, so the eye sorts the list
+   instead of scanning nine identical tiles. */
+.link-hub-group { display: grid; gap: .55rem; margin-bottom: 1.4rem; text-align: left; }
+.link-hub-group-label {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 0;
+  color: var(--red);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: .62rem;
+  font-weight: 950;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+.link-hub-group-label::after {
+  content: "";
+  flex: 1;
+  height: 3px;
+  border-top: 3px double rgba(168,22,28,.34);
+}
 .link-hub-list { display: grid; gap: .7rem; }
 .link-hub-list a,
 .link-hub-list button {
@@ -1045,6 +1066,50 @@ img { max-width: 100%; }
    tile's white text colour. */
 .link-hub-list .link-hub-primary > span:first-child { color: var(--ink); }
 .link-hub-list .link-hub-primary small { color: #ffe9bb; }
+/* The four review and social profiles, compacted into one row of chips. */
+.link-hub-socials { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+.link-hub-socials a {
+  display: grid;
+  justify-items: center;
+  gap: .38rem;
+  padding: .7rem .25rem .6rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: inherit;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.link-hub-socials a:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
+.link-hub-socials span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 900;
+  transition: transform .18s ease;
+}
+.link-hub-socials a:hover span { transform: rotate(-9deg) scale(1.08); }
+.link-hub-socials small { font-size: .62rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+
+/* A staggered settle on arrival, and a nudge on the icon disc when a tile is
+   hovered. The global prefers-reduced-motion rule flattens both. */
+@keyframes link-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.link-hub-group { animation: link-rise .5s ease-out both; }
+.link-hub-group:nth-of-type(1) { animation-delay: .16s; }
+.link-hub-group:nth-of-type(2) { animation-delay: .27s; }
+.link-hub-group:nth-of-type(3) { animation-delay: .38s; }
+.link-hub-list a > span:first-child,
+.link-hub-list button > span:first-child { transition: transform .18s ease; }
+.link-hub-list a:not(.link-hub-primary):hover > span:first-child,
+.link-hub-list button:hover > span:first-child { transform: rotate(-9deg) scale(1.08); }
+/* The call tile rings instead of tilting, matching the header's call button. */
+.link-hub-list .link-hub-primary:hover > span:first-child { animation: phone-ring .45s ease-in-out 2; }
+
 .link-hub-hours { margin: 1.5rem 0 .7rem; font-size: .7rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
 .link-hub-home { font-size: .75rem; font-weight: 900; text-decoration: underline; text-underline-offset: .25rem; }
 
@@ -2299,6 +2364,9 @@ img { max-width: 100%; }
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: .01ms !important;
+    /* Without this, a staggered entrance still holds its `from` state for the
+       length of the delay — the motion is gone but the content flashes in. */
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
