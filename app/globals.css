@@ -3644,6 +3644,27 @@ body.is-play-locked {
 .pos-change b { color: #f6bd38; }
 .pos .cozy-actions button { background: #cfe8d6; }
 .pos .cozy-actions button.is-on { background: #8fe0a0; }
+.cash-drawer { display: grid; gap: .65rem; padding-top: .7rem; border-top: 1px dashed rgba(207,232,214,.45); }
+.cash-drawer-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: .5rem 1rem; }
+.cash-drawer-head p { margin: 0; }
+.cash-drawer-head > div > p { color: #8fe0a0; font-size: .68rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; }
+.cash-drawer-head > div > span { color: rgba(207,232,214,.7); font-family: ui-monospace, monospace; font-size: .62rem; }
+.cash-slots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
+.cash-slots button { min-width: 0; min-height: 54px; display: grid; place-items: center; gap: .1rem; padding: .35rem .2rem; border: 2px solid #0e1712; background: #dce9cd; box-shadow: 2px 2px 0 #0e1712; color: #172019; cursor: pointer; font: inherit; }
+.cash-slots button b { font-family: ui-monospace, monospace; font-size: .76rem; }
+.cash-slots button span { font-size: .5rem; font-weight: 850; text-transform: uppercase; }
+.cash-slots button:disabled { opacity: .32; cursor: not-allowed; }
+.change-tray { display: grid; grid-template-columns: 1fr auto; gap: .1rem 1rem; padding: .55rem .65rem; border: 2px solid rgba(207,232,214,.5); background: #17211b; font-family: ui-monospace, monospace; }
+.change-tray > span { font-size: .62rem; text-transform: uppercase; }
+.change-tray > b { color: #f6bd38; }
+.change-tray > small { grid-column: 1 / -1; color: rgba(207,232,214,.68); }
+.change-tray.is-exact { border-color: #8fe0a0; box-shadow: inset 0 0 0 2px rgba(143,224,160,.15); }
+.change-tray.is-exact > b, .change-tray.is-exact > small { color: #8fe0a0; }
+.change-breakdown { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0; }
+.change-breakdown span { padding: .2rem .4rem; border: 1px solid rgba(207,232,214,.4); font-family: ui-monospace, monospace; font-size: .58rem; }
+.cash-note { margin: 0; color: #f6bd38; font-size: .68rem; line-height: 1.45; }
+.cash-actions button:last-child { background: #f6bd38; color: #17140f; }
+@media (max-width: 600px) { .cash-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .receipt { display: flex; justify-content: center; }
 .receipt-body {
