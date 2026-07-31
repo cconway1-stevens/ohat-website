@@ -196,7 +196,7 @@ export const cozyAudio = {
 /* --- sustained beds ------------------------------------------------ */
 
 export type AmbienceLayer =
-  | "rain" | "shopHum" | "road" | "water" | "fluorescent" | "static" | "traffic";
+  | "rain" | "shopHum" | "road" | "water" | "fluorescent" | "static" | "traffic" | "casino";
 
 type Bed = { gain: GainNode; stop: () => void };
 
@@ -209,6 +209,7 @@ const BEDS: Record<AmbienceLayer, { hz: number; q: number; type: BiquadFilterTyp
   fluorescent: { hz: 240, q: 6, type: "bandpass" },
   static: { hz: 3200, q: 0.4, type: "bandpass" },
   traffic: { hz: 300, q: 1.2, type: "bandpass" },
+  casino: { hz: 1050, q: 0.65, type: "bandpass" },
 };
 
 const live = new Map<AmbienceLayer, Bed>();

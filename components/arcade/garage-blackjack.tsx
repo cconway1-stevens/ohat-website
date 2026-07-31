@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Game, GameStep } from "@blackjacktrainer/blackjack-simulator";
+import { ambience, garageAudio } from "@/lib/garage-audio";
 
 const HIT = 2;
 const STAND = 5;
@@ -45,6 +46,10 @@ function suitSymbol(suit: string) {
   return { h: "\u2665", d: "\u2666", c: "\u2663", s: "\u2660" }[suit] ?? "?";
 }
 
+function cardRank(rank: string) {
+  return rank === "T" ? "10" : rank;
+}
+
 function roundMessage(round: Round) {
   if (!round.over) return "Hit for another card or stand and let the dealer play.";
   if (round.player.cardTotal > 21) return "Busted. The service bay takes this hand.";
@@ -58,8 +63,8 @@ function PlayingCard({ card }: { card: Card }) {
   const red = card.suit === "h" || card.suit === "d";
   if (!card.showingFace) return <div className="garage-blackjack-card is-hidden" aria-label="Dealer card face down">OH</div>;
   return (
-    <div className={`garage-blackjack-card${red ? " is-red" : ""}`} aria-label={`${card.rank} of ${card.suit}`}>
-      <span>{card.rank}</span>
+    <div className={`garage-blackjack-card${red ? " is-red" : ""}`} aria-label={`${cardRank(card.rank)} of ${card.suit}`}>
+      <span>{cardRank(card.rank)}</span>
       <b>{suitSymbol(card.suit)}</b>
     </div>
   );
@@ -70,6 +75,9 @@ export function GarageBlackjack() {
   const [round, setRound] = useState<Round | null>(null);
   const [lugNuts, setLugNuts] = useState(STARTING_LUG_NUTS);
   const [quit, setQuit] = useState(false);
+  const [casinoLobby, setCasinoLobby] = useState(false);
+
+  useEffect(() => () => ambience.set("casino", 0, 0.12), []);
 
   function deal() {
     if (lugNuts < HAND_COST || (!round?.over && round)) return;
@@ -100,6 +108,13 @@ export function GarageBlackjack() {
     setQuit(false);
   }
 
+  function toggleCasinoLobby() {
+    const next = !casinoLobby;
+    setCasinoLobby(next);
+    ambience.set("casino", next ? 0.018 : 0, 0.18);
+    if (next) garageAudio.chime();
+  }
+
   const canDeal = lugNuts >= HAND_COST && (round === null || round.over);
   const status = quit
     ? `You left the table with ${lugNuts} Lug Nuts.`
@@ -118,6 +133,9 @@ export function GarageBlackjack() {
         </div>
         <div className="garage-blackjack-header-actions">
           <span className="garage-blackjack-bank" aria-label={`${lugNuts} Lug Nuts remaining`}>{lugNuts} Lug Nuts</span>
+          <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby}>
+            {casinoLobby ? "Lobby sound on" : "Lobby sound off"}
+          </button>
           <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal}>Deal hand</button>
         </div>
       </header>
