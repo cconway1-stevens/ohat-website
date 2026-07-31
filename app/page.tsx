@@ -91,9 +91,10 @@ export default function Home() {
               </p>
 
               <h1>
-                Car care, done right.
-                <em>No detours.</em>
+                Auto Repair &amp; Tire Shop
+                <em>in Egg Harbor Township, NJ</em>
               </h1>
+              <p className="cover-tagline">Car care, done right. No detours.</p>
               <p className="cover-lede">
                 Dealer-level diagnostics. Family-garage honesty. From
                 carbureted classics to brand-new EVs, every car in your
@@ -264,13 +265,14 @@ export default function Home() {
             <p>
               From routine maintenance to difficult diagnostics, our family
               takes the time to find the real problem, explain your options,
-              and fix it right. That includes recall work, so a notice in the
-              mail doesn&rsquo;t have to mean a trip to the dealership.
+              and fix it right. And if a recall notice shows up in the mail,
+              we&rsquo;ll help you check it against the official NHTSA lookup
+              and explain exactly what to do next.
             </p>
             <div className="service-preview">
               {[
                 ["Diagnostics", "Check-engine lights & complex electrical", "/services/advanced-diagnostics"],
-                ["Brakes & tires", "Safe stops, smooth rides, longer tread life", "/services/tires-alignments"],
+                ["Brakes & tires", "Safe stops, smooth rides, longer tread life", "/services/tires"],
                 ["Maintenance", "Oil, fluids, filters & factory schedules", "/services/oil-maintenance"],
               ].map(([title, copy, href], index) => (
                 <article key={title}>

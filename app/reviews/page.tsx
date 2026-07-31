@@ -9,7 +9,27 @@ export const metadata: Metadata = {
   alternates: { canonical: "/reviews" },
 };
 
-import { profileLinks } from "@/lib/business";
+import { carfaxUrl, profileLinks } from "@/lib/business";
+
+const reviewExcerpts = [
+  {
+    quote: "It's been a long time since I really trusted a place with my car.",
+    name: "Jim K.",
+    context: "Verified CARFAX review",
+  },
+  {
+    quote:
+      "You won't find a more honest and affordable mechanic in the area. They make sure our cars are fixed right.",
+    name: "Kimberly J.",
+    context: "Verified CARFAX review",
+  },
+  {
+    quote:
+      "They handled even my exacting custom camber and toe request perfectly—and took time to explain the tradeoffs.",
+    name: "Kevin B.",
+    context: "Verified CARFAX review · wheel alignment",
+  },
+];
 
 const reviewThemes = [
   ["Honest answers", "Drivers repeatedly mention trust, fair recommendations, and no unnecessary repairs."],
@@ -62,6 +82,31 @@ export default function ReviewsPage() {
                   <h3>{title}</h3>
                   <p>{copy}</p>
                 </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section reviews-section">
+          <div className="shell">
+            <div className="section-heading-row">
+              <div>
+                <p className="eyebrow dark">In their own words</p>
+                <h2>Straight from verified reviews.</h2>
+              </div>
+              <a className="text-link" href={carfaxUrl}>
+                Read the originals on CARFAX →
+              </a>
+            </div>
+            <div className="review-grid">
+              {reviewExcerpts.map((excerpt) => (
+                <blockquote key={excerpt.name}>
+                  <div aria-label="5 out of 5 stars">★★★★★</div>
+                  <p>&ldquo;{excerpt.quote}&rdquo;</p>
+                  <cite>
+                    {excerpt.name} · <a href={carfaxUrl}>{excerpt.context}</a>
+                  </cite>
+                </blockquote>
               ))}
             </div>
           </div>

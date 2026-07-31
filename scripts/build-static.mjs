@@ -26,8 +26,11 @@ const LEGACY_REDIRECTS = {
   "contact-us": "/contact",
   coupons: "/offers",
   "oil-changes": "/services/oil-maintenance",
-  "tire-rotation": "/services/tires-alignments",
-  alignments: "/services/tires-alignments",
+  "tire-rotation": "/services/tires",
+  alignments: "/services/wheel-alignment",
+  // Split into /services/tires and /services/wheel-alignment; tires is the
+  // closer match for the combined page's primary content.
+  "services/tires-alignments": "/services/tires",
 };
 
 function walk(dir) {

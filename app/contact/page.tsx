@@ -67,6 +67,27 @@ export default function ContactPage() {
           </div>
         </section>
 
+        <section className="dropoff-checklist">
+          <div className="shell checklist-grid">
+            <div>
+              <p className="eyebrow">Good to know before you visit</p>
+              <h2>What to expect at the shop.</h2>
+            </div>
+            <ul>
+              <li>Customer parking is right out front—no garage maze, no meters.</li>
+              <li>A clean, comfortable waiting area if you stay with the car.</li>
+              <li>
+                Running late or after hours? The secure key drop by the side
+                door works around the clock for scheduled service.
+              </li>
+              <li>
+                No repairs happen without your say-so—we call with findings and
+                pricing before any work is done.
+              </li>
+            </ul>
+          </div>
+        </section>
+
         <section className="shop-map-section" aria-labelledby="shop-map-title">
           <div className="shell">
             <p className="eyebrow dark">Find the garage</p>

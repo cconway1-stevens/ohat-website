@@ -11,19 +11,13 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   metadataBase: new URL("https://oceanheightsautorepair.com"),
   title: {
-    default: "Ocean Heights Auto & Tire | Auto Repair in Egg Harbor Township",
+    default: "Auto Repair & Tire Shop in Egg Harbor Township, NJ | Ocean Heights",
     template: "%s | Ocean Heights Auto & Tire",
   },
+  // Google ignores the keywords meta tag, so none is emitted here — keywords
+  // belong in titles, headings, and body copy instead.
   description:
-    "Family-owned auto repair in Egg Harbor Township, NJ. ASE-certified technicians, advanced diagnostics, tires, brakes, maintenance and service for gas, hybrid, diesel and electric vehicles.",
-  keywords: [
-    "auto repair Egg Harbor Township NJ",
-    "mechanic Egg Harbor Township",
-    "tire shop Egg Harbor Township",
-    "hybrid repair Egg Harbor Township",
-    "electric vehicle repair NJ",
-    "Ocean Heights Auto and Tire",
-  ],
+    "Family-owned auto repair and tire service in Egg Harbor Township. ASE-certified technicians for diagnostics, brakes, tires, maintenance, diesel, hybrid, EV and classic vehicles. Call Ocean Heights Auto & Tire.",
   alternates: {
     canonical: "/",
   },
