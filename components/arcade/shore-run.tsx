@@ -86,6 +86,7 @@ export function ShoreRun() {
   const [best, setBest] = useState(0);
   const [coins, setCoins] = useState(0);
   const [won, setWon] = useState(false);
+  const [reachedNight, setReachedNight] = useState(false);
   const [sound, setSound] = useState(true);
   const soundOn = useRef(true);
   const game = useRef<Game>(freshGame());
@@ -218,6 +219,7 @@ export function ShoreRun() {
       if (shouldBeNight !== g.night) {
         g.night = shouldBeNight;
         g.nightFlash = 1;
+        if (shouldBeNight) setReachedNight(true);
       }
       g.nightFlash = Math.max(0, g.nightFlash - 0.02);
 
@@ -291,6 +293,7 @@ export function ShoreRun() {
     setScore(0);
     // Coins and the prize both carry across runs on purpose.
     setOver(false);
+    setReachedNight(false);
     if (soundOn.current) garageAudio.ignition();
     setRunning(true);
   }
@@ -337,12 +340,20 @@ export function ShoreRun() {
       </div>
       <p className="match-game-status" role="status">
         {running
-          ? `Hop the tire stacks, duck the signals — ${COINS_TO_WIN - coins} more coin${COINS_TO_WIN - coins === 1 ? "" : "s"} for the prize.`
+          ? won || reachedNight
+            ? "Prize earned - keep driving. We'll show it when the run ends."
+            : `Hop the tire stacks, duck the signals - ${Math.max(0, COINS_TO_WIN - coins)} more coin${COINS_TO_WIN - coins === 1 ? "" : "s"} for the prize.`
           : over
             ? `Crunch. You made ${score} down the Shore.`
             : `Space or tap to go. Grab ${COINS_TO_WIN} coins to win a coupon.`}
       </p>
-      {won ? <PrizeBanner achievement={`${COINS_TO_WIN} coins collected on the Shore Run.`} /> : null}
+      {(won || reachedNight) && over ? (
+        <PrizeBanner
+          achievement={won
+            ? `${COINS_TO_WIN} coins collected on the Shore Run.`
+            : "You drove the Shore Run all the way into night."}
+        />
+      ) : null}
       <canvas
         ref={canvasRef}
         className="shore-run-strip"
