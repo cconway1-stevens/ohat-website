@@ -1,5 +1,5 @@
 // The arcade's game roster — one entry per cabinet, one route per game.
-export type ArcadeCategory = "word" | "puzzle" | "action";
+export type ArcadeCategory = "word" | "puzzle" | "action" | "cozy";
 
 export type ArcadeGame = {
   slug: string;
@@ -18,6 +18,7 @@ export const arcadeCategories: {
   label: string;
   blurb: string;
 }[] = [
+  { id: "cozy", label: "Cozy garage", blurb: "No score, no clock. Put on a little shop ambience and stay as long as you like." },
   { id: "word", label: "Word & clue", blurb: "Paper puzzles for a slow wait. Pick a difficulty and take your time." },
   { id: "puzzle", label: "Puzzle & memory", blurb: "Shapes and badges. Easy to start, harder to put down." },
   { id: "action", label: "Arcade action", blurb: "Thumbs and reflexes. Short rounds, scores stay on your own device." },
@@ -109,6 +110,46 @@ export const arcadePresets = {
 } as const;
 
 export const arcadeGames: ArcadeGame[] = [
+  {
+    slug: "closing-time",
+    name: "Closing Time Garage",
+    tagline: "Dim the bays, roll the cart in, and listen to the rain.",
+    classic: "ambient garage",
+    glyph: "◐",
+    category: "cozy",
+  },
+  {
+    slug: "sunday-wash",
+    name: "Sunday Car Wash",
+    tagline: "Foam, rinse, dry, and make a Sunday shine.",
+    classic: "wash bay",
+    glyph: "≈",
+    category: "cozy",
+  },
+  {
+    slug: "night-drive",
+    name: "Night Drive Home",
+    tagline: "Pick a station and drift through the evening roads.",
+    classic: "night drive",
+    glyph: "☾",
+    category: "cozy",
+  },
+  {
+    slug: "parts-counter",
+    name: "The Parts Counter",
+    tagline: "Ring a little sale, pack a part, hear the door bell.",
+    classic: "shop counter",
+    glyph: "□",
+    category: "cozy",
+  },
+  {
+    slug: "garage-radio",
+    name: "Garage Radio",
+    tagline: "Settle in, turn the dial, and watch the shop go by.",
+    classic: "waiting room",
+    glyph: "♫",
+    category: "cozy",
+  },
   {
     slug: "garage-guess",
     name: "Garage Guess",
