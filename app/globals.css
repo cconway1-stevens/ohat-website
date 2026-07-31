@@ -3189,7 +3189,7 @@ body.is-play-locked {
 
 /* Driving CTA and footer */
 .drive-cta { position: relative; overflow: hidden; background: var(--yellow); border-top: 4px solid var(--ink); }
-.drive-sky { position: relative; min-height: 315px; padding-top: 4.5rem; }
+.drive-sky { position: relative; min-height: 410px; padding: 4.5rem 0 8.5rem; }
 .drive-copy { position: relative; z-index: 3; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
 .drive-copy p { margin: 0 0 .5rem; color: var(--red-dark); font-weight: 950; letter-spacing: .13em; text-transform: uppercase; }
 .drive-cta h2 { font-size: clamp(2.4rem, 5vw, 4.8rem); }
@@ -3658,7 +3658,7 @@ body.is-play-locked {
   .gallery-grid figure, .gallery-grid figure:nth-child(3), .gallery-grid figure:nth-child(4) { min-height: 260px; transform: none; }
   .community-band .shell > span { font-size: 7rem; }
   .contact-hero-grid img { display: none; }
-  .drive-sky { min-height: 385px; }
+  .drive-sky { min-height: 430px; padding-bottom: 9rem; }
   .classic-car { animation-duration: 6s; }
   .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
   .footer-bottom { flex-direction: column; }
