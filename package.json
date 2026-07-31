@@ -22,7 +22,8 @@
     "qrcode": "^1.5.4",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "simple-icons": "^16.10.0"
+    "simple-icons": "^16.10.0",
+    "tetris-kit": "^0.0.2"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
