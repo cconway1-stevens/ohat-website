@@ -243,6 +243,13 @@ export function GarageBlackjack() {
       <p className="garage-blackjack-notice">
         For entertainment only. Every hand is free and has no cash value. The session score is display-only and unlocks nothing. There are no chips, prizes, discounts, services, rewards, betting, wagers, winnings, or payouts.
       </p>
+      <details className="garage-blackjack-legal">
+        <summary>More information</summary>
+        <p>
+          This game is designed as a free, display-only amusement. Read the current New Jersey statutory definition of gambling in
+          {" "}<a href="https://lis.njleg.state.nj.us/nxt/gateway.dll?f=xhitlist&vid=Publish%3A10.1048%2FEnu&xhitlist_d=&xhitlist_hc=%5BXML%5D%5BKwic%2C25%5D&xhitlist_mh=99999&xhitlist_q=%5BRank+100%5D%5BDomain%3A+2C%3A37-1.+Definitions%5D2C%3A37-1.+Definitions&xhitlist_s=relevance-weight&xhitlist_sel=title%3Bpath%3Brelevance-weight%3Bcontent-type%3Bhome-title%3Bitem-bookmark%3Btitle-path%3Bhit-context&xhitlist_vpc=first&xhitlist_vps=20&xhitlist_vq=2C%3A37-1.+Definitions&xhitlist_x=advanced&xhitlist_xsl=xhitlist.xsl" target="_blank" rel="noreferrer">N.J.S.A. 2C:37-1 <span className="sr-only">(opens in a new tab)</span>↗</a>.
+        </p>
+      </details>
     </section>
   );
 }
