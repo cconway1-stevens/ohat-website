@@ -83,9 +83,55 @@ export const garageAudio = {
       voice(audio, "square", [[0, 55], [0.1, 50], [0.22, 90]], 0.3, 0.05);
       noise(audio, 0.22, 700, 0.02);
     }),
-  /** A low, unobtrusive engine pulse for a car that is already moving. */
-  cruise: () =>
-    safely((audio) => voice(audio, "sawtooth", [[0, 72], [0.28, 94], [0.72, 78]], 0.78, 0.018)),
+  /** A soft continuous engine loop. Call the returned function to stop it. */
+  startCruise: () => {
+    const audio = context();
+    if (!audio) return () => {};
+    try {
+      const filter = audio.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = 260;
+      const gain = audio.createGain();
+      gain.gain.value = 0.018;
+      filter.connect(gain).connect(audio.destination);
+
+      const engine = audio.createOscillator();
+      engine.type = "sawtooth";
+      engine.frequency.value = 58;
+      const harmonic = audio.createOscillator();
+      harmonic.type = "triangle";
+      harmonic.frequency.value = 116;
+      const wobble = audio.createOscillator();
+      wobble.type = "sine";
+      wobble.frequency.value = 1.6;
+      const wobbleGain = audio.createGain();
+      wobbleGain.gain.value = 2.5;
+      wobble.connect(wobbleGain).connect(engine.frequency);
+      engine.connect(filter);
+      harmonic.connect(filter);
+      engine.start();
+      harmonic.start();
+      wobble.start();
+
+      return () => {
+        try {
+          engine.stop();
+          harmonic.stop();
+          wobble.stop();
+          engine.disconnect();
+          harmonic.disconnect();
+          wobble.disconnect();
+          wobbleGain.disconnect();
+          filter.disconnect();
+          gain.disconnect();
+        } catch {
+          // The loop may already have been stopped during a fast route change.
+        }
+      };
+    } catch {
+      return () => {};
+    }
+  },
   /** Friendly two-tone horn — a successful match. */
   horn: () =>
     safely((audio) => {

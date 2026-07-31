@@ -113,9 +113,7 @@ export function ShoreRun() {
 
   useEffect(() => {
     if (!running || !sound) return;
-    garageAudio.cruise();
-    const interval = window.setInterval(() => garageAudio.cruise(), 920);
-    return () => window.clearInterval(interval);
+    return garageAudio.startCruise();
   }, [running, sound]);
 
   function jump() {
