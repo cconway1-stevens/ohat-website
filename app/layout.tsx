@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { CallTracking } from "@/components/analytics";
 import { shop } from "@/lib/shop";
+import "tetris-kit/layout.css";
 import "./globals.css";
 
 const geistSans = Geist({
