@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cozyAudio } from "@/lib/garage-audio";
 import { CozyShell, useAmbience, useSceneCanvas } from "./cozy-shell";
-import { RadioSet } from "./radio-set";
+import { RadioPanel } from "./radio-panel";
 
 const W = 480;
 const H = 250;
@@ -25,7 +25,6 @@ const WEATHER_NOTE: Record<Weather, string> = {
  */
 export function NightDrive() {
   const [sound, setSound] = useState(false);
-  const [radioOn, setRadioOn] = useState(false);
   const [heater, setHeater] = useState(1); // 0 off, 1 low, 2 high
   const [wipers, setWipers] = useState(false);
   const [weather, setWeather] = useState<Weather>("clear");
@@ -177,7 +176,7 @@ export function NightDrive() {
     ctx.fillStyle = "rgba(246,189,56,.85)";
     ctx.font = "900 8px Georgia, serif";
     ctx.textAlign = "center";
-    ctx.fillText(radioOn ? "FM" : "—", W / 2, H - 20);
+    ctx.fillText("FM", W / 2, H - 20);
   }, W, H);
 
   return (
@@ -194,7 +193,7 @@ export function NightDrive() {
 
       <p className="cozy-note" aria-live="polite">{note}</p>
 
-      <RadioSet on={radioOn} onPowerChange={setRadioOn} />
+      <RadioPanel />
 
       <div className="cozy-actions">
         <button

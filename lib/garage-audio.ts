@@ -269,91 +269,154 @@ export const ambience = {
 
 /* --- the radio ----------------------------------------------------- */
 
-// Each station is a slow chord pad rather than a stream: nothing is fetched,
-// nothing is downloaded, and it cannot break when someone else's server does.
-export type Station = { id: string; name: string; dial: number; notes: number[]; wave: OscillatorType };
+// Each station is a locally synthesised bed rather than a stream: nothing is
+// fetched, nothing is downloaded, and it cannot break when someone else's
+// server does. Real chart music is licensed and cannot be shipped here, so the
+// pop stations are styled after it — brighter keys, faster arpeggios and an
+// actual beat — rather than being it.
+export type Band = "AM" | "FM";
+export type Station = {
+  id: string;
+  name: string;
+  genre: string;
+  band: Band;
+  dial: number;
+  notes: number[];
+  wave: OscillatorType;
+  /** Beats per second. Set for anything that should feel rhythmic. */
+  pulse?: number;
+  /** Cycle the notes instead of holding them as a chord. */
+  arp?: boolean;
+};
 
 export const stations: Station[] = [
-  { id: "shore", name: "WSHR Shore Gold", dial: 88.5, notes: [196, 247, 294, 392], wave: "sine" },
-  { id: "pines", name: "WPNE Pinelands", dial: 93.1, notes: [175, 220, 262, 349], wave: "triangle" },
-  { id: "boulevard", name: "WBLV The Boulevard", dial: 98.7, notes: [147, 185, 220, 294], wave: "sine" },
-  { id: "latenight", name: "WLNT Late Night", dial: 103.3, notes: [131, 165, 196, 262], wave: "triangle" },
-  { id: "shop", name: "WOHT Shop Talk", dial: 107.9, notes: [110, 165, 220], wave: "sawtooth" },
+  { id: "pop", name: "WHTZ Hot Hits", genre: "Top 40", band: "FM", dial: 89.9, notes: [440, 554, 659, 880], wave: "square", pulse: 2, arp: true },
+  { id: "pulse", name: "WPLS Pulse FM", genre: "Dance pop", band: "FM", dial: 92.3, notes: [392, 523, 587, 784], wave: "sawtooth", pulse: 2.2, arp: true },
+  { id: "shore", name: "WSHR Shore Gold", genre: "Oldies", band: "FM", dial: 95.5, notes: [196, 247, 294, 392], wave: "sine" },
+  { id: "boulevard", name: "WBLV The Boulevard", genre: "Soft rock", band: "FM", dial: 98.7, notes: [147, 185, 220, 294], wave: "triangle", pulse: 1.1 },
+  { id: "latenight", name: "WLNT Late Night", genre: "Jazz", band: "FM", dial: 103.3, notes: [131, 165, 196, 262], wave: "triangle" },
+  { id: "country", name: "WPNE Pinelands", genre: "Country", band: "FM", dial: 106.1, notes: [175, 220, 262, 349], wave: "triangle", pulse: 1.4, arp: true },
+  { id: "talk", name: "WOHT Shop Talk", genre: "Talk", band: "AM", dial: 1010, notes: [110, 165], wave: "sawtooth" },
+  { id: "ball", name: "WGME Ball Game", genre: "Sports", band: "AM", dial: 1290, notes: [131, 196], wave: "square" },
+  { id: "news", name: "WNWS All News", genre: "News", band: "AM", dial: 1560, notes: [147, 220], wave: "sawtooth" },
 ];
 
-export const DIAL_MIN = 87.5;
-export const DIAL_MAX = 108;
+export const BANDS: Record<Band, { min: number; max: number; step: number }> = {
+  FM: { min: 87.5, max: 108, step: 0.1 },
+  AM: { min: 530, max: 1700, step: 10 },
+};
 
-let radioVoices: { osc: OscillatorNode; gain: GainNode }[] = [];
+// Kept for the older callers that only ever knew about FM.
+export const DIAL_MIN = BANDS.FM.min;
+export const DIAL_MAX = BANDS.FM.max;
+
+let radioVoices: OscillatorNode[] = [];
 let radioBus: GainNode | null = null;
+let radioTone: BiquadFilterNode | null = null;
+let radioPan: StereoPannerNode | null = null;
+let radioPulse: OscillatorNode | null = null;
+let loaded = "";
 
 /** How cleanly a dial position lands on a station: 1 is dead on, 0 is noise. */
-export function stationLock(dial: number) {
-  let best: Station | null = null;
+export function stationLock(dial: number, band: Band = "FM") {
+  const inBand = stations.filter((entry) => entry.band === band);
+  let best = inBand[0];
   let bestGap = Infinity;
-  for (const station of stations) {
-    const gap = Math.abs(station.dial - dial);
-    if (gap < bestGap) { bestGap = gap; best = station; }
+  for (const entry of inBand) {
+    const gap = Math.abs(entry.dial - dial);
+    if (gap < bestGap) { bestGap = gap; best = entry; }
   }
-  // Half a megahertz either side before it is pure static.
-  return { station: best!, lock: Math.max(0, 1 - bestGap / 0.6) };
+  // AM dials are numerically much wider, so the tolerance scales with the band.
+  const tolerance = band === "AM" ? 14 : 0.6;
+  return { station: best, lock: Math.max(0, 1 - bestGap / tolerance) };
 }
 
+export type RadioSettings = {
+  volume: number;
+  /** 0 mellow, 1 bright. */
+  tone: number;
+  /** -1 left, 0 centre, 1 right. */
+  balance: number;
+  band: Band;
+};
+
 export const radio = {
-  /** Tune to a dial position at a volume; call again to retune. */
-  tune(dial: number, volume: number) {
+  tune(dial: number, { volume, tone, balance, band }: RadioSettings) {
     safely((audio) => {
-      const { station, lock } = stationLock(dial);
+      const { station, lock } = stationLock(dial, band);
       if (!radioBus) {
         radioBus = audio.createGain();
+        radioTone = audio.createBiquadFilter();
+        radioTone.type = "lowpass";
+        radioPan = audio.createStereoPanner();
         radioBus.gain.value = 0;
-        radioBus.connect(audio.destination);
+        radioBus.connect(radioTone).connect(radioPan).connect(audio.destination);
       }
       const now = audio.currentTime;
-      // Rebuild the pad when the station changes; otherwise just rebalance.
-      const wanted = station.notes.join(",");
-      if (radioBus.dataset !== wanted) {
-        for (const voiceNode of radioVoices) {
-          try { voiceNode.osc.stop(); } catch { /* already stopped */ }
+      radioTone!.frequency.setTargetAtTime(500 + tone * 6500, now, 0.05);
+      radioPan!.pan.setTargetAtTime(balance, now, 0.05);
+
+      // Rebuild the voices only when the station actually changes.
+      if (loaded !== station.id) {
+        for (const osc of radioVoices) { try { osc.stop(); } catch { /* gone */ } }
+        radioVoices = [];
+        radioPulse?.disconnect();
+        radioPulse = null;
+
+        // A beat, where the station has one: a slow square LFO ducking the bus.
+        const beat = audio.createGain();
+        beat.gain.value = 1;
+        beat.connect(radioBus!);
+        if (station.pulse) {
+          const lfo = audio.createOscillator();
+          lfo.type = "square";
+          lfo.frequency.value = station.pulse;
+          const depth = audio.createGain();
+          depth.gain.value = 0.32;
+          lfo.connect(depth).connect(beat.gain);
+          lfo.start(now);
+          radioPulse = lfo;
         }
-        radioVoices = station.notes.map((hz, index) => {
+
+        station.notes.forEach((hz, index) => {
           const gain = audio.createGain();
           gain.gain.value = 0.9 / station.notes.length;
           const osc = audio.createOscillator();
           osc.type = station.wave;
           osc.frequency.value = hz;
-          // A touch of detune per voice keeps the pad from sounding synthetic.
           osc.detune.value = (index - 1) * 4;
-          osc.connect(gain).connect(radioBus!);
+          // An arpeggio steps each note in turn rather than holding a chord.
+          if (station.arp && station.pulse) {
+            const step = 1 / (station.pulse * station.notes.length);
+            gain.gain.value = 0;
+            for (let bar = 0; bar < 64; bar += 1) {
+              const at = now + bar * step * station.notes.length + index * step;
+              gain.gain.setValueAtTime(0.9 / station.notes.length, at);
+              gain.gain.setValueAtTime(0, at + step * 0.85);
+            }
+          }
+          osc.connect(gain).connect(beat);
           osc.start(now);
-          return { osc, gain };
+          radioVoices.push(osc);
         });
-        radioBus.dataset = wanted;
+        loaded = station.id;
       }
-      radioBus.gain.cancelScheduledValues(now);
-      radioBus.gain.setValueAtTime(radioBus.gain.value, now);
-      radioBus.gain.linearRampToValueAtTime(volume * lock * 0.045, now + 0.18);
+
+      radioBus!.gain.cancelScheduledValues(now);
+      radioBus!.gain.setValueAtTime(radioBus!.gain.value, now);
+      radioBus!.gain.linearRampToValueAtTime(volume * lock * 0.045, now + 0.18);
       // Between stations you get hiss instead of music.
       ambience.set("static", volume * (1 - lock) * 0.02, 0.2);
     });
   },
   off() {
     safely(() => {
-      // The audio context is not needed here — this only tears voices down.
-      for (const voiceNode of radioVoices) {
-        try { voiceNode.osc.stop(); } catch { /* already stopped */ }
-      }
+      for (const osc of radioVoices) { try { osc.stop(); } catch { /* gone */ } }
       radioVoices = [];
-      if (radioBus) { radioBus.dataset = undefined; radioBus.gain.value = 0; }
+      radioPulse = null;
+      loaded = "";
+      if (radioBus) radioBus.gain.value = 0;
       ambience.set("static", 0, 0.2);
     });
   },
 };
-
-// GainNode has no `dataset`; this keeps the "which station is loaded" marker
-// beside the node without a second map.
-declare global {
-  interface GainNode {
-    dataset?: string;
-  }
-}
