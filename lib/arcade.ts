@@ -9,7 +9,20 @@ export type ArcadeGame = {
 
 // One place to tune round length, prize difficulty, and game speed.
 export const arcadePresets = {
-  logoMatch: { pairs: 8 },
+  logoMatch: {
+    defaultGrid: 4,
+    modes: [3, 4, 5],
+    customMinGrid: 2,
+    responsiveMaxGrid: {
+      mobile: 5,
+      tablet: 6,
+      desktop: 8,
+    },
+    breakpoints: {
+      tablet: 700,
+      desktop: 1100,
+    },
+  },
   dragStrip: { prizeReactionMs: 650 },
   shoreRun: { coinsToWin: 4 },
   towChain: { carsToWin: 4, tickMs: 175 },

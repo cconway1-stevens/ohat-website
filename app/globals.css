@@ -1533,30 +1533,54 @@ img { max-width: 100%; }
 }
 .match-game-start p { max-width: 46ch; margin: 0; color: var(--muted); line-height: 1.6; }
 
-/* The board is square tiles in a fixed grid, so its height is a fixed ratio
-   of its width — 4 columns x 5 rows here. Capping the width by the height
-   left over after the game's chrome keeps the whole board on screen instead
-   of running off the bottom of a short phone. `svh` accounts for mobile
-   browser chrome; the floor stops it shrinking to nothing on tiny viewports. */
+.match-mode-picker {
+  display: inline-grid;
+  grid-template-columns: repeat(4, minmax(58px, auto));
+  border: 3px solid var(--ink);
+  background: var(--ink);
+  gap: 2px;
+}
+.match-mode-picker button {
+  min-height: 42px;
+  padding: .45rem .75rem;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.match-mode-picker button:hover,
+.match-mode-picker button.is-active { background: var(--yellow); }
+.match-mode-picker button:focus-visible { outline: 3px solid var(--blue); outline-offset: -4px; }
+
+/* The board stays square at every mode. Its width is capped by the shorter of
+   the content column and remaining viewport height, which keeps large custom
+   boards usable on wide screens without overflowing short mobile screens. */
 .match-grid {
-  --board-fit: calc((100svh - 290px) * 0.8);
+  --board-fit: calc(100svh - 310px);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: .5rem;
+  grid-template-columns: repeat(var(--match-grid-size), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--match-grid-size), minmax(0, 1fr));
+  gap: clamp(.22rem, 1vw, .55rem);
   width: 100%;
-  max-width: max(232px, min(100%, var(--board-fit)));
+  max-width: max(240px, min(100%, var(--board-fit), 720px));
+  aspect-ratio: 1;
   margin: 0 auto;
   padding: 0;
   list-style: none;
 }
+.match-grid li { min-width: 0; min-height: 0; }
 .match-tile {
   width: 100%;
-  aspect-ratio: 1;
+  height: 100%;
   padding: 0;
   border: 0;
   background: none;
-  /* A tap target that stays comfortable on a phone. */
-  min-height: 68px;
+  min-width: 0;
+  min-height: 0;
   cursor: pointer;
   perspective: 640px;
 }
@@ -1588,16 +1612,18 @@ img { max-width: 100%; }
   color: var(--yellow);
   box-shadow: 4px 4px 0 var(--ink);
 }
-.match-tile-back b { font-family: Georgia, serif; font-size: .78rem; letter-spacing: .12em; }
+.match-tile-back b { font-family: Georgia, serif; font-size: clamp(.48rem, 1.5vw, .78rem); letter-spacing: .08em; }
 .match-tile-face {
   background: var(--paper);
   color: var(--ink);
   transform: rotateY(180deg);
   box-shadow: 4px 4px 0 var(--ink);
 }
-.match-tile-face img { width: 34px; height: 34px; object-fit: contain; }
-.match-tile-face small { font-size: .52rem; font-weight: 950; letter-spacing: .04em; text-transform: uppercase; text-align: center; }
+.match-tile-face img { width: clamp(20px, 48%, 44px); height: clamp(20px, 48%, 44px); object-fit: contain; }
+.match-tile-face small { max-width: 92%; overflow: hidden; font-size: clamp(.4rem, 1.2vw, .55rem); font-weight: 950; text-transform: uppercase; text-align: center; text-overflow: ellipsis; }
 .match-tile.is-matched .match-tile-face { background: var(--yellow); box-shadow: 4px 4px 0 var(--blue); }
+.match-tile.is-free .match-tile-face { background: var(--blue); color: #fff; box-shadow: 4px 4px 0 var(--yellow); }
+.match-free-mark { font-family: Georgia, serif; font-size: clamp(.65rem, 2vw, 1rem); }
 @media (hover: hover) {
   .match-tile:not(:disabled):hover .match-tile-back { background-color: var(--red-dark); }
 }
@@ -1609,10 +1635,65 @@ img { max-width: 100%; }
 .match-grid-won li:nth-child(2n) .match-tile { animation-delay: .07s; }
 .match-grid-won li:nth-child(3n) .match-tile { animation-delay: .14s; }
 
+.match-dialog-backdrop {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(23,20,18,.72);
+}
+.match-dialog {
+  position: relative;
+  display: grid;
+  justify-items: stretch;
+  gap: .85rem;
+  width: min(100%, 430px);
+  max-height: calc(100svh - 2rem);
+  overflow-y: auto;
+  padding: clamp(1.25rem, 5vw, 2rem);
+  border: 4px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 9px 9px 0 var(--yellow);
+}
+.match-dialog .eyebrow { margin: 0; color: var(--red); font-size: .65rem; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; }
+.match-dialog h3 { margin: 0; font-family: Georgia, serif; font-size: clamp(1.5rem, 6vw, 2rem); }
+.match-dialog p { margin: 0; color: var(--muted); line-height: 1.5; }
+.match-dialog small { color: var(--muted); font-size: .68rem; text-align: center; }
+.match-dialog-size { font-family: Georgia, serif; font-size: clamp(2.4rem, 12vw, 4.4rem); font-weight: 900; line-height: 1; text-align: center; }
+.match-dialog input[type="range"] { width: 100%; accent-color: var(--red); cursor: pointer; }
+.match-dialog .button { justify-self: stretch; text-align: center; }
+.match-dialog-close {
+  position: absolute;
+  top: .6rem;
+  right: .6rem;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 950;
+  cursor: pointer;
+}
+
 @media (min-width: 720px) {
-  .match-grid { --board-fit: calc(100svh - 300px); grid-template-columns: repeat(4, 1fr); gap: .6rem; }
-  .match-tile-face img { width: 40px; height: 40px; }
-  .match-tile-face small { font-size: .55rem; }
+  .match-grid { --board-fit: calc(100svh - 300px); }
+}
+
+@media (max-width: 480px) {
+  .match-game-bar { align-items: flex-start; }
+  .match-game-score { width: 100%; }
+  .match-game-score > div { flex: 1 1 60px; min-width: 0; padding-inline: .35rem; }
+  .match-game-controls { width: 100%; }
+  .match-game-controls button { flex: 1; }
+  .match-mode-picker { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .match-mode-picker button { min-width: 0; padding-inline: .3rem; }
 }
 
 .game-hero { background: linear-gradient(120deg, rgba(23,20,18,.97), rgba(105,12,17,.95)); }

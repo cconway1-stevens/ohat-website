@@ -6,6 +6,7 @@ export const makes = [
   "Volkswagen", "BMW", "Audi", "Kia", "Hyundai", "Mazda", "Volvo",
   "Tesla", "Acura", "Cadillac", "Chrysler", "Mitsubishi", "Porsche", "Ram",
   "Mini", "Infiniti", "Fiat", "Lucid", "Polestar", "Suzuki", "Smart", "Saturn",
+  "Dacia", "Renault", "Opel", "Citroen", "SEAT",
 ];
 
 // A shorter run for the marquee, where every logo scrolls past twice.
@@ -26,7 +27,6 @@ export function shuffle<T>(items: readonly T[]): T[] {
 }
 
 // The wall renders in complete rows only. 28 fills both layouts exactly —
-// four rows of 7 on desktop, seven rows of 4 on phones — so with 29 brands
-// on file, each load randomly benches one brand instead of showing a gap.
+// four rows of 7 on desktop and seven rows of 4 on phones. The expanded brand
+// pool lets each load show a different complete wall without leaving a gap.
 export const WALL_SIZE = 28;
-
