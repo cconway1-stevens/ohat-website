@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
 import { PrizeBanner } from "./prize";
+import { arcadePresets } from "@/lib/arcade";
 
 const BEST_KEY = "ohat-shorerun-best";
 
@@ -18,7 +19,7 @@ const DUCK_GRAVITY = 1.5;
 
 // Grab this many coins and the prize unlocks. Deliberately gentle: coins sit
 // at easy heights and come along often.
-const COINS_TO_WIN = 5;
+const COINS_TO_WIN = arcadePresets.shoreRun.coinsToWin;
 
 type Obstacle =
   | { kind: "tires"; x: number; count: number }
@@ -90,6 +91,7 @@ export function ShoreRun() {
   const game = useRef<Game>(freshGame());
   const coinTally = useRef(0);
   const runningRef = useRef(false);
+  const touchedCanvas = useRef(false);
 
   useEffect(() => {
     soundOn.current = sound;
@@ -295,6 +297,8 @@ export function ShoreRun() {
 
   // Touch: tap the top half to jump, hold the bottom half to duck.
   function onTouchStart(event: React.TouchEvent<HTMLCanvasElement>) {
+    event.preventDefault();
+    touchedCanvas.current = true;
     if (!runningRef.current) {
       start();
       return;
@@ -346,10 +350,32 @@ export function ShoreRun() {
         height={H}
         onTouchStart={onTouchStart}
         onTouchEnd={() => setDuck(false)}
-        onClick={() => (runningRef.current ? jump() : start())}
+        onTouchCancel={() => setDuck(false)}
+        onClick={() => {
+          if (touchedCanvas.current) {
+            touchedCanvas.current = false;
+            return;
+          }
+          if (runningRef.current) jump();
+          else start();
+        }}
         role="img"
         aria-label="Side-scrolling driving game: jump the car over stacked tires and duck under traffic signals"
       />
+      <div className="shore-run-touch-controls" aria-label="Driving controls">
+        <button type="button" onPointerDown={() => (runningRef.current ? jump() : start())}>
+          <span aria-hidden="true">↑</span> Jump
+        </button>
+        <button
+          type="button"
+          onPointerDown={() => setDuck(true)}
+          onPointerUp={() => setDuck(false)}
+          onPointerCancel={() => setDuck(false)}
+          onPointerLeave={() => setDuck(false)}
+        >
+          <span aria-hidden="true">↓</span> Duck
+        </button>
+      </div>
       <p className="shore-run-keys">
         <span><b>Space</b> / <b>↑</b> jump</span>
         <span><b>↓</b> duck</span>

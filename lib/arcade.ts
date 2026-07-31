@@ -7,6 +7,14 @@ export type ArcadeGame = {
   glyph: string;
 };
 
+// One place to tune round length, prize difficulty, and game speed.
+export const arcadePresets = {
+  logoMatch: { pairs: 8 },
+  dragStrip: { prizeReactionMs: 650 },
+  shoreRun: { coinsToWin: 4 },
+  towChain: { carsToWin: 4, tickMs: 175 },
+} as const;
+
 export const arcadeGames: ArcadeGame[] = [
   {
     slug: "logo-match",

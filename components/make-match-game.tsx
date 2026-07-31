@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
 import { PrizeBanner } from "./arcade/prize";
 import { brandSrc, makes, shuffle } from "@/lib/makes";
+import { arcadePresets } from "@/lib/arcade";
 
-const PAIRS = 10;
+const PAIRS = arcadePresets.logoMatch.pairs;
 const BEST_KEY = "ohat-match-best";
 
 type Tile = { id: number; name: string; matched: boolean };
@@ -135,11 +136,11 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
       <div className="match-game match-game-start">
         <Heading className="match-game-title">Logo match</Heading>
         <p>
-          Flip the badges face down and find the matching pairs. Every round
-          deals a different set from the makes we service.
+          Open the service bays and match the vehicle badges. Every shift
+          brings in a different set of makes we service.
         </p>
         <button type="button" className="button button-primary" onClick={deal}>
-          Deal the deck
+          Open the garage
         </button>
       </div>
     );
@@ -151,7 +152,7 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
         <Heading className="match-game-title">Logo match</Heading>
         <dl className="match-game-score">
           <div>
-            <dt>Pairs</dt>
+            <dt>Bays cleared</dt>
             <dd>{matched}/{PAIRS}</dd>
           </div>
           <div>
@@ -184,8 +185,8 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
 
       <p className="match-game-status" role="status">
         {won
-          ? `Cleared in ${moves} moves and ${formatClock(seconds)}. Nice work.`
-          : `Find a matching pair — ${PAIRS - matched} to go.`}
+          ? `Every service bay cleared in ${moves} moves and ${formatClock(seconds)}.`
+          : `Match the badges — ${PAIRS - matched} service bay${PAIRS - matched === 1 ? "" : "s"} left.`}
       </p>
 
       <ul className={`match-grid${won ? " match-grid-won" : ""}`}>
@@ -202,7 +203,7 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
               >
                 <span className="match-tile-inner">
                   <span className="match-tile-back" aria-hidden="true">
-                    <b>OHAT</b>
+                    <b>Bay {String((tile.id % PAIRS) + 1).padStart(2, "0")}</b>
                   </span>
                   <span className="match-tile-face">
                     <Image

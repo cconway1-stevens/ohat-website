@@ -1575,9 +1575,7 @@ img { max-width: 100%; }
 .match-grid-won li:nth-child(3n) .match-tile { animation-delay: .14s; }
 
 @media (min-width: 720px) {
-  /* Five columns: 20 tiles land in four complete rows, so the board is wider
-     than it is tall and the height budget buys more width. */
-  .match-grid { --board-fit: calc((100svh - 300px) * 1.25); grid-template-columns: repeat(5, 1fr); gap: .6rem; }
+  .match-grid { --board-fit: calc(100svh - 300px); grid-template-columns: repeat(4, 1fr); gap: .6rem; }
   .match-tile-face img { width: 40px; height: 40px; }
   .match-tile-face small { font-size: .55rem; }
 }
@@ -1759,6 +1757,28 @@ img { max-width: 100%; }
 .drag-tree i { width: 34px; height: 34px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; background: #2b2725; transition: background .1s ease, box-shadow .1s ease; }
 .drag-tree i.is-amber { background: var(--yellow); box-shadow: 0 0 18px rgba(246,189,56,.75); }
 .drag-tree i.is-green { background: #3fae4c; box-shadow: 0 0 22px rgba(63,174,76,.8); }
+.drag-lane {
+  position: relative;
+  width: 100%;
+  height: 72px;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,.3);
+  background:
+    linear-gradient(90deg, transparent 48%, rgba(255,255,255,.6) 48% 52%, transparent 52%) 0 50% / 42px 3px repeat-x,
+    #38312e;
+}
+.drag-start-line, .drag-finish-line { position: absolute; inset-block: 0; width: 8px; background: repeating-linear-gradient(0deg, #fff 0 8px, #171412 8px 16px); }
+.drag-start-line { left: 70px; }
+.drag-finish-line { right: 22px; }
+.drag-car { position: absolute; left: 18px; bottom: 13px; width: 64px; height: 28px; border: 3px solid #171412; background: var(--red); transition: left .15s ease; }
+.drag-car::before { content: ""; position: absolute; left: 14px; top: -14px; width: 32px; height: 15px; border: 3px solid #171412; border-bottom: 0; background: var(--yellow); transform: skewX(-18deg); }
+.drag-car i, .drag-car b { position: absolute; bottom: -9px; width: 15px; height: 15px; border: 3px solid #171412; border-radius: 50%; background: var(--paper); }
+.drag-car i { left: 5px; }
+.drag-car b { right: 5px; }
+.drag-strip-done .drag-car { animation: drag-launch .7s ease-in forwards; }
+.drag-strip-jumped .drag-car { animation: drag-foul .22s ease-in-out 2; }
+@keyframes drag-launch { to { left: calc(100% - 86px); } }
+@keyframes drag-foul { 50% { transform: translateX(8px) rotate(-2deg); } }
 
 /* Canvas games share a frame */
 .shore-run, .tow-chain { display: grid; gap: 1rem; }
@@ -1784,9 +1804,39 @@ img { max-width: 100%; }
   border: 4px solid var(--ink);
   box-shadow: 8px 8px 0 var(--ink);
   background: var(--cream);
-  touch-action: manipulation;
+  touch-action: none;
   cursor: pointer;
 }
+.shore-run-touch-controls { display: none; grid-template-columns: 1fr 1fr; gap: .65rem; width: min(100%, 720px); justify-self: center; }
+.shore-run-touch-controls button,
+.tow-controls button {
+  min-height: 52px;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+.shore-run-touch-controls button:last-child { background: var(--blue); color: #fff; }
+.shore-run-touch-controls span { display: inline-block; margin-right: .35rem; font-size: 1rem; }
+.tow-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  grid-template-areas: ". up ." "left badge right" ". down .";
+  gap: .35rem;
+  justify-self: center;
+}
+.tow-controls button { min-height: 48px; padding: 0; font-size: 1.2rem; }
+.tow-controls span { grid-area: badge; display: grid; place-items: center; border: 3px solid var(--ink); background: var(--red); color: #fff; font-size: .58rem; font-weight: 950; }
+.tow-up { grid-area: up; }
+.tow-left { grid-area: left; }
+.tow-right { grid-area: right; }
+.tow-down { grid-area: down; }
 .shore-run-keys {
   display: flex;
   flex-wrap: wrap;
@@ -1816,12 +1866,21 @@ img { max-width: 100%; }
   .match-tile { min-height: 46px; }
   /* The arcade hero gives up some height on phones so the board starts
      nearer the top of the screen. */
-  .game-hero { padding: 130px 0 60px; }
+  .game-hero { padding: 120px 0 38px; }
+  .game-hero h1 { font-size: clamp(2.6rem, 14vw, 4rem); }
+  .game-hero > .shell > p:last-child { font-size: .9rem; line-height: 1.5; }
+  .is-arcade .game-board { padding-block: 1.5rem 3rem; }
   .match-tile-back, .match-tile-face { box-shadow: 3px 3px 0 var(--ink); }
   .match-tile-face img { width: 26px; height: 26px; }
   .match-tile-face small { font-size: .44rem; }
-  .drag-strip-stage { padding: 1.3rem; }
+  .drag-strip-stage { gap: .75rem; padding: 1rem; box-shadow: 5px 5px 0 var(--ink); }
   .drag-tree i { width: 28px; height: 28px; }
+  .drag-tree { grid-template-columns: repeat(4, 28px); gap: .4rem; padding: .55rem; }
+  .drag-lane { height: 62px; }
+  .drag-strip-stage strong { font-size: 1.15rem; }
+  .shore-run-touch-controls { display: grid; }
+  .shore-run-keys span:last-child { display: none; }
+  .tow-chain-lot { width: min(100%, 312px); box-shadow: 5px 5px 0 var(--ink); }
   .arcade-cabinet { box-shadow: 6px 6px 0 var(--ink); }
 }
 
