@@ -54,6 +54,7 @@ export function ShopHoursStatus() {
 
   const shownStatus = previewState ?? status.status;
   const shownLabel = previewState ? getShopStatusLabel(previewState) : status.label;
+  const statusLines = shownLabel.split(". ").filter(Boolean);
 
   return (
     <span className="shop-hours-status-wrap">
@@ -79,7 +80,10 @@ export function ShopHoursStatus() {
         tabIndex={0}
         title={preview.hint}
       >
-        <span aria-hidden="true" />{shownLabel}
+        <span className="shop-status-dot" aria-hidden="true" />
+        <span className="shop-status-copy">
+          {statusLines.map((line) => <span key={line}>{line}</span>)}
+        </span>
       </span>
       {status.holiday ? (
         <span className="shop-hours-holiday">
