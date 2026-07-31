@@ -68,9 +68,9 @@ export function MakeMatchGame({
   paper?: boolean;
 }) {
   const [deck, setDeck] = useState<Tile[]>([]);
-  const [gridSize, setGridSize] = useState(MATCH_CONFIG.defaultGrid);
-  const [maxGrid, setMaxGrid] = useState(MATCH_CONFIG.responsiveMaxGrid.mobile);
-  const [customSize, setCustomSize] = useState(MATCH_CONFIG.defaultGrid);
+  const [gridSize, setGridSize] = useState<number>(MATCH_CONFIG.defaultGrid);
+  const [maxGrid, setMaxGrid] = useState<number>(MATCH_CONFIG.responsiveMaxGrid.mobile);
+  const [customSize, setCustomSize] = useState<number>(MATCH_CONFIG.defaultGrid);
   const [customOpen, setCustomOpen] = useState(false);
   const [picked, setPicked] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);

@@ -36,7 +36,7 @@ const CLUES: ClueTuple[] = [
   ["MIRROR", "Look in it to see behind you", "kids"],
   ["ROAD", "Cars drive on it", "kids"],
   ["TRUCK", "Big vehicle that carries things", "kids"],
-  ["VAN", "Family ride with sliding doors", "kids"],
+  ["VAN", "Boxy vehicle for carrying people or cargo", "kids"],
   ["BUS", "Big yellow ride to school", "kids"],
   ["JACK", "Tool that lifts a car off the ground", "kids"],
   ["GARAGE", "Where cars get fixed", "kids"],
@@ -133,7 +133,7 @@ const CLUES: ClueTuple[] = [
   ["MECHANIC", "Technician who inspects and repairs vehicles", "easy"],
   ["HEATER", "Cabin system that supplies warm air", "easy"],
   ["FLUID", "Liquid used for lubrication or hydraulics", "easy"],
-  ["FRAME", "Structural foundation beneath a vehicle", "easy"],
+  ["FRAME", "Steel skeleton a body is built on", "easy"],
   ["PULLEY", "Grooved wheel that carries a belt", "easy"],
   ["SPOILER", "Body piece that changes airflow at speed", "easy"],
   ["CHASSIS", "Vehicle's supporting frame and structure", "easy"],
@@ -150,7 +150,7 @@ const CLUES: ClueTuple[] = [
   ["CONVERTIBLE", "Car with a roof that folds away", "easy"],
   ["HORSEPOWER", "Common measure of engine output", "easy"],
   ["MODULE", "Self-contained electronic control unit", "easy"],
-  ["COMPUTER", "Module that manages vehicle systems", "easy"],
+  ["COMPUTER", "Electronic brain running the vehicle systems", "easy"],
   ["WIRING", "Network of conductors behind the electrics", "easy"],
   ["CIRCUIT", "Complete path followed by current", "easy"],
   ["TERMINAL", "Battery connection point", "easy"],
@@ -202,7 +202,7 @@ const CLUES: ClueTuple[] = [
   ["SPEEDOMETER", "Gauge that shows road speed", "advanced"],
   ["SIDEWALL", "Outer side surface of a tire", "advanced"],
   ["AUTOMATIC", "Transmission that shifts without a clutch pedal", "advanced"],
-  ["CHARGING", "Adding electrical energy to a battery", "advanced"],
+  ["CHARGING", "What an EV is doing while plugged in", "advanced"],
   ["HEADREST", "Seat support behind an occupant's head", "advanced"],
   ["ARMREST", "Padded cabin support beside a seat", "advanced"],
   ["BODYWORK", "Repair of exterior panels and collision damage", "advanced"],
@@ -229,12 +229,12 @@ const CLUES: ClueTuple[] = [
   ["DOORHANDLE", "Lever pulled to enter the cabin", "advanced", 2],
   ["KEYFOB", "Pocket remote used to lock or start a car", "advanced", 2],
   ["LUGNUT", "Fastener that secures a wheel", "advanced", 2],
-  ["HUBCAP", "Decorative cover over a wheel center", "advanced", 2],
-  ["WHEELBASE", "Distance between front and rear axles", "advanced", 2],
+  ["HUBCAP", "Decorative cover over a wheel center", "advanced"],
+  ["WHEELBASE", "Distance between front and rear axles", "advanced"],
   ["FOGLAMP", "Low-mounted light for poor visibility", "advanced", 2],
-  ["TAILGATE", "Hinged rear panel of a pickup bed", "advanced", 2],
-  ["TAILPIPE", "Visible outlet at the end of the exhaust", "advanced", 2],
-  ["SEATBELT", "Strap that restrains an occupant", "advanced", 2],
+  ["TAILGATE", "Hinged rear panel of a pickup bed", "advanced"],
+  ["TAILPIPE", "Visible outlet at the end of the exhaust", "advanced"],
+  ["SEATBELT", "Strap that restrains an occupant", "advanced"],
   ["CVJOINT", "Flexible drive connection used near a wheel", "advanced", 2],
 ];
 
@@ -246,39 +246,6 @@ export const CLUE_BANK: ClueWord[] = CLUES.map(([answer, clue, level, words]) =>
   ...(words ? { words } : {}),
 }));
 
-// Word-search words, tagged the same way. No clues here — the player is only
-// hunting letters — so this stays a short tuple list.
-const SEARCH: [string, ClueLevel][] = [
-  ["OIL", "kids"], ["GAS", "kids"], ["CAR", "kids"], ["TOW", "kids"],
-  ["KEY", "kids"], ["VAN", "kids"], ["BUS", "kids"], ["MAP", "kids"],
-  ["TIRE", "kids"], ["HOOD", "kids"], ["HORN", "kids"], ["ROAD", "kids"],
-  ["SEAT", "kids"], ["DOOR", "kids"], ["JACK", "kids"], ["BELT", "kids"],
-  ["GEAR", "kids"], ["PARK", "kids"], ["STOP", "kids"], ["TANK", "kids"],
-  ["PUMP", "kids"], ["WASH", "kids"], ["RAMP", "kids"], ["CONE", "kids"],
-  ["WHEEL", "kids"], ["BRAKE", "kids"], ["TRUCK", "kids"], ["WIPER", "kids"],
-  ["TRUNK", "kids"], ["MOTOR", "kids"], ["PEDAL", "kids"], ["SPARE", "kids"],
-  ["ENGINE", "kids"], ["GARAGE", "kids"], ["MIRROR", "kids"], ["WAGON", "kids"],
-
-  ["ALIGN", "easy"], ["AXLE", "easy"], ["CLUTCH", "easy"], ["FILTER", "easy"],
-  ["PISTON", "easy"], ["ROTOR", "easy"], ["SPARK", "easy"], ["FUSE", "easy"],
-  ["FENDER", "easy"], ["BUMPER", "easy"], ["AIRBAG", "easy"], ["GASKET", "easy"],
-  ["GRILLE", "easy"], ["SENSOR", "easy"], ["RELAY", "easy"], ["SHOCK", "easy"],
-  ["STRUT", "easy"], ["TREAD", "easy"], ["TURBO", "easy"], ["VALVE", "easy"],
-  ["HITCH", "easy"], ["WINCH", "easy"], ["PICKUP", "easy"], ["PULLEY", "easy"],
-  ["OCTANE", "easy"], ["COOLANT", "easy"], ["EXHAUST", "easy"], ["MILEAGE", "easy"],
-  ["REVERSE", "easy"], ["VOLTAGE", "easy"], ["CHASSIS", "easy"], ["SUNROOF", "easy"],
-
-  ["CALIPER", "advanced"], ["BEARING", "advanced"], ["DAMPER", "advanced"],
-  ["CAMBER", "advanced"], ["CASTER", "advanced"], ["KEYFOB", "advanced"],
-  ["LUGNUT", "advanced"], ["SHIFTER", "advanced"], ["STARTER", "advanced"],
-  ["INJECTOR", "advanced"], ["TAILPIPE", "advanced"], ["MANIFOLD", "advanced"],
-  ["SOLENOID", "advanced"], ["FLYWHEEL", "advanced"], ["CAMSHAFT", "advanced"],
-];
-
-export const SEARCH_WORDS: { word: string; level: ClueLevel }[] = SEARCH.map(
-  ([word, level]) => ({ word, level }),
-);
-
 // A mode plays its own level plus the easier ones below it, so "Advanced"
 // still mixes in familiar words instead of being wall-to-wall jargon.
 export const LEVELS_FOR: Record<ClueLevel, ClueLevel[]> = {
@@ -286,3 +253,22 @@ export const LEVELS_FOR: Record<ClueLevel, ClueLevel[]> = {
   easy: ["kids", "easy"],
   advanced: ["easy", "advanced"],
 };
+
+/**
+ * The one query both word games use. The crossword wants the clue; the word
+ * search only needs the letters — but they draw from the same bank, so a word
+ * that is fair at a level is fair at that level in either game, and there is
+ * only one list to curate.
+ */
+export function wordsForLevel(
+  level: ClueLevel,
+  { minLength = 1, maxLength = 99 }: { minLength?: number; maxLength?: number } = {},
+): ClueWord[] {
+  const allowed = LEVELS_FOR[level];
+  return CLUE_BANK.filter(
+    (entry) =>
+      allowed.includes(entry.level) &&
+      entry.answer.length >= minLength &&
+      entry.answer.length <= maxLength,
+  );
+}

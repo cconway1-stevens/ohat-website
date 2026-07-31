@@ -120,17 +120,23 @@ export function TreadStack() {
   }
 
   return (
-    <div className="tread-stack-game">
+    <div className="paper-game tread-stack-game">
+      <header className="paper-game-header">
+        <div>
+          <p className="paper-game-edition">Ocean Heights Tire Warehouse</p>
+          <h2>Tread Stack</h2>
+        </div>
+        <div className="match-game-controls">
+          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>{sound ? "Sound on" : "Sound off"}</button>
+          {over ? <button type="button" onClick={start}>New shift</button> : null}
+        </div>
+      </header>
       <div className="match-game-bar">
         <dl className="match-game-score">
           <div><dt>Rows cleared</dt><dd>{lines}</dd></div>
           <div><dt>Best</dt><dd>{best}</dd></div>
           <div><dt>Prize at</dt><dd>{CONFIG.linesToWin}</dd></div>
         </dl>
-        <div className="match-game-controls">
-          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>{sound ? "Sound on" : "Sound off"}</button>
-          {over ? <button type="button" onClick={start}>New shift</button> : null}
-        </div>
       </div>
       <p className="match-game-status" role="status">
         {over
@@ -142,7 +148,7 @@ export function TreadStack() {
       <Tetris.Provider key={runKey} playground={{ rows: CONFIG.rows, columns: CONFIG.columns }}>
         <TreadStackRun stopped={over} onLines={updateLines} onRunEnd={finishRun} />
       </Tetris.Provider>
-      {qualified && over ? <PrizeBanner achievement={`${CONFIG.linesToWin} tire rows cleared in Tread Stack.`} /> : null}
+      {qualified && over ? <PrizeBanner sound={sound} achievement={`${CONFIG.linesToWin} tire rows cleared in Tread Stack.`} /> : null}
       <p className="tread-stack-keys">Keyboard: arrows to move and rotate, space to drop.</p>
     </div>
   );
