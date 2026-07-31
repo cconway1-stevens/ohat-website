@@ -53,10 +53,16 @@ function cardRank(rank: string) {
 function roundMessage(round: Round) {
   if (!round.over) return `You have ${round.player.cardTotal}. The house is showing ${round.dealer.cardTotal}; choose Hit or Stand.`;
   if (round.player.cardTotal > 21) return "You went over 21. The house wins this hand.";
-  if (round.dealer.cardTotal > 21) return "The house went over 21. You win this hand, with no real-world prize.";
-  if (round.player.cardTotal > round.dealer.cardTotal) return "You beat the house. No prize is awarded.";
-  if (round.player.cardTotal === round.dealer.cardTotal) return "Push: you and the house tied. Nobody wins this hand.";
+  if (round.dealer.cardTotal > 21) return "The house went over 21. Your 5 Lug Nuts were returned.";
+  if (round.player.cardTotal > round.dealer.cardTotal) return "You beat the house. Your 5 Lug Nuts were returned.";
+  if (round.player.cardTotal === round.dealer.cardTotal) return "Push: you and the house tied. Your 5 Lug Nuts were returned.";
   return "The house wins this hand. Deal another one when ready.";
+}
+
+function returnsHandCost(round: Round) {
+  return round.over
+    && round.player.cardTotal <= 21
+    && (round.dealer.cardTotal > 21 || round.player.cardTotal >= round.dealer.cardTotal);
 }
 
 function PlayingCard({ card }: { card: Card }) {
@@ -82,9 +88,10 @@ export function GarageBlackjack() {
   const deal = useCallback(() => {
     if (lugNuts < HAND_COST || (!round?.over && round)) return;
     const game = newGame();
+    const nextRound = readRound(game);
     setEngine(game);
-    setRound(readRound(game));
-    setLugNuts((current) => current - HAND_COST);
+    setRound(nextRound);
+    setLugNuts((current) => Math.min(STARTING_LUG_NUTS, current - HAND_COST + (returnsHandCost(nextRound) ? HAND_COST : 0)));
     setQuit(false);
   }, [lugNuts, round]);
 
@@ -92,7 +99,11 @@ export function GarageBlackjack() {
     if (!engine || !round || round.over) return;
     engine.step(move);
     runToPlayerChoice(engine);
-    setRound(readRound(engine));
+    const nextRound = readRound(engine);
+    setRound(nextRound);
+    if (returnsHandCost(nextRound)) {
+      setLugNuts((current) => Math.min(STARTING_LUG_NUTS, current + HAND_COST));
+    }
   }, [engine, round]);
 
   const leaveTable = useCallback(() => {
@@ -174,7 +185,7 @@ export function GarageBlackjack() {
           <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal} title="Press D to deal">Deal hand</button>
         </div>
       </header>
-      <p className="garage-blackjack-intro">You are the player. The house is the dealer. Finish closer to 21 than the house without going over.</p>
+      <p className="garage-blackjack-intro">You are the player. The house is the dealer. Finish closer to 21 without going over; wins and ties return the same 5 session tokens.</p>
       {round ? <div className="garage-blackjack-table">
         <div className="garage-blackjack-hand is-house">
           <span><b>House</b> Dealer {round.over ? `total ${round.dealer.cardTotal}` : `showing ${round.dealer.cardTotal}`}</span>
@@ -196,7 +207,7 @@ export function GarageBlackjack() {
       </div>
       <p className="garage-blackjack-keys"><b>Keys:</b> D deal, H hit, S stand, Q leave table, L lobby sound.</p>
       <p className="garage-blackjack-notice">
-        For entertainment only. Lug Nuts are free session-only play tokens with no cash value. They cannot be bought, sold, transferred, exchanged, redeemed, or used for any prize or real-world reward. No betting, wagering, winnings, or payouts.
+        For entertainment only. Lug Nuts are free session-only play tokens with no cash value. A win or tie only returns the same 5 tokens used for that hand, up to the starting balance. They cannot be bought, sold, transferred, exchanged, redeemed, or used for any prize, discount, service, real-world reward, betting, wager, winning, or payout.
       </p>
     </section>
   );
