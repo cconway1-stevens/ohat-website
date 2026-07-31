@@ -127,6 +127,11 @@ img { max-width: 100%; }
   text-transform: uppercase;
 }
 .garage-strip > span { font-family: Georgia, "Times New Roman", serif; font-size: .68rem; letter-spacing: .04em; }
+/* Masthead almanac: a dateline detail, deliberately the same weight as the
+   text it sits beside rather than a feature of its own. */
+.garage-almanac { display: inline-flex; align-items: baseline; gap: .42rem; white-space: nowrap; }
+.garage-almanac-rule { color: var(--red); }
+.garage-almanac-reading { font-variant-numeric: tabular-nums; }
 .garage-strip-phone { justify-self: end; }
 .garage-strip a { transition: color .18s ease; }
 .garage-strip a:hover { color: var(--red); }
