@@ -80,53 +80,80 @@ export default function Home() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
-        <section className="hero catalog-front" id="top">
-          <div className="catalog-front-grid">
-            <figure className="catalog-front-photo">
-              <div className="catalog-front-image">
-                <Image
-                  src="/media/ocean-heights-cover.png"
-                  alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
-                  fill
-                  priority
-                  sizes="(max-width: 900px) 100vw, 62vw"
-                />
-              </div>
-              <figcaption>
-                <span>Cover story · the modern family garage</span>
-                <strong>Service catalog · issue no. 1178</strong>
-              </figcaption>
-            </figure>
-            <div className="catalog-front-copy">
-              <div className="catalog-front-inner">
-                <div className="catalog-meta" aria-label="Ocean Heights service catalog">
-                  <span>Service &amp; repair annual</span>
-                  <strong>Issue No. 1178</strong>
-                </div>
-                <p className="hero-kicker">The modern family garage</p>
-                <h1>We know cars.<br />We know families.</h1>
-                <p className="hero-lede">
-                  Dealer-level diagnostics, family-garage value, and straight
-                  talk for classic, gas, diesel, hybrid, and electric vehicles.
-                </p>
-                <ul className="catalog-front-value" aria-label="Ocean Heights service value">
-                  <li><span>01</span><strong>Dealer-level tools</strong></li>
-                  <li><span>02</span><strong>Your whole driveway</strong></li>
-                  <li><span>03</span><strong>Neighbor-level care</strong></li>
-                </ul>
-                <div className="hero-actions">
-                  <a className="button button-primary" href={phoneHref}>
-                    Call {phoneDisplay}
-                  </a>
-                  <DirectionsTrigger className="button button-ghost">
-                    Find the garage <span aria-hidden="true">↗</span>
-                  </DirectionsTrigger>
-                </div>
-              </div>
-            </div>
-          </div>
+        <section className="catalog-cover-hero" id="top">
+          <div className="cover-shell">
+            <article className="cover-sheet">
+              <p className="cover-topline" aria-label="Catalog edition">
+                <span>Egg Harbor Township, N.J.</span>
+                <span className="cover-topline-title">
+                  Service &amp; repair annual
+                </span>
+                <span>Issue No. 1178</span>
+              </p>
 
-          <section
+              <h1>
+                We know cars.
+                <em>We know families.</em>
+              </h1>
+              <p className="cover-lede">
+                Dealer-level diagnostics, family-garage value, and straight
+                talk for classic, gas, diesel, hybrid, and electric vehicles.
+              </p>
+
+              <div className="cover-actions">
+                <a className="button button-primary" href={phoneHref}>
+                  Call {phoneDisplay}
+                </a>
+                <DirectionsTrigger className="button button-ghost">
+                  Get directions <span aria-hidden="true">↗</span>
+                </DirectionsTrigger>
+              </div>
+
+              <ul
+                className="cover-index"
+                aria-label="Why drivers choose Ocean Heights"
+              >
+                <li>
+                  <span>No. 01</span>
+                  <strong>Dealer-level tools</strong>
+                  <small>We don&rsquo;t guess. We test.</small>
+                </li>
+                <li>
+                  <span>No. 02</span>
+                  <strong>Your whole driveway</strong>
+                  <small>Gas, diesel, hybrid, EV &amp; classics</small>
+                </li>
+                <li>
+                  <span>No. 03</span>
+                  <strong>Neighbor-level care</strong>
+                  <small>Family owned &amp; operated</small>
+                </li>
+              </ul>
+
+              <figure className="cover-plate">
+                <div className="cover-plate-image">
+                  <Image
+                    src="/media/ocean-heights-cover.png"
+                    alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
+                    fill
+                    priority
+                    sizes="(max-width: 1220px) 100vw, 1180px"
+                  />
+                </div>
+                <span className="cover-stamp" aria-hidden="true">
+                  <strong>All makes</strong>
+                  <em>All eras</em>
+                </span>
+                <figcaption>
+                  <span>Fig. 1 — The modern family garage</span>
+                  <strong>1178 Ocean Heights Avenue</strong>
+                </figcaption>
+              </figure>
+            </article>
+          </div>
+        </section>
+
+        <section
             className="garage-credentials"
             aria-labelledby="garage-credentials-title"
           >
@@ -169,7 +196,7 @@ export default function Home() {
               >
                 <div className="garage-proof-ticket garage-proof-ase">
                   <img
-                    src="https://ase.com/wp-content/uploads/ASE-Logo.png"
+                    src="/media/ase-certified.jpg"
                     alt="ASE"
                     width="70"
                     height="52"
@@ -230,7 +257,6 @@ export default function Home() {
               </div>
             </div>
             <div className="garage-credentials-checker" aria-hidden="true" />
-          </section>
         </section>
 
         <section className="section services-intro" id="services">

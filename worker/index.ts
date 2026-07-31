@@ -30,6 +30,15 @@ const worker = {
     const url = new URL(request.url);
 
     if (url.pathname === "/_vinext/image") {
+      // Local dev has no ASSETS/IMAGES bindings; serve the original asset
+      // instead of crashing the optimizer.
+      if (!env.ASSETS || !env.IMAGES) {
+        const src = url.searchParams.get("url");
+        if (src && src.startsWith("/")) {
+          return Response.redirect(new URL(src, request.url).toString(), 302);
+        }
+        return new Response("Image optimization unavailable", { status: 404 });
+      }
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       return handleImageOptimization(request, {
         fetchAsset: (path) => env.ASSETS.fetch(new Request(new URL(path, request.url))),
