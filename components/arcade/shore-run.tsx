@@ -111,6 +111,13 @@ export function ShoreRun() {
     soundOn.current = sound;
   }, [sound]);
 
+  useEffect(() => {
+    if (!running || !sound) return;
+    garageAudio.cruise();
+    const interval = window.setInterval(() => garageAudio.cruise(), 920);
+    return () => window.clearInterval(interval);
+  }, [running, sound]);
+
   function jump() {
     const g = game.current;
     if (!runningRef.current || !g.onGround) return;
