@@ -1,45 +1,72 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Game, GameStep } from "@blackjacktrainer/blackjack-simulator";
 import { ambience, garageAudio } from "@/lib/garage-audio";
 
-const HIT = 2;
-const STAND = 5;
 const STARTING_LUG_NUTS = 50;
 const HAND_COST = 5;
+const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"];
+const SUITS = ["h", "d", "c", "s"];
 
 type Card = { id: string; rank: string; suit: string; showingFace: boolean };
 type Hand = { cards: Card[]; cardTotal: number; blackjack: boolean };
-type Engine = InstanceType<typeof Game>;
 type Round = { dealer: Hand; player: Hand; over: boolean };
 
-function runToPlayerChoice(game: Engine) {
-  while (
-    game.state.step !== GameStep.WaitingForPlayInput
-    && game.state.step !== GameStep.WaitingForNewGameInput
-  ) game.step();
-}
-
-function readRound(game: Engine): Round {
+function drawCard(showingFace = true): Card {
   return {
-    dealer: game.dealer.firstHand.attributes(),
-    player: game.player.firstHand.attributes(),
-    over: game.state.step === GameStep.WaitingForNewGameInput,
+    id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    rank: RANKS[Math.floor(Math.random() * RANKS.length)],
+    suit: SUITS[Math.floor(Math.random() * SUITS.length)],
+    showingFace,
   };
 }
 
-function newGame() {
-  const game = new Game({
-    autoDeclineInsurance: true,
-    disableEvents: true,
-    deckCount: 1,
-    hitSoft17: false,
-    playerCount: 1,
-  });
-  game.betAmount = 100;
-  runToPlayerChoice(game);
-  return game;
+function hand(cards: Card[]): Hand {
+  let total = 0;
+  let aces = 0;
+  for (const card of cards) {
+    if (card.rank === "A") {
+      total += 11;
+      aces += 1;
+    } else total += ["T", "J", "Q", "K"].includes(card.rank) ? 10 : Number(card.rank);
+  }
+  while (total > 21 && aces > 0) {
+    total -= 10;
+    aces -= 1;
+  }
+  return {
+    cards,
+    cardTotal: total,
+    blackjack: cards.length === 2 && total === 21,
+  };
+}
+
+function reveal(cards: Card[]) {
+  return cards.map((card) => ({ ...card, showingFace: true }));
+}
+
+function finishDealerHand(cards: Card[]) {
+  const revealed = reveal(cards);
+  while (hand(revealed).cardTotal < 17) revealed.push(drawCard());
+  return hand(revealed);
+}
+
+function dealRound(): Round {
+  const dealerCards = [drawCard(false), drawCard()];
+  const player = hand([drawCard(), drawCard()]);
+  if (player.blackjack) return { dealer: finishDealerHand(dealerCards), player, over: true };
+  return { dealer: hand(dealerCards), player, over: false };
+}
+
+function playRound(round: Round, move: "hit" | "stand"): Round {
+  const playerCards = [...round.player.cards];
+  if (move === "hit") {
+    playerCards.push(drawCard());
+    const player = hand(playerCards);
+    if (player.cardTotal > 21) return { dealer: hand(reveal(round.dealer.cards)), player, over: true };
+    return { dealer: hand(round.dealer.cards), player, over: false };
+  }
+  return { dealer: finishDealerHand(round.dealer.cards), player: hand(playerCards), over: true };
 }
 
 function suitSymbol(suit: string) {
@@ -50,8 +77,12 @@ function cardRank(rank: string) {
   return rank === "T" ? "10" : rank;
 }
 
+function dealerShowingTotal(round: Round) {
+  return hand(round.dealer.cards.filter((card) => card.showingFace)).cardTotal;
+}
+
 function roundMessage(round: Round) {
-  if (!round.over) return `You have ${round.player.cardTotal}. The house is showing ${round.dealer.cardTotal}; choose Hit or Stand.`;
+  if (!round.over) return `You have ${round.player.cardTotal}. The house is showing ${dealerShowingTotal(round)}; choose Hit or Stand.`;
   if (round.player.cardTotal > 21) return "You went over 21. The house wins this hand.";
   if (round.dealer.cardTotal > 21) return "The house went over 21. Your 5 Lug Nuts were returned.";
   if (round.player.cardTotal > round.dealer.cardTotal) return "You beat the house. Your 5 Lug Nuts were returned.";
@@ -85,7 +116,6 @@ function PlayingCard({ card }: { card: Card }) {
 }
 
 export function GarageBlackjack() {
-  const [engine, setEngine] = useState<Engine | null>(null);
   const [round, setRound] = useState<Round | null>(null);
   const [lugNuts, setLugNuts] = useState(STARTING_LUG_NUTS);
   const [quit, setQuit] = useState(false);
@@ -95,33 +125,27 @@ export function GarageBlackjack() {
 
   const deal = useCallback(() => {
     if (lugNuts < HAND_COST || (!round?.over && round)) return;
-    const game = newGame();
-    const nextRound = readRound(game);
-    setEngine(game);
+    const nextRound = dealRound();
     setRound(nextRound);
     setLugNuts((current) => Math.min(STARTING_LUG_NUTS, current - HAND_COST + (returnsHandCost(nextRound) ? HAND_COST : 0)));
     setQuit(false);
   }, [lugNuts, round]);
 
-  const play = useCallback((move: number) => {
-    if (!engine || !round || round.over) return;
-    engine.step(move);
-    runToPlayerChoice(engine);
-    const nextRound = readRound(engine);
+  const play = useCallback((move: "hit" | "stand") => {
+    if (!round || round.over) return;
+    const nextRound = playRound(round, move);
     setRound(nextRound);
     if (returnsHandCost(nextRound)) {
       setLugNuts((current) => Math.min(STARTING_LUG_NUTS, current + HAND_COST));
     }
-  }, [engine, round]);
+  }, [round]);
 
   const leaveTable = useCallback(() => {
-    setEngine(null);
     setRound(null);
     setQuit(true);
   }, []);
 
   function resetSession() {
-    setEngine(null);
     setRound(null);
     setLugNuts(STARTING_LUG_NUTS);
     setQuit(false);
@@ -156,10 +180,10 @@ export function GarageBlackjack() {
         deal();
       } else if (key === "h" && round && !round.over) {
         event.preventDefault();
-        play(HIT);
+        play("hit");
       } else if (key === "s" && round && !round.over) {
         event.preventDefault();
-        play(STAND);
+        play("stand");
       } else if (key === "q" && round && !round.over) {
         event.preventDefault();
         leaveTable();
@@ -197,7 +221,7 @@ export function GarageBlackjack() {
       <p className="garage-blackjack-intro">You are the player. The house is the dealer. Finish closer to 21 without going over; wins and ties return the same 5 session tokens.</p>
       {round ? <div className={`garage-blackjack-table${outcome ? ` is-${outcome}-win` : ""}`}>
         <div className="garage-blackjack-hand is-house">
-          <span><b>House</b> Dealer {round.over ? `total ${round.dealer.cardTotal}` : `showing ${round.dealer.cardTotal}`}</span>
+          <span><b>House</b> Dealer {round.over ? `total ${round.dealer.cardTotal}` : `showing ${dealerShowingTotal(round)}`}</span>
           <div>{round.dealer.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
         </div>
         <div className="garage-blackjack-marker" aria-hidden="true">
@@ -213,8 +237,8 @@ export function GarageBlackjack() {
       </div> : <div className="garage-blackjack-table is-empty" aria-hidden="true"><span>YOU PLAY THE HOUSE</span><small>Deal a hand to start</small></div>}
       <p className="match-game-status" role="status">{status}</p>
       <div className="garage-blackjack-controls">
-        <button type="button" onClick={() => play(HIT)} disabled={!round || round.over} title="Press H to hit">Hit</button>
-        <button type="button" onClick={() => play(STAND)} disabled={!round || round.over} title="Press S to stand">Stand</button>
+        <button type="button" onClick={() => play("hit")} disabled={!round || round.over} title="Press H to hit">Hit</button>
+        <button type="button" onClick={() => play("stand")} disabled={!round || round.over} title="Press S to stand">Stand</button>
         <button type="button" onClick={leaveTable} disabled={!round || round.over} title="Press Q to quit">Quit table</button>
         {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
         {(quit || lugNuts < HAND_COST) ? <button type="button" onClick={resetSession}>New play session</button> : null}
