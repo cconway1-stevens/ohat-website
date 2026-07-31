@@ -3666,6 +3666,25 @@ body.is-play-locked {
 .cash-actions button:last-child { background: #f6bd38; color: #17140f; }
 @media (max-width: 600px) { .cash-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
+.card-reader { display: grid; gap: .6rem; padding: .7rem; border: 3px solid #0d1510; border-radius: 5px; background: linear-gradient(#66716a, #313a35); box-shadow: inset 0 2px 0 rgba(255,255,255,.14), 4px 4px 0 #0d1510; }
+.card-reader-screen { display: flex; justify-content: space-between; gap: 1rem; padding: .45rem .6rem; border: 2px solid #101611; background: #17241b; box-shadow: inset 0 0 10px rgba(0,0,0,.6); color: #9ae7a8; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .68rem; }
+.card-reader-screen span { font-weight: 900; letter-spacing: .08em; }
+.card-reader.is-approved .card-reader-screen { background: #183b23; color: #b8ffc5; box-shadow: inset 0 0 12px rgba(87,224,111,.2); }
+.card-swipe-track { position: relative; height: 78px; overflow: hidden; border: 2px solid #111713; border-radius: 3px; background: linear-gradient(#222b26 0 8px, #0c100d 8px 16px, #48534c 16px); }
+.swipe-slot { position: absolute; top: 5px; right: 7px; bottom: 5px; width: 4px; background: #090c0a; box-shadow: -2px 0 0 rgba(255,255,255,.13); }
+.payment-card { position: absolute; z-index: 1; top: 20px; left: 0; display: grid; grid-template-columns: auto 1fr; grid-template-rows: 1fr 1fr; align-items: center; width: 34%; min-width: 112px; max-width: 190px; height: 50px; padding: .35rem .5rem; border: 2px solid #15120f; border-radius: 5px; background: linear-gradient(135deg, #f6bd38, #dd991f); box-shadow: 2px 3px 0 #10130f; color: #15120f; pointer-events: none; transition: left .08s linear; user-select: none; }
+.payment-card:active { transition: none; }
+.payment-card i { grid-row: 1 / -1; width: 24px; height: 18px; margin-right: .45rem; border: 1px solid #6c5321; border-radius: 2px; background: repeating-linear-gradient(90deg, #d7bd70 0 5px, #987531 5px 6px); }
+.payment-card b { align-self: end; font-size: .55rem; letter-spacing: .06em; text-align: left; }
+.payment-card span { align-self: start; font-family: ui-monospace, monospace; font-size: .5rem; text-align: left; }
+.card-swipe-input { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; touch-action: pan-y; }
+.card-reader > p { margin: 0; color: #d8e6dc; font-size: .68rem; line-height: 1.4; }
+.card-reader.is-approved .payment-card { background: linear-gradient(135deg, #a9e9b4, #61b974); cursor: default; }
+@media (max-width: 600px) {
+  .payment-card { width: 38%; }
+  .card-reader-screen { font-size: .6rem; }
+}
+
 .receipt { display: flex; justify-content: center; }
 .receipt-body {
   width: min(100%, 300px);

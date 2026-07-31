@@ -45,7 +45,16 @@ const DENOMINATIONS = [
 ] as const;
 
 type Phase = "browsing" | "register" | "receipt";
-type Order = { items: string[]; outOfStock: string | null; coupon: boolean; customer: string; slip: number };
+type OrderItem = { id: string; quantity: number };
+type Order = {
+  items: OrderItem[];
+  outOfStock: string | null;
+  coupon: boolean;
+  taxExempt: boolean;
+  coreCharge: boolean;
+  customer: string;
+  slip: number;
+};
 type Drawer = Record<number, number>;
 
 const money = (value: number) => `$${value.toFixed(2)}`;
@@ -98,12 +107,18 @@ function depositCash(drawer: Drawer, dollars: number): Drawer {
 
 function nextOrder(): Order {
   const pool = [...STOCK].sort(() => Math.random() - 0.5);
-  const items = pool.slice(0, 1 + Math.floor(Math.random() * 3)).map((entry) => entry.id);
+  const items = pool.slice(0, 1 + Math.floor(Math.random() * 3)).map((entry) => ({
+    id: entry.id,
+    quantity: Math.random() < 0.38 ? 2 + Math.floor(Math.random() * 3) : 1,
+  }));
+  const hasBattery = items.some((item) => item.id === "battery");
   return {
     items,
     // Now and then the hook is empty and it has to go on back-order.
-    outOfStock: items.length > 1 && Math.random() < 0.3 ? items[items.length - 1] : null,
+    outOfStock: items.length > 1 && Math.random() < 0.25 ? items[items.length - 1].id : null,
     coupon: Math.random() < 0.25,
+    taxExempt: Math.random() < 0.12,
+    coreCharge: hasBattery && Math.random() < 0.6,
     customer: CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)],
     slip: 1000 + Math.floor(Math.random() * 8999),
   };
@@ -119,7 +134,8 @@ export function PartsCounter() {
   // The first order is fixed so the server and browser agree, then reshuffled
   // on mount — randomising in the initialiser is a hydration error.
   const [order, setOrder] = useState<Order>({
-    items: ["wipers"], outOfStock: null, coupon: false, customer: CUSTOMERS[0], slip: 1042,
+    items: [{ id: "wipers", quantity: 4 }], outOfStock: null, coupon: false,
+    taxExempt: false, coreCharge: false, customer: CUSTOMERS[0], slip: 1042,
   });
   const [phase, setPhase] = useState<Phase>("browsing");
   const [tray, setTray] = useState<string[]>([]);
@@ -131,6 +147,8 @@ export function PartsCounter() {
   const [drawer, setDrawer] = useState<Drawer>(STARTING_DRAWER);
   const [changePicks, setChangePicks] = useState<number[]>([]);
   const [changeNote, setChangeNote] = useState("");
+  const [cardApproved, setCardApproved] = useState(false);
+  const [swipeProgress, setSwipeProgress] = useState(0);
 
   useAmbience(sound, { fluorescent: 0.012, shopHum: 0.012, traffic: 0.006 });
 
@@ -142,19 +160,21 @@ export function PartsCounter() {
     return () => window.clearTimeout(id);
   }, []);
 
-  const wanted = order.items.filter((id) => !backOrdered.includes(id));
-  const outstanding = wanted.filter((id) => !tray.includes(id));
-  const ready = outstanding.length === 0 && (tray.length > 0 || backOrdered.length > 0);
+  const wanted = order.items.filter((item) => !backOrdered.includes(item.id));
+  const outstanding = wanted.reduce((sum, item) => sum + Math.max(0, item.quantity - tray.filter((id) => id === item.id).length), 0);
+  const ready = outstanding === 0 && (tray.length > 0 || backOrdered.length > 0);
 
-  const lines = tray.map((id) => STOCK.find((entry) => entry.id === id)!);
-  const subtotal = lines.reduce((sum, entry) => sum + entry.price, 0);
+  const lines = STOCK.map((entry) => ({ ...entry, quantity: tray.filter((id) => id === entry.id).length })).filter((entry) => entry.quantity > 0);
+  const subtotal = lines.reduce((sum, entry) => sum + entry.price * entry.quantity, 0);
   const discount = order.coupon ? subtotal * 0.1 : 0;
-  const taxed = (subtotal - discount) * TAX;
-  const total = subtotal - discount + taxed;
+  const coreCharge = order.coreCharge ? 15 : 0;
+  const taxed = order.taxExempt ? 0 : (subtotal - discount) * TAX;
+  const total = subtotal - discount + taxed + coreCharge;
   const change = tender?.bill ? tender.bill - total : 0;
   const changeDueCents = Math.max(0, Math.round(change * 100));
   const changePickedCents = changePicks.reduce((sum, cents) => sum + cents, 0);
   const changeReady = tender?.kind !== "cash" || changePickedCents === changeDueCents;
+  const paymentReady = tender?.kind === "cash" ? changeReady : tender?.kind === "card" ? cardApproved : false;
   const drawerTotalCents = DENOMINATIONS.reduce((sum, { cents }) => sum + cents * (drawer[cents] ?? 0), 0);
 
   const canvasRef = useSceneCanvas((ctx, frame) => {
@@ -180,7 +200,8 @@ export function PartsCounter() {
           ctx.fillRect(x, y + 8, 62, 26);
           continue;
         }
-        const isWanted = wanted.includes(entry.id) && !tray.includes(entry.id);
+        const requested = wanted.find((item) => item.id === entry.id)?.quantity ?? 0;
+        const isWanted = tray.filter((id) => id === entry.id).length < requested;
         ctx.fillStyle = entry.tint;
         ctx.globalAlpha = tray.includes(entry.id) ? 0.28 : isWanted ? 1 : 0.6;
         ctx.fillRect(x, y + 8, 62, 26);
@@ -257,27 +278,43 @@ export function PartsCounter() {
       setNote("That hook is empty — nothing left in that size. It will have to go on back-order.");
       return;
     }
-    if (tray.includes(id)) {
+    const needed = wanted.find((item) => item.id === id)?.quantity ?? 0;
+    const held = tray.filter((entry) => entry === id).length;
+    if (held >= needed && needed > 0) {
       cozyAudio.drawer();
-      setTray((current) => current.filter((entry) => entry !== id));
-      setNote("Back on the shelf.");
+      const last = tray.lastIndexOf(id);
+      setTray((current) => current.filter((_, index) => index !== last));
+      setNote("One goes back on the shelf.");
       return;
     }
-    if (!wanted.includes(id)) {
+    if (needed === 0) {
       cozyAudio.drawer();
-      setNote(`"Not that one — I asked for ${order.items.map((item) => STOCK.find((s) => s.id === item)!.ask).join(" and ")}."`);
+      setNote("That is not on this order.");
       return;
     }
     cozyAudio.drawer();
     setTray((current) => [...current, id]);
-    setNote("Onto the counter it goes.");
+    setNote(`${held + 1} of ${needed} on the counter.`);
   }
 
   function chooseTender(next: { kind: "cash" | "card"; bill?: number }) {
     cozyAudio.coin();
     setTender(next);
     setChangePicks([]);
-    setChangeNote(next.kind === "cash" ? "Count the change from what is actually in the drawer." : "Card approved. Ready to print the slip.");
+    setCardApproved(false);
+    setSwipeProgress(0);
+    setChangeNote(next.kind === "cash" ? "Count the change from what is actually in the drawer." : "Swipe the card all the way through the reader.");
+  }
+
+  function swipeCard(progress: number) {
+    if (cardApproved) return;
+    setSwipeProgress(progress);
+    if (progress >= 0.9) {
+      setCardApproved(true);
+      setSwipeProgress(1);
+      setChangeNote("Approved. The reader gives a cheerful beep.");
+      cozyAudio.coin();
+    }
   }
 
   function addChange(cents: number) {
@@ -310,7 +347,7 @@ export function PartsCounter() {
   }
 
   function ringUp() {
-    if (!tender || (tender.kind === "cash" && !changeReady)) return;
+    if (!tender || !paymentReady) return;
     if (tender.kind === "cash" && tender.bill) {
       setDrawer((current) => {
         const next = { ...current };
@@ -332,6 +369,8 @@ export function PartsCounter() {
     setTender(null);
     setChangePicks([]);
     setChangeNote("");
+    setCardApproved(false);
+    setSwipeProgress(0);
     setNote("");
     setPhase("browsing");
   }
@@ -353,25 +392,28 @@ export function PartsCounter() {
           <div className="counter-ticket" aria-live="polite">
             <p className="counter-who">{order.customer}</p>
             <p className="counter-ask">
-              &ldquo;I need {order.items.map((id) => STOCK.find((entry) => entry.id === id)!.ask).join(", and ")}.&rdquo;
+              &ldquo;I need {order.items.map((item) => `${item.quantity === 1 ? "" : `${item.quantity} × `}${STOCK.find((entry) => entry.id === item.id)!.ask}`).join(", and ")}.&rdquo;
             </p>
             {order.coupon ? <p className="counter-reply">They slide a 10% coupon across the counter.</p> : null}
+            {order.taxExempt ? <p className="counter-reply">It is a shop account with a tax-exempt certificate on file.</p> : null}
+            {order.coreCharge ? <p className="counter-reply">No old battery today, so the refundable core charge applies.</p> : null}
             {note ? <p className="counter-reply">{note}</p> : null}
           </div>
 
           <div className="cozy-actions counter-shelf">
             {STOCK.map((entry) => {
               const gap = entry.id === order.outOfStock && !backOrdered.includes(entry.id);
-              const held = tray.includes(entry.id);
+              const held = tray.filter((id) => id === entry.id).length;
+              const needed = order.items.find((item) => item.id === entry.id)?.quantity ?? 0;
               return (
                 <button
                   key={entry.id}
                   type="button"
-                  className={held ? "is-on" : ""}
+                  className={held >= needed && needed > 0 ? "is-on" : ""}
                   onClick={() => grab(entry.id)}
                   style={{ borderBottom: `6px solid ${gap ? "#8d8676" : entry.tint}` }}
                 >
-                  {entry.label}{held ? " ✓" : gap ? " — empty" : ""}
+                  {entry.label}{gap ? " — empty" : needed > 1 ? ` ${held}/${needed}` : held ? " ✓" : ""}
                 </button>
               );
             })}
@@ -402,7 +444,7 @@ export function PartsCounter() {
           <p className="pos-head">Register 1 · Slip #{order.slip}</p>
           <ul className="pos-lines">
             {lines.map((entry) => (
-              <li key={entry.id}><span>{entry.label}</span><b>{money(entry.price)}</b></li>
+              <li key={entry.id}><span>{entry.quantity} × {entry.label}</span><b>{money(entry.price * entry.quantity)}</b></li>
             ))}
             {backOrdered.map((id) => (
               <li key={id} className="is-void"><span>{STOCK.find((e) => e.id === id)!.label} — back-ordered</span><b>—</b></li>
@@ -411,7 +453,8 @@ export function PartsCounter() {
           <dl className="pos-totals">
             <div><dt>Subtotal</dt><dd>{money(subtotal)}</dd></div>
             {order.coupon ? <div className="is-off"><dt>Coupon 10%</dt><dd>-{money(discount)}</dd></div> : null}
-            <div><dt>NJ tax</dt><dd>{money(taxed)}</dd></div>
+            {order.coreCharge ? <div><dt>Battery core</dt><dd>{money(coreCharge)}</dd></div> : null}
+            <div><dt>NJ tax{order.taxExempt ? " — exempt" : ""}</dt><dd>{money(taxed)}</dd></div>
             <div className="is-total"><dt>Total</dt><dd>{money(total)}</dd></div>
           </dl>
 
@@ -426,6 +469,31 @@ export function PartsCounter() {
               </button>
             ))}
           </div>
+          {tender?.kind === "card" ? (
+            <section className={`card-reader${cardApproved ? " is-approved" : ""}`} aria-label="Credit card reader">
+              <div className="card-reader-screen" aria-live="polite">
+                <span>{cardApproved ? "APPROVED" : "SWIPE CARD"}</span>
+                <b>{cardApproved ? "THANK YOU" : money(total)}</b>
+              </div>
+              <div className="card-swipe-track">
+                <div className="payment-card" style={{ left: `${swipeProgress * 64}%` }} aria-hidden="true">
+                  <i aria-hidden="true" /><b>OHAT BANK</b><span>•••• 1546</span>
+                </div>
+                <input
+                  className="card-swipe-input"
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={Math.round(swipeProgress * 100)}
+                  disabled={cardApproved}
+                  onChange={(event) => swipeCard(Number(event.target.value) / 100)}
+                  aria-label={cardApproved ? "Card approved" : "Swipe card from left to right"}
+                />
+                <span className="swipe-slot" aria-hidden="true" />
+              </div>
+              <p>{changeNote}</p>
+            </section>
+          ) : null}
           {tender?.kind === "cash" ? (
             <section className="cash-drawer" aria-labelledby="cash-drawer-title">
               <div className="cash-drawer-head">
@@ -484,14 +552,14 @@ export function PartsCounter() {
 
           <div className="cozy-actions">
             <button type="button" onClick={() => { setTender(null); setChangePicks([]); setChangeNote(""); setPhase("browsing"); }}>Back to the shelf</button>
-            <button type="button" disabled={!tender || !changeReady} onClick={ringUp}>Ring it up</button>
+            <button type="button" disabled={!paymentReady} onClick={ringUp}>Ring it up</button>
           </div>
         </div>
       ) : null}
 
       {phase === "receipt" ? (
         <>
-          <div className="receipt" role="img" aria-label={`Receipt, ${lines.length} items, total ${money(total)}`}>
+          <div className="receipt" role="img" aria-label={`Receipt, ${lines.reduce((sum, entry) => sum + entry.quantity, 0)} items, total ${money(total)}`}>
             <div className="receipt-body">
               <p className="receipt-shop">OCEAN HEIGHTS<br />AUTO &amp; TIRE</p>
               <p className="receipt-addr">1178 OCEAN HEIGHTS AVE<br />EGG HARBOR TWP, NJ<br />(609) 241-1546</p>
@@ -500,7 +568,7 @@ export function PartsCounter() {
               <p className="receipt-rule">- - - - - - - - - - - -</p>
               <ul>
                 {lines.map((entry) => (
-                  <li key={entry.id}><span>{entry.label.toUpperCase()}</span><b>{money(entry.price)}</b></li>
+                  <li key={entry.id}><span>{entry.quantity}× {entry.label.toUpperCase()}</span><b>{money(entry.price * entry.quantity)}</b></li>
                 ))}
                 {backOrdered.map((id) => (
                   <li key={id} className="is-void"><span>{STOCK.find((e) => e.id === id)!.label.toUpperCase()} B/O</span><b>0.00</b></li>
@@ -510,6 +578,7 @@ export function PartsCounter() {
               <ul>
                 <li><span>SUBTOTAL</span><b>{money(subtotal)}</b></li>
                 {order.coupon ? <li><span>COUPON 10%</span><b>-{money(discount)}</b></li> : null}
+                {order.coreCharge ? <li><span>BATTERY CORE</span><b>{money(coreCharge)}</b></li> : null}
                 <li><span>TAX 6.625%</span><b>{money(taxed)}</b></li>
                 <li className="is-total"><span>TOTAL</span><b>{money(total)}</b></li>
                 <li>
