@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Game, GameStep } from "@blackjacktrainer/blackjack-simulator";
 import { ambience, garageAudio } from "@/lib/garage-audio";
 
@@ -79,27 +79,27 @@ export function GarageBlackjack() {
 
   useEffect(() => () => ambience.set("casino", 0, 0.12), []);
 
-  function deal() {
+  const deal = useCallback(() => {
     if (lugNuts < HAND_COST || (!round?.over && round)) return;
     const game = newGame();
     setEngine(game);
     setRound(readRound(game));
     setLugNuts((current) => current - HAND_COST);
     setQuit(false);
-  }
+  }, [lugNuts, round]);
 
-  function play(move: number) {
+  const play = useCallback((move: number) => {
     if (!engine || !round || round.over) return;
     engine.step(move);
     runToPlayerChoice(engine);
     setRound(readRound(engine));
-  }
+  }, [engine, round]);
 
-  function leaveTable() {
+  const leaveTable = useCallback(() => {
     setEngine(null);
     setRound(null);
     setQuit(true);
-  }
+  }, []);
 
   function resetSession() {
     setEngine(null);
@@ -108,12 +108,12 @@ export function GarageBlackjack() {
     setQuit(false);
   }
 
-  function toggleCasinoLobby() {
+  const toggleCasinoLobby = useCallback(() => {
     const next = !casinoLobby;
     setCasinoLobby(next);
     ambience.set("casino", next ? 0.018 : 0, 0.18);
     if (next) garageAudio.chime();
-  }
+  }, [casinoLobby]);
 
   const canDeal = lugNuts >= HAND_COST && (round === null || round.over);
   const availableHands = Math.ceil(lugNuts / HAND_COST);
@@ -124,6 +124,33 @@ export function GarageBlackjack() {
       : lugNuts < HAND_COST
         ? "Out of Lug Nuts. This play session is finished."
         : `Each hand uses ${HAND_COST} Lug Nuts. You have ${lugNuts}.`;
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
+      const key = event.key.toLowerCase();
+      if (key === "d" && canDeal) {
+        event.preventDefault();
+        deal();
+      } else if (key === "h" && round && !round.over) {
+        event.preventDefault();
+        play(HIT);
+      } else if (key === "s" && round && !round.over) {
+        event.preventDefault();
+        play(STAND);
+      } else if (key === "q" && round && !round.over) {
+        event.preventDefault();
+        leaveTable();
+      } else if (key === "l") {
+        event.preventDefault();
+        toggleCasinoLobby();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [canDeal, deal, leaveTable, play, round, toggleCasinoLobby]);
 
   return (
     <section className="paper-game garage-blackjack-game" aria-labelledby="garage-blackjack-title">
@@ -141,10 +168,10 @@ export function GarageBlackjack() {
             </span>
             <span className="garage-lug-nut-copy"><b>{lugNuts}</b><small>Lug Nuts</small></span>
           </div>
-          <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby}>
+          <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby} title="Press L to toggle lobby sound">
             {casinoLobby ? "Lobby sound on" : "Lobby sound off"}
           </button>
-          <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal}>Deal hand</button>
+          <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal} title="Press D to deal">Deal hand</button>
         </div>
       </header>
       <p className="garage-blackjack-intro">A no-money service-bay table. Beat the dealer without going over 21.</p>
@@ -161,9 +188,9 @@ export function GarageBlackjack() {
       </div> : <div className="garage-blackjack-table is-empty" aria-hidden="true">SERVICE BAY 21</div>}
       <p className="match-game-status" role="status">{status}</p>
       <div className="garage-blackjack-controls">
-        <button type="button" onClick={() => play(HIT)} disabled={!round || round.over}>Hit</button>
-        <button type="button" onClick={() => play(STAND)} disabled={!round || round.over}>Stand</button>
-        <button type="button" onClick={leaveTable} disabled={!round || round.over}>Quit table</button>
+        <button type="button" onClick={() => play(HIT)} disabled={!round || round.over} title="Press H to hit">Hit</button>
+        <button type="button" onClick={() => play(STAND)} disabled={!round || round.over} title="Press S to stand">Stand</button>
+        <button type="button" onClick={leaveTable} disabled={!round || round.over} title="Press Q to quit">Quit table</button>
         {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
         {(quit || lugNuts < HAND_COST) ? <button type="button" onClick={resetSession}>New play session</button> : null}
       </div>
