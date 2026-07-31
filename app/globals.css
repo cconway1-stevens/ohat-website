@@ -473,6 +473,17 @@ img { max-width: 100%; }
   transform: none;
 }
 .is-arcade .booking-dock { display: none; }
+/* At the very bottom of the page the dock would sit on top of the footer's
+   own phone number and the maker credit, so it bows out. */
+.at-footer .booking-dock {
+  opacity: 0;
+  /* `visibility` is discrete, so it needs a delay rather than a duration —
+     it flips once the fade has finished, which also takes the dock out of
+     the tab order instead of leaving an invisible focusable target. */
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
+}
 .booking-dock a { min-width: 168px; display: flex; align-items: center; gap: .65rem; padding: .7rem .85rem; }
 .booking-dock a + a { background: var(--red); color: #fff; border-top: 0; border-left: 3px solid var(--ink); }
 .booking-dock small { font-size: .58rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
