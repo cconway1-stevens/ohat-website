@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ambience, garageAudio } from "@/lib/garage-audio";
 
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"];
@@ -114,8 +114,12 @@ export function GarageBlackjack() {
   const [casinoLobby, setCasinoLobby] = useState(false);
   const [score, setScore] = useState<Score>({ wins: 0, losses: 0, pushes: 0 });
   const [termsAcknowledged, setTermsAcknowledged] = useState(false);
+  const lobbyAudio = useRef<HTMLAudioElement>(null);
 
-  useEffect(() => () => ambience.set("casino", 0, 0.12), []);
+  useEffect(() => () => {
+    ambience.set("casino", 0, 0.12);
+    lobbyAudio.current?.pause();
+  }, []);
 
   const recordOutcome = useCallback((completedRound: Round) => {
     const result = roundOutcome(completedRound);
@@ -157,8 +161,18 @@ export function GarageBlackjack() {
   const toggleCasinoLobby = useCallback(() => {
     const next = !casinoLobby;
     setCasinoLobby(next);
-    ambience.set("casino", next ? 0.018 : 0, 0.18);
-    if (next) garageAudio.chime();
+    const track = lobbyAudio.current;
+    if (next) {
+      ambience.set("casino", 0, 0.12);
+      if (track) {
+        track.volume = 0.12;
+        void track.play().catch(() => setCasinoLobby(false));
+      }
+      garageAudio.chime();
+    } else if (track) {
+      track.pause();
+      track.currentTime = 0;
+    }
   }, [casinoLobby]);
 
   const canDeal = termsAcknowledged && (round === null || round.over);
@@ -200,6 +214,8 @@ export function GarageBlackjack() {
 
   return (
     <section className="paper-game garage-blackjack-game" aria-labelledby="garage-blackjack-title">
+      {/* Lobby ambience: Casino Ambiance by freesound_community, via Pixabay Content License. */}
+      <audio ref={lobbyAudio} src="/media/casino-ambiance-19130.mp3" preload="metadata" loop aria-hidden="true" />
       <header className="paper-game-header">
         <div>
           <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
@@ -243,6 +259,9 @@ export function GarageBlackjack() {
         {quit ? <button type="button" onClick={resetSession}>New table</button> : null}
       </div>
       <p className="garage-blackjack-keys"><b>Keys:</b> D deal, H hit, S stand, Q leave table, L lobby sound.</p>
+      <p className="garage-blackjack-audio-credit">
+        Lobby ambience: <a href="https://pixabay.com/sound-effects/people-casino-ambiance-19130/" target="_blank" rel="noreferrer">Casino Ambiance by freesound_community via Pixabay <span className="sr-only">(opens in a new tab)</span>↗</a>
+      </p>
       <p className="garage-blackjack-notice">
         For entertainment only. Every hand is free and has no cash value. The session score is display-only and unlocks nothing. There are no chips, prizes, discounts, services, rewards, betting, wagers, winnings, or payouts.
       </p>
