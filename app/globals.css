@@ -2213,6 +2213,21 @@ img { max-width: 100%; }
 .garage-blackjack-intro { margin: 0; color: var(--muted); line-height: 1.5; }
 .garage-blackjack-header-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .55rem; }
 .garage-blackjack-bank { display: inline-grid; place-items: center; min-height: 42px; padding: .45rem .7rem; border: 3px solid var(--ink); background: var(--blue); color: #fff; font-size: .68rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
+.garage-blackjack-lobby {
+  min-height: 42px;
+  padding: .45rem .7rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: .68rem;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.garage-blackjack-lobby[aria-pressed="true"] { background: var(--red); color: #fff; box-shadow: 3px 3px 0 var(--yellow); }
 .garage-blackjack-deal {
   min-height: 42px;
   padding: .45rem .7rem;
