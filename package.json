@@ -17,6 +17,7 @@
     "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"
   },
   "dependencies": {
+    "@blackjacktrainer/blackjack-simulator": "^0.35.14",
     "drizzle-orm": "0.45.2",
     "next": "16.2.6",
     "qrcode": "^1.5.4",

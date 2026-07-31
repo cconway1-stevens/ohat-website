@@ -193,11 +193,11 @@ export const arcadeGames: ArcadeGame[] = [
     category: "puzzle",
   },
   {
-    slug: "thirteen-unlucky",
-    name: "13 Unlucky",
-    tagline: "Pick three lucky garage cards. Avoid the flat tire.",
-    classic: "lucky draw",
-    glyph: "13",
+    slug: "garage-blackjack",
+    name: "Garage Blackjack",
+    tagline: "Hit 21 at the service-bay card table.",
+    classic: "blackjack",
+    glyph: "21",
     category: "puzzle",
   },
   {
