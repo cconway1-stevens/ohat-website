@@ -2096,8 +2096,53 @@ img { max-width: 100%; }
 .garage-guess-keys button:hover { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
 .garage-guess-keys button.is-wide { flex: 0 1 120px; }
 
+/* Collapsed worked example — expanded it pushed the board off a phone screen. */
+.service-search-help { border-block: 1px solid var(--ink); }
+.service-search-help summary { padding: .6rem 0; color: var(--red); font-size: .7rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.service-search-help summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.service-search-help .service-search-example { border-block: 0; padding-top: 0; }
+
+/* "Freeze screen": stops the page moving under a thumb mid-swipe. */
+.arcade-lock-bar {
+  position: sticky;
+  bottom: .6rem;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem .8rem;
+  margin-top: 1.1rem;
+}
+.arcade-lock-bar small { color: var(--muted); font-size: .68rem; line-height: 1.4; }
+.arcade-lock-button {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 48px;
+  padding: .5rem 1rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.arcade-lock-bar.is-locked .arcade-lock-button { background: var(--yellow); box-shadow: 4px 4px 0 var(--red); }
+.arcade-lock-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+/* The lock itself: freeze the document, and stop a swipe chaining out to the
+   browser's own pull-to-refresh. */
+body.is-play-locked { overflow: hidden; overscroll-behavior: none; }
+
 /* Canvas games share a frame */
 .shore-run, .tow-chain { display: grid; gap: 1rem; }
+/* Inside the newspaper frame these keep their own spacing rhythm. */
+.paper-game.shore-run, .paper-game.tow-chain, .paper-game.match-game { gap: 1rem; }
+.paper-game.match-game { display: grid; }
 /* Canvases keep their logical resolution but scale to the screen, capped so
    a desktop viewport doesn't blow the pixels up. */
 .tow-chain-lot {

@@ -23,14 +23,18 @@ function readBest(): number {
   }
 }
 
+// Picks from the cells the chain isn't sitting on. The old version guessed at
+// random in a `while (true)`, which slows to a crawl — and never returns at
+// all — as the lot fills up.
 function randomCell(exclude: Point[]): Point {
-  while (true) {
-    const cell = {
-      x: Math.floor(Math.random() * GRID),
-      y: Math.floor(Math.random() * GRID),
-    };
-    if (!exclude.some((point) => point.x === cell.x && point.y === cell.y)) return cell;
+  const taken = new Set(exclude.map((point) => `${point.x},${point.y}`));
+  const free: Point[] = [];
+  for (let x = 0; x < GRID; x += 1) {
+    for (let y = 0; y < GRID; y += 1) {
+      if (!taken.has(`${x},${y}`)) free.push({ x, y });
+    }
   }
+  return free[Math.floor(Math.random() * free.length)] ?? { x: 0, y: 0 };
 }
 
 /**
@@ -135,7 +139,11 @@ export function TowChain() {
       s.dir = s.nextDir;
       const head = { x: s.chain[0].x + s.dir.x, y: s.chain[0].y + s.dir.y };
       const hitFence = head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID;
-      const hitChain = s.chain.some((cell) => cell.x === head.x && cell.y === head.y);
+      // The last car in the chain moves out of its cell on this same tick
+      // (unless we're about to grow), so driving into it isn't a crash.
+      const grows = head.x === s.pickup.x && head.y === s.pickup.y;
+      const body = grows ? s.chain : s.chain.slice(0, -1);
+      const hitChain = body.some((cell) => cell.x === head.x && cell.y === head.y);
       if (hitFence || hitChain) {
         runningRef.current = false;
         setRunning(false);
@@ -154,7 +162,7 @@ export function TowChain() {
         return;
       }
       s.chain.unshift(head);
-      if (head.x === s.pickup.x && head.y === s.pickup.y) {
+      if (grows) {
         if (soundOn.current) garageAudio.horn();
         const towed = s.chain.length - 1;
         setScore(towed);
@@ -192,7 +200,21 @@ export function TowChain() {
   }
 
   return (
-    <div className="tow-chain">
+    <div className="paper-game tow-chain">
+      <header className="paper-game-header">
+        <div>
+          <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
+          <h2>Tow chain</h2>
+        </div>
+        <div className="match-game-controls">
+          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
+            {sound ? "Sound on" : "Sound off"}
+          </button>
+          {!running ? (
+            <button type="button" onClick={() => start()}>{over ? "New shift" : "Start the shift"}</button>
+          ) : null}
+        </div>
+      </header>
       <div className="match-game-bar">
         <dl className="match-game-score">
           <div>
@@ -204,14 +226,6 @@ export function TowChain() {
             <dd>{best}</dd>
           </div>
         </dl>
-        <div className="match-game-controls">
-          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
-            {sound ? "Sound on" : "Sound off"}
-          </button>
-          {!running ? (
-            <button type="button" onClick={() => start()}>{over ? "New shift" : "Start the shift"}</button>
-          ) : null}
-        </div>
       </div>
       <p className="match-game-status" role="status">
         {running
@@ -222,7 +236,7 @@ export function TowChain() {
             ? `Shift over: ${score} car${score === 1 ? "" : "s"} towed back to the shop.`
             : `Every pickup makes the chain longer. Tow ${CARS_TO_WIN} to win a coupon.`}
       </p>
-      {won && over ? <PrizeBanner achievement={`${CARS_TO_WIN} cars towed in one shift.`} /> : null}
+      {won && over ? <PrizeBanner sound={sound} achievement={`${CARS_TO_WIN} cars towed in one shift.`} /> : null}
       <canvas
         ref={canvasRef}
         className="tow-chain-lot"

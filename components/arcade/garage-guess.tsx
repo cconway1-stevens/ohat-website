@@ -169,7 +169,7 @@ export function GarageGuess() {
           <button type="button" className="is-wide" onClick={() => press("BACKSPACE")}>Delete</button>
         </div>
       </div>
-      {won ? <PrizeBanner achievement="Garage Guess solved in six tries or less." /> : null}
+      {won ? <PrizeBanner sound={sound} achievement="Garage Guess solved in six tries or less." /> : null}
     </div>
   );
 }

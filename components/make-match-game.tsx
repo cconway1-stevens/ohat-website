@@ -58,7 +58,15 @@ function formatClock(seconds: number) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
-export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
+export function MakeMatchGame({
+  heading = "h2",
+  // The arcade dresses the game as a newspaper page, matching Garage Guess.
+  // The copy embedded in the shop pages keeps the plainer card.
+  paper = false,
+}: {
+  heading?: "h2" | "h1";
+  paper?: boolean;
+}) {
   const [deck, setDeck] = useState<Tile[]>([]);
   const [gridSize, setGridSize] = useState(MATCH_CONFIG.defaultGrid);
   const [maxGrid, setMaxGrid] = useState(MATCH_CONFIG.responsiveMaxGrid.mobile);
@@ -252,7 +260,8 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
 
   if (deck.length === 0) {
     return (
-      <div className="match-game match-game-start">
+      <div className={paper ? "paper-game paper-game-start" : "match-game match-game-start"}>
+        {paper ? <p className="paper-game-edition">The Ocean Heights Motoring Page</p> : null}
         <Heading className="match-game-title">Logo match</Heading>
         <p>
           Open the service bays and match the vehicle badges. Pick a quick
@@ -265,9 +274,23 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
   }
 
   return (
-    <div className="match-game">
+    <div className={paper ? "paper-game match-game" : "match-game"}>
+      {paper ? (
+        <header className="paper-game-header">
+          <div>
+            <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
+            <Heading className="match-game-title">Logo match</Heading>
+          </div>
+          <div className="match-game-controls">
+            <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
+              {sound ? "Sound on" : "Sound off"}
+            </button>
+            <button type="button" onClick={() => deal()}>New game</button>
+          </div>
+        </header>
+      ) : null}
       <div className="match-game-bar">
-        <Heading className="match-game-title">Logo match</Heading>
+        {paper ? null : <Heading className="match-game-title">Logo match</Heading>}
         <dl className="match-game-score">
           <div>
             <dt>Bays cleared</dt>
@@ -288,16 +311,18 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
             </div>
           ) : null}
         </dl>
-        <div className="match-game-controls">
-          <button
-            type="button"
-            onClick={() => setSound((on) => !on)}
-            aria-pressed={sound}
-          >
-            {sound ? "Sound on" : "Sound off"}
-          </button>
-          <button type="button" onClick={() => deal()}>New game</button>
-        </div>
+        {paper ? null : (
+          <div className="match-game-controls">
+            <button
+              type="button"
+              onClick={() => setSound((on) => !on)}
+              aria-pressed={sound}
+            >
+              {sound ? "Sound on" : "Sound off"}
+            </button>
+            <button type="button" onClick={() => deal()}>New game</button>
+          </div>
+        )}
       </div>
 
       {modeControls}
@@ -352,7 +377,7 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
         })}
       </ul>
 
-      {won ? <PrizeBanner achievement={`Every pair matched on the ${gridSize}x${gridSize} board.`} /> : null}
+      {won ? <PrizeBanner sound={sound} achievement={`Every pair matched on the ${gridSize}x${gridSize} board.`} /> : null}
       {customDialog}
     </div>
   );

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { arcadeGames } from "@/lib/arcade";
+import { PlayLock } from "./play-lock";
 
 // The shared shell for one arcade cabinet: hero with the game's name, the
 // game itself, and a footer rail to the other cabinets. Gives every game the
@@ -29,6 +30,7 @@ export function ArcadeFrame({
       <section className="section game-board">
         <div className="shell">
           {children}
+          <PlayLock />
           <nav className="arcade-rail" aria-label="More arcade games">
             <span>Next cabinet:</span>
             {others.map((other) => (

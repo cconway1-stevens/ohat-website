@@ -14,7 +14,7 @@ export default function LogoMatchPage() {
       slug="logo-match"
       lede="Every round deals a fresh set of badges from the makes we service. No countdown, no pressure — just find the pairs."
     >
-      <MakeMatchGame heading="h2" />
+      <MakeMatchGame heading="h2" paper />
     </ArcadeFrame>
   );
 }

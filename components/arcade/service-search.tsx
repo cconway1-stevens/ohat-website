@@ -2,6 +2,7 @@
 
 import { type CSSProperties, useState } from "react";
 import { arcadePresets } from "@/lib/arcade";
+import { LEVELS_FOR, SEARCH_WORDS } from "@/lib/arcade-words";
 import { garageAudio } from "@/lib/garage-audio";
 import { PrizeBanner } from "./prize";
 
@@ -11,20 +12,12 @@ type SearchPuzzle = { grid: string[][]; words: HiddenWord[] };
 
 const CONFIG = arcadePresets.serviceSearch;
 type Difficulty = keyof typeof CONFIG.difficulties;
-const SEARCH_WORDS = [
-  "ALIGN", "AXLE", "BRAKE", "CLUTCH", "ENGINE", "FILTER", "FUEL",
-  "GARAGE", "GEAR", "HOOD", "MIRROR", "OIL", "PISTON", "ROTOR",
-  "SPARK", "TIRE", "TRUNK", "WHEEL", "WIPER", "AIRBAG", "BEARING",
-  "BUMPER", "CALIPER", "CAMBER", "CASTER", "CHASSIS", "COOLANT",
-  "DAMPER", "EXHAUST", "FENDER", "FUSE", "GASKET", "GRILLE", "HORN",
-  "INJECTOR", "KEYFOB", "LUGNUT", "MILEAGE", "MOTOR", "OCTANE",
-  "PICKUP", "PULLEY", "RELAY", "REVERSE", "SENSOR", "SHIFTER", "SHOCK",
-  "SPARE", "STARTER", "STRUT", "SUNROOF", "TAILPIPE", "TOW", "TREAD",
-  "TURBO", "VALVE", "VOLTAGE", "WAGON", "WINCH",
-];
+// Ordered easiest-first and sliced by the difficulty's `directions` count:
+// left-to-right and top-to-bottom first, then the two reversals, then the
+// diagonals. Kids therefore never get a word spelled backwards.
 const DIRECTIONS: Point[] = [
-  { row: 0, col: 1 }, { row: 0, col: -1 },
-  { row: 1, col: 0 }, { row: -1, col: 0 },
+  { row: 0, col: 1 }, { row: 1, col: 0 },
+  { row: 0, col: -1 }, { row: -1, col: 0 },
   { row: 1, col: 1 }, { row: 1, col: -1 },
   { row: -1, col: 1 }, { row: -1, col: -1 },
 ];
@@ -62,11 +55,15 @@ function createSearch(difficulty: Difficulty): SearchPuzzle {
   const size = settings.gridSize;
   const grid = Array.from({ length: size }, () => Array<string>(size).fill(""));
   const words: HiddenWord[] = [];
+  const levels: readonly string[] = LEVELS_FOR[settings.level];
+  const pool = SEARCH_WORDS.filter(
+    (entry) => levels.includes(entry.level) && entry.word.length <= size,
+  ).map((entry) => entry.word);
 
-  for (const word of shuffled(SEARCH_WORDS)) {
+  for (const word of shuffled(pool)) {
     if (words.length >= settings.wordsPerPuzzle) break;
     const options: Point[][] = [];
-    for (const direction of DIRECTIONS.slice(0, settings.directionCount)) {
+    for (const direction of DIRECTIONS.slice(0, settings.directions)) {
       for (let row = 0; row < size; row += 1) {
         for (let col = 0; col < size; col += 1) {
           const cells = Array.from({ length: word.length }, (_, index) => ({
@@ -209,11 +206,16 @@ export function ServiceSearch() {
       </header>
 
       <p className="match-game-status" role="status">{message}</p>
-      <SearchExample />
+      {/* Folded away once play starts: on a phone the worked example pushed
+          the board itself below the fold. */}
+      <details className="service-search-help">
+        <summary>How do I select a word?</summary>
+        <SearchExample />
+      </details>
       <div className="service-search-layout">
         <div
           className="service-search-grid"
-          style={{ "--search-size": CONFIG.gridSize } as CSSProperties}
+          style={{ "--search-size": puzzle.grid.length } as CSSProperties}
           aria-label="Automotive word search"
         >
           {puzzle.grid.flatMap((letters, row) => letters.map((letter, col) => {
@@ -246,7 +248,7 @@ export function ServiceSearch() {
       </div>
 
       {won && complete ? (
-        <PrizeBanner achievement={`${prizeWords} service words found in the morning paper.`} />
+        <PrizeBanner sound={sound} achievement={`${prizeWords} service words found in the morning paper.`} />
       ) : null}
     </div>
   );
