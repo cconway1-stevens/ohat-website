@@ -1479,7 +1479,22 @@ img { max-width: 100%; }
 }
 .match-game-start p { max-width: 46ch; margin: 0; color: var(--muted); line-height: 1.6; }
 
-.match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin: 0; padding: 0; list-style: none; }
+/* The board is square tiles in a fixed grid, so its height is a fixed ratio
+   of its width — 4 columns x 5 rows here. Capping the width by the height
+   left over after the game's chrome keeps the whole board on screen instead
+   of running off the bottom of a short phone. `svh` accounts for mobile
+   browser chrome; the floor stops it shrinking to nothing on tiny viewports. */
+.match-grid {
+  --board-fit: calc((100svh - 290px) * 0.8);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .5rem;
+  width: 100%;
+  max-width: max(232px, min(100%, var(--board-fit)));
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
 .match-tile {
   width: 100%;
   aspect-ratio: 1;
@@ -1541,8 +1556,9 @@ img { max-width: 100%; }
 .match-grid-won li:nth-child(3n) .match-tile { animation-delay: .14s; }
 
 @media (min-width: 720px) {
-  /* Five columns: 20 tiles land in four complete rows. */
-  .match-grid { grid-template-columns: repeat(5, 1fr); gap: .6rem; }
+  /* Five columns: 20 tiles land in four complete rows, so the board is wider
+     than it is tall and the height budget buys more width. */
+  .match-grid { --board-fit: calc((100svh - 300px) * 1.25); grid-template-columns: repeat(5, 1fr); gap: .6rem; }
   .match-tile-face img { width: 40px; height: 40px; }
   .match-tile-face small { font-size: .55rem; }
 }
@@ -1633,7 +1649,12 @@ img { max-width: 100%; }
   .match-game-score > div { min-width: 58px; padding: .28rem .45rem; }
   .match-game-score dd { font-size: 1rem; }
   .match-game-controls button { padding: .45rem .7rem; font-size: .64rem; }
-  .match-tile { min-height: 60px; }
+  /* Low enough not to fight the height-based cap above, but still a
+     comfortable thumb target. */
+  .match-tile { min-height: 46px; }
+  /* The arcade hero gives up some height on phones so the board starts
+     nearer the top of the screen. */
+  .game-hero { padding: 130px 0 60px; }
   .match-tile-back, .match-tile-face { box-shadow: 3px 3px 0 var(--ink); }
   .match-tile-face img { width: 26px; height: 26px; }
   .match-tile-face small { font-size: .44rem; }
