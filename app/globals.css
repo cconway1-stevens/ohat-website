@@ -3476,3 +3476,129 @@ body.is-play-locked {
     transition-duration: .01ms !important;
   }
 }
+
+/* ------------------------------------------------------------------ *
+   Cozy garage: no score, no clock. A warm shell, and a radio you turn.
+ * ------------------------------------------------------------------ */
+
+.cozy-scene { display: grid; gap: 1rem; }
+.cozy-stage {
+  position: relative;
+  width: 100%;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: #17181c;
+  touch-action: manipulation;
+}
+.cozy-stage canvas { display: block; width: 100%; height: auto; }
+.cozy-note { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.55; }
+.cozy-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.cozy-actions button {
+  min-height: 46px;
+  padding: .5rem .8rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: .68rem;
+  font-weight: 950;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.cozy-actions button:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.cozy-actions button.is-on { background: var(--yellow); }
+.cozy-actions button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
+
+/* The radio set ----------------------------------------------------- */
+.radio-set {
+  display: grid;
+  gap: .7rem;
+  padding: .8rem;
+  border: 4px solid var(--ink);
+  background: linear-gradient(#3b332c, #241f1b);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.radio-face { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .8rem; align-items: center; }
+.radio-dial { display: grid; gap: .4rem; min-width: 0; }
+.radio-dial-glass {
+  position: relative;
+  height: 62px;
+  border: 3px solid #0f0d0c;
+  border-radius: 3px;
+  background: #2a2622;
+  overflow: hidden;
+  transition: background .3s ease;
+}
+.radio-set.is-on .radio-dial-glass { background: linear-gradient(#5c4a1f, #2f2716); box-shadow: inset 0 0 22px rgba(246,189,56,.45); }
+.radio-dial-glass > span { position: absolute; top: 0; width: 1px; height: 9px; background: rgba(247,239,217,.5); }
+.radio-dial-glass > span.is-major { height: 15px; background: rgba(247,239,217,.85); }
+.radio-dial-glass > span b {
+  position: absolute; top: 17px; left: 50%;
+  transform: translateX(-50%);
+  color: rgba(247,239,217,.8);
+  font-family: Georgia, serif; font-size: .6rem; font-weight: 900;
+}
+.radio-station-mark { position: absolute; bottom: 6px; width: 5px; height: 5px; margin-left: -2px; border-radius: 50%; background: var(--red); }
+.radio-set.is-on .radio-station-mark { background: #ff6b60; box-shadow: 0 0 6px #ff6b60; }
+.radio-needle { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--red); box-shadow: 0 0 8px rgba(224,85,90,.9); transition: left .12s linear; }
+.radio-tune-track { width: 100%; accent-color: var(--red); cursor: ew-resize; }
+.radio-readout { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; margin: 0; color: #f7efd9; }
+.radio-readout b { font-family: Georgia, serif; font-size: 1.3rem; color: var(--yellow); }
+.radio-readout span { font-size: .64rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; opacity: .82; }
+
+.radio-knobs { display: flex; gap: .7rem; }
+.radio-knob-wrap { display: grid; justify-items: center; gap: .25rem; }
+.radio-knob-wrap small { color: #cfc6b2; font-size: .5rem; font-weight: 950; letter-spacing: .12em; text-transform: uppercase; }
+.radio-knob {
+  position: relative;
+  width: 52px; height: 52px;
+  border: 3px solid #0f0d0c;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 30%, #6d6257 0 34%, #3a332c 62%, #221d19 100%);
+  box-shadow: inset 0 -3px 6px rgba(0,0,0,.6), 2px 2px 0 var(--ink);
+  cursor: ns-resize;
+  touch-action: none;
+}
+/* The pointer line shows the knob's position, driven by --turn. */
+.radio-knob i {
+  position: absolute; top: 5px; left: 50%;
+  width: 3px; height: 17px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--yellow);
+  transform-origin: 50% 21px;
+  transform: rotate(var(--turn, 0deg));
+}
+.radio-knob:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+
+.radio-presets { display: flex; flex-wrap: wrap; gap: .35rem; }
+.radio-presets button {
+  min-height: 40px;
+  padding: .3rem .6rem;
+  border: 2px solid #0f0d0c;
+  border-radius: 2px;
+  background: linear-gradient(#cfc9b8, #8d8676);
+  box-shadow: 0 3px 0 #17140f;
+  color: #17140f;
+  font: inherit; font-size: .64rem; font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.radio-presets button:active { transform: translateY(2px); box-shadow: 0 1px 0 #17140f; }
+.radio-presets button.is-tuned { background: linear-gradient(#f6bd38, #d59a1c); }
+.radio-presets .radio-power { background: linear-gradient(#8d8676, #5c564b); color: #f7efd9; }
+.radio-presets .radio-power.is-on { background: linear-gradient(#e0555a, #a8161c); color: #fff; }
+@media (max-width: 700px) {
+  .radio-face { grid-template-columns: minmax(0, 1fr); }
+  .radio-knobs { justify-content: center; }
+}
+
+/* Parts counter: the request slip and the shelf of boxes. */
+.counter-ticket { padding: .8rem .9rem; border: 3px solid var(--ink); background: var(--yellow-tint, #fdf1cf); }
+.counter-who { margin: 0 0 .25rem; color: var(--red); font-size: .6rem; font-weight: 950; letter-spacing: .12em; text-transform: uppercase; }
+.counter-ask { margin: 0; font-family: Georgia, serif; font-size: clamp(.95rem, 2.4vw, 1.2rem); line-height: 1.4; }
+.counter-reply { margin: .5rem 0 0; color: var(--muted); font-size: .78rem; }
+.counter-shelf button { flex: 1 1 130px; }

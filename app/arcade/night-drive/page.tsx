@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
 import { ArcadeFrame } from "@/components/arcade/arcade-frame";
-import { CozyGarage } from "@/components/arcade/cozy-garage";
+import { NightDrive } from "@/components/arcade/cozy/night-drive";
 
-export const metadata: Metadata = { title: "Night Drive Home - Garage Arcade", description: "A calm night drive from the Ocean Heights arcade." };
+export const metadata: Metadata = {
+  title: "Night Drive Home - Garage Arcade",
+  description: "A calm endless night drive with a working radio, heater and changing weather.",
+  alternates: { canonical: "/arcade/night-drive" },
+};
 
 export default function NightDrivePage() {
-  return <ArcadeFrame slug="night-drive" lede="A quiet road, passing lights, and a radio dial. Keep driving for as long as you want."><CozyGarage scene="night-drive" /></ArcadeFrame>;
+  return (
+    <ArcadeFrame
+      slug="night-drive"
+      lede="The Parkway at night with nothing at the end of it. Tune the radio, set the heater, and let the weather come and go."
+    >
+      <NightDrive />
+    </ArcadeFrame>
+  );
 }

@@ -18,10 +18,12 @@ export const arcadeCategories: {
   label: string;
   blurb: string;
 }[] = [
-  { id: "cozy", label: "Cozy garage", blurb: "No score, no clock. Put on a little shop ambience and stay as long as you like." },
   { id: "word", label: "Word & clue", blurb: "Paper puzzles for a slow wait. Pick a difficulty and take your time." },
   { id: "puzzle", label: "Puzzle & memory", blurb: "Shapes and badges. Easy to start, harder to put down." },
   { id: "action", label: "Arcade action", blurb: "Thumbs and reflexes. Short rounds, scores stay on your own device." },
+  // Last on purpose: the games people came to play lead, and the cozy corner
+  // waits at the end for whoever wants to sit in it.
+  { id: "cozy", label: "Cozy garage", blurb: "No score, no clock, nothing to lose. Put the shop on and stay as long as you like." },
 ];
 
 // One place to tune round length, prize difficulty, and game speed.

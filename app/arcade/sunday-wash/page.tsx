@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
 import { ArcadeFrame } from "@/components/arcade/arcade-frame";
-import { CozyGarage } from "@/components/arcade/cozy-garage";
+import { SundayWash } from "@/components/arcade/cozy/sunday-wash";
 
-export const metadata: Metadata = { title: "Sunday Car Wash - Garage Arcade", description: "A slow, sunny car wash from the Ocean Heights arcade." };
+export const metadata: Metadata = {
+  title: "Sunday Car Wash - Garage Arcade",
+  description: "Spray, foam, rinse, dry and shine whatever rolls into the Ocean Heights wash bay.",
+  alternates: { canonical: "/arcade/sunday-wash" },
+};
 
 export default function SundayWashPage() {
-  return <ArcadeFrame slug="sunday-wash" lede="A warm Sunday wash bay with no timer and nowhere else to be."><CozyGarage scene="sunday-wash" /></ArcadeFrame>;
+  return (
+    <ArcadeFrame
+      slug="sunday-wash"
+      lede="Spray, foam, rinse, dry, tire shine. Whatever rolls into the bay gets the full five passes, and there is no clock on any of it."
+    >
+      <SundayWash />
+    </ArcadeFrame>
+  );
 }
