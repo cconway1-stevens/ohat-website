@@ -49,10 +49,11 @@ export const metadata: Metadata = {
   other: {
     "codex-preview": "development",
   },
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-  },
+  // No `icons` here on purpose. Next resolves icon hrefs against
+  // `metadataBase`, which emits an absolute production URL — so any other
+  // host (the prototype, a preview deploy) fetches the favicon cross-origin
+  // from a domain still serving the old site, and the tab icon breaks. The
+  // <link> tags in the layout below stay host-relative instead.
 };
 
 export const viewport: Viewport = {
@@ -66,6 +67,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Host-relative so the icon resolves on whatever domain serves the
+            site — see the note on `icons` in the metadata above. */}
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
       <body className={`${geistSans.variable} antialiased`}>
         {children}
         <CallTracking />
