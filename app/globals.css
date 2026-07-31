@@ -1387,6 +1387,141 @@ img { max-width: 100%; }
 .make-grid span { font-size: .62rem; font-weight: 900; text-transform: uppercase; }
 .make-note { color: var(--muted); font-size: .73rem; }
 
+/* Logo match game --------------------------------------------------------
+   Deliberately quiet furniture: the toggle reads as a caption beside the
+   grid rather than a call to action competing with the service links. */
+.make-game-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--red);
+  font: inherit;
+  font-size: .73rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.make-game-toggle:hover { color: var(--red-dark); }
+.make-note-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .6rem 1.4rem; }
+.make-grid-tools { display: flex; justify-content: flex-end; margin-bottom: .55rem; }
+
+.match-game { display: grid; gap: 1rem; }
+.match-game-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem 1.2rem; }
+.match-game-title { margin: 0; font-family: Georgia, serif; font-size: 1.6rem; letter-spacing: -.02em; }
+.match-game-score { display: flex; flex-wrap: wrap; gap: .3rem; margin: 0; }
+.match-game-score > div {
+  min-width: 68px;
+  padding: .35rem .6rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  text-align: center;
+}
+.match-game-score dt { font-size: .55rem; font-weight: 950; letter-spacing: .13em; text-transform: uppercase; color: var(--red); }
+.match-game-score dd { margin: 0; font-family: Georgia, serif; font-size: 1.15rem; font-weight: 900; }
+.match-game-controls { display: flex; gap: .5rem; }
+.match-game-controls button {
+  padding: .5rem .9rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 3px 3px 0 var(--ink);
+  font: inherit;
+  font-size: .7rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.match-game-controls button:hover { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+.match-game-status { margin: 0; color: var(--muted); font-size: .82rem; }
+.match-game-start {
+  justify-items: start;
+  gap: .7rem;
+  padding: clamp(1.4rem, 4vw, 2.4rem);
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+.match-game-start p { max-width: 46ch; margin: 0; color: var(--muted); line-height: 1.6; }
+
+.match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.match-tile {
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  /* A tap target that stays comfortable on a phone. */
+  min-height: 68px;
+  cursor: pointer;
+  perspective: 640px;
+}
+.match-tile:disabled { cursor: default; }
+.match-tile-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .38s ease;
+}
+.match-tile.is-showing .match-tile-inner { transform: rotateY(180deg); }
+.match-tile-back,
+.match-tile-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: .3rem;
+  border: 3px solid var(--ink);
+  backface-visibility: hidden;
+}
+.match-tile-back {
+  background:
+    repeating-linear-gradient(125deg, transparent 0 9px, rgba(255,255,255,.14) 9px 11px, transparent 11px 20px),
+    var(--red);
+  color: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.match-tile-back b { font-family: Georgia, serif; font-size: .78rem; letter-spacing: .12em; }
+.match-tile-face {
+  background: var(--paper);
+  color: var(--ink);
+  transform: rotateY(180deg);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.match-tile-face img { width: 34px; height: 34px; object-fit: contain; }
+.match-tile-face small { font-size: .52rem; font-weight: 950; letter-spacing: .04em; text-transform: uppercase; text-align: center; }
+.match-tile.is-matched .match-tile-face { background: var(--yellow); box-shadow: 4px 4px 0 var(--blue); }
+@media (hover: hover) {
+  .match-tile:not(:disabled):hover .match-tile-back { background-color: var(--red-dark); }
+}
+@keyframes match-cheer { 0%,100% { transform: none; } 50% { transform: translateY(-6px) rotate(-1.5deg); } }
+/* Applied to the outer tile, never to `.match-tile-face`: the face carries the
+   rotateY(180deg) half of the flip, and animating its transform would drop
+   that rotation and turn every matched logo away from the viewer. */
+.match-grid-won .match-tile { animation: match-cheer .6s ease-in-out; }
+.match-grid-won li:nth-child(2n) .match-tile { animation-delay: .07s; }
+.match-grid-won li:nth-child(3n) .match-tile { animation-delay: .14s; }
+
+@media (min-width: 720px) {
+  .match-grid { grid-template-columns: repeat(8, 1fr); gap: .6rem; }
+  .match-tile-face img { width: 40px; height: 40px; }
+  .match-tile-face small { font-size: .55rem; }
+}
+
+.game-hero { background: linear-gradient(120deg, rgba(23,20,18,.97), rgba(105,12,17,.95)); }
+.game-board { background: var(--cream); }
+.game-board-note { margin-top: 1.6rem; }
+.game-board-note a { color: var(--red); font-weight: 900; }
+
 .award-section { position: relative; padding: 9rem 0 7rem; background: var(--red); color: #fff; }
 .award-grid { display: grid; grid-template-columns: .7fr 1.3fr; gap: clamp(3rem, 8vw, 8rem); align-items: center; }
 .award-badge {
