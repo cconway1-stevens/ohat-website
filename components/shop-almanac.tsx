@@ -70,7 +70,7 @@ function clientSnapshot(): Snapshot {
     date: new Date().toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      timeZone: "America/New_York",
+      timeZone: shop.timezone,
     }),
     reading: readCache(),
   };
