@@ -104,6 +104,9 @@ export default function LinksPage() {
         </nav>
 
         <p className="link-hub-hours">Monday–Friday · 8:00 AM–5:00 PM</p>
+        <p className="link-hub-share">
+          <Link href="/links/qr">Share this page — QR code &amp; link →</Link>
+        </p>
         <Link className="link-hub-home" href="/">← Back to the full garage</Link>
       </section>
     </main>
