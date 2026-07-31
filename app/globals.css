@@ -1884,6 +1884,8 @@ img { max-width: 100%; }
 .copy-button:hover { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
 .contact-facts { padding-block: clamp(3.5rem, 7vw, 5.5rem); background: var(--cream); }
 .contact-dashboard { display: grid; grid-template-columns: minmax(0, .92fr) minmax(360px, 1.08fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+.contact-dashboard > *,
+.contact-facts-grid > * { min-width: 0; }
 .contact-dashboard-copy > h2,
 .contact-map-panel > h2 { margin: .2rem 0 1.25rem; font-family: Georgia, serif; font-size: clamp(2rem, 4.4vw, 3.55rem); line-height: .95; letter-spacing: -.035em; }
 .contact-facts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch; }
@@ -1895,6 +1897,7 @@ img { max-width: 100%; }
 }
 .contact-fact-card h2,
 .contact-fact-card h3 { margin: .2rem 0 .65rem; font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.12; }
+.contact-fact-card h3 { overflow-wrap: anywhere; }
 .contact-fact-card p { margin: 0 0 .55rem; color: var(--muted); line-height: 1.5; font-size: .9rem; }
 .contact-fact-card a { color: var(--red); font-weight: 900; }
 .hours-list { display: grid; gap: .45rem; margin: 0 0 .85rem; }
