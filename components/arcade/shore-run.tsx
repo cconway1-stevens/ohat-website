@@ -123,6 +123,7 @@ export function ShoreRun() {
   function setDuck(on: boolean) {
     const g = game.current;
     if (!runningRef.current) return;
+    if (on && !g.ducking && soundOn.current) garageAudio.duck();
     g.ducking = on;
   }
 
