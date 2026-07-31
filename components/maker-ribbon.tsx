@@ -89,7 +89,7 @@ export function MakerRibbon({
         <span className="mkr-medal-disc">★</span>
       </span>
       <small>
-        {note} · <u>see more of their work</u>
+        {note} · <u>see more of his work</u>
         <span className="sr-only"> (opens in a new tab)</span>
       </small>
     </a>
