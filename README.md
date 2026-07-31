@@ -98,10 +98,10 @@ Notes:
 
 - The dev server simulates Cloudflare bindings via `vite.config.ts`; there is
   no `wrangler.jsonc`.
-- Google Fonts are cached in `.vinext/fonts/` and rewritten to served URLs at
-  build time. If font requests 404 after moving the checkout, refresh the
-  `url(...)` paths in `.vinext/fonts/*/style.css` to the new project root (or
-  delete the cache and rebuild with network access).
+- Google Fonts are cached in `.vinext/fonts/`, which is **gitignored on
+  purpose**: the cached CSS bakes in absolute filesystem paths, so a committed
+  cache 404s on every machine but the one that generated it. It regenerates on
+  first build/dev (falling back to the Google CDN if the network is blocked).
 - The remote Sites builder runs `npm run build` against the pushed commit —
   don't repeat install/build as a routine pre-push step.
 
