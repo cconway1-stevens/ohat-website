@@ -42,6 +42,17 @@ test("keeps ordinary weekends closed without a holiday notice", () => {
   assert.equal(status.holidayNotice, null);
 });
 
+test("tells customers when the shop will reopen after hours", () => {
+  const mondayEvening = getShopHoursStatus(new Date("2026-07-27T21:00:00Z"));
+  assert.equal(mondayEvening.label, "Closed for the day. Reopens Tuesday at 8:00 AM");
+
+  const fridayEvening = getShopHoursStatus(new Date("2026-07-31T21:00:00Z"));
+  assert.equal(fridayEvening.label, "Closed for the day. Reopens Monday at 8:00 AM");
+
+  const mondayMorning = getShopHoursStatus(new Date("2026-07-27T11:00:00Z"));
+  assert.equal(mondayMorning.label, "Closed. Reopens today at 8:00 AM");
+});
+
 test("configures every hold-preview sign and label", () => {
   const preview = shop.hours.status.signPreview;
   assert.equal(preview.holdMs, 5_000);
