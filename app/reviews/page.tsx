@@ -114,12 +114,13 @@ export default function ReviewsPage() {
 
         <section className="profile-section" id="review-profiles">
           <div className="shell profile-grid">
-            {profileLinks.map((profile) => (
-              <a key={profile.name} href={profile.href} target="_blank" rel="noreferrer">
-                <span>View on</span>
+            {profileLinks.map((profile, index) => (
+              <a key={profile.name} href={profile.href} target="_blank" rel="noreferrer" className="profile-plate">
+                <span className="profile-plate-bolts" aria-hidden="true"><i /><i /><i /><i /></span>
+                <span className="profile-plate-serial">Review source / {String(index + 1).padStart(2, "0")}</span>
                 <strong>{profile.name}</strong>
                 <p>{profile.detail}</p>
-                <b>Open profile ↗︎<span className="sr-only"> (opens in a new tab)</span></b>
+                <b>Open profile <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></b>
               </a>
             ))}
           </div>
