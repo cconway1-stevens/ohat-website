@@ -1784,8 +1784,8 @@ img { max-width: 100%; }
 .arcade-cabinet:nth-child(3)::before { background: var(--yellow); }
 .arcade-cabinet:nth-child(4)::before { background: var(--paper); }
 .arcade-cabinet:nth-child(5)::before { background: var(--blue); }
-.arcade-cabinet:nth-child(4) { grid-column: 2 / span 2; }
-.arcade-cabinet:nth-child(5) { grid-column: 4 / span 2; }
+.arcade-cabinet:nth-child(6) { background: var(--blue); color: #fff; }
+.arcade-cabinet:nth-child(6)::before { background: var(--yellow); }
 .arcade-cabinet:hover { transform: translateY(-6px) rotate(-.6deg); box-shadow: 12px 12px 0 var(--red); }
 .arcade-cabinet:nth-child(4):hover { box-shadow: 12px 12px 0 var(--yellow); }
 .arcade-cabinet-number { font-size: .65rem; font-weight: 950; letter-spacing: .16em; color: currentColor; opacity: .6; }
@@ -1820,8 +1820,8 @@ img { max-width: 100%; }
   .arcade-cabinets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .arcade-cabinet,
   .arcade-cabinet:nth-child(4),
-  .arcade-cabinet:nth-child(5) { grid-column: auto; }
-  .arcade-cabinet:nth-child(5) { grid-column: 1 / -1; width: min(100%, 360px); justify-self: center; }
+  .arcade-cabinet:nth-child(5),
+  .arcade-cabinet:nth-child(6) { grid-column: auto; }
 }
 
 @media (max-width: 600px) {
@@ -1829,7 +1829,8 @@ img { max-width: 100%; }
   .arcade-cabinets { grid-template-columns: minmax(0, 1fr); }
   .arcade-cabinet,
   .arcade-cabinet:nth-child(4),
-  .arcade-cabinet:nth-child(5) { grid-column: auto; width: 100%; }
+  .arcade-cabinet:nth-child(5),
+  .arcade-cabinet:nth-child(6) { grid-column: auto; width: 100%; }
   .arcade-cabinet { min-height: 244px; }
 }
 
@@ -2078,6 +2079,22 @@ img { max-width: 100%; }
 .service-search-list li { font-family: Georgia, serif; font-size: .92rem; font-weight: 900; }
 .service-search-list li.is-found { color: var(--muted); text-decoration: line-through 3px var(--red); }
 .service-search-list p { margin: 1rem 0 0; color: var(--red); font-size: .7rem; font-weight: 950; text-transform: uppercase; }
+
+/* Garage Guess: a compact five-letter shop word puzzle. */
+.garage-guess-game { justify-items: center; }
+.garage-guess-game .paper-game-header,
+.garage-guess-game .match-game-status { width: 100%; }
+.garage-guess-grid { display: grid; gap: .38rem; width: min(100%, 360px); }
+.garage-guess-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .38rem; }
+.garage-guess-row span { display: grid; place-items: center; aspect-ratio: 1; border: 3px solid var(--ink); background: #fffdf5; font-family: Georgia, serif; font-size: clamp(1.25rem, 6vw, 2rem); font-weight: 900; text-transform: uppercase; }
+.garage-guess-row .is-correct, .garage-guess-keys .is-correct { background: var(--blue); color: #fff; }
+.garage-guess-row .is-present, .garage-guess-keys .is-present { background: var(--yellow); color: var(--ink); }
+.garage-guess-row .is-absent, .garage-guess-keys .is-absent { background: var(--ink); color: #fff; }
+.garage-guess-keys { display: grid; gap: .35rem; width: min(100%, 440px); }
+.garage-guess-keys > div { display: flex; justify-content: center; gap: .26rem; }
+.garage-guess-keys button { display: grid; place-items: center; min-width: 0; flex: 1 1 0; min-height: 42px; padding: .35rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 2px 2px 0 var(--ink); color: var(--ink); font: inherit; font-size: clamp(.6rem, 2vw, .76rem); font-weight: 950; cursor: pointer; }
+.garage-guess-keys button:hover { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+.garage-guess-keys button.is-wide { flex: 0 1 120px; }
 
 /* Canvas games share a frame */
 .shore-run, .tow-chain { display: grid; gap: 1rem; }

@@ -39,6 +39,7 @@ export const arcadePresets = {
       advanced: { label: "Advanced", gridSize: 12, wordsPerPuzzle: 9, prizeWords: 6, directionCount: 8 },
     },
   },
+  garageGuess: { wordLength: 5, maxGuesses: 6 },
   shoreRun: { coinsToWin: 4 },
   towChain: { carsToWin: 4, tickMs: 175 },
 } as const;
@@ -79,4 +80,22 @@ export const arcadeGames: ArcadeGame[] = [
     classic: "Snake",
     glyph: "⌁",
   },
+  {
+    slug: "garage-guess",
+    name: "Garage Guess",
+    tagline: "Find the five-letter shop word in six tries.",
+    classic: "word puzzle",
+    glyph: "G",
+  },
 ];
+
+// Five-letter automotive words used by Garage Guess for both answers and
+// accepted guesses. Keeping the word bank beside the game presets makes the
+// vocabulary straightforward to tune without touching the game logic.
+export const garageGuessWords = [
+  "ALIGN", "AXLES", "BELTS", "BRAKE", "CABIN", "CLAMP", "COUPE",
+  "FRAME", "FUEL", "FUSES", "GAUGE", "GEARS", "GRILL", "HATCH",
+  "HITCH", "HOODS", "MOTOR", "RELAY", "ROTOR", "SEDAN", "SHAFT",
+  "SHOCK", "SPARK", "STRUT", "TIRES", "TOWED", "TREAD", "TRUCK",
+  "TRUNK", "VALVE", "WAGON", "WHEEL", "WINCH", "WIPER",
+] as const;
