@@ -1,14 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
-
-// One shared code rather than per-player random strings: the shop has no way
-// to validate a generated code at the counter, and a single memorable one is
-// far easier for everyone. The actual discount is intentionally left to the
-// shop — see /offers.
-export const PRIZE_CODE = "PIT-STOP";
 
 /**
  * A short confetti burst, drawn on a canvas that sits over the game and
@@ -70,27 +64,47 @@ function Confetti() {
 
 /**
  * Shown the moment a game's (deliberately easy) target is met: confetti, the
- * coupon code, and a route to the offers page.
+ * prize note, and a route to the offers page.
  */
 export function PrizeBanner({ achievement }: { achievement: string }) {
+  const [dismissed, setDismissed] = useState(false);
+
   useEffect(() => {
     garageAudio.fanfare();
   }, []);
 
+  if (dismissed) return null;
+
   return (
-    <div className="prize-banner" role="status">
-      <Confetti />
-      <div className="prize-banner-body">
-        <p className="prize-banner-kicker">You won a coupon</p>
-        <h3>{achievement}</h3>
-        <p className="prize-code">
-          Show this code at the counter: <b>{PRIZE_CODE}</b>
-        </p>
-        <p className="prize-terms">
-          Mention it when you book or drop off. One per visit — terms and
-          conditions may apply, and the shop has the final say on what applies
-          to your vehicle. <Link href="/offers">See current offers →</Link>
-        </p>
+    <div className="prize-popup-backdrop" role="presentation">
+      <div
+        aria-label="Arcade prize"
+        aria-modal="false"
+        className="prize-banner"
+        role="dialog"
+      >
+        <Confetti />
+        <div className="prize-banner-body">
+          <p className="prize-banner-kicker">You won a coupon</p>
+          <h3>{achievement}</h3>
+          <p className="prize-terms">
+            Head to the deals page and we&apos;ll help match the current offer
+            to your visit. Terms and conditions may apply, and the shop has the
+            final say on what applies to your vehicle.
+          </p>
+          <div className="prize-actions">
+            <Link className="button button-primary prize-redeem" href="/offers">
+              Redeem prize
+            </Link>
+            <button
+              className="prize-dismiss"
+              onClick={() => setDismissed(true)}
+              type="button"
+            >
+              Keep playing
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
