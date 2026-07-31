@@ -2320,6 +2320,8 @@ img { max-width: 100%; }
 .garage-blackjack-keys { margin: 1rem 0 0; color: var(--muted); font-size: .7rem; line-height: 1.45; text-align: center; }
 .garage-blackjack-keys b { color: var(--ink); font-weight: 950; text-transform: uppercase; }
 .garage-blackjack-notice { margin: 0; padding: .65rem .8rem; border-left: 4px solid var(--red); background: var(--yellow-tint); color: var(--ink); font-size: .7rem; font-weight: 800; line-height: 1.45; }
+.garage-blackjack-acknowledgement { display: flex; align-items: flex-start; gap: .55rem; margin-top: .65rem; padding: .65rem .8rem; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; font-size: .7rem; font-weight: 900; line-height: 1.4; }
+.garage-blackjack-acknowledgement input { flex: 0 0 auto; width: 1rem; height: 1rem; margin: .02rem 0 0; accent-color: var(--red); }
 .garage-blackjack-legal { margin-top: .65rem; }
 .garage-blackjack-legal summary { width: max-content; padding: .5rem .7rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 2px 2px 0 var(--ink); color: var(--ink); cursor: pointer; font-size: .63rem; font-weight: 950; letter-spacing: .07em; list-style: none; text-transform: uppercase; }
 .garage-blackjack-legal summary::-webkit-details-marker { display: none; }

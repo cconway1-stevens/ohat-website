@@ -113,6 +113,7 @@ export function GarageBlackjack() {
   const [quit, setQuit] = useState(false);
   const [casinoLobby, setCasinoLobby] = useState(false);
   const [score, setScore] = useState<Score>({ wins: 0, losses: 0, pushes: 0 });
+  const [termsAcknowledged, setTermsAcknowledged] = useState(false);
 
   useEffect(() => () => ambience.set("casino", 0, 0.12), []);
 
@@ -160,13 +161,15 @@ export function GarageBlackjack() {
     if (next) garageAudio.chime();
   }, [casinoLobby]);
 
-  const canDeal = round === null || round.over;
+  const canDeal = termsAcknowledged && (round === null || round.over);
   const outcome = roundOutcome(round);
   const status = quit
     ? "You left the table. Come back for a free hand anytime."
     : round
       ? roundMessage(round)
-      : "Every hand is free. Deal when you are ready.";
+      : termsAcknowledged
+        ? "Every hand is free. Deal when you are ready."
+        : "Acknowledge the free-play table terms to deal a hand.";
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -243,6 +246,10 @@ export function GarageBlackjack() {
       <p className="garage-blackjack-notice">
         For entertainment only. Every hand is free and has no cash value. The session score is display-only and unlocks nothing. There are no chips, prizes, discounts, services, rewards, betting, wagers, winnings, or payouts.
       </p>
+      <label className="garage-blackjack-acknowledgement">
+        <input type="checkbox" checked={termsAcknowledged} onChange={(event) => setTermsAcknowledged(event.target.checked)} />
+        <span>I acknowledge the free-play table terms.</span>
+      </label>
       <details className="garage-blackjack-legal">
         <summary>More information</summary>
         <p>
