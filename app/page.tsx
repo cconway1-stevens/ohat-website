@@ -13,6 +13,7 @@ import { brandSrc, heroMakes } from "@/lib/makes";
 
 import { carfaxUrl } from "@/lib/business";
 import { autoRepairSchema, shop } from "@/lib/shop";
+import { ShopHoursStatus } from "@/components/shop-hours-status";
 
 export default function Home() {
   const localBusinessSchema = {
@@ -442,6 +443,7 @@ export default function Home() {
                 <small>Shop hours</small>
                 <strong>Monday–Friday</strong>
                 <span>{shop.hours.display.split(", ")[1]}</span>
+                <ShopHoursStatus />
               </div>
               <div>
                 <small>Service area</small>

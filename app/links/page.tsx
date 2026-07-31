@@ -8,6 +8,7 @@ import {
 } from "@/components/site-header";
 import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/business";
 import { shop } from "@/lib/shop";
+import { ShopHoursStatus } from "@/components/shop-hours-status";
 
 // Deliberately not chasing "auto repair Egg Harbor Township" here — /contact
 // and the service pages own those queries, and a second page competing for
@@ -104,7 +105,7 @@ export default function LinksPage() {
           </div>
         </nav>
 
-        <p className="link-hub-hours">{shop.hours.compact}</p>
+        <p className="link-hub-hours">{shop.hours.compact} <ShopHoursStatus /></p>
         <p className="link-hub-share">
           <Link href="/links/qr">Share this page — QR code &amp; link →</Link>
         </p>

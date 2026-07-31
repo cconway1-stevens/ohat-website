@@ -6,6 +6,7 @@ import { DirectionsTrigger } from "@/components/directions-dialog";
 import { CopyButton } from "@/components/copy-field";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { contactEmail, receiptsEmail } from "@/lib/business";
+import { ShopHoursStatus } from "@/components/shop-hours-status";
 import { autoRepairSchema, shop } from "@/lib/shop";
 
 // The wording is page-specific SEO copy and stays here, but the details
@@ -152,6 +153,7 @@ export default function ContactPage() {
                       <dd>Closed</dd>
                     </div>
                   </dl>
+                  <ShopHoursStatus />
                   <p>
                     {shop.hours.closedNote} The{" "}
                     <Link href="/vehicle-drop-off">secure night drop</Link>

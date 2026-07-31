@@ -271,6 +271,13 @@ img { max-width: 100%; }
 }
 .directions-dialog-hours a { color: var(--red); }
 .directions-dialog-hours a:hover { text-decoration: underline; }
+.shop-hours-status-wrap { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .35rem .65rem; }
+.shop-hours-status { display: inline-flex; align-items: center; gap: .35rem; font-size: .7rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; }
+.shop-hours-status > span { width: .48rem; height: .48rem; border-radius: 50%; background: currentColor; }
+.shop-hours-status.is-open { color: #187a42; }
+.shop-hours-status.is-opening-soon, .shop-hours-status.is-closing-soon { color: #a65d00; }
+.shop-hours-status.is-closed { color: var(--red); }
+.shop-hours-holiday { flex-basis: 100%; color: var(--red); font-size: .72rem; font-weight: 800; line-height: 1.35; }
 .directions-dialog-options {
   display: grid;
   grid-template-columns: 1fr 1fr;

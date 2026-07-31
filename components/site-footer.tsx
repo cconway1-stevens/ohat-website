@@ -6,6 +6,7 @@ import { shop } from "@/lib/shop";
 import { BrandMark, phoneDisplay, phoneHref } from "./site-header";
 
 import { profileLinks } from "@/lib/business";
+import { ShopHoursStatus } from "./shop-hours-status";
 
 const socialLinks = profileLinks.map(({ name, href }) => [name, href]);
 
@@ -69,6 +70,7 @@ export function SiteFooter() {
             <strong>Call</strong>
             <a href={phoneHref}>{phoneDisplay}</a>
             <span>{shop.hours.display}</span>
+            <ShopHoursStatus />
           </div>
           <div>
             <strong>Connect</strong>
