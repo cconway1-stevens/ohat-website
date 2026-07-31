@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { DirectionsTrigger } from "@/components/directions-dialog";
@@ -6,10 +7,11 @@ import {
   phoneHref,
 } from "@/components/site-header";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Quick Links",
   description:
     "Call, get directions, save Ocean Heights Auto & Tire to your contacts, and find our trusted profiles.",
+  alternates: { canonical: "/links" },
 };
 
 const carfax =
@@ -59,15 +61,15 @@ export default function LinksPage() {
           </Link>
           <a href={carfax} target="_blank" rel="noreferrer">
             <span aria-hidden="true">★</span>
-            <span><strong>CARFAX reviews</strong><small>Verified customer feedback</small></span>
+            <span><strong>CARFAX reviews<span className="sr-only"> (opens in a new tab)</span></strong><small>Verified customer feedback</small></span>
           </a>
           <a href="https://www.facebook.com/OceanHeightsAuto/" target="_blank" rel="noreferrer">
             <span aria-hidden="true">f</span>
-            <span><strong>Facebook</strong><small>Follow the garage</small></span>
+            <span><strong>Facebook<span className="sr-only"> (opens in a new tab)</span></strong><small>Follow the garage</small></span>
           </a>
           <a href="https://www.yelp.com/biz/ocean-heights-auto-and-tire-egg-harbor-township-2" target="_blank" rel="noreferrer">
             <span aria-hidden="true">Y</span>
-            <span><strong>Yelp</strong><small>Find our business profile</small></span>
+            <span><strong>Yelp<span className="sr-only"> (opens in a new tab)</span></strong><small>Find our business profile</small></span>
           </a>
         </nav>
 

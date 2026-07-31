@@ -47,6 +47,8 @@ export default function Home() {
     "@type": "AutoRepair",
     name: "Ocean Heights Auto & Tire",
     url: "https://oceanheightsautorepair.com",
+    image: "https://oceanheightsautorepair.com/media/ocean-heights-cover.jpg",
+    logo: "https://oceanheightsautorepair.com/ohat-logo.jpg",
     telephone: "+1-609-241-1546",
     address: {
       "@type": "PostalAddress",
@@ -96,8 +98,9 @@ export default function Home() {
                 <em>We know families.</em>
               </h1>
               <p className="cover-lede">
-                Dealer-level diagnostics, family-garage value, and straight
-                talk for classic, gas, diesel, hybrid, and electric vehicles.
+                Dealer-level diagnostics. Family-garage honesty. From
+                carbureted classics to brand-new EVs, every car in your
+                driveway is welcome here.
               </p>
 
               <div className="cover-actions">
@@ -133,7 +136,7 @@ export default function Home() {
               <figure className="cover-plate">
                 <div className="cover-plate-image">
                   <Image
-                    src="/media/ocean-heights-cover.png"
+                    src="/media/ocean-heights-cover.jpg"
                     alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
                     fill
                     priority
@@ -145,7 +148,7 @@ export default function Home() {
                   <em>All eras</em>
                 </span>
                 <figcaption>
-                  <span>Fig. 1 — The modern family garage</span>
+                  <span>Fig. 1 — Classics, dailies &amp; EVs, one driveway</span>
                   <strong>1178 Ocean Heights Avenue</strong>
                 </figcaption>
               </figure>
@@ -217,12 +220,10 @@ export default function Home() {
                   className="garage-proof-ticket garage-proof-carfax"
                   href={carfaxUrl}
                 >
-                  <img
-                    src="https://dealers.carfax.com/static/images/top-rated-service-center/2025/100MZOQLBL/top-rated_small.webp"
-                    alt="2025 CARFAX Top-Rated Service Center"
-                    width="58"
-                    height="58"
-                  />
+                  <span className="garage-carfax-seal" aria-hidden="true">
+                    <small>CARFAX</small>
+                    <b>★★★★★</b>
+                  </span>
                   <span>
                     <strong>2025 Top-Rated</strong>
                     <small>CARFAX Service Center</small>

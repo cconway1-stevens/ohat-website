@@ -9,6 +9,8 @@
   --ink: #171412;
   --muted: #655d54;
   --blue: #1a7183;
+  --yellow-tint: #ffe9b0;
+  --blue-tint: #dff0f3;
   --line: rgba(23, 20, 18, 0.18);
   --shadow: 0 22px 60px rgba(54, 30, 18, 0.16);
   --hard-shadow: 8px 8px 0 #171412;
@@ -92,7 +94,7 @@ img { max-width: 100%; }
 .ticket-status,
 .dropoff-route {
   margin: 0 0 1rem;
-  color: var(--yellow);
+  color: var(--yellow-tint);
   font-size: .76rem;
   font-weight: 950;
   letter-spacing: .18em;
@@ -209,22 +211,47 @@ img { max-width: 100%; }
   letter-spacing: .14em;
   text-transform: uppercase;
 }
+.directions-dialog[open] { animation: dialog-pop .28s ease-out; }
+.directions-dialog[open]::backdrop { animation: backdrop-fade .28s ease-out; }
 .directions-dialog h2 {
   margin: 0;
+  padding-bottom: .55rem;
+  border-bottom: 4px double var(--ink);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.4rem, 8vw, 4.4rem);
-  line-height: .9;
-  letter-spacing: -.05em;
+  font-size: clamp(1.9rem, 6vw, 3rem);
+  line-height: .92;
+  letter-spacing: -.04em;
   text-transform: uppercase;
 }
 .directions-dialog address {
-  display: grid;
-  gap: .2rem;
-  margin: 1rem 0 1.4rem;
+  display: inline-grid;
+  gap: .15rem;
+  margin: 1.2rem 0 1.4rem;
+  padding: .7rem .9rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
   font-style: normal;
+  transform: rotate(-.6deg);
 }
-.directions-dialog address strong { font-size: 1.02rem; }
-.directions-dialog address span { color: var(--muted); font-size: .86rem; }
+.directions-dialog address strong {
+  font-size: 1rem;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+}
+.directions-dialog address span { color: #4c3c2d; font-size: .82rem; font-weight: 700; }
+.directions-dialog-hours {
+  margin: 1.2rem 0 0;
+  padding-top: .8rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.directions-dialog-hours a { color: var(--red); }
+.directions-dialog-hours a:hover { text-decoration: underline; }
 .directions-dialog-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -366,7 +393,7 @@ img { max-width: 100%; }
   box-shadow: 5px 5px 0 var(--yellow);
 }
 .button-small > span:last-child { display: grid; }
-.button-small small { color: var(--yellow); font-size: .6rem; letter-spacing: .13em; text-transform: uppercase; }
+.button-small small { color: var(--yellow-tint); font-size: .6rem; letter-spacing: .13em; text-transform: uppercase; }
 .button-small strong { font-size: .92rem; text-transform: uppercase; }
 .retro-call-button:hover {
   background: var(--yellow);
@@ -441,6 +468,7 @@ img { max-width: 100%; }
 .cover-sheet {
   --sheet-pad: clamp(1.4rem, 4vw, 3.5rem);
   position: relative;
+  animation: sheet-in .65s ease-out both;
   padding: clamp(1.4rem, 3.2vw, 2.5rem) var(--sheet-pad) 0;
   border: 4px solid var(--ink);
   background:
@@ -570,6 +598,7 @@ img { max-width: 100%; }
   text-transform: uppercase;
   transform: rotate(7deg);
   box-shadow: 5px 6px 0 rgba(12, 8, 7, .45);
+  animation: stamp-in .5s cubic-bezier(.2, .9, .3, 1.2) .55s both;
 }
 .cover-stamp strong {
   font-family: Georgia, "Times New Roman", serif;
@@ -577,7 +606,7 @@ img { max-width: 100%; }
   line-height: 1;
 }
 .cover-stamp em {
-  color: var(--yellow);
+  color: var(--yellow-tint);
   font-size: .55rem;
   font-style: normal;
   font-weight: 950;
@@ -777,6 +806,28 @@ img { max-width: 100%; }
   object-fit: contain;
 }
 .garage-proof-ase img { mix-blend-mode: multiply; }
+.garage-carfax-seal {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-content: center;
+  gap: .1rem;
+  border: 4px double #fff;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  transform: rotate(-6deg);
+}
+.garage-carfax-seal small {
+  font-size: .5rem !important;
+  font-weight: 950;
+  letter-spacing: .06em !important;
+}
+.garage-carfax-seal b {
+  color: var(--red);
+  font-size: .55rem;
+  letter-spacing: .08em;
+}
 .garage-proof-ticket > span:not(.garage-ticket-number) {
   display: grid;
   gap: .22rem;
@@ -849,6 +900,7 @@ img { max-width: 100%; }
   padding: .7rem 0;
   animation: catalog-logo-roll 24s linear infinite;
 }
+.catalog-make-marquee:hover .catalog-make-track { animation-play-state: paused; }
 .catalog-make-logo {
   width: 124px;
   flex: 0 0 124px;
@@ -992,6 +1044,11 @@ img { max-width: 100%; }
   border: 3px solid var(--ink);
   box-shadow: var(--hard-shadow);
   overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.service-preview article:hover {
+  transform: translateY(-6px) rotate(-.5deg);
+  box-shadow: 11px 12px 0 var(--ink);
 }
 .service-preview article:nth-child(2) { margin-top: 2.5rem; background: var(--yellow); }
 .service-preview article:nth-child(3) { margin-top: 5rem; background: var(--blue); color: #fff; }
@@ -1011,7 +1068,9 @@ img { max-width: 100%; }
 .service-preview h3 { margin: auto 0 .75rem; font-family: Georgia, serif; font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1; }
 .service-preview p { color: inherit; opacity: .78; line-height: 1.55; }
 .service-preview a, .text-link { margin-top: .5rem; color: var(--red); font-weight: 950; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
-.service-preview article:nth-child(3) a { color: var(--yellow); }
+.service-preview article:nth-child(2) a { color: var(--red-dark); }
+.service-preview article:nth-child(3) a { color: var(--yellow-tint); }
+.service-preview article:nth-child(3) p { opacity: 1; color: var(--blue-tint); }
 
 .technology-section {
   position: relative;
@@ -1231,6 +1290,7 @@ img { max-width: 100%; }
 .review-grid blockquote div { color: var(--red); letter-spacing: .15em; }
 .review-grid blockquote p { font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.45; }
 .review-grid cite { margin-top: auto; color: var(--red); font-style: normal; font-weight: 900; }
+.review-grid blockquote:nth-child(2) cite { color: var(--red-dark); }
 
 .visit-section {
   position: relative;
@@ -1462,7 +1522,13 @@ img { max-width: 100%; }
 .service-directory h2 { margin: auto 0 .75rem; font-family: Georgia, serif; font-size: 2.1rem; line-height: .98; }
 .service-directory p { color: inherit; opacity: .75; line-height: 1.55; }
 .service-directory a { color: var(--red); font-weight: 950; }
-.service-directory article:nth-child(6n) a { color: var(--yellow); }
+.service-directory article:nth-child(5n+2) a,
+.service-directory article:nth-child(5n+4) a,
+.service-directory article:nth-child(5n+2) .catalog-card-number,
+.service-directory article:nth-child(5n+4) .catalog-card-number { color: var(--red-dark); }
+.service-directory article:nth-child(6n) a,
+.service-directory article:nth-child(6n) .catalog-card-number { color: var(--yellow-tint); }
+.service-directory article:nth-child(6n) p { opacity: 1; color: var(--blue-tint); }
 
 /* Service work orders */
 .repair-ticket { background: #171412; }
@@ -1472,7 +1538,7 @@ img { max-width: 100%; }
 .ticket-number { display: grid; justify-items: center; padding: 1.25rem; background: var(--yellow); color: var(--ink); border: 4px solid var(--ink); box-shadow: 8px 8px 0 #fff; transform: rotate(-4deg); }
 .ticket-number span { font-size: .75rem; font-weight: 950; letter-spacing: .15em; text-transform: uppercase; }
 .ticket-number strong { font-family: Georgia, serif; font-size: clamp(5rem, 10vw, 8rem); line-height: .85; }
-.back-link { display: inline-block; margin-bottom: 1.5rem; color: var(--yellow); font-weight: 900; }
+.back-link { display: inline-block; margin-bottom: 1.5rem; color: var(--yellow-tint); font-weight: 900; }
 .ticket-copy > p:not(.ticket-status) { max-width: 680px; color: #eaded0; line-height: 1.7; }
 .part-stamp {
   aspect-ratio: 1;
@@ -1522,7 +1588,7 @@ img { max-width: 100%; }
 .dropoff-photo img { object-fit: cover; }
 .dropoff-sign { position: absolute; right: -25px; bottom: -25px; width: 145px; height: 145px; display: grid; place-content: center; background: var(--red); border: 6px double var(--yellow); border-radius: 50%; text-align: center; transform: rotate(-6deg); }
 .dropoff-sign span { font-family: Georgia, serif; font-size: 3.8rem; line-height: .7; }
-.dropoff-sign strong, .dropoff-sign small { color: var(--yellow); font-weight: 950; letter-spacing: .1em; }
+.dropoff-sign strong, .dropoff-sign small { color: var(--yellow-tint); font-weight: 950; letter-spacing: .1em; }
 .dropoff-steps { padding-bottom: 11rem; }
 .dropoff-grid { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 3rem; }
 .dropoff-grid::before { content: ""; position: absolute; left: 8%; right: 8%; top: 48px; height: 8px; background: repeating-linear-gradient(90deg, var(--red) 0 28px, transparent 28px 42px); }
@@ -1626,7 +1692,7 @@ img { max-width: 100%; }
 .drive-cta { position: relative; overflow: hidden; background: var(--yellow); border-top: 4px solid var(--ink); }
 .drive-sky { position: relative; min-height: 315px; padding-top: 4.5rem; }
 .drive-copy { position: relative; z-index: 3; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-.drive-copy p { margin: 0 0 .5rem; color: var(--red); font-weight: 950; letter-spacing: .13em; text-transform: uppercase; }
+.drive-copy p { margin: 0 0 .5rem; color: var(--red-dark); font-weight: 950; letter-spacing: .13em; text-transform: uppercase; }
 .drive-cta h2 { font-size: clamp(2.4rem, 5vw, 4.8rem); }
 .car-track {
   position: absolute;
@@ -1683,6 +1749,23 @@ img { max-width: 100%; }
   0%, 100% { transform: rotate(-8deg); }
   25% { transform: rotate(-18deg) scale(1.04); }
   75% { transform: rotate(3deg) scale(1.04); }
+}
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes stamp-in {
+  0% { opacity: 0; transform: rotate(16deg) scale(1.7); }
+  70% { opacity: 1; transform: rotate(5deg) scale(.94); }
+  100% { opacity: 1; transform: rotate(7deg) scale(1); }
+}
+@keyframes dialog-pop {
+  from { opacity: 0; transform: translateY(14px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes backdrop-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (max-width: 1000px) {
@@ -1908,6 +1991,9 @@ img { max-width: 100%; }
   }
   .garage-proof-ticket::before { inset: 4px; }
   .garage-proof-ticket img { width: 44px; height: 38px; }
+  .garage-carfax-seal { width: 46px; height: 46px; border-width: 3px; }
+  .garage-carfax-seal small { font-size: .36rem !important; }
+  .garage-carfax-seal b { font-size: .4rem; }
   .garage-proof-ticket strong { font-size: .63rem; }
   .garage-proof-ticket small { font-size: .38rem; }
   .garage-ticket-number { font-size: 2rem; }
