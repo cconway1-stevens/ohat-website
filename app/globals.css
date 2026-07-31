@@ -2280,6 +2280,36 @@ body.is-play-locked {
 .tread-stack-controls .is-drop { background: var(--blue); color: #fff; font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; }
 .tread-stack-keys { margin: 0; color: var(--muted); font-size: .7rem; text-align: center; }
 
+/* Lot Defender: night lot, magnet sweeper. */
+.lot-defender { display: grid; gap: 1rem; }
+.lot-defender-lot {
+  justify-self: center;
+  width: min(100%, 460px);
+  height: auto;
+  image-rendering: pixelated;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: #2b2725;
+  touch-action: none;
+}
+.lot-defender-brief { max-width: 46ch; margin: 0; padding: .55rem .7rem; border-left: 4px solid var(--red); background: var(--yellow-tint, #fdf1cf); color: var(--ink); font-size: .78rem; line-height: 1.5; }
+.lot-defender-controls { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: .55rem; width: min(100%, 460px); justify-self: center; }
+.lot-defender-controls button {
+  min-height: 56px;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+.lot-defender-controls .is-fire { background: var(--blue); color: #fff; font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; }
+.lot-defender-controls button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+
 /* Canvas games share a frame */
 .shore-run, .tow-chain { display: grid; gap: 1rem; }
 /* Inside the newspaper frame these keep their own spacing rhythm. */
