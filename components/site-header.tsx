@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import {
   addressDisplay,
   DirectionsTrigger,
@@ -13,6 +14,8 @@ import { shop } from "@/lib/shop";
 // these names keep working, while the values live in exactly one place.
 export const phoneDisplay = shop.phone.display;
 export const phoneHref = shop.phone.href;
+
+const logoHoldMs = 650;
 
 const primaryLinks = [
   { number: "01", label: "Service catalog", href: "/services", note: "Repairs, tires & diagnostics" },
@@ -27,8 +30,44 @@ const primaryLinks = [
 ];
 
 export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const heldLogo = useRef(false);
+
+  function clearLogoHold() {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+  }
+
+  function startLogoHold() {
+    heldLogo.current = false;
+    clearLogoHold();
+    holdTimer.current = setTimeout(() => {
+      heldLogo.current = true;
+      window.location.assign("/links");
+    }, logoHoldMs);
+  }
+
   return (
-    <Link className="brand" href={homeHref} aria-label="Ocean Heights Auto and Tire home">
+    <Link
+      className="brand"
+      href={homeHref}
+      aria-label="Ocean Heights Auto and Tire home"
+      onClick={(event) => {
+        if (!heldLogo.current) return;
+        event.preventDefault();
+        heldLogo.current = false;
+      }}
+      onContextMenu={(event) => {
+        if (!heldLogo.current) return;
+        event.preventDefault();
+      }}
+      onPointerCancel={clearLogoHold}
+      onPointerDown={startLogoHold}
+      onPointerLeave={clearLogoHold}
+      onPointerUp={clearLogoHold}
+    >
       <Image
         src="/media/logo-transparent.png"
         width={315}
@@ -45,6 +84,30 @@ export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {
 // contents ride the shell grid — painting the background directly on the
 // shell element left the page background bleeding down both sides.
 export function SiteHeader() {
+  const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      const menu = mobileMenuRef.current;
+      if (!menu || menu.contains(event.target as Node)) return;
+      setMobileMenuOpen(false);
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <header className="site-header">
       <div className="garage-strip">
@@ -73,20 +136,29 @@ export function SiteHeader() {
               <strong>Call the garage</strong>
             </span>
           </a>
-          <details className="mobile-menu">
+          <details
+            className="mobile-menu"
+            onToggle={(event) => setMobileMenuOpen(event.currentTarget.open)}
+            open={mobileMenuOpen}
+            ref={mobileMenuRef}
+          >
             <summary aria-label="Open navigation">Menu</summary>
             <nav aria-label="Mobile navigation">
               {primaryLinks.map((item) => (
-                <Link href={item.href} key={item.href}>
+                <Link
+                  href={item.href}
+                  key={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
                   <span><small>{item.number}</small>{item.label}</span>
                   <em>{item.note}</em>
                 </Link>
               ))}
-              <a className="mobile-menu-contact" href="/contact-card.vcf" download>
-                <span><small>07</small>Save our contact</span>
-                <em>Add the garage to your phone</em>
-              </a>
-              <a className="mobile-menu-call" href={phoneHref}>
+              <a
+                className="mobile-menu-call"
+                href={phoneHref}
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
                 <span><small>Mechanic on the line</small><strong>{phoneDisplay}</strong></span>
               </a>
