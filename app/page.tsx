@@ -227,7 +227,7 @@ export default function Home() {
             <div className="service-preview">
               {[
                 ["Diagnostics", "Check-engine lights & complex electrical", "/services/advanced-diagnostics"],
-                ["Brakes & tires", "Safer stops, smoother rides, longer tread life", "/services/tires"],
+                ["Brakes & tires", "Safer stops, smoother rides, and longer tread life", "/services/tires"],
                 ["Maintenance", "Oil, fluids, filters & factory schedules", "/services/oil-maintenance"],
               ].map(([title, copy, href], index) => (
                 <article key={title}>
