@@ -1606,13 +1606,26 @@ img { max-width: 100%; }
   backface-visibility: hidden;
 }
 .match-tile-back {
-  background:
-    repeating-linear-gradient(125deg, transparent 0 9px, rgba(255,255,255,.14) 9px 11px, transparent 11px 20px),
-    var(--red);
-  color: var(--yellow);
+  overflow: hidden;
+  background: var(--yellow-tint);
+  color: var(--red);
   box-shadow: 4px 4px 0 var(--ink);
 }
-.match-tile-back b { font-family: Georgia, serif; font-size: clamp(.48rem, 1.5vw, .78rem); letter-spacing: .08em; }
+.match-tile-back::before,
+.match-tile-back::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.match-tile-back::before { inset: 5px; border: 2px solid var(--red); }
+.match-tile-back::after { inset: 9px; border: 1px solid var(--red); opacity: .55; }
+.match-card-car {
+  position: relative;
+  z-index: 1;
+  width: min(76%, 128px);
+  height: auto;
+  filter: drop-shadow(1px 2px 0 rgba(23,20,18,.28));
+}
 .match-tile-face {
   background: var(--paper);
   color: var(--ink);
@@ -1620,12 +1633,23 @@ img { max-width: 100%; }
   box-shadow: 4px 4px 0 var(--ink);
 }
 .match-tile-face img { width: clamp(20px, 48%, 44px); height: clamp(20px, 48%, 44px); object-fit: contain; }
-.match-tile-face small { max-width: 92%; overflow: hidden; font-size: clamp(.4rem, 1.2vw, .55rem); font-weight: 950; text-transform: uppercase; text-align: center; text-overflow: ellipsis; }
+.match-tile-face small {
+  display: block;
+  width: 100%;
+  padding-inline: 2px;
+  font-size: clamp(.4rem, 1.1vw, .55rem);
+  font-weight: 950;
+  line-height: 1.05;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 .match-tile.is-matched .match-tile-face { background: var(--yellow); box-shadow: 4px 4px 0 var(--blue); }
 .match-tile.is-free .match-tile-face { background: var(--blue); color: #fff; box-shadow: 4px 4px 0 var(--yellow); }
 .match-free-mark { font-family: Georgia, serif; font-size: clamp(.65rem, 2vw, 1rem); }
 @media (hover: hover) {
-  .match-tile:not(:disabled):hover .match-tile-back { background-color: var(--red-dark); }
+  .match-tile:not(:disabled):hover .match-tile-back { background-color: var(--yellow); }
 }
 @keyframes match-cheer { 0%,100% { transform: none; } 50% { transform: translateY(-6px) rotate(-1.5deg); } }
 /* Applied to the outer tile, never to `.match-tile-face`: the face carries the

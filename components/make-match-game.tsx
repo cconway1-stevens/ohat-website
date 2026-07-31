@@ -324,7 +324,13 @@ export function MakeMatchGame({ heading = "h2" }: { heading?: "h2" | "h1" }) {
               >
                 <span className="match-tile-inner">
                   <span className="match-tile-back" aria-hidden="true">
-                    <b>Bay {String(tile.id + 1).padStart(2, "0")}</b>
+                    <Image
+                      className="match-card-car"
+                      src="/media/match-card-car.png"
+                      width={160}
+                      height={52}
+                      alt=""
+                    />
                   </span>
                   <span className="match-tile-face">
                     {tile.free ? (
