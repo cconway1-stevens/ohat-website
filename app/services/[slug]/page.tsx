@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
+import { DirectionsTrigger } from "@/components/directions-dialog";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { serviceBySlug, services } from "@/lib/services";
 
@@ -18,8 +19,10 @@ export async function generateMetadata({
   const service = serviceBySlug(slug);
   if (!service) return {};
   return {
-    title: `${service.name} in Egg Harbor Township, NJ`,
-    description: `${service.short} Schedule ${service.name.toLowerCase()} with Ocean Heights Auto & Tire in Egg Harbor Township, NJ.`,
+    title: service.metaTitle ?? `${service.name} in Egg Harbor Township, NJ`,
+    description:
+      service.metaDescription ??
+      `${service.short} Schedule ${service.name.toLowerCase()} with Ocean Heights Auto & Tire in Egg Harbor Township, NJ.`,
     alternates: { canonical: `/services/${service.slug}` },
   };
 }
@@ -81,6 +84,9 @@ export default async function ServicePage({
   const serviceNumber = String(
     services.findIndex((item) => item.slug === service.slug) + 1,
   ).padStart(2, "0");
+  const relatedServices = service.related
+    .map((relatedSlug) => serviceBySlug(relatedSlug))
+    .filter((related) => related !== undefined);
 
   return (
     <>
@@ -104,11 +110,18 @@ export default async function ServicePage({
             <div className="ticket-copy">
               <Link className="back-link" href="/services">← Service board</Link>
               <p className="ticket-status">Now writing repair orders</p>
-              <h1>{service.name}</h1>
+              <h1>
+                {service.name} <span className="ticket-locale">in Egg Harbor Township, NJ</span>
+              </h1>
               <p>{service.intro}</p>
-              <a className="button button-primary" href={phoneHref}>
-                Call {phoneDisplay}
-              </a>
+              <div className="ticket-actions">
+                <a className="button button-primary" href={phoneHref}>
+                  Call {phoneDisplay}
+                </a>
+                <DirectionsTrigger className="button button-ghost">
+                  Get directions <span aria-hidden="true">↗︎</span>
+                </DirectionsTrigger>
+              </div>
             </div>
             <div className="part-stamp" aria-hidden="true">
               <i /><i /><i /><i /><i /><i />
@@ -134,6 +147,78 @@ export default async function ServicePage({
             </div>
           </div>
         </section>
+        <section className="section service-detail service-depth">
+          <div className="shell detail-grid">
+            <div>
+              <p className="eyebrow dark">How the work starts</p>
+              <h2>How we inspect and diagnose</h2>
+              <p>{service.diagnosis}</p>
+            </div>
+            <div className="includes-card">
+              <p className="eyebrow dark">The family-shop difference</p>
+              <h2>Why Egg Harbor Township drivers choose us</h2>
+              <p>{service.whyUs}</p>
+            </div>
+          </div>
+        </section>
+        <section className="section service-detail">
+          <div className="shell">
+            <p className="eyebrow dark">Straight talk on pricing</p>
+            <h2>What affects the cost</h2>
+            <p className="service-cost-copy">{service.cost}</p>
+          </div>
+        </section>
+        {service.resources ? (
+          <section className="section service-detail">
+            <div className="shell">
+              <p className="eyebrow dark">Official resources</p>
+              <h2>Check for yourself, free</h2>
+              <ul className="service-resource-list">
+                {service.resources.map((resource) => (
+                  <li key={resource.href}>
+                    <a href={resource.href} target="_blank" rel="noreferrer">
+                      {resource.label} ↗︎
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                    <p>{resource.note}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ) : null}
+        <section className="section review-themes">
+          <div className="shell">
+            <p className="eyebrow dark">From the service counter</p>
+            <h2>{service.name} questions we hear most</h2>
+            <div className="theme-grid">
+              {service.faqs.map((faq, index) => (
+                <article key={faq.question}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <h3>{faq.question}</h3>
+                  <p>{faq.answer}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+        {relatedServices.length > 0 ? (
+          <section className="section service-detail">
+            <div className="shell">
+              <p className="eyebrow dark">Related services</p>
+              <h2>Often serviced together</h2>
+              <ul className="service-related-list">
+                {relatedServices.map((related) => (
+                  <li key={related.slug}>
+                    <Link href={`/services/${related.slug}`}>
+                      {related.name} →
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ) : null}
         <section className="inner-cta">
           <div className="shell">
             <div>
