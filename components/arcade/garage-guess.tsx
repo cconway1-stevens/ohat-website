@@ -46,6 +46,7 @@ export function GarageGuess() {
   const [gaveUp, setGaveUp] = useState(false);
   const won = answer.length > 0 && guesses.at(-1) === answer;
   const over = won || gaveUp || (answer.length > 0 && guesses.length === CONFIG.maxGuesses);
+  const currentGuess = Math.min(guesses.length + (over ? 0 : 1), CONFIG.maxGuesses);
 
   function start() {
     const next = chooseWord(answer);
@@ -71,11 +72,6 @@ export function GarageGuess() {
     if (!answer || over) return;
     if (draft.length !== CONFIG.wordLength) {
       setMessage(`Use all ${CONFIG.wordLength} letters before checking.`);
-      if (sound) garageAudio.skid();
-      return;
-    }
-    if (!garageGuessWords.includes(draft)) {
-      setMessage("Try a five-letter shop word from the garage word bank.");
       if (sound) garageAudio.skid();
       return;
     }
@@ -136,7 +132,7 @@ export function GarageGuess() {
       <div className="paper-game paper-game-start">
         <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
         <h2>Garage Guess</h2>
-        <p>Find a five-letter automotive word from the shop word bank. Every answer is fair game in the garage.</p>
+        <p>Find a five-letter automotive word from the shop word bank. Any five-letter guess is allowed.</p>
         <button type="button" className="button button-primary" onClick={start}>Start a word</button>
       </div>
     );
@@ -155,6 +151,10 @@ export function GarageGuess() {
         </div>
       </header>
       <p className="match-game-status" role="status">{message}</p>
+      <div className="garage-guess-progress" aria-label="Garage Guess progress">
+        <span>Guess {currentGuess} of {CONFIG.maxGuesses}</span>
+        <span>{draft.length} of {CONFIG.wordLength} letters</span>
+      </div>
       {/* Hidden until asked for, so it never spoils the puzzle by accident. */}
       <p className="garage-guess-clue">
         {showClue ? (
@@ -179,6 +179,11 @@ export function GarageGuess() {
             </div>
           );
         })}
+      </div>
+      <div className="garage-guess-legend" aria-label="Garage Guess color key">
+        <span><b className="is-correct">A</b> Right spot</span>
+        <span><b className="is-present">A</b> In word</span>
+        <span><b className="is-absent">A</b> Not in word</span>
       </div>
       <div className="garage-guess-keys" aria-label="Garage Guess keyboard">
         {KEY_ROWS.map((row) => (

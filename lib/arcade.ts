@@ -218,9 +218,9 @@ export const arcadeGames: ArcadeGame[] = [
   },
 ];
 
-// Five-letter automotive words used by Garage Guess for both answers and
-// accepted guesses. Keeping the word bank beside the game presets makes the
-// vocabulary straightforward to tune without touching the game logic.
+// Five-letter automotive answers used by Garage Guess. Keeping the word bank
+// beside the game presets makes the vocabulary straightforward to tune without
+// touching the game logic.
 //
 // Every entry must be exactly `garageGuess.wordLength` letters — a short one
 // slipping in makes the round unwinnable, since the player can never type a
