@@ -1,0 +1,112 @@
+import type { Metadata } from "next";
+import { SiteFooter } from "@/components/site-footer";
+import { phoneHref, SiteHeader } from "@/components/site-header";
+
+export const metadata: Metadata = {
+  title: "Customer Reviews",
+  description:
+    "Read what drivers say about Ocean Heights Auto & Tire and visit verified CARFAX, Yelp, and Facebook profiles.",
+  alternates: { canonical: "/reviews" },
+};
+
+const profiles = [
+  {
+    name: "CARFAX",
+    href: "https://www.carfax.com/Reviews-Ocean-Heights-Auto-And-Tire-Egg-Harbor-Township-NJ_BLQLOZM001",
+    detail: "5.0 from 498 verified reviews, observed July 30, 2026",
+  },
+  {
+    name: "Yelp",
+    href: "https://www.yelp.com/biz/ocean-heights-auto-and-tire-egg-harbor-township-2",
+    detail: "See the current Ocean Heights business profile",
+  },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/OceanHeightsAuto/",
+    detail: "Follow shop news and community updates",
+  },
+];
+
+const reviewThemes = [
+  ["Honest answers", "Drivers repeatedly mention trust, fair recommendations, and no unnecessary repairs."],
+  ["Clear explanations", "Customers value knowing what was found, what it costs, and what can wait."],
+  ["Broad capability", "Reviews describe service across family fleets, older vehicles, imports, trucks, and hybrids."],
+  ["A comfortable visit", "Friendly staff, timely communication, and a clean waiting area make service easier."],
+];
+
+export default function ReviewsPage() {
+  return (
+    <>
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <SiteHeader inner />
+      <main id="main-content">
+        <section className="inner-hero reviews-hero">
+          <div className="shell reviews-hero-grid">
+            <div className="reviews-hero-copy">
+              <p className="eyebrow">The local recommendation</p>
+              <h1>Good service makes waves down the Shore.</h1>
+              <p>
+                Around here, a trusted shop gets passed from neighbor to
+                neighbor, family to family, and key ring to key ring.
+              </p>
+            </div>
+            <div className="shore-sticker-board" aria-label="What local drivers say about Ocean Heights">
+              <div className="shore-sticker shore-sticker-red">
+                <span>Shore drivers</span>
+                <strong>Know where to steer their friends.</strong>
+              </div>
+              <div className="shore-sticker shore-sticker-yellow">
+                <span>Fueled by</span>
+                <strong>Happy drivers &amp; good word.</strong>
+              </div>
+              <div className="shore-sticker shore-sticker-blue">
+                <span>Passed around town</span>
+                <strong>Key ring to key ring.</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section review-themes">
+          <div className="shell">
+            <p className="eyebrow dark">What customers notice</p>
+            <h2>Trust is built one repair at a time.</h2>
+            <div className="theme-grid">
+              {reviewThemes.map(([title, copy], index) => (
+                <article key={title}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="profile-section" id="review-profiles">
+          <div className="shell profile-grid">
+            {profiles.map((profile) => (
+              <a key={profile.name} href={profile.href} target="_blank" rel="noreferrer">
+                <span>View on</span>
+                <strong>{profile.name}</strong>
+                <p>{profile.detail}</p>
+                <b>Open profile ↗</b>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="inner-cta">
+          <div className="shell">
+            <div>
+              <p className="eyebrow">Ready for a better shop experience?</p>
+              <h2>From warning light to green light.</h2>
+            </div>
+            <a className="button button-primary" href={phoneHref}>Call to book</a>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
+  );
+}
