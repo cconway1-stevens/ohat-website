@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { type AmbienceLayer, ambience, cozyAudio, radio } from "@/lib/garage-audio";
+import { LiveRadio } from "./live-radio";
 import { RadioSet } from "./radio-set";
 
 const LAYERS: { layer: AmbienceLayer; label: string; hint: string }[] = [
@@ -21,12 +22,12 @@ const LAYERS: { layer: AmbienceLayer; label: string; hint: string }[] = [
  * presets and tone. Whichever you pick, nothing is streamed or downloaded.
  */
 export function RadioPanel() {
-  const [mode, setMode] = useState<"ambience" | "radio">("ambience");
+  const [mode, setMode] = useState<"ambience" | "radio" | "live">("ambience");
   const [radioOn, setRadioOn] = useState(false);
 
   // Switching source is a user action, so the dash unit is silenced right
   // there rather than in an effect reacting to the change.
-  function chooseMode(next: "ambience" | "radio") {
+  function chooseMode(next: "ambience" | "radio" | "live") {
     cozyAudio.click();
     if (next !== "radio") {
       radio.off();
@@ -54,9 +55,19 @@ export function RadioPanel() {
         >
           Car radio
         </button>
+        <button
+          type="button"
+          className={mode === "live" ? "is-on" : ""}
+          aria-pressed={mode === "live"}
+          onClick={() => chooseMode("live")}
+        >
+          Live stations
+        </button>
       </div>
 
-      {mode === "ambience" ? <AmbienceDeck /> : <RadioSet on={radioOn} onPowerChange={setRadioOn} />}
+      {mode === "ambience" ? <AmbienceDeck /> : null}
+      {mode === "radio" ? <RadioSet on={radioOn} onPowerChange={setRadioOn} /> : null}
+      {mode === "live" ? <LiveRadio /> : null}
     </div>
   );
 }
