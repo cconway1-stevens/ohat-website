@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { arcadeGames } from "@/lib/arcade";
+import { arcadeCategories, arcadeGames } from "@/lib/arcade";
 import { PlayLock } from "./play-lock";
 
 // The shared shell for one arcade cabinet: hero with the game's name, the
@@ -15,7 +15,12 @@ export function ArcadeFrame({
   children: React.ReactNode;
 }) {
   const game = arcadeGames.find((candidate) => candidate.slug === slug);
+  // Six "next cabinet" links is a wall. Lead with the games of the same kind —
+  // someone who just played a word game usually wants another one.
   const others = arcadeGames.filter((candidate) => candidate.slug !== slug);
+  const sameKind = others.filter((candidate) => candidate.category === game?.category);
+  const rest = others.filter((candidate) => candidate.category !== game?.category);
+  const kindLabel = arcadeCategories.find((entry) => entry.id === game?.category)?.label;
 
   return (
     <>
@@ -29,11 +34,22 @@ export function ArcadeFrame({
       </section>
       <section className="section game-board">
         <div className="shell">
-          {children}
-          <PlayLock />
+          {/* The stage is what "Freeze screen" promotes to the full viewport,
+              so the board is always completely reachable while the page
+              behind it stays put. */}
+          <div className="arcade-stage">
+            {children}
+            <PlayLock />
+          </div>
           <nav className="arcade-rail" aria-label="More arcade games">
-            <span>Next cabinet:</span>
-            {others.map((other) => (
+            <span>More {kindLabel?.toLowerCase() ?? "games"}:</span>
+            {sameKind.map((other) => (
+              <Link key={other.slug} href={`/arcade/${other.slug}`}>
+                {other.glyph} {other.name}
+              </Link>
+            ))}
+            <span>Or something different:</span>
+            {rest.map((other) => (
               <Link key={other.slug} href={`/arcade/${other.slug}`}>
                 {other.glyph} {other.name}
               </Link>

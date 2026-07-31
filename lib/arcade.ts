@@ -1,11 +1,27 @@
 // The arcade's game roster — one entry per cabinet, one route per game.
+export type ArcadeCategory = "word" | "puzzle" | "action";
+
 export type ArcadeGame = {
   slug: string;
   name: string;
   tagline: string;
   classic: string;
   glyph: string;
+  category: ArcadeCategory;
 };
+
+// The lobby groups by category rather than listing every cabinet in one row:
+// with this many games a flat grid gives a visitor no idea what they are
+// choosing between. Order runs quiet to loud, quickest first inside each group.
+export const arcadeCategories: {
+  id: ArcadeCategory;
+  label: string;
+  blurb: string;
+}[] = [
+  { id: "word", label: "Word & clue", blurb: "Paper puzzles for a slow wait. Pick a difficulty and take your time." },
+  { id: "puzzle", label: "Puzzle & memory", blurb: "Shapes and badges. Easy to start, harder to put down." },
+  { id: "action", label: "Arcade action", blurb: "Thumbs and reflexes. Short rounds, scores stay on your own device." },
+];
 
 // One place to tune round length, prize difficulty, and game speed.
 export const arcadePresets = {
@@ -53,18 +69,12 @@ export const arcadePresets = {
 
 export const arcadeGames: ArcadeGame[] = [
   {
-    slug: "logo-match",
-    name: "Logo Match",
-    tagline: "Flip the badges, find the pairs.",
-    classic: "Concentration",
-    glyph: "☰",
-  },
-  {
-    slug: "crossword",
-    name: "Garage Crossword",
-    tagline: "Fresh clues from under the hood.",
-    classic: "Crossword",
-    glyph: "#",
+    slug: "garage-guess",
+    name: "Garage Guess",
+    tagline: "Find the five-letter shop word in six tries.",
+    classic: "word puzzle",
+    glyph: "G",
+    category: "word",
   },
   {
     slug: "service-search",
@@ -72,27 +82,23 @@ export const arcadeGames: ArcadeGame[] = [
     tagline: "Find the shop words in the morning paper.",
     classic: "Word search",
     glyph: "A",
+    category: "word",
   },
   {
-    slug: "shore-run",
-    name: "Shore Run",
-    tagline: "Hop the tires, duck the signals, don't stop.",
-    classic: "endless runner",
-    glyph: "⇢",
+    slug: "crossword",
+    name: "Garage Crossword",
+    tagline: "Fresh clues from under the hood.",
+    classic: "Crossword",
+    glyph: "#",
+    category: "word",
   },
   {
-    slug: "tow-chain",
-    name: "Tow Chain",
-    tagline: "Every pickup makes the chain longer.",
-    classic: "Snake",
-    glyph: "⌁",
-  },
-  {
-    slug: "garage-guess",
-    name: "Garage Guess",
-    tagline: "Find the five-letter shop word in six tries.",
-    classic: "word puzzle",
-    glyph: "G",
+    slug: "logo-match",
+    name: "Logo Match",
+    tagline: "Flip the badges, find the pairs.",
+    classic: "Concentration",
+    glyph: "☰",
+    category: "puzzle",
   },
   {
     slug: "tread-stack",
@@ -100,6 +106,23 @@ export const arcadeGames: ArcadeGame[] = [
     tagline: "Stack the tire loads and clear the rack.",
     classic: "falling-block puzzle",
     glyph: "●",
+    category: "puzzle",
+  },
+  {
+    slug: "tow-chain",
+    name: "Tow Chain",
+    tagline: "Every pickup makes the chain longer.",
+    classic: "Snake",
+    glyph: "⌁",
+    category: "action",
+  },
+  {
+    slug: "shore-run",
+    name: "Shore Run",
+    tagline: "Hop the tires, duck the signals, don’t stop.",
+    classic: "endless runner",
+    glyph: "⇢",
+    category: "action",
   },
 ];
 
