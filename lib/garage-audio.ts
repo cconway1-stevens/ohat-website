@@ -95,6 +95,9 @@ export const garageAudio = {
       noise(audio, 0.3, 1800, 0.05);
       voice(audio, "sawtooth", [[0, 220], [0.26, 90]], 0.28, 0.03);
     }),
+  /** A short low dip for ducking under an obstacle. */
+  duck: () =>
+    safely((audio) => voice(audio, "triangle", [[0, 260], [0.11, 130]], 0.14, 0.035)),
   /** Race-start beep, the lights going up. */
   beep: (hz = 392) => safely((audio) => voice(audio, "square", [[0, hz]], 0.14, 0.05)),
   /** A little victory fanfare on horns. */

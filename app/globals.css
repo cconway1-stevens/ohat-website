@@ -2578,6 +2578,14 @@ body.is-play-locked {
   text-transform: uppercase;
   touch-action: manipulation;
 }
+.shore-run-touch-controls,
+.shore-run-touch-controls button,
+.shore-run-touch-controls button * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 .shore-run-touch-controls button:last-child { background: var(--blue); color: #fff; }
 .shore-run-touch-controls span { display: inline-block; margin-right: .35rem; font-size: 1rem; }
 .tow-chain-bonus { margin: 0; padding: .22rem .55rem; border: 2px solid var(--ink); background: var(--blue); color: #fff; font-size: .58rem; font-weight: 950; letter-spacing: .09em; text-transform: uppercase; }
