@@ -62,6 +62,30 @@ export const arcadePresets = {
     },
   },
   garageGuess: { wordLength: 5, maxGuesses: 6 },
+  // Lot Defender's three intensities differ in how much is coming at you and
+  // how fast, not in how forgiving the controls are. Kids is a swarm that
+  // never fires back; Advanced marches quicker, drops harder and runs three
+  // waves. Frame counts assume 60fps.
+  lotDefender: {
+    defaultLevel: "easy",
+    levels: {
+      kids: {
+        label: "Kids", brief: "A slow drift, nothing falls back at you, and five sweeps in hand.",
+        rows: 2, cols: 5, marchFrames: 46, dropStep: 6, dropSpeed: 1.1,
+        fireFrames: 9999, shotCooldown: 10, truckSpeed: 3, lives: 5, wavesToWin: 1,
+      },
+      easy: {
+        label: "Easy", brief: "A steady drift with the odd bolt shaking loose. Two waves to clear.",
+        rows: 3, cols: 6, marchFrames: 34, dropStep: 8, dropSpeed: 1.6,
+        fireFrames: 110, shotCooldown: 12, truckSpeed: 3, lives: 3, wavesToWin: 2,
+      },
+      advanced: {
+        label: "Advanced", brief: "A full lot, hardware raining down, three waves. Keep moving.",
+        rows: 4, cols: 8, marchFrames: 24, dropStep: 10, dropSpeed: 2.2,
+        fireFrames: 62, shotCooldown: 14, truckSpeed: 3.4, lives: 3, wavesToWin: 3,
+      },
+    },
+  },
   treadStack: { rows: 18, columns: 10, linesToWin: 3 },
   shoreRun: { coinsToWin: 4 },
   towChain: { carsToWin: 4, tickMs: 175 },
@@ -107,6 +131,14 @@ export const arcadeGames: ArcadeGame[] = [
     classic: "falling-block puzzle",
     glyph: "●",
     category: "puzzle",
+  },
+  {
+    slug: "lot-defender",
+    name: "Lot Defender",
+    tagline: "Sweep the nails before they reach the tires.",
+    classic: "Space Invaders",
+    glyph: "▲",
+    category: "action",
   },
   {
     slug: "tow-chain",

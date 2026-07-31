@@ -63,6 +63,39 @@ export function GarageCrossword() {
     if (next) focusCell(next);
   }
 
+  // Typing used to step exactly one square, so running into a letter already
+  // placed by a crossing word left you overwriting it instead of carrying on.
+  // Skip ahead to the next square still waiting for a letter.
+  function advanceToGap(key: string) {
+    if (!activeEntry) return;
+    const index = activeEntry.cells.indexOf(key);
+    const ahead = activeEntry.cells.slice(index + 1);
+    focusCell(ahead.find((cell) => !answers[cell]) ?? ahead[0] ?? key);
+  }
+
+  // Enter had no handler at all, which is what made a part-filled entry feel
+  // stuck. It now jumps to this entry's next gap, or on to the next clue that
+  // still has one.
+  function jumpToNextGap() {
+    if (!puzzle || !activeEntry) return;
+    const gapHere = activeEntry.cells.find((cell) => !answers[cell]);
+    if (gapHere) {
+      focusCell(gapHere);
+      return;
+    }
+    const order = puzzle.entries;
+    const from = order.indexOf(activeEntry);
+    for (let step = 1; step <= order.length; step += 1) {
+      const candidate = order[(from + step) % order.length];
+      const gap = candidate.cells.find((cell) => !answers[cell]);
+      if (gap) {
+        setActiveId(candidate.id);
+        focusCell(gap);
+        return;
+      }
+    }
+  }
+
   function selectCell(key: string) {
     if (!puzzle) return;
     const entryIds = puzzle.cells[key].entries;
@@ -141,8 +174,13 @@ export function GarageCrossword() {
                   autoCapitalize="characters"
                   aria-label={`Crossword square${cell.number ? ` ${cell.number}` : ""}`}
                   onClick={() => selectCell(key)}
-                  onFocus={() => {
+                  onFocus={(event) => {
                     if (!cell.entries.includes(activeId)) setActiveId(cell.entries[0]);
+                    // The square holds one character and maxLength=1, so typing
+                    // over a letter already placed by a crossing word was
+                    // silently rejected — no change event, no advance, stuck.
+                    // Selecting the contents lets the next keystroke replace it.
+                    event.target.select();
                   }}
                   onChange={(event) => {
                     const letter = event.target.value.toUpperCase().replace(/[^A-Z]/g, "").slice(-1);
@@ -150,10 +188,14 @@ export function GarageCrossword() {
                     setChecked(false);
                     if (letter) {
                       if (sound) garageAudio.beep(420);
-                      window.setTimeout(() => moveInEntry(key, 1), 0);
+                      window.setTimeout(() => advanceToGap(key), 0);
                     }
                   }}
                   onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      jumpToNextGap();
+                    }
                     if (event.key === "Backspace" && !answers[key]) moveInEntry(key, -1);
                     if (event.key === "ArrowLeft") focusCell(keyFor(row, col - 1));
                     if (event.key === "ArrowRight") focusCell(keyFor(row, col + 1));
