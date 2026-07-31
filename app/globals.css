@@ -2110,15 +2110,21 @@ img { max-width: 100%; }
 /* "Freeze screen": stops the page moving under a thumb mid-swipe. */
 .arcade-lock-bar {
   position: sticky;
-  bottom: .6rem;
+  bottom: 0;
   z-index: 30;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: .35rem .8rem;
   margin-top: 1.1rem;
+  /* Opaque: it stays pinned over the board as you scroll, so it has to be a
+     bar rather than text floating on top of the game. */
+  padding: .6rem .75rem;
+  border: 3px solid var(--ink);
+  background: var(--cream, #f7efd9);
+  box-shadow: 0 -4px 0 rgba(23, 20, 18, .08);
 }
-.arcade-lock-bar small { color: var(--muted); font-size: .68rem; line-height: 1.4; }
+.arcade-lock-bar small { flex: 1 1 200px; color: var(--muted); font-size: .68rem; line-height: 1.4; }
 .arcade-lock-button {
   display: inline-flex;
   align-items: center;
@@ -2151,14 +2157,48 @@ body.is-play-locked { overflow: hidden; overscroll-behavior: none; }
 .tread-stack-board .tetris-kit-frame { min-width: 0; min-height: 0; padding: 1px; }
 .tread-stack-board .tetris-kit-cell { width: 100%; height: 100%; }
 .tread-stack-board .tetris-kit-empty { border: 1px solid rgba(247,239,217,.08); background: transparent; }
+/* A tire, not a coloured dot: a lit rubber wall, a repeating tread block cut
+   around the circumference, a bright alloy rim and a coloured hub so the seven
+   piece shapes stay tellable apart at a glance. */
 .tread-stack-board .tetris-kit-filled,
 .tread-stack-board .tetris-kit-active,
 .tread-stack-board .tetris-kit-ghost {
-  border: 2px solid #050505;
+  position: relative;
+  border: 1px solid #050505;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--tire-hub, var(--yellow)) 0 18%, #d7d1c0 19% 31%, #151515 32% 64%, #46413d 65% 76%, #111 77%);
+  background:
+    /* tread blocks, cut as a repeating pie around the rubber */
+    repeating-conic-gradient(from 0deg, #090909 0deg 9deg, #3b3632 9deg 18deg) padding-box,
+    radial-gradient(circle at 34% 28%, #4a4441 0 12%, transparent 60%),
+    #141210;
+  box-shadow:
+    inset 0 0 0 1px #000,
+    inset 2px 2px 5px rgba(255,255,255,.13),
+    inset -2px -3px 6px rgba(0,0,0,.75);
 }
-.tread-stack-board .tetris-kit-ghost { opacity: .28; }
+/* The rim and hub sit on top, so the tread only shows as the outer ring. */
+.tread-stack-board .tetris-kit-filled::after,
+.tread-stack-board .tetris-kit-active::after,
+.tread-stack-board .tetris-kit-ghost::after {
+  content: "";
+  position: absolute;
+  inset: 29%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 36% 30%, #fbf8ef 0 20%, #cfc9b8 45%, #8d8676 78%, #5f594e 100%);
+  box-shadow:
+    0 0 0 2px #0b0b0b,
+    inset 0 0 0 3px var(--tire-hub, var(--yellow));
+}
+.tread-stack-board .tetris-kit-active { filter: brightness(1.18) saturate(1.1); }
+.tread-stack-board .tetris-kit-ghost { opacity: .22; filter: grayscale(1); }
+/* Warehouse rack: steel uprights behind the falling stock. */
+.tread-stack-board {
+  background-image:
+    linear-gradient(90deg, rgba(246,189,56,.14) 0 3px, transparent 3px),
+    linear-gradient(0deg, rgba(246,189,56,.07) 0 2px, transparent 2px);
+  background-size: 10% 100%, 100% 5.5555%;
+}
 .tread-stack-board .tetris-kit-i { --tire-hub: var(--blue); }
 .tread-stack-board .tetris-kit-o { --tire-hub: var(--yellow); }
 .tread-stack-board .tetris-kit-t { --tire-hub: var(--red); }
