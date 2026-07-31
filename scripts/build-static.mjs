@@ -55,9 +55,10 @@ const htmlFiles = walk(OUT_DIR).filter((file) => file.endsWith(".html"));
 let rewritten = 0;
 for (const file of htmlFiles) {
   const html = readFileSync(file, "utf8");
+  // Emitted unprefixed; the base-path pass below handles public/ assets.
   const next = html.replace(
     /\/_vinext\/image\?url=([^"&\s]+)(?:&(?:amp;)?[^"\s]*)?/g,
-    (_match, encoded) => basePath + decodeURIComponent(encoded).replace(basePath, ""),
+    (_match, encoded) => decodeURIComponent(encoded),
   );
   if (next !== html) {
     writeFileSync(file, next);
@@ -120,6 +121,22 @@ for (const [from, to] of Object.entries(LEGACY_REDIRECTS)) {
 
 // Stop GitHub Pages from running Jekyll, which would drop underscore paths.
 writeFileSync(join(OUT_DIR, ".nojekyll"), "");
+
+// Subdirectory hosting (a GitHub Pages *project* site) is not supported, and
+// the failure is in the framework rather than anything fixable here: vinext's
+// prerenderer ignores `basePath` — it fetches unprefixed paths from a prefixed
+// server, so the dynamic service routes never export — and it does not
+// implement `assetPrefix`, so the JS and CSS it loads at runtime stay pinned to
+// the domain root. Rewriting URLs afterwards leaves the client chunks and the
+// RSC router requesting `/assets/*.js` and `/services.rsc`, which 404 under a
+// subpath: the pages still render, but scripts and navigation break.
+if (basePath) {
+  console.error(
+    `BASE_PATH=${basePath} is set, but this site must be served from the root ` +
+      `of a domain — a custom domain, or an <owner>.github.io repository.`,
+  );
+  process.exit(1);
+}
 
 console.log(
   `Static site ready in ${OUT_DIR}: ${htmlFiles.length} pages ` +

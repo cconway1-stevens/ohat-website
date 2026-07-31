@@ -1,17 +1,15 @@
 import type { NextConfig } from "next";
 
 // The Cloudflare Worker build is the default. Setting STATIC_EXPORT=1 produces
-// a fully pre-rendered copy of the site for a plain static host (GitHub Pages),
-// where BASE_PATH covers project sites served from a subdirectory.
-const staticExport = process.env.STATIC_EXPORT === "1";
-const basePath = process.env.BASE_PATH ?? "";
-
-const nextConfig: NextConfig = staticExport
-  ? {
-      output: "export",
-      images: { unoptimized: true },
-      ...(basePath ? { basePath, assetPrefix: basePath } : {}),
-    }
-  : {};
+// a fully pre-rendered copy of the site for a plain static host (GitHub Pages).
+//
+// Subdirectory hosting is not configurable here: vinext's prerenderer ignores
+// `basePath` (it fetches unprefixed paths from a prefixed server, so the
+// dynamic service routes fail to export) and it does not implement
+// `assetPrefix` at all. The static site must be served from a domain root.
+const nextConfig: NextConfig =
+  process.env.STATIC_EXPORT === "1"
+    ? { output: "export", images: { unoptimized: true } }
+    : {};
 
 export default nextConfig;

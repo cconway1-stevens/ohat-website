@@ -127,10 +127,14 @@ meta-refresh pages with canonicals, reshapes `about.html` into
 `.nojekyll`.
 
 **The Pages site must be served from the root of a domain** — either a custom
-domain or a `<owner>.github.io` repo. vinext cannot pre-render the dynamic
-service routes when `basePath` is set, so a project-site subpath
-(`user.github.io/repo/`) will not build; the workflow fails early with that
-message rather than publishing a broken site.
+domain or an `<owner>.github.io` repo. A project-site subpath
+(`owner.github.io/repo/`) cannot work: vinext's prerenderer ignores `basePath`
+(the dynamic service routes fail to export) and it does not implement
+`assetPrefix`, so its runtime JS and CSS stay pinned to the domain root.
+Rewriting the emitted URLs is not a way around it either — the client chunks
+and RSC router still request `/assets/*.js` and `/services.rsc`, so scripts and
+navigation break even though the pages render. The build fails early with that
+explanation rather than publishing a broken site.
 
 Canonical URLs still point at `oceanheightsautorepair.com`, so a Pages copy
 will not compete with the production domain in search results.
