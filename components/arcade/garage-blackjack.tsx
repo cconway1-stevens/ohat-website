@@ -191,13 +191,13 @@ export function GarageBlackjack() {
       const target = event.target as HTMLElement | null;
       if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
       const key = event.key.toLowerCase();
-      if (key === "d" && canDeal) {
+      if ((key === "d" || key === "1") && canDeal) {
         event.preventDefault();
         deal();
-      } else if (key === "h" && round && !round.over) {
+      } else if ((key === "h" || key === "2") && round && !round.over) {
         event.preventDefault();
         play("hit");
-      } else if (key === "s" && round && !round.over) {
+      } else if ((key === "s" || key === "3") && round && !round.over) {
         event.preventDefault();
         play("stand");
       } else if (key === "q" && round && !round.over) {
@@ -258,7 +258,7 @@ export function GarageBlackjack() {
         {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
         {quit ? <button type="button" onClick={resetSession}>New table</button> : null}
       </div>
-      <p className="garage-blackjack-keys"><b>Keys:</b> D deal, H hit, S stand, Q leave table, L lobby sound.</p>
+      <p className="garage-blackjack-keys"><b>Keys:</b> 1 deal, 2 hit, 3 stand. D, H, and S also work. Q leaves the table; L toggles lobby sound.</p>
       <p className="garage-blackjack-audio-credit">
         Lobby ambience: <a href="https://pixabay.com/sound-effects/people-casino-ambiance-19130/" target="_blank" rel="noreferrer">Casino Ambiance by freesound_community via Pixabay <span className="sr-only">(opens in a new tab)</span>↗</a>
       </p>
