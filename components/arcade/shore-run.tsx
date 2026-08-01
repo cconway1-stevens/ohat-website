@@ -101,6 +101,7 @@ export function ShoreRun() {
   const [won, setWon] = useState(false);
   const [reachedNight, setReachedNight] = useState(false);
   const [sound, setSound] = useState(true);
+  const [roadSound, setRoadSound] = useState(false);
   const soundOn = useRef(true);
   const game = useRef<Game>(freshGame());
   const coinTally = useRef(0);
@@ -110,6 +111,11 @@ export function ShoreRun() {
   useEffect(() => {
     soundOn.current = sound;
   }, [sound]);
+
+  useEffect(() => {
+    if (!running || !sound || !roadSound) return;
+    return garageAudio.startCruise();
+  }, [roadSound, running, sound]);
 
   function jump() {
     const g = game.current;
@@ -351,10 +357,17 @@ export function ShoreRun() {
           <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
           <h2>Shore run</h2>
         </div>
-        <div className="match-game-controls">
-          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
-            {sound ? "Sound on" : "Sound off"}
-          </button>
+        <div className="shore-run-header-tools">
+          <div className="shore-run-sound-toggles" aria-label="Sound settings">
+            <button type="button" className="shore-run-sound-toggle" onClick={() => setSound((on) => !on)} aria-pressed={sound} aria-label={`Master sound ${sound ? "on" : "off"}`}>
+              <span className="shore-run-tire-toggle" aria-hidden="true"><span /></span>
+              <span>Master sound</span>
+            </button>
+            <button type="button" className="shore-run-sound-toggle" onClick={() => setRoadSound((on) => !on)} aria-pressed={roadSound} aria-label={`Road sound ${roadSound ? "on" : "off"}`} disabled={!sound}>
+              <span className="shore-run-tire-toggle" aria-hidden="true"><span /></span>
+              <span>Road sound</span>
+            </button>
+          </div>
           {!running ? (
             <button type="button" onClick={start}>{over ? "Run again" : "Start the run"}</button>
           ) : null}
