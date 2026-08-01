@@ -4119,3 +4119,158 @@ body.is-play-locked {
 .legal-doc ul { margin: 0 0 1.35rem; padding-left: 1.15rem; display: grid; gap: .7rem; }
 .legal-doc strong { color: var(--ink); }
 .legal-doc a { color: inherit; text-underline-offset: .18em; }
+
+/* ---------------------------------------------------------------------------
+   /contact — vintage road-map treatment.
+
+   Same catalog palette and the same hard-edged borders as the rest of the
+   site; the difference is that this section reads as a folded paper road map
+   rather than a catalog page. Everything here is decorative and sits behind
+   the content, so nothing below changes what a screen reader hears or how the
+   grid measures. Built from gradients rather than images to keep it free.
+--------------------------------------------------------------------------- */
+.road-map { position: relative; isolation: isolate; overflow: hidden; }
+
+/* Aged map paper plus the creases of a map folded into eighths. The seams sit
+   at fixed percentages so they land between the cards rather than across a
+   heading. */
+.road-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    /* vertical folds */
+    linear-gradient(90deg, transparent 24.6%, rgba(23,20,18,.11) 24.9%, rgba(255,250,240,.55) 25.2%, transparent 25.5%),
+    linear-gradient(90deg, transparent 49.6%, rgba(23,20,18,.11) 49.9%, rgba(255,250,240,.55) 50.2%, transparent 50.5%),
+    linear-gradient(90deg, transparent 74.6%, rgba(23,20,18,.11) 74.9%, rgba(255,250,240,.55) 75.2%, transparent 75.5%),
+    /* horizontal fold */
+    linear-gradient(0deg, transparent 49.4%, rgba(23,20,18,.09) 49.8%, rgba(255,250,240,.5) 50.2%, transparent 50.6%),
+    /* faint surveyor grid */
+    repeating-linear-gradient(0deg, rgba(26,113,131,.07) 0 1px, transparent 1px 46px),
+    repeating-linear-gradient(90deg, rgba(26,113,131,.07) 0 1px, transparent 1px 46px);
+}
+
+/* The route itself: a yellow highway with a dashed centre line, running the
+   width of the section behind the three cards. */
+.road-map::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -4%;
+  right: -4%;
+  top: 50%;
+  height: 26px;
+  transform: translateY(-50%) rotate(-1.15deg);
+  pointer-events: none;
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  background:
+    repeating-linear-gradient(90deg, var(--ink) 0 26px, transparent 26px 56px) center / 100% 3px no-repeat,
+    var(--yellow);
+  opacity: .5;
+}
+
+/* A compass rose in the corner, drawn as a four-point star. */
+.road-map-compass {
+  position: absolute;
+  z-index: -1;
+  top: clamp(1rem, 3vw, 2.25rem);
+  right: clamp(1rem, 4vw, 3.5rem);
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 5px 5px 0 rgba(23,20,18,.5);
+  opacity: .62;
+}
+.road-map-compass::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  background: var(--red);
+  clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+}
+.road-map-compass b {
+  position: relative;
+  align-self: start;
+  margin-top: -2px;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+/* The card numbers become route shields, the way a state highway is marked. */
+.road-map .contact-grid article > span {
+  position: relative;
+  width: 62px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin-bottom: .15rem;
+  padding-top: .5rem;
+  color: var(--ink);
+  font-size: 1.5rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 26px 26px 9px 9px;
+  box-shadow: 3px 3px 0 rgba(23,20,18,.45);
+}
+.road-map .contact-grid article > span::before {
+  content: "ROUTE";
+  position: absolute;
+  top: 4px;
+  color: var(--red);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-size: .42rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+/* The third card is blue, so its shield keeps the paper face for contrast
+   rather than inheriting the card's white type colour. */
+.road-map .contact-grid article:nth-child(3) > span { color: var(--ink); }
+
+/* Map key strip, in the language of a paper map legend. */
+.road-legend {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 1.5rem;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding: .7rem 1rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 rgba(23,20,18,.5);
+  color: var(--muted);
+  font-size: .72rem;
+}
+.road-legend span { display: inline-flex; align-items: center; gap: .45rem; }
+.road-legend-title {
+  color: var(--red);
+  font-weight: 900;
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.key-swatch { width: 16px; height: 10px; border: 2px solid var(--ink); }
+.key-shop { background: var(--red); border-radius: 50%; width: 12px; height: 12px; }
+.key-route { background: var(--yellow); }
+.key-hours { background: var(--blue); }
+.road-legend-scale { margin-left: auto; gap: 0; font-family: ui-monospace, monospace; font-size: .62rem; }
+.road-legend-scale em { width: 20px; height: 7px; margin: 0 0 0 2px; border: 2px solid var(--ink); border-right: 0; }
+.road-legend-scale em:nth-child(even) { background: var(--ink); }
+.road-legend-scale em:last-of-type { border-right: 2px solid var(--ink); margin-right: 4px; }
+
+@media (max-width: 900px) {
+  /* The route would cut straight through a stacked column of cards. */
+  .road-map::after { display: none; }
+  .road-map-compass { width: 54px; height: 54px; }
+  .road-legend-scale { margin-left: 0; }
+}
