@@ -358,19 +358,16 @@ export function ShoreRun() {
           <h2>Shore run</h2>
         </div>
         <div className="shore-run-header-tools">
-          <div className="shore-run-sound-toggles" aria-label="Sound settings">
-            <button type="button" className="shore-run-sound-toggle" onClick={() => setSound((on) => !on)} aria-pressed={sound} aria-label={`Master sound ${sound ? "on" : "off"}`}>
-              <span className="shore-run-tire-toggle" aria-hidden="true"><span /></span>
-              <span>Master sound</span>
-            </button>
-            <button type="button" className="shore-run-sound-toggle" onClick={() => setRoadSound((on) => !on)} aria-pressed={roadSound} aria-label={`Road sound ${roadSound ? "on" : "off"}`} disabled={!sound}>
-              <span className="shore-run-tire-toggle" aria-hidden="true"><span /></span>
-              <span>Road sound</span>
-            </button>
-          </div>
+          <button type="button" className="shore-run-command" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
+            Sound {sound ? "on" : "off"}
+          </button>
           {!running ? (
-            <button type="button" onClick={start}>{over ? "Run again" : "Start the run"}</button>
+            <button type="button" className="shore-run-command" onClick={start}>{over ? "Run again" : "Start the run"}</button>
           ) : null}
+          <button type="button" className="shore-run-road-toggle" onClick={() => setRoadSound((on) => !on)} aria-pressed={roadSound} aria-label={`Road sound ${roadSound ? "on" : "off"}`} disabled={!sound}>
+            <span>Road sound</span>
+            <span className="shore-run-tire-toggle" aria-hidden="true"><span /></span>
+          </button>
         </div>
       </header>
       <div className="match-game-bar">
