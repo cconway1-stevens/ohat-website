@@ -117,12 +117,18 @@ Audited by reading the source, not by assumption:
 - **No accounts, no logins, no cart, no payment processing.**
 - **Google Analytics 4** — page views plus a `call_click` event on taps of any
   phone-number link. Sets cookies. Configured as in the table above.
-- **Vercel Web Analytics — removed.** It was dropped in "Prepare production
-  deployment checks" (the site does not deploy to Vercel, so the script 404'd).
-  Google Analytics is now the only analytics on the site, which simplifies the
-  picture rather than complicating it: one tool, cookies disclosed, advertising
-  off. `components/analytics.tsx` still reports `call_click` through
-  `window.va` if it is ever present, which is inert with the script gone.
+- **Vercel Web Analytics** — page-view counts, cookieless, no personal data.
+  Restored after being removed, and worth recording why it moved twice. The
+  site is published to two hosts from one static export: Vercel (`vercel.json`)
+  and GitHub Pages (`.github/workflows/deploy-pages.yml`). The script lives at
+  `/_vercel/insights/script.js`, a path that exists only on Vercel's edge, so a
+  hardcoded tag 404'd on every GitHub Pages page load — which is why "Prepare
+  production deployment checks" pulled it and added a readiness check that
+  fails on any `/_vercel/` script in a rendered page. It is now injected at
+  runtime by `components/vercel-analytics.tsx` only when the hostname is a
+  Vercel one, so the export stays clean, the readiness check still passes, and
+  analytics works where it can. Being cookieless, it changes nothing about the
+  consent analysis.
 - **Local storage** — arcade high scores, game settings, and a 30-minute
   weather cache. Never transmitted; lives on the visitor's device.
 - **Third-party requests that necessarily expose the visitor's IP:** Google

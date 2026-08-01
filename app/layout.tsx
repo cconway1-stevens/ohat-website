@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { CallTracking } from "@/components/analytics";
+import { VercelAnalytics } from "@/components/vercel-analytics";
 import { gaMeasurementId } from "@/lib/analytics";
 import { shop } from "@/lib/shop";
 import "tetris-kit/layout.css";
@@ -119,6 +120,10 @@ gtag('config', '${gaMeasurementId}', {
       <body className={`${geistSans.variable} antialiased`}>
         {children}
         <CallTracking />
+        {/* Cookieless page-view counts, injected at runtime and only on a
+            Vercel host — the script lives on Vercel's edge and this same
+            export is also served from GitHub Pages. See the component. */}
+        <VercelAnalytics />
       </body>
     </html>
   );
