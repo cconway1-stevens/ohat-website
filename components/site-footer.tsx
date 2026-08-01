@@ -86,6 +86,9 @@ export function SiteFooter() {
         <div className="shell footer-bottom">
           <span>© {new Date().getFullYear()} {shop.name}</span>
           <span>All makes &amp; models · Gas · Diesel · Hybrid · Electric</span>
+          {/* Sitewide footer link because a privacy notice has to be
+              "reasonably accessible" from anywhere on the site to count. */}
+          <a href="/privacy">Privacy</a>
         </div>
         {/* Watched by DockVisibility so the floating call dock steps aside
             once the bottom of the footer is on screen. */}

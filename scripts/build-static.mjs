@@ -172,11 +172,13 @@ const routes = htmlFiles
 const priority = (route) =>
   route === "/"
     ? "1.0"
-    : route === "/links"
-      ? "0.5"
-      : route.includes("/services/")
-        ? "0.7"
-        : "0.8";
+    : route === "/privacy"
+      ? "0.3"
+      : route === "/links"
+        ? "0.5"
+        : route.includes("/services/")
+          ? "0.7"
+          : "0.8";
 
 // `lastmod` is the one sitemap hint Google still acts on. The build date is
 // the honest value here: these pages are published by this build.
