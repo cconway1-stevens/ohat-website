@@ -117,7 +117,12 @@ Audited by reading the source, not by assumption:
 - **No accounts, no logins, no cart, no payment processing.**
 - **Google Analytics 4** — page views plus a `call_click` event on taps of any
   phone-number link. Sets cookies. Configured as in the table above.
-- **Vercel Web Analytics** — page-view counts, cookieless.
+- **Vercel Web Analytics — removed.** It was dropped in "Prepare production
+  deployment checks" (the site does not deploy to Vercel, so the script 404'd).
+  Google Analytics is now the only analytics on the site, which simplifies the
+  picture rather than complicating it: one tool, cookies disclosed, advertising
+  off. `components/analytics.tsx` still reports `call_click` through
+  `window.va` if it is ever present, which is inert with the script gone.
 - **Local storage** — arcade high scores, game settings, and a 30-minute
   weather cache. Never transmitted; lives on the visitor's device.
 - **Third-party requests that necessarily expose the visitor's IP:** Google
@@ -143,6 +148,10 @@ straightforward.
 3. **Advertising disabled** in the Google tag, per the table above.
 4. **Stale comment corrected** in `app/layout.tsx`, which claimed no consent
    banner was needed — true of Vercel's cookieless analytics, not of GA4.
+5. **Privacy policy corrected when Vercel Analytics was removed.** The policy
+   had described it as a live tool. This is exactly the drift warned about
+   under "Keep the policy true": an inaccurate privacy policy is a worse
+   position than none, because it is a representation to consumers.
 
 ## Deliberately not done
 

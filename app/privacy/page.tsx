@@ -71,7 +71,8 @@ export default function PrivacyPage() {
             <h2>What the website measures automatically</h2>
             <p>
               Like most websites, this one records some technical information
-              about visits so we can tell what is useful and what is not:
+              about visits so we can tell what is useful and what is not.
+              Google Analytics is the only such tool on the site:
             </p>
             <ul>
               <li>
@@ -82,11 +83,6 @@ export default function PrivacyPage() {
                 taps one of our phone-number links, because a phone call is the
                 only thing this site is really trying to produce. Google
                 Analytics sets cookies to recognise a repeat visit.
-              </li>
-              <li>
-                <strong>Vercel Web Analytics</strong> — a page-view count from
-                our host. It sets no cookies and does not track visitors
-                between sites.
               </li>
             </ul>
             <p>
