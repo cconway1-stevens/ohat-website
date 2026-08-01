@@ -153,6 +153,7 @@ export function GarageBlackjack() {
   const [score, setScore] = useState<Score>({ wins: 0, losses: 0, pushes: 0 });
   const [termsAcknowledged, setTermsAcknowledged] = useState(false);
   const [advancedMode, setAdvancedMode] = useState(false);
+  const [showTableDetails, setShowTableDetails] = useState(true);
   const lobbyAudio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => () => {
@@ -316,25 +317,30 @@ export function GarageBlackjack() {
         {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
         {quit ? <button type="button" onClick={resetSession}>New table</button> : null}
       </div>
-      <p className="garage-blackjack-keys"><b>Keys:</b> 1 deal, 2 hit, 3 stand. D, H, and S also work. Q leaves the table; L toggles lobby sound.</p>
-      {advancedMode ? <p className="garage-blackjack-advanced-note"><b>Advanced rules:</b> Split matching pairs once. Double draws one final card. Surrender ends an opening hand as a loss. These are free-play actions only.</p> : null}
-      <p className="garage-blackjack-audio-credit">
-        Lobby ambience: <a href="https://pixabay.com/sound-effects/people-casino-ambiance-19130/" target="_blank" rel="noreferrer">Casino Ambiance by freesound_community via Pixabay <span className="sr-only">(opens in a new tab)</span>↗</a>
-      </p>
-      <p className="garage-blackjack-notice">
-        For entertainment only. Every hand is free and has no cash value. The session score is display-only and unlocks nothing. There are no chips, prizes, discounts, services, rewards, betting, wagers, winnings, or payouts.
-      </p>
-      <label className="garage-blackjack-acknowledgement">
-        <input type="checkbox" checked={termsAcknowledged} onChange={(event) => setTermsAcknowledged(event.target.checked)} />
-        <span>I acknowledge the free-play table terms.</span>
-      </label>
-      <details className="garage-blackjack-legal">
-        <summary>More information</summary>
-        <p>
-          This game is designed as a free, display-only amusement. Read the current New Jersey statutory definition of gambling in
-          {" "}<a href="https://lis.njleg.state.nj.us/nxt/gateway.dll?f=xhitlist&vid=Publish%3A10.1048%2FEnu&xhitlist_d=&xhitlist_hc=%5BXML%5D%5BKwic%2C25%5D&xhitlist_mh=99999&xhitlist_q=%5BRank+100%5D%5BDomain%3A+2C%3A37-1.+Definitions%5D2C%3A37-1.+Definitions&xhitlist_s=relevance-weight&xhitlist_sel=title%3Bpath%3Brelevance-weight%3Bcontent-type%3Bhome-title%3Bitem-bookmark%3Btitle-path%3Bhit-context&xhitlist_vpc=first&xhitlist_vps=20&xhitlist_vq=2C%3A37-1.+Definitions&xhitlist_x=advanced&xhitlist_xsl=xhitlist.xsl" target="_blank" rel="noreferrer">N.J.S.A. 2C:37-1 <span className="sr-only">(opens in a new tab)</span>↗</a>.
+      {termsAcknowledged ? <button type="button" className="garage-blackjack-details-toggle" onClick={() => setShowTableDetails((show) => !show)} aria-expanded={showTableDetails}>
+        {showTableDetails ? "Hide table details" : "Show table details"}
+      </button> : null}
+      <div className="garage-blackjack-details" hidden={termsAcknowledged && !showTableDetails}>
+        <p className="garage-blackjack-keys"><b>Keys:</b> 1 deal, 2 hit, 3 stand. D, H, and S also work. Q leaves the table; L toggles lobby sound.</p>
+        {advancedMode ? <p className="garage-blackjack-advanced-note"><b>Advanced rules:</b> Split matching pairs once. Double draws one final card. Surrender ends an opening hand as a loss. These are free-play actions only.</p> : null}
+        <p className="garage-blackjack-audio-credit">
+          Lobby ambience: <a href="https://pixabay.com/sound-effects/people-casino-ambiance-19130/" target="_blank" rel="noreferrer">Casino Ambiance by freesound_community via Pixabay <span className="sr-only">(opens in a new tab)</span>↗</a>
         </p>
-      </details>
+        <p className="garage-blackjack-notice">
+          For entertainment only. Every hand is free and has no cash value. The session score is display-only and unlocks nothing. There are no chips, prizes, discounts, services, rewards, betting, wagers, winnings, or payouts.
+        </p>
+        <label className="garage-blackjack-acknowledgement">
+          <input type="checkbox" checked={termsAcknowledged} onChange={(event) => setTermsAcknowledged(event.target.checked)} />
+          <span>I acknowledge the free-play table terms.</span>
+        </label>
+        <details className="garage-blackjack-legal">
+          <summary>More information</summary>
+          <p>
+            This game is designed as a free, display-only amusement. Read the current New Jersey statutory definition of gambling in
+            {" "}<a href="https://lis.njleg.state.nj.us/nxt/gateway.dll?f=xhitlist&vid=Publish%3A10.1048%2FEnu&xhitlist_d=&xhitlist_hc=%5BXML%5D%5BKwic%2C25%5D&xhitlist_mh=99999&xhitlist_q=%5BRank+100%5D%5BDomain%3A+2C%3A37-1.+Definitions%5D2C%3A37-1.+Definitions&xhitlist_s=relevance-weight&xhitlist_sel=title%3Bpath%3Brelevance-weight%3Bcontent-type%3Bhome-title%3Bitem-bookmark%3Btitle-path%3Bhit-context&xhitlist_vpc=first&xhitlist_vps=20&xhitlist_vq=2C%3A37-1.+Definitions&xhitlist_x=advanced&xhitlist_xsl=xhitlist.xsl" target="_blank" rel="noreferrer">N.J.S.A. 2C:37-1 <span className="sr-only">(opens in a new tab)</span>↗</a>.
+          </p>
+        </details>
+      </div>
     </section>
   );
 }

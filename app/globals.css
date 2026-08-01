@@ -2330,6 +2330,9 @@ img { max-width: 100%; }
 }
 .garage-blackjack-controls button:nth-child(2) { background: var(--blue); color: #fff; }
 .garage-blackjack-controls button:disabled { cursor: not-allowed; opacity: .45; }
+.garage-blackjack-details { display: grid; gap: .65rem; }
+.garage-blackjack-details-toggle { justify-self: center; padding: .42rem .65rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 2px 2px 0 var(--ink); color: var(--ink); font: inherit; font-size: .6rem; font-weight: 950; letter-spacing: .07em; text-transform: uppercase; cursor: pointer; }
+.garage-blackjack-details-toggle[aria-expanded="false"] { color: var(--muted); }
 .garage-blackjack-keys { margin: 1rem 0 0; color: var(--muted); font-size: .7rem; line-height: 1.45; text-align: center; }
 .garage-blackjack-keys b { color: var(--ink); font-weight: 950; text-transform: uppercase; }
 .garage-blackjack-advanced-note { margin: 0; padding: .6rem .75rem; border-left: 4px solid var(--blue); background: #e4f2f5; color: var(--ink); font-size: .67rem; font-weight: 800; line-height: 1.45; }
