@@ -113,48 +113,42 @@ export default async function ServicePage({
             </div>
           </div>
         </section>
-        <section className="section service-detail">
-          <div className="shell detail-grid">
-            <div>
+        <section className="service-workbench">
+          <div className="shell service-workbench-grid">
+            <article className="service-panel service-panel-signs">
               <p className="eyebrow dark">When to call us</p>
               <h2>Signs your vehicle needs attention</h2>
               <ul>
                 {service.signs.map((sign) => <li key={sign}>{sign}</li>)}
               </ul>
-            </div>
-            <div className="includes-card">
+            </article>
+            <article className="service-panel service-panel-includes">
               <p className="eyebrow dark">What we handle</p>
               <h2>Complete, evidence-led service</h2>
               <ul>
                 {service.includes.map((item) => <li key={item}>{item}</li>)}
               </ul>
-            </div>
-          </div>
-        </section>
-        <section className="section service-detail service-depth">
-          <div className="shell detail-grid">
-            <div>
+            </article>
+            <article className="service-panel service-panel-diagnosis">
+              <span className="service-panel-index" aria-hidden="true">01 / inspect</span>
               <p className="eyebrow dark">How the work starts</p>
               <h2>How we inspect and diagnose</h2>
               <p>{service.diagnosis}</p>
-            </div>
-            <div className="includes-card">
+            </article>
+            <article className="service-panel service-panel-why-us">
+              <span className="service-panel-index" aria-hidden="true">02 / explain</span>
               <p className="eyebrow dark">The family-shop difference</p>
               <h2>Why Egg Harbor Township drivers choose us</h2>
               <p>{service.whyUs}</p>
-            </div>
-          </div>
-        </section>
-        <section className="section service-detail">
-          <div className="shell">
-            <p className="eyebrow dark">Straight talk on pricing</p>
-            <h2>What affects the cost</h2>
-            <p className="service-cost-copy">{service.cost}</p>
-          </div>
-        </section>
-        {service.resources ? (
-          <section className="section service-detail">
-            <div className="shell">
+            </article>
+            <article className={`service-panel service-panel-cost${service.resources ? "" : " service-panel-cost-wide"}`}>
+              <span className="service-panel-index" aria-hidden="true">03 / approve</span>
+              <p className="eyebrow dark">Straight talk on pricing</p>
+              <h2>What affects the cost</h2>
+              <p className="service-cost-copy">{service.cost}</p>
+            </article>
+            {service.resources ? (
+              <article className="service-panel service-panel-resources">
               <p className="eyebrow dark">Official resources</p>
               <h2>Check for yourself, free</h2>
               <ul className="service-resource-list">
@@ -168,10 +162,26 @@ export default async function ServicePage({
                   </li>
                 ))}
               </ul>
-            </div>
-          </section>
-        ) : null}
-        <section className="section review-themes">
+              </article>
+            ) : null}
+            {relatedServices.length > 0 ? (
+              <aside className="service-panel service-panel-related">
+              <p className="eyebrow dark">Related services</p>
+              <h2>Often serviced together</h2>
+              <ul className="service-related-list">
+                {relatedServices.map((related) => (
+                  <li key={related.slug}>
+                    <Link href={`/services/${related.slug}`}>
+                      {related.name} →
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              </aside>
+            ) : null}
+          </div>
+        </section>
+        <section className="section review-themes service-faqs">
           <div className="shell">
             <p className="eyebrow dark">From the service counter</p>
             <h2>{service.name} questions we hear most</h2>
@@ -186,23 +196,6 @@ export default async function ServicePage({
             </div>
           </div>
         </section>
-        {relatedServices.length > 0 ? (
-          <section className="section service-detail">
-            <div className="shell">
-              <p className="eyebrow dark">Related services</p>
-              <h2>Often serviced together</h2>
-              <ul className="service-related-list">
-                {relatedServices.map((related) => (
-                  <li key={related.slug}>
-                    <Link href={`/services/${related.slug}`}>
-                      {related.name} →
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        ) : null}
         <section className="inner-cta">
           <div className="shell">
             <div>

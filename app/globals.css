@@ -3130,6 +3130,133 @@ body.is-play-locked {
 .service-related-list a { display: inline-block; padding: .8rem 1.3rem; background: var(--paper); border: 3px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); color: var(--red); font-weight: 900; transition: transform .15s ease, box-shadow .15s ease; }
 .service-related-list a:hover { transform: translateY(-3px); box-shadow: 8px 8px 0 var(--red); }
 
+/* Service-page workbench
+   The service detail used to be split across as many as six full `.section`
+   blocks. Keeping the work-order styling in one 12-column board preserves the
+   hierarchy while removing repeated bands of empty vertical space. */
+.service-workbench {
+  position: relative;
+  padding: clamp(4rem, 6.5vw, 6rem) 0 clamp(4.5rem, 7vw, 6.5rem);
+  overflow: hidden;
+  background: var(--cream);
+}
+.service-workbench::before {
+  content: "SERVICE NOTES  /  INSPECT • EXPLAIN • APPROVE";
+  position: absolute;
+  top: 2.2rem;
+  right: max(22px, calc((100vw - 1180px) / 2));
+  color: rgba(23,20,18,.32);
+  font-size: .58rem;
+  font-weight: 950;
+  letter-spacing: .16em;
+}
+.service-workbench-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1.15rem, 2.2vw, 1.8rem);
+  align-items: start;
+}
+.service-panel {
+  position: relative;
+  grid-column: span 6;
+  padding: clamp(1.55rem, 3vw, 2.5rem);
+  background: rgba(255,255,255,.42);
+  border: 3px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+}
+.service-panel h2 {
+  margin: 0 0 1.25rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 3.5vw, 3.25rem);
+  line-height: .96;
+  letter-spacing: -.035em;
+}
+.service-panel > p:not(.eyebrow) { margin: 0; line-height: 1.7; }
+.service-panel ul:not(.service-related-list) {
+  display: grid;
+  gap: .65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.service-panel-signs { grid-column: span 7; padding-left: 0; border: 0; box-shadow: none; background: transparent; }
+.service-panel-signs ul,
+.service-panel-includes ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.service-panel-signs li,
+.service-panel-includes li {
+  position: relative;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  padding: .8rem .85rem .8rem 2.85rem;
+  border-bottom: 2px solid var(--ink);
+  background: rgba(255,255,255,.52);
+  font-weight: 800;
+}
+.service-panel-signs li::before,
+.service-panel-includes li::before {
+  content: "✓";
+  position: absolute;
+  left: .65rem;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  font-size: .8rem;
+}
+.service-panel-includes {
+  grid-column: span 5;
+  margin-top: 1.35rem;
+  background: var(--paper);
+  box-shadow: 9px 9px 0 var(--red);
+  transform: rotate(.45deg);
+}
+.service-panel-diagnosis { grid-column: span 7; background: var(--paper); border-left: 9px solid var(--red); }
+.service-panel-why-us {
+  grid-column: span 5;
+  margin-top: -1rem;
+  background: var(--yellow);
+  box-shadow: 8px 8px 0 var(--blue);
+  transform: rotate(-.35deg);
+}
+.service-panel-cost { grid-column: span 7; background: var(--ink); color: #fff; box-shadow: 8px 8px 0 var(--yellow); }
+.service-panel-cost-wide { grid-column: span 7; }
+.service-panel-cost .eyebrow { color: var(--yellow); }
+.service-panel-resources { grid-column: span 5; background: var(--blue-tint); }
+.service-panel-index {
+  position: absolute;
+  top: .8rem;
+  right: 1rem;
+  color: var(--red);
+  font-size: .58rem;
+  font-weight: 950;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.service-panel-why-us .service-panel-index { color: var(--red-dark); }
+.service-panel-cost .service-panel-index { color: var(--yellow); }
+.service-panel .service-resource-list li { max-width: none; padding: .95rem 1rem; box-shadow: 4px 4px 0 var(--blue); }
+.service-panel-related {
+  grid-column: span 5;
+  align-self: stretch;
+  padding: 1.5rem;
+  border-style: dashed;
+  box-shadow: none;
+  background: rgba(255,250,240,.66);
+}
+.service-panel-related h2 { margin-bottom: 1rem; font-size: clamp(1.8rem, 2.7vw, 2.5rem); }
+.service-panel-related .service-related-list { gap: .7rem; }
+.service-panel-related .service-related-list a { padding: .65rem .9rem; box-shadow: 3px 3px 0 var(--ink); }
+.service-faqs { padding: clamp(4.5rem, 7vw, 6.5rem) 0; background: var(--paper); }
+.service-faqs .theme-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.35rem; margin-top: 2.25rem; }
+.service-faqs .theme-grid article,
+.service-faqs .theme-grid article:nth-child(even) { min-height: 0; margin-top: 0; }
+.service-faqs .theme-grid h3 { margin: .65rem 0 .55rem; }
+.service-faqs .theme-grid p { margin: 0; }
+
 .inner-cta {
   position: relative;
   padding: 5rem 0;
@@ -3589,6 +3716,14 @@ body.is-play-locked {
   .service-directory article { grid-column: span 6; }
   .repair-ticket-grid { grid-template-columns: .35fr 1fr; }
   .part-stamp { display: none; }
+  .service-panel-signs,
+  .service-panel-diagnosis,
+  .service-panel-cost,
+  .service-panel-cost-wide { grid-column: span 7; }
+  .service-panel-includes,
+  .service-panel-why-us,
+  .service-panel-resources,
+  .service-panel-related { grid-column: span 5; }
   .dropoff-grid, .theme-grid { grid-template-columns: 1fr 1fr; }
   .profile-grid, .contact-grid { grid-template-columns: 1fr 1fr; }
   .profile-grid > a:last-child, .contact-grid article:last-child { grid-column: 1 / -1; transform: none; }
@@ -3864,6 +3999,27 @@ body.is-play-locked {
   .repair-ticket-grid { grid-template-columns: 1fr; }
   .ticket-number { width: 135px; }
   .ticket-number strong { font-size: 5rem; }
+  .service-workbench { padding: 4rem 0; }
+  .service-workbench::before { display: none; }
+  .service-workbench-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+  .service-panel,
+  .service-panel-signs,
+  .service-panel-includes,
+  .service-panel-diagnosis,
+  .service-panel-why-us,
+  .service-panel-cost,
+  .service-panel-cost-wide,
+  .service-panel-resources,
+  .service-panel-related {
+    grid-column: auto;
+    margin-top: 0;
+    transform: none;
+  }
+  .service-panel-signs { padding: 0; }
+  .service-panel-signs ul,
+  .service-panel-includes ul { grid-template-columns: 1fr; }
+  .service-panel h2 { font-size: clamp(2rem, 8.5vw, 2.7rem); }
+  .service-faqs .theme-grid { grid-template-columns: 1fr; margin-top: 1.75rem; }
   .detail-grid, .checklist-grid, .community-band .shell { grid-template-columns: 1fr; }
   .includes-card { box-shadow: 8px 8px 0 var(--red); }
   .inner-cta > .shell, .directions-band .shell, .drive-copy { align-items: flex-start; flex-direction: column; }
