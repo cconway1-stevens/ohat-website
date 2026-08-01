@@ -1,7 +1,17 @@
 /**
- * A thin, full-width gold credit band for the site's maker — the last strip
- * at the very bottom of every page. Subtle but elegant: brushed antique gold,
- * a small medal, one quiet line of text.
+ * The maker's credit at the very bottom of every page.
+ *
+ * Modelled on a real engraved nameplate — the small brass rectangle screwed
+ * onto a machine or a shop door, not a banner. The previous version was a
+ * full-bleed bar with a rainbow sheen, a star medal and a glint that swept
+ * across it every seven seconds, which drew far more attention than a credit
+ * line should and read as ornament rather than hardware.
+ *
+ * What makes it read as metal now is restraint: a narrow tonal range, a fine
+ * horizontal grain, one hairline bevel catching light from above, and type
+ * cut *into* the surface — a dark glyph with a pale highlight beneath it,
+ * which is what an engraved groove actually looks like. No animation, no
+ * gradient sweep, no medal. Two screws hold it on.
  *
  * Deliberately self-contained — markup and styles in this one file, no
  * external CSS, fonts, or images — so it can be dropped into any site by
@@ -10,109 +20,83 @@
  */
 
 const css = `
-.mkr-band {
-  position: relative;
+.mkr-mount {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: .6em;
-  width: 100%;
-  padding: .62em 1em;
+  padding: 1.15rem 1rem 1.5rem;
+}
+.mkr-plate {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .85em;
+  max-width: 100%;
+  padding: .5em 2.4em;
   box-sizing: border-box;
   text-decoration: none;
-  font-size: .68rem;
-  letter-spacing: .1em;
+  border-radius: 2px;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .13em;
   text-transform: uppercase;
-  /* Engraved, not printed: the glyphs sit a shade darker than the metal and
-     catch a highlight along their lower edge, the way a cut groove does. */
-  color: #6a4f16;
-  text-shadow:
-    0 1px 0 rgba(255, 250, 224, .62),
-    0 -1px 0 rgba(58, 41, 6, .32);
+  /* Engraved, not printed: the glyphs sit darker than the plate and carry a
+     pale highlight along their lower edge, the way a cut groove does. */
+  color: #5c4a22;
+  text-shadow: 0 1px 0 rgba(255, 250, 226, .5);
+  /* A narrow tonal range is what separates believable metal from costume
+     jewellery: fine grain over a shallow top-to-bottom fall of light. */
   background:
-    /* brushed grain */
-    repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(120,88,26,.07) 1px 3px),
-    /* the sheen travelling across the bar */
-    linear-gradient(96deg,
-      #8f6a26 0%, #b98f37 12%, #e8cf82 30%, #fbf1c8 44%,
-      #e8cf82 56%, #b98f37 74%, #9a7429 88%, #7d5c1f 100%);
-  /* Bevelled edges top and bottom so it reads as a solid bar, not a stripe. */
+    repeating-linear-gradient(0deg,
+      rgba(255, 255, 255, .045) 0 1px,
+      rgba(92, 68, 24, .045) 1px 2px),
+    linear-gradient(180deg, #cbb277 0%, #b99f63 42%, #a68d55 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 252, 232, .75),
-    inset 0 2px 3px rgba(255, 250, 224, .35),
-    inset 0 -1px 0 rgba(58, 41, 6, .55),
-    inset 0 -3px 5px rgba(88, 63, 12, .30);
-  border-top: 1px solid rgba(58, 41, 6, .5);
+    inset 0 1px 0 rgba(255, 250, 226, .55),
+    inset 0 -1px 0 rgba(70, 50, 14, .45),
+    0 1px 2px rgba(0, 0, 0, .35);
+  transition: filter .18s ease;
 }
-.mkr-band:hover .mkr-band-cta, .mkr-band:focus-visible .mkr-band-cta { text-decoration-color: #6a4f16; }
-.mkr-medal {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  width: 1.7em;
-  height: 1.7em;
-  flex: none;
-}
-.mkr-medal::before, .mkr-medal::after {
+.mkr-plate:hover { filter: brightness(1.05); }
+/* Countersunk screws, one at each end, with the slot catching the same light
+   as the bevel above. */
+.mkr-plate::before,
+.mkr-plate::after {
   content: "";
   position: absolute;
-  top: 52%;
-  width: .56em;
-  height: 1.05em;
-  background: linear-gradient(180deg, #8c6829, #6f5220);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
-}
-.mkr-medal::before { left: .12em; transform: rotate(16deg); }
-.mkr-medal::after { right: .12em; transform: rotate(-16deg); }
-.mkr-medal-disc {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 1.4em;
-  height: 1.4em;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
   border-radius: 50%;
-  color: #5d4310;
-  font-size: .68em;
-  line-height: 1;
   background:
-    radial-gradient(circle at 32% 28%, #fdf3cf 0 18%, transparent 45%),
-    conic-gradient(#e8c96a, #b98f37 22%, #f3dd93 38%, #ad8330 55%, #eecf74 72%, #a97f2d 88%, #e8c96a);
-  box-shadow:
-    inset 0 0 0 1px rgba(93, 67, 16, .55),
-    inset 0 0 .3em rgba(255, 248, 220, .55),
-    0 1px 2px rgba(0, 0, 0, .3);
+    linear-gradient(90deg, transparent 42%, rgba(70, 50, 14, .75) 42% 58%, transparent 58%),
+    radial-gradient(circle at 35% 30%, #e0cb94, #8f7840 70%);
+  box-shadow: inset 0 0 0 1px rgba(70, 50, 14, .4), 0 1px 0 rgba(255, 250, 226, .3);
 }
-/* Text and medal ride above the glint sweep. */
-.mkr-band-text, .mkr-medal { position: relative; z-index: 1; }
-.mkr-band small { font-size: 1em; font-weight: 700; }
-.mkr-band-cta {
+.mkr-plate::before { left: .85em; }
+.mkr-plate::after { right: .85em; transform: rotate(58deg); }
+.mkr-plate small { font-size: 1em; font-weight: 700; }
+.mkr-plate-cta {
   text-decoration: underline;
-  text-decoration-color: rgba(106, 79, 22, .5);
+  text-decoration-color: rgba(92, 74, 34, .45);
   text-decoration-thickness: 1px;
   text-underline-offset: .3em;
   transition: text-decoration-color .18s ease;
 }
+.mkr-plate:hover .mkr-plate-cta,
+.mkr-plate:focus-visible .mkr-plate-cta { text-decoration-color: #5c4a22; }
+.mkr-plate:focus-visible { outline: 2px solid #cbb277; outline-offset: 3px; }
 @media (max-width: 560px) {
-  .mkr-band { font-size: .58rem; letter-spacing: .07em; }
-}
-@media (prefers-reduced-motion: no-preference) {
-  /* A slow glint travelling the length of the bar, like light moving over
-     polished metal. Sits above the fill and below the text. */
-  .mkr-band::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(100deg,
-      transparent 42%, rgba(255, 253, 240, .34) 50%, transparent 58%);
-    background-size: 260% 100%;
-    animation: mkr-glint 7s ease-in-out infinite;
+  .mkr-mount { padding: .9rem .75rem 1.15rem; }
+  .mkr-plate {
+    gap: .5em;
+    padding: .5em 1.9em;
+    font-size: .54rem;
+    letter-spacing: .09em;
+    text-align: center;
   }
-  @keyframes mkr-glint {
-    0%, 62% { background-position: 130% 0; }
-    100% { background-position: -30% 0; }
-  }
+  .mkr-plate::before { left: .6em; }
+  .mkr-plate::after { right: .6em; }
 }
 `;
 
@@ -124,15 +108,14 @@ export function MakerRibbon({
   note?: string;
 }) {
   return (
-    <a className="mkr-band" href={href} target="_blank" rel="noreferrer author">
+    <div className="mkr-mount">
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      <span className="mkr-medal" aria-hidden="true">
-        <span className="mkr-medal-disc">★</span>
-      </span>
-      <small className="mkr-band-text">
-        {note} · <span className="mkr-band-cta">see his work</span>
-        <span className="sr-only"> (opens in a new tab)</span>
-      </small>
-    </a>
+      <a className="mkr-plate" href={href} target="_blank" rel="noreferrer author">
+        <small>
+          {note} · <span className="mkr-plate-cta">see his work</span>
+          <span className="sr-only"> (opens in a new tab)</span>
+        </small>
+      </a>
+    </div>
   );
 }
