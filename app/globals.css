@@ -454,6 +454,7 @@ img { max-width: 100%; }
   font-weight: 900;
   letter-spacing: .04em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .desktop-nav small { color: var(--yellow); font-size: .56rem; }
 .desktop-nav a::after {
@@ -3661,7 +3662,10 @@ body.is-play-locked {
   to { opacity: 1; }
 }
 
-@media (max-width: 1000px) {
+/* The full six-link masthead plus call card needs more room than the rest of
+   the desktop layout. Switch just the navigation to its compact menu before
+   labels start wrapping into the tall, uneven row visible around 1024px. */
+@media (max-width: 1200px) {
   .desktop-nav { display: none; }
   .nav-wrap > .button-small { margin-left: auto; }
   .mobile-menu { display: block; position: relative; }
@@ -3720,6 +3724,15 @@ body.is-play-locked {
   }
   .mobile-menu .mobile-menu-call > span:last-child { display: grid; gap: .08rem; }
   .mobile-menu .mobile-menu-call small { color: var(--yellow); }
+}
+
+/* The header call card is still present in this range, so repeating it inside
+   the dropdown only makes the menu collide with the fixed quick-action dock. */
+@media (min-width: 721px) and (max-width: 1200px) {
+  .mobile-menu .mobile-menu-call { display: none; }
+}
+
+@media (max-width: 1000px) {
   .technology-grid, .award-grid, .visit-grid, .dropoff-hero-grid, .dropoff-location-grid, .story-grid, .contact-hero-grid, .offer-grid { grid-template-columns: 1fr; }
   .cover-stamp { top: -28px; width: 92px; height: 92px; }
   .cover-stamp strong { font-size: .78rem; }
