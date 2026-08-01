@@ -3027,18 +3027,53 @@ body.is-play-locked {
 .bay-counter span { font-size: .7rem; font-weight: 950; text-transform: uppercase; }
 .board-copy { grid-column: 1 / 2; max-width: 650px; color: #f7dede; font-size: 1.1rem; line-height: 1.65; }
 
+.service-directory-frame {
+  position: relative;
+  padding: clamp(1rem, 2.4vw, 1.75rem);
+  background: color-mix(in srgb, var(--paper) 82%, var(--yellow) 18%);
+  border: 4px solid var(--ink);
+  box-shadow: 11px 11px 0 var(--red);
+}
+.service-directory-frame::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed color-mix(in srgb, var(--ink) 38%, transparent);
+  pointer-events: none;
+}
+.service-directory-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 .25rem 1rem;
+  color: var(--muted);
+  font-size: .65rem;
+  font-weight: 950;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
 .service-directory {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 1.3rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
 }
 .service-directory article {
   position: relative;
-  grid-column: span 4;
-  min-height: 310px;
-  display: flex;
-  flex-direction: column;
-  padding: 1.75rem;
+  min-height: 245px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-areas:
+    "number tag"
+    "icon title"
+    "icon copy"
+    ". link";
+  column-gap: 1.25rem;
+  align-content: start;
+  padding: 1.6rem;
   overflow: hidden;
   background: var(--paper);
   border: 3px solid var(--ink);
@@ -3048,22 +3083,43 @@ body.is-play-locked {
 .service-directory article:nth-child(5n+2),
 .service-directory article:nth-child(5n+4) { background: var(--yellow); }
 .service-directory article:nth-child(6n) { background: var(--blue); color: #fff; }
-.service-directory article:nth-child(3n+2) { margin-top: 1.1rem; }
 .service-directory article:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 12px 12px 0 var(--red); }
-.catalog-card-number { color: var(--red); font-size: .7rem; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; }
-.catalog-card-tag { position: absolute; right: -42px; top: 24px; width: 160px; padding: .35rem; background: var(--red); color: #fff; text-align: center; font-size: .62rem; font-weight: 900; text-transform: uppercase; transform: rotate(39deg); }
-/* The heading no longer carries `margin-top: auto`. That pushed it to the
-   foot of the card and left ~130px of blank card above it; the icon below
-   takes over the job of absorbing the free space, so the gap becomes the
-   illustration instead of a hole. */
-.service-directory h2 { margin: 0 0 .6rem; font-family: Georgia, serif; font-size: 2.1rem; line-height: .98; }
-/* `margin: auto 0` centres the icon in whatever room is left between the bay
-   number and the title, so cards of differing text length still look
-   deliberate rather than top- or bottom-heavy. */
+.catalog-card-number {
+  grid-area: number;
+  align-self: center;
+  color: var(--red);
+  font-size: .7rem;
+  font-weight: 950;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.catalog-card-tag {
+  grid-area: tag;
+  justify-self: end;
+  padding: .32rem .55rem;
+  background: var(--red);
+  color: #fff;
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  line-height: 1;
+  text-transform: uppercase;
+  transform: rotate(1deg);
+}
+.service-directory h2 {
+  grid-area: title;
+  align-self: end;
+  margin: 1.35rem 0 .7rem;
+  font-family: Georgia, serif;
+  font-size: clamp(1.55rem, 2.3vw, 2.05rem);
+  line-height: .98;
+}
 .service-icon {
+  grid-area: icon;
+  align-self: start;
   width: 46px;
   height: 46px;
-  margin: auto 0 1.1rem;
+  margin-top: 1.35rem;
   color: var(--red);
   opacity: .9;
 }
@@ -3071,8 +3127,20 @@ body.is-play-locked {
    inherit through currentColor rather than needing their own icon variant. */
 .service-directory article:nth-child(6n) .service-icon { color: var(--yellow); opacity: 1; }
 .service-directory article:hover .service-icon { opacity: 1; }
-.service-directory p { color: inherit; opacity: .75; line-height: 1.55; }
-.service-directory a { color: var(--red); font-weight: 950; }
+.service-directory p { grid-area: copy; margin: 0; color: inherit; opacity: .75; line-height: 1.5; }
+.service-directory a { grid-area: link; margin-top: 1rem; color: var(--red); font-weight: 950; }
+.service-directory .service-card-reverse {
+  grid-template-columns: minmax(0, 1fr) 58px;
+  grid-template-areas:
+    "tag number"
+    "title icon"
+    "copy icon"
+    "link .";
+  text-align: right;
+}
+.service-card-reverse .catalog-card-tag { justify-self: start; transform: rotate(-1deg); }
+.service-card-reverse .service-icon { justify-self: end; }
+.service-card-reverse a { justify-self: end; }
 .service-directory article:nth-child(5n+2) a,
 .service-directory article:nth-child(5n+4) a,
 .service-directory article:nth-child(5n+2) .catalog-card-number,
@@ -3743,7 +3811,6 @@ body.is-play-locked {
   .make-grid { grid-template-columns: repeat(7,1fr); }
   .ride-track { grid-template-columns: repeat(5, minmax(145px, 1fr)); overflow-x: auto; }
   .award-badge { max-width: 300px; }
-  .service-directory article { grid-column: span 6; }
   .repair-ticket-grid { grid-template-columns: .35fr 1fr; }
   .part-stamp { display: none; }
   .service-panel-signs,
@@ -4024,8 +4091,28 @@ body.is-play-locked {
   .bay-counter { width: 150px; aspect-ratio: 1; justify-self: start; }
   .bay-counter strong { font-size: 3.2rem; }
   .board-copy { grid-column: auto; }
-  .service-directory { display: grid; grid-template-columns: 1fr; }
-  .service-directory article, .service-directory article:nth-child(3n+2) { grid-column: auto; min-height: 260px; margin-top: 0; transform: none; }
+  .service-directory-frame { padding: .9rem; box-shadow: 7px 7px 0 var(--red); }
+  .service-directory-frame::after { inset: 5px; }
+  .service-directory-heading { margin-inline: .15rem; font-size: .58rem; }
+  .service-directory { grid-template-columns: 1fr; gap: 1.15rem; }
+  .service-directory article,
+  .service-directory .service-card-reverse {
+    min-height: 0;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-areas:
+      "number tag"
+      "icon title"
+      "icon copy"
+      ". link";
+    column-gap: .9rem;
+    padding: 1.3rem;
+    text-align: left;
+    transform: none;
+  }
+  .service-directory .catalog-card-tag { justify-self: end; transform: rotate(1deg); }
+  .service-directory .service-icon { width: 40px; height: 40px; justify-self: start; }
+  .service-directory h2 { margin-top: .9rem; }
+  .service-directory a { justify-self: start; }
   .repair-ticket-grid { grid-template-columns: 1fr; }
   .ticket-number { width: 135px; }
   .ticket-number strong { font-size: 5rem; }
