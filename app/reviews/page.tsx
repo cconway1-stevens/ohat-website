@@ -12,25 +12,55 @@ export const metadata = pageMetadata({
 
 import { carfaxUrl, profileLinks } from "@/lib/business";
 
-const reviewExcerpts = [
+/**
+ * Customer quotes, and the date each one was last checked against the live
+ * CARFAX profile.
+ *
+ * `verifiedOn` is the gate, and it is deliberately strict: a quote only
+ * renders as an attributed testimonial when someone has confirmed it against
+ * the source and dated that check. Attributing words to a named customer is
+ * the highest-risk claim on this whole site — a testimonial nobody can trace
+ * back to a real review is deceptive under N.J.A.C. 13:45A-26C.2 and under
+ * the FTC's rule on consumer reviews, and unlike a stale statistic it cannot
+ * be explained away as an oversight.
+ *
+ * All three are currently unverified, so the page shows an invitation to read
+ * the reviews at the source instead. Nothing is lost: the quotes stay right
+ * here, and restoring one is a one-line edit.
+ *
+ * TO RESTORE: open the CARFAX profile linked below, find the review, confirm
+ * the wording and the reviewer's name match, then set `verifiedOn` to the
+ * date you checked. Do not date one you have not actually read.
+ */
+const reviewExcerpts: {
+  quote: string;
+  name: string;
+  context: string;
+  verifiedOn: string | null;
+}[] = [
   {
     quote: "It's been a long time since I really trusted a place with my car.",
     name: "Jim K.",
     context: "Verified CARFAX review",
+    verifiedOn: null,
   },
   {
     quote:
       "You won't find a more honest and affordable mechanic in the area. They make sure our cars are fixed right.",
     name: "Kimberly J.",
     context: "Verified CARFAX review",
+    verifiedOn: null,
   },
   {
     quote:
       "They handled even my exacting custom camber and toe request perfectly—and took time to explain the tradeoffs.",
     name: "Kevin B.",
     context: "Verified CARFAX review · wheel alignment",
+    verifiedOn: null,
   },
 ];
+
+const verifiedExcerpts = reviewExcerpts.filter((e) => e.verifiedOn !== null);
 
 const reviewThemes = [
   ["Honest answers", "Drivers repeatedly mention trust, fair recommendations, and no unnecessary repairs."],
@@ -45,10 +75,10 @@ export default function ReviewsPage() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">
-        {/* Breadcrumbs only. The quotes below are real CARFAX reviews, but
-            self-serving Review/AggregateRating markup — a business rating
-            itself on its own site — is explicitly ineligible for review rich
-            results, so marking them up would add risk and no benefit. */}
+        {/* Breadcrumbs only. No Review/AggregateRating markup: a business
+            rating itself on its own site is explicitly ineligible for review
+            rich results, so it would add manual-action risk and no benefit.
+            That holds regardless of what `reviewExcerpts` above is showing. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -103,23 +133,45 @@ export default function ReviewsPage() {
             <div className="section-heading-row">
               <div>
                 <p className="eyebrow dark">In their own words</p>
-                <h2>Straight from verified reviews.</h2>
+                <h2>
+                  {verifiedExcerpts.length > 0
+                    ? "Straight from verified reviews."
+                    : "Hundreds of reviews, none of them ours to edit."}
+                </h2>
               </div>
               <a className="text-link" href={carfaxUrl}>
                 Read the originals on CARFAX →
               </a>
             </div>
-            <div className="review-grid">
-              {reviewExcerpts.map((excerpt) => (
-                <blockquote key={excerpt.name}>
-                  <div aria-label="5 out of 5 stars">★★★★★</div>
-                  <p>&ldquo;{excerpt.quote}&rdquo;</p>
-                  <cite>
-                    {excerpt.name} · <a href={carfaxUrl}>{excerpt.context}</a>
-                  </cite>
-                </blockquote>
-              ))}
-            </div>
+            {verifiedExcerpts.length > 0 ? (
+              <div className="review-grid">
+                {verifiedExcerpts.map((excerpt) => (
+                  <blockquote key={excerpt.name}>
+                    <div aria-label="5 out of 5 stars">★★★★★</div>
+                    <p>&ldquo;{excerpt.quote}&rdquo;</p>
+                    <cite>
+                      {excerpt.name} · <a href={carfaxUrl}>{excerpt.context}</a>
+                      {" · confirmed "}
+                      {excerpt.verifiedOn}
+                    </cite>
+                  </blockquote>
+                ))}
+              </div>
+            ) : (
+              <div className="review-source-invite">
+                <p className="eyebrow dark">Straight from the source</p>
+                <h3>Read them where they were written.</h3>
+                <p>
+                  Rather than reprint reviews here, we send you to the profiles
+                  themselves — every review dated, attributed, and outside our
+                  control. That is worth more than a quote on our own website.
+                </p>
+                <a className="button button-primary" href={carfaxUrl}>
+                  Read the reviews on CARFAX{" "}
+                  <span aria-hidden="true">↗︎</span>
+                </a>
+              </div>
+            )}
           </div>
         </section>
 

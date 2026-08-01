@@ -4274,3 +4274,168 @@ body.is-play-locked {
   .road-map-compass { width: 54px; height: 54px; }
   .road-legend-scale { margin-left: 0; }
 }
+
+/* Shown on /reviews when no quote has been verified against its source — see
+   the note on `reviewExcerpts`. Styled as a confident destination rather than
+   an empty state, because pointing at the real profiles is a stronger claim
+   than reprinting a quote on our own website. */
+.review-source-invite {
+  max-width: 46rem;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  box-shadow: 9px 9px 0 var(--yellow);
+}
+.review-source-invite h3 {
+  margin: .3rem 0 .7rem;
+  font-family: Georgia, serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.1;
+}
+.review-source-invite p { margin: 0 0 1.1rem; color: var(--muted); line-height: 1.65; }
+.review-source-invite .button { margin-top: .2rem; }
+
+/* ---------------------------------------------------------------------------
+   /contact — the rest of the map sheet.
+
+   The cards section became a road map earlier; this carries the same paper,
+   the same colour key and the same hard-edged catalog frames down through the
+   facts section, so the page reads as one folded map rather than three
+   unrelated bands. The colour language is fixed and matches the printed key:
+
+     red    — the shop, and anything that means "here"
+     yellow — the route, and anything about getting to us
+     blue   — reference information
+
+   Legibility comes first: the numbers a visitor is hunting for (hours, phone,
+   address) are set larger, in tabular figures, on their own line.
+--------------------------------------------------------------------------- */
+
+/* The sheet variant drops the highway — one route through the page is enough
+   — but keeps the paper, the folds and the surveyor's grid. */
+.road-map-sheet::after { content: none; }
+
+/* Map insets: a fact panel labelled the way a legend box on a paper map is,
+   with a lettered tab in the corner. */
+.map-inset { position: relative; }
+.map-inset[data-stop]::before {
+  content: attr(data-stop);
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  background: var(--red);
+  color: #fff;
+  border: 3px solid var(--ink);
+  font-family: Georgia, serif;
+  font-size: .95rem;
+  font-weight: 900;
+  line-height: 1;
+}
+/* On the yellow receipts panel the red tab would fight the fill. */
+.contact-receipts.map-inset[data-stop]::before { background: var(--ink); }
+
+/* Hours read as data, not prose: the day range and the time are on one line,
+   the time in tabular figures at a size you can find without leaning in. */
+.road-map-sheet .hours-list > div {
+  align-items: baseline;
+  gap: .75rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px dotted rgba(23,20,18,.32);
+}
+.road-map-sheet .hours-list dt {
+  font-size: .74rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.road-map-sheet .hours-list dd {
+  color: var(--ink);
+  font-size: 1.02rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The map panel gets the same catalog frame and a printed title bar, so it
+   sits with the insets instead of floating apart from them. */
+.road-map-sheet .contact-map-panel > h2 { margin-bottom: .9rem; }
+.road-map-sheet .shop-map { border: 4px solid var(--ink); box-shadow: 9px 9px 0 var(--red); }
+.road-map-sheet .shop-map-frame { border-bottom-width: 4px; }
+.road-map-sheet .shop-map figcaption {
+  background: var(--yellow);
+  border-top: 0;
+}
+
+/* The directions band closes the sheet: a route banner rather than a plain
+   coloured block, with the dashed centre line running under the type. */
+.directions-band { position: relative; overflow: hidden; }
+.directions-band::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0 -2%;
+  top: auto;
+  bottom: 0;
+  height: 20px;
+  border-top: 3px solid rgba(255,255,255,.35);
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.5) 0 30px, transparent 30px 62px) center / 100% 3px no-repeat;
+  pointer-events: none;
+}
+.directions-band .shell { position: relative; z-index: 1; }
+
+@media (max-width: 700px) {
+  .map-inset[data-stop]::before { width: 25px; height: 25px; font-size: .8rem; }
+}
+
+/* Hours are the thing people come to this page to find, so they get the
+   clearest treatment on it. Side-by-side did not survive the narrow inset:
+   "MONDAY-FRIDAY" and "8:00 AM-5:00 PM" cannot share a line at this width, so
+   the label first wrapped mid-range and then, once held on one line, pushed
+   the time out past the card edge. Stacked instead — a small label over the
+   value in large tabular figures, which is both readable and scannable. */
+.road-map-sheet .hours-list > div {
+  display: grid;
+  gap: .1rem;
+  padding-bottom: .55rem;
+}
+.road-map-sheet .hours-list dt {
+  font-size: .68rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.road-map-sheet .hours-list dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.08rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The contact hero used to stop dead against the map sheet below it, reading
+   as a different page. A route strip along its bottom edge hands off to the
+   map: the same yellow highway and dashed centre line that runs behind the
+   cards, so the eye carries straight through. */
+.contact-hero { position: relative; }
+.contact-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16px;
+  background:
+    repeating-linear-gradient(90deg, var(--ink) 0 24px, transparent 24px 52px) center / 100% 3px no-repeat,
+    var(--yellow);
+  border-top: 3px solid var(--ink);
+  pointer-events: none;
+}
+
+/* The map sheet opened with a full section's padding directly under the
+   hero's route strip, leaving a band of blank paper before the first card. */
+.contact-section.road-map { padding-top: clamp(1.75rem, 3vw, 2.75rem); }
+.contact-facts.road-map-sheet { padding-top: clamp(1.5rem, 2.5vw, 2.25rem); }

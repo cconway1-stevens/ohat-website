@@ -154,14 +154,14 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="section contact-facts">
+        <section className="section contact-facts road-map road-map-sheet">
           <div className="shell contact-dashboard">
             <div className="contact-dashboard-copy">
               <p className="eyebrow dark">Before you come by</p>
               <h2>Hours, parking, drop-off, and receipts in one place.</h2>
 
               <div className="contact-facts-grid">
-                <div className="contact-fact-card">
+                <div className="contact-fact-card map-inset" data-stop="A">
                   <p className="eyebrow dark">Shop hours</p>
                   <dl className="hours-list">
                     <div>
@@ -181,7 +181,7 @@ export default function ContactPage() {
                   </p>
                 </div>
 
-                <div className="contact-fact-card">
+                <div className="contact-fact-card map-inset" data-stop="B">
                   <p className="eyebrow dark">Good to know</p>
                   <ul className="contact-checklist">
                     <li>Customer parking is right out front.</li>
@@ -193,7 +193,7 @@ export default function ContactPage() {
 
                 {/* The POS address is outbound-only. Naming it here keeps
                     receipts out of spam without inviting mail nobody reads. */}
-                <div className="contact-fact-card contact-receipts">
+                <div className="contact-fact-card contact-receipts map-inset" data-stop="C">
                   <p className="eyebrow dark">Receipts</p>
                   <h3>Digital receipts come from {receiptsEmail}.</h3>
                   <p>
