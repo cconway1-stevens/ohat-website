@@ -37,7 +37,7 @@ Claims inventoried on the site, and where each one stands:
 | "ASE-certified technicians" | metadata, /our-shop, service pages | Verifiable; keep certificates on file |
 | "40+ years" / "more than 15 years running a repair shop" | homepage, /our-shop | Owner's own history; substantiable |
 | "Dealer-level diagnostics / tools / scan capability" | homepage, service pages | Capability claim; tie to actual equipment |
-| Named review excerpts (Jim K., Kimberly J., Kevin B.) | /reviews | Must be genuine CARFAX reviews — verify |
+| Named review excerpts (Jim K., Kimberly J., Kevin B.) | /reviews | **Gated** — not rendering until verified |
 | Legacy coupon image | /offers | Already well disclaimed |
 
 ### The one that mattered
@@ -62,10 +62,24 @@ first. A stale date is honest; a moved date that nobody verified is not.
 - **ASE certification.** Keep current certificates for the technicians on file.
   This is the single most repeated claim on the site — it is in the site-wide
   meta description, so it appears under every search result.
-- **The review excerpts.** Three quotes are attributed by name to verified
-  CARFAX reviews. If any was written for illustration rather than quoted from a
-  real review, it needs to come down. Fabricated testimonials are squarely
-  deceptive under both the state rule and the FTC's rule on consumer reviews.
+- **The review excerpts — resolved defensively, still needs you.** Three
+  quotes were attributed by name to verified CARFAX reviews. They could not be
+  verified from here: carfax.com is blocked at this environment's gateway, and
+  the repository's history is squashed into one bulk commit, so nothing records
+  where the quotes came from.
+
+  Rather than guess, `reviewExcerpts` in `app/reviews/page.tsx` now carries a
+  `verifiedOn` date per quote, and a quote only renders as an attributed
+  testimonial once that date is set. All three are `null`, so the page shows an
+  invitation to read the reviews at the source instead — which is stronger
+  proof anyway, being dated, attributed and outside the shop's control.
+
+  Nothing was deleted. To restore a quote: open the CARFAX profile, find the
+  review, confirm the wording and the name, then set `verifiedOn` to the date
+  you checked. This is the safe default rather than a pessimistic one — a
+  testimonial that cannot be traced to a real review is deceptive under both
+  the state rule and the FTC's rule on consumer reviews, and unlike a stale
+  statistic there is no innocent reading of it.
 - **"Dealer-level."** Defensible if the shop genuinely runs factory-level scan
   tools and subscribes to factory service information. Worth being able to name
   the specific equipment if asked.
@@ -176,12 +190,16 @@ Revisit if the site ever adds online booking, payments, or a review form.
    the first privacy pass and found while doing layout work on that page.
 5. Footer spacing and column balance tightened (cosmetic, in the footer
    cleanup commit) — no accessibility defect was found there.
+6. Review quotes gated behind a `verifiedOn` date, and the schema comment that
+   asserted they were genuine corrected.
 
 ## Needs the owner
 
 1. **Confirm the ASE certifications are current** and keep the certificates
    where they can be produced. This claim runs under every search result.
-2. **Confirm the three named review quotes are real** and quoted accurately.
+2. **Confirm the three named review quotes are real**, then set each
+   `verifiedOn` date to restore them. They are currently hidden, so this is a
+   feature that is switched off rather than a risk that is live.
 3. **Have an attorney review `/privacy` and the claims table above.** An hour
    converts this from a diligent engineering judgment into an actual opinion.
 

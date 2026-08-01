@@ -1,7 +1,7 @@
 # SEO audit — Ocean Heights Auto & Tire
 
-Audit date: 2026-08-01. Scope: the whole site as it builds today (48 exported
-pages, 22 in the sitemap). Target: organic Google visibility for local auto
+Audit date: 2026-08-01. Scope: the whole site as it builds today (49 exported
+pages, 23 in the sitemap). Target: organic Google visibility for local auto
 repair and tire queries in Egg Harbor Township and the surrounding shore towns.
 
 ## Summary
@@ -115,11 +115,12 @@ short drive, but if any of them is not realistic, trim the list in
 
 ## Not changed, deliberately
 
-- **No `AggregateRating` / `Review` markup on `/reviews`.** The quotes are
-  genuine CARFAX reviews, but a business rating *itself* on its own site is
-  explicitly ineligible for review rich results. Marking it up adds
-  manual-action risk and no upside. The right move is third-party reviews on
-  the Google Business Profile.
+- **No `AggregateRating` / `Review` markup on `/reviews`.** A business rating
+  *itself* on its own site is explicitly ineligible for review rich results,
+  so marking it up adds manual-action risk and no upside. That holds
+  regardless of whether the quotes are verified — and as of this audit they
+  are not; see the legal audit. The right move is third-party reviews on the
+  Google Business Profile.
 - **Arcade stays `noindex`.** It is an easter egg with no service intent;
   indexing it would put game pages into results for a shop that wants calls.
   Already correct, and the static build keeps it out of the sitemap.
