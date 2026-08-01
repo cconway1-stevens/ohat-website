@@ -107,7 +107,7 @@ export default function ContactPage() {
             </div>
             <Image
               src="/media/building8-21-14.4.jpg"
-              width={700}
+              width={750}
               height={520}
               alt="Ocean Heights Auto and Tire shop exterior"
             />

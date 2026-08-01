@@ -266,7 +266,7 @@ export function GarageBlackjack() {
   return (
     <section className={`paper-game garage-blackjack-game${termsAcknowledged ? "" : " is-terms-pending"}`} aria-labelledby="garage-blackjack-title">
       {/* Lobby ambience: Casino Ambiance by freesound_community, via Pixabay Content License. */}
-      <audio ref={lobbyAudio} src="/media/casino-ambiance-19130.mp3" preload="metadata" loop aria-hidden="true" />
+      <audio ref={lobbyAudio} src="/media/casino-ambiance-19130.mp3" preload="none" loop aria-hidden="true" />
       <header className="paper-game-header">
         <div>
           <p className="paper-game-edition">The Ocean Heights Motoring Page</p>

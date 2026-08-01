@@ -178,11 +178,12 @@ export default function Home() {
                 aria-label="Shop credentials"
               >
                 <div className="garage-proof-ticket garage-proof-ase">
-                  <img
+                  <Image
                     src="/media/ase-certified.jpg"
                     alt="ASE"
-                    width="70"
-                    height="52"
+                    width={70}
+                    height={52}
+                    unoptimized
                   />
                   <span>
                     <strong>ASE Certified</strong>

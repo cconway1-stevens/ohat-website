@@ -16,9 +16,8 @@ declare global {
  *
  * Delegated from the document because call links appear in the header, the
  * sticky dock, the footer, and inline on most pages. It reports through
- * whatever analytics is present — Vercel's `window.va` and Google Analytics'
- * `window.gtag` — and is inert when neither is loaded, so it never blocks a
- * call from going through.
+ * whatever analytics is present (`window.va` or `window.gtag`) and is inert
+ * when none is loaded, so it never blocks a call from going through.
  */
 export function CallTracking() {
   useEffect(() => {

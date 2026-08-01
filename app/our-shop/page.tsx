@@ -78,7 +78,7 @@ export default function OurShopPage() {
             <div className="gallery-grid">
               {gallery.map(([src, alt], index) => (
                 <figure key={src} className={index === 0 ? "gallery-wide" : ""}>
-                  <Image src={src} width={900} height={600} alt={alt} />
+                  <Image src={src} width={1200} height={800} alt={alt} />
                 </figure>
               ))}
             </div>
