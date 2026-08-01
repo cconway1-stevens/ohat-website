@@ -218,9 +218,13 @@ export default function ContactPage() {
         <section className="directions-band">
           <div className="shell">
             <div>
-              <p className="eyebrow">Serving South Jersey drivers</p>
+              <p className="eyebrow">Serving {shop.region} drivers</p>
               <h2>Right here in Egg Harbor Township.</h2>
-              <p>{shop.areaServed.slice(1).join(", ")}, and nearby communities are welcome.</p>
+              <p>
+                On Ocean Heights Avenue in {shop.nickname}, minutes from{" "}
+                {shop.areaServed.slice(1).join(", ")} and the rest of{" "}
+                {shop.county}.
+              </p>
             </div>
             <DirectionsTrigger className="button button-primary">
               Get directions

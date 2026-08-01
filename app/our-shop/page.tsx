@@ -90,11 +90,14 @@ export default function OurShopPage() {
             <span aria-hidden="true">EHT</span>
             <div>
               <p className="eyebrow">Built to keep our town moving</p>
-              <h2>Proud to support the Egg Harbor Township community.</h2>
+              <h2>
+                Proud to support the Egg Harbor Township community.
+              </h2>
               <p>
                 Your car carries the people and plans that matter. Our job is
                 to help keep those everyday miles safe, dependable, and a
-                little less stressful.
+                little less stressful — for our neighbours in EHT and across
+                Atlantic County.
               </p>
             </div>
           </div>

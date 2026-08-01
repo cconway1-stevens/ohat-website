@@ -79,6 +79,40 @@ the business `@id`.
 sitemap route nor the static export emitted it. Both now carry the build date,
 which is the honest value: these pages are published by that build.
 
+### 8. The site never used the names locals actually search — *high impact*
+
+Added 2026-08-01, at the owner's prompting, and it was a good catch.
+
+The site wrote "Egg Harbor Township" in full everywhere and never once said
+**EHT** — which is what the township is called on signage, in conversation and
+in search boxes. **"Atlantic County" appeared zero times** across the entire
+site, and "South Jersey" exactly once, buried in a paragraph about suspension
+wear. Someone searching "mechanic EHT" or "auto repair Atlantic County" found
+nothing here to match against.
+
+This is not a keyword-stuffing exercise — Google is good at spotting that, and
+readers resent it. The terms went into real sentences a person would say:
+
+- The site-wide meta description, which renders under **every** search result,
+  now reads "Egg Harbor Township (EHT), Atlantic County NJ".
+- The homepage lede welcomes "every driver in EHT, Atlantic County, and the
+  shore towns around us".
+- The contact page's location band names the shop's position in EHT relative
+  to the surrounding towns and the county.
+- The services hub and the community section on /our-shop each place the shop
+  in EHT and Atlantic County once, in passing.
+
+Structurally, `areaServed` grew from three towns to eight — adding Northfield,
+Somers Point, Absecon, Pleasantville and Galloway — and Atlantic County is now
+its own `AdministrativeArea` node in the structured data, with every city
+nested inside it. The business also carries an `alternateName` of "Ocean
+Heights Auto & Tire — EHT auto repair".
+
+**One thing for the owner to confirm:** the five towns added to `areaServed`
+are a claim about where customers actually come from. They are all within a
+short drive, but if any of them is not realistic, trim the list in
+`lib/shop.mjs` — it is one edit and it propagates everywhere.
+
 ## Not changed, deliberately
 
 - **No `AggregateRating` / `Review` markup on `/reviews`.** The quotes are
