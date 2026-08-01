@@ -8,7 +8,8 @@ const SUITS = ["h", "d", "c", "s"];
 
 type Card = { id: string; rank: string; suit: string; showingFace: boolean };
 type Hand = { cards: Card[]; cardTotal: number; blackjack: boolean };
-type Round = { dealer: Hand; player: Hand; over: boolean };
+type PlayerHand = Hand & { complete: boolean; doubled: boolean; surrendered: boolean };
+type Round = { dealer: Hand; players: PlayerHand[]; activeHand: number; over: boolean };
 type Score = { wins: number; losses: number; pushes: number };
 
 function drawCard(showingFace = true): Card {
@@ -50,22 +51,55 @@ function finishDealerHand(cards: Card[]) {
   return hand(revealed);
 }
 
-function dealRound(): Round {
-  const dealerCards = [drawCard(false), drawCard()];
-  const player = hand([drawCard(), drawCard()]);
-  if (player.blackjack) return { dealer: finishDealerHand(dealerCards), player, over: true };
-  return { dealer: hand(dealerCards), player, over: false };
+function playerHand(cards: Card[], options: Partial<Pick<PlayerHand, "complete" | "doubled" | "surrendered">> = {}): PlayerHand {
+  return { ...hand(cards), complete: false, doubled: false, surrendered: false, ...options };
 }
 
-function playRound(round: Round, move: "hit" | "stand"): Round {
-  const playerCards = [...round.player.cards];
-  if (move === "hit") {
-    playerCards.push(drawCard());
-    const player = hand(playerCards);
-    if (player.cardTotal > 21) return { dealer: hand(reveal(round.dealer.cards)), player, over: true };
-    return { dealer: hand(round.dealer.cards), player, over: false };
+function dealRound(): Round {
+  const dealerCards = [drawCard(false), drawCard()];
+  const player = playerHand([drawCard(), drawCard()]);
+  if (player.blackjack) return { dealer: finishDealerHand(dealerCards), players: [{ ...player, complete: true }], activeHand: 0, over: true };
+  return { dealer: hand(dealerCards), players: [player], activeHand: 0, over: false };
+}
+
+function finishRound(round: Omit<Round, "dealer" | "over"> & { dealer: Hand }) {
+  const dealerNeedsToPlay = round.players.some((player) => !player.surrendered && player.cardTotal <= 21);
+  return { ...round, dealer: dealerNeedsToPlay ? finishDealerHand(round.dealer.cards) : hand(reveal(round.dealer.cards)), over: true };
+}
+
+function advanceHand(round: Omit<Round, "over"> & { dealer: Hand }): Round {
+  const nextActive = round.players.findIndex((player, index) => index > round.activeHand && !player.complete);
+  if (nextActive !== -1) return { ...round, activeHand: nextActive, over: false };
+  return finishRound(round);
+}
+
+function playRound(round: Round, move: "hit" | "stand" | "double" | "surrender" | "split"): Round {
+  const active = round.players[round.activeHand];
+  if (!active || active.complete) return round;
+  const players = [...round.players];
+
+  if (move === "split") {
+    if (players.length !== 1 || active.cards.length !== 2 || active.cards[0].rank !== active.cards[1].rank) return round;
+    players.splice(round.activeHand, 1, playerHand([active.cards[0], drawCard()]), playerHand([active.cards[1], drawCard()]));
+    return { ...round, players, activeHand: round.activeHand, over: false };
   }
-  return { dealer: finishDealerHand(round.dealer.cards), player: hand(playerCards), over: true };
+
+  if (move === "surrender") {
+    players[round.activeHand] = playerHand(active.cards, { complete: true, surrendered: true });
+    return advanceHand({ ...round, players });
+  }
+
+  if (move === "stand") {
+    players[round.activeHand] = playerHand(active.cards, { complete: true, doubled: active.doubled });
+    return advanceHand({ ...round, players });
+  }
+
+  const cards = [...active.cards, drawCard()];
+  const doubled = move === "double";
+  const next = playerHand(cards, { complete: doubled || hand(cards).cardTotal > 21, doubled });
+  players[round.activeHand] = next;
+  if (next.complete) return advanceHand({ ...round, players });
+  return { ...round, players, over: false };
 }
 
 function suitSymbol(suit: string) {
@@ -80,21 +114,25 @@ function dealerShowingTotal(round: Round) {
   return hand(round.dealer.cards.filter((card) => card.showingFace)).cardTotal;
 }
 
-function roundMessage(round: Round) {
-  if (!round.over) return `You have ${round.player.cardTotal}. The house is showing ${dealerShowingTotal(round)}; choose Hit or Stand.`;
-  if (round.player.cardTotal > 21) return "You went over 21. The house wins this hand.";
-  if (round.dealer.cardTotal > 21) return "The house went over 21. You win this free hand.";
-  if (round.player.cardTotal > round.dealer.cardTotal) return "You beat the house. You win this free hand.";
-  if (round.player.cardTotal === round.dealer.cardTotal) return "Push: you and the house tied.";
-  return "The house wins this hand. Deal another one when ready.";
+function handOutcome(player: PlayerHand, dealer: Hand): "player" | "house" | "push" {
+  if (player.surrendered || player.cardTotal > 21) return "house";
+  if (dealer.cardTotal > 21 || player.cardTotal > dealer.cardTotal) return "player";
+  if (player.cardTotal === dealer.cardTotal) return "push";
+  return "house";
 }
 
-function roundOutcome(round: Round | null) {
-  if (!round?.over) return null;
-  if (round.player.cardTotal > 21) return "house";
-  if (round.dealer.cardTotal > 21 || round.player.cardTotal > round.dealer.cardTotal) return "player";
-  if (round.player.cardTotal === round.dealer.cardTotal) return "push";
-  return "house";
+function roundOutcomes(round: Round | null) {
+  if (!round?.over) return [];
+  return round.players.map((player) => handOutcome(player, round.dealer));
+}
+
+function roundMessage(round: Round) {
+  if (!round.over) {
+    const player = round.players[round.activeHand];
+    return `Hand ${round.activeHand + 1}: you have ${player.cardTotal}. The house is showing ${dealerShowingTotal(round)}; choose an action.`;
+  }
+  const results = roundOutcomes(round).map((outcome, index) => `Hand ${index + 1} ${outcome === "player" ? "wins" : outcome === "house" ? "loses" : "pushes"}`);
+  return `${results.join(". ")}. Deal another free hand when ready.`;
 }
 
 function PlayingCard({ card }: { card: Card }) {
@@ -114,6 +152,7 @@ export function GarageBlackjack() {
   const [casinoLobby, setCasinoLobby] = useState(false);
   const [score, setScore] = useState<Score>({ wins: 0, losses: 0, pushes: 0 });
   const [termsAcknowledged, setTermsAcknowledged] = useState(false);
+  const [advancedMode, setAdvancedMode] = useState(false);
   const lobbyAudio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => () => {
@@ -122,14 +161,14 @@ export function GarageBlackjack() {
   }, []);
 
   const recordOutcome = useCallback((completedRound: Round) => {
-    const result = roundOutcome(completedRound);
-    if (!result) return;
-    setScore((current) => result === "player"
-      ? { ...current, wins: current.wins + 1 }
+    const results = roundOutcomes(completedRound);
+    if (!results.length) return;
+    setScore((current) => results.reduce((next, result) => result === "player"
+      ? { ...next, wins: next.wins + 1 }
       : result === "house"
-        ? { ...current, losses: current.losses + 1 }
-        : { ...current, pushes: current.pushes + 1 });
-    if (result === "player") garageAudio.blackjackWin();
+        ? { ...next, losses: next.losses + 1 }
+        : { ...next, pushes: next.pushes + 1 }, current));
+    if (results.includes("player")) garageAudio.blackjackWin();
   }, []);
 
   const deal = useCallback(() => {
@@ -140,7 +179,7 @@ export function GarageBlackjack() {
     setQuit(false);
   }, [recordOutcome, round]);
 
-  const play = useCallback((move: "hit" | "stand") => {
+  const play = useCallback((move: "hit" | "stand" | "double" | "surrender" | "split") => {
     if (!round || round.over) return;
     const nextRound = playRound(round, move);
     setRound(nextRound);
@@ -176,7 +215,18 @@ export function GarageBlackjack() {
   }, [casinoLobby]);
 
   const canDeal = termsAcknowledged && (round === null || round.over);
-  const outcome = roundOutcome(round);
+  const outcomes = roundOutcomes(round);
+  const outcome = outcomes.length && outcomes.every((result) => result === "player")
+    ? "player"
+    : outcomes.length && outcomes.every((result) => result === "house")
+      ? "house"
+      : outcomes.length
+        ? "push"
+        : null;
+  const activePlayer = round && !round.over ? round.players[round.activeHand] : null;
+  const canSplit = advancedMode && Boolean(activePlayer && round?.players.length === 1 && activePlayer.cards.length === 2 && activePlayer.cards[0].rank === activePlayer.cards[1].rank);
+  const canDouble = advancedMode && Boolean(activePlayer && activePlayer.cards.length === 2);
+  const canSurrender = advancedMode && Boolean(activePlayer && round?.players.length === 1 && activePlayer.cards.length === 2);
   const status = quit
     ? "You left the table. Come back for a free hand anytime."
     : round
@@ -230,6 +280,9 @@ export function GarageBlackjack() {
           <button type="button" className="garage-blackjack-lobby" onClick={toggleCasinoLobby} aria-pressed={casinoLobby} disabled={!termsAcknowledged} title="Press L to toggle lobby sound">
             {casinoLobby ? "Lobby sound on" : "Lobby sound off"}
           </button>
+          <button type="button" className="garage-blackjack-advanced" onClick={() => setAdvancedMode((on) => !on)} aria-pressed={advancedMode} disabled={!termsAcknowledged || Boolean(round && !round.over)}>
+            {advancedMode ? "Advanced rules on" : "Advanced rules"}
+          </button>
           <button type="button" className="garage-blackjack-deal" onClick={deal} disabled={!canDeal} title="Press D to deal">Deal hand</button>
         </div>
       </header>
@@ -242,23 +295,29 @@ export function GarageBlackjack() {
         <div className="garage-blackjack-marker" aria-hidden="true">
           {outcome === "player" ? <><strong>You win</strong><small>Free hand complete</small></> : null}
           {outcome === "house" ? <><strong>House wins</strong><small>Try the next hand</small></> : null}
-          {outcome === "push" ? <><strong>Push</strong><small>Free hand complete</small></> : null}
+          {outcome === "push" ? <><strong>Hand complete</strong><small>Check the table result</small></> : null}
           {!outcome ? <>YOU PLAY<br />THE HOUSE<br /><small>GET CLOSE TO 21</small></> : null}
         </div>
-        <div className="garage-blackjack-hand is-player">
-          <span><b>You</b> Player total {round.player.cardTotal}</span>
-          <div>{round.player.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
+        <div className="garage-blackjack-player-hands">
+          {round.players.map((player, index) => <div className={`garage-blackjack-hand is-player${index === round.activeHand && !round.over ? " is-active" : ""}`} key={player.cards.map((card) => card.id).join("-")}>
+            <span><b>{round.players.length > 1 ? `You ${index + 1}` : "You"}</b> Player total {player.cardTotal}{player.surrendered ? " - surrendered" : player.doubled ? " - doubled" : ""}</span>
+            <div>{player.cards.map((card) => <PlayingCard card={card} key={card.id} />)}</div>
+          </div>)}
         </div>
       </div> : <div className="garage-blackjack-table is-empty" aria-hidden="true"><span>YOU PLAY THE HOUSE</span><small>Deal a hand to start</small></div>}
       <p className="match-game-status" role="status">{status}</p>
       <div className="garage-blackjack-controls">
         <button type="button" onClick={() => play("hit")} disabled={!termsAcknowledged || !round || round.over} title="Press H to hit">Hit</button>
         <button type="button" onClick={() => play("stand")} disabled={!termsAcknowledged || !round || round.over} title="Press S to stand">Stand</button>
+        {advancedMode ? <button type="button" onClick={() => play("double")} disabled={!canDouble} title="Draw one card, then stand">Double</button> : null}
+        {advancedMode ? <button type="button" onClick={() => play("split")} disabled={!canSplit} title="Split a matching pair into two hands">Split pair</button> : null}
+        {advancedMode ? <button type="button" onClick={() => play("surrender")} disabled={!canSurrender} title="End this hand as a loss">Surrender</button> : null}
         <button type="button" onClick={leaveTable} disabled={!termsAcknowledged || !round || round.over} title="Press Q to quit">Quit table</button>
         {round?.over && canDeal ? <button type="button" onClick={deal}>Deal again</button> : null}
         {quit ? <button type="button" onClick={resetSession}>New table</button> : null}
       </div>
       <p className="garage-blackjack-keys"><b>Keys:</b> 1 deal, 2 hit, 3 stand. D, H, and S also work. Q leaves the table; L toggles lobby sound.</p>
+      {advancedMode ? <p className="garage-blackjack-advanced-note"><b>Advanced rules:</b> Split matching pairs once. Double draws one final card. Surrender ends an opening hand as a loss. These are free-play actions only.</p> : null}
       <p className="garage-blackjack-audio-credit">
         Lobby ambience: <a href="https://pixabay.com/sound-effects/people-casino-ambiance-19130/" target="_blank" rel="noreferrer">Casino Ambiance by freesound_community via Pixabay <span className="sr-only">(opens in a new tab)</span>↗</a>
       </p>
