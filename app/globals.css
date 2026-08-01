@@ -3091,6 +3091,23 @@ body.is-play-locked {
 /* Block, not inline-block: the status badge below is itself inline-block (it
    carries a text-width underline), so an inline back link shared its line. */
 .back-link { display: block; width: fit-content; margin-bottom: 1.5rem; color: var(--yellow-tint); font-weight: 900; }
+.service-breadcrumbs { margin-bottom: 1.5rem; }
+.service-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem .65rem;
+  margin: 0;
+  padding: 0;
+  color: #eaded0;
+  font-size: .72rem;
+  font-weight: 850;
+  list-style: none;
+}
+.service-breadcrumbs li { display: inline-flex; align-items: center; gap: .65rem; }
+.service-breadcrumbs li + li::before { content: "/"; color: var(--yellow); }
+.service-breadcrumbs a { color: var(--yellow-tint); text-underline-offset: 4px; }
+.service-breadcrumbs a:hover { color: #fff; }
+.service-breadcrumbs [aria-current="page"] { color: #fff; }
 .ticket-copy > p:not(.ticket-status) { max-width: 680px; color: #eaded0; line-height: 1.7; }
 .part-stamp {
   aspect-ratio: 1;
