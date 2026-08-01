@@ -49,9 +49,6 @@ export const metadata: Metadata = {
     images: ["/media/ocean-heights-cover.jpg"],
   },
   formatDetection: { telephone: true },
-  other: {
-    "codex-preview": "development",
-  },
   // No `icons` here on purpose. Next resolves icon hrefs against
   // `metadataBase`, which emits an absolute production URL — so any other
   // host (the prototype, a preview deploy) fetches the favicon cross-origin
@@ -114,19 +111,14 @@ gtag('config', '${gaMeasurementId}', {
         />
         {/* Host-relative so the icon resolves on whatever domain serves the
             site — see the note on `icons` in the metadata above. */}
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className={`${geistSans.variable} antialiased`}>
         {children}
         <CallTracking />
-        {/* Vercel Web Analytics: cookieless, and a 404 on any other host
-            rather than an error. (The "no consent banner needed" note that
-            used to sit here was true of Vercel alone; the Google tag above
-            does set cookies, so see docs/privacy-compliance.md for where the
-            banner question actually lands.) */}
-        <script defer src="/_vercel/insights/script.js" />
       </body>
     </html>
   );

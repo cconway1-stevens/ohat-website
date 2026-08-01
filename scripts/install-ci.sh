@@ -7,22 +7,21 @@ if [[ "${SITES_ENV_READY:-}" != "1" ]]; then
   exec "${script_dir}/sites-env.sh" -- "$0" "$@"
 fi
 
-command -v flock >/dev/null || {
-  echo "install-ci.sh requires Linux flock." >&2
-  exit 69
-}
-command -v timeout >/dev/null || {
-  echo "install-ci.sh requires GNU timeout." >&2
-  exit 69
-}
+flock_cmd="$(command -v flock || command -v gflock || true)"
+timeout_cmd="$(command -v timeout || command -v gtimeout || true)"
+sha256sum_cmd="$(command -v sha256sum || true)"
+if [[ -z "${sha256sum_cmd}" ]] && command -v shasum >/dev/null; then
+  sha256sum_cmd="shasum -a 256"
+fi
+
 command -v curl >/dev/null || {
   echo "install-ci.sh requires curl for the locked-tarball preflight." >&2
   exit 69
 }
-command -v sha256sum >/dev/null || {
-  echo "install-ci.sh requires sha256sum for cache and install verification." >&2
+if [[ -z "${sha256sum_cmd}" ]]; then
+  echo "install-ci.sh requires sha256sum or shasum for cache and install verification." >&2
   exit 69
-}
+fi
 
 runtime_root="${SITES_PROJECT_ROOT}/.sites-runtime"
 expected_home="${runtime_root}/home"
@@ -42,28 +41,39 @@ touch "${HOME}/.sites-write-test" "${expected_cache}/.sites-write-test"
 rm -f "${HOME}/.sites-write-test" "${expected_cache}/.sites-write-test"
 echo "[sites] environment passed: HOME=${HOME}, cache=${expected_cache}"
 
-lock_file="${runtime_root}/install.lock"
-exec 9>"${lock_file}"
-if ! flock -n 9; then
-  echo "Another dependency install is already running for ${SITES_PROJECT_ROOT}." >&2
-  exit 75
+if [[ -n "${flock_cmd}" ]]; then
+  lock_file="${runtime_root}/install.lock"
+  exec 9>"${lock_file}"
+  if ! "${flock_cmd}" -n 9; then
+    echo "Another dependency install is already running for ${SITES_PROJECT_ROOT}." >&2
+    exit 75
+  fi
+else
+  lock_dir="${runtime_root}/install.lockdir"
+  if ! mkdir "${lock_dir}" 2>/dev/null; then
+    echo "Another dependency install is already running for ${SITES_PROJECT_ROOT}." >&2
+    exit 75
+  fi
+  trap 'rm -rf "${lock_dir}"' EXIT
 fi
 
 # Catch an installer started outside this helper. Linux exposes both its command
 # line and working directory through /proc, so avoid broad process-name matches.
-for process in /proc/[0-9]*; do
-  pid="${process##*/}"
-  [[ "${pid}" != "$$" && "${pid}" != "${PPID}" ]] || continue
-  process_cwd="$(readlink -f "${process}/cwd" 2>/dev/null || true)"
-  [[ "${process_cwd}" == "${SITES_PROJECT_ROOT}" ]] || continue
-  process_command="$(tr '\0' ' ' <"${process}/cmdline" 2>/dev/null || true)"
-  if [[ "${process_command}" == *"npm ci"* ]]; then
-    echo "Another npm ci is visible in ${SITES_PROJECT_ROOT}; refusing to overlap installs." >&2
-    exit 75
-  fi
-done
+if [[ -d /proc ]]; then
+  for process in /proc/[0-9]*; do
+    pid="${process##*/}"
+    [[ "${pid}" != "$$" && "${pid}" != "${PPID}" ]] || continue
+    process_cwd="$(readlink -f "${process}/cwd" 2>/dev/null || true)"
+    [[ "${process_cwd}" == "${SITES_PROJECT_ROOT}" ]] || continue
+    process_command="$(tr '\0' ' ' <"${process}/cmdline" 2>/dev/null || true)"
+    if [[ "${process_command}" == *"npm ci"* ]]; then
+      echo "Another npm ci is visible in ${SITES_PROJECT_ROOT}; refusing to overlap installs." >&2
+      exit 75
+    fi
+  done
+fi
 
-lockfile_sha256="$(sha256sum "${SITES_PROJECT_ROOT}/package-lock.json" | awk '{print $1}')"
+lockfile_sha256="$(${sha256sum_cmd} "${SITES_PROJECT_ROOT}/package-lock.json" | awk '{print $1}')"
 use_seeded_cache=0
 seed_cache="${SITES_NPM_CACHE_SEED:-}"
 if [[ -n "${seed_cache}" && -d "${seed_cache}" ]]; then
@@ -93,7 +103,10 @@ NODE
   echo "Could not read the integrity-pinned vinext tarball from package-lock.json." >&2
   exit 65
 }
-mapfile -t locked_vinext <<<"${locked_vinext_output}"
+locked_vinext=()
+while IFS= read -r line; do
+  locked_vinext+=("${line}")
+done <<<"${locked_vinext_output}"
 if [[ "${#locked_vinext[@]}" -ne 2 ]]; then
   echo "Expected exactly one Vinext URL and integrity value from package-lock.json." >&2
   exit 65
@@ -162,11 +175,18 @@ npm_ci_args=(ci --cache "${expected_cache}")
 if [[ "${use_seeded_cache}" == "1" ]]; then
   npm_ci_args+=(--prefer-offline)
 fi
-timeout \
-  --signal=TERM \
-  --kill-after="${SITES_INSTALL_KILL_AFTER:-15s}" \
-  "${SITES_INSTALL_TIMEOUT:-8m}" \
-  npm "${npm_ci_args[@]}"
+if [[ -n "${timeout_cmd}" ]]; then
+  "${timeout_cmd}" \
+    --signal=TERM \
+    --kill-after="${SITES_INSTALL_KILL_AFTER:-15s}" \
+    "${SITES_INSTALL_TIMEOUT:-8m}" \
+    npm "${npm_ci_args[@]}"
+else
+  node "${script_dir}/run-with-timeout.mjs" \
+    "${SITES_INSTALL_TIMEOUT:-8m}" \
+    "${SITES_INSTALL_KILL_AFTER:-15s}" \
+    npm "${npm_ci_args[@]}"
+fi
 
 vinext="${SITES_PROJECT_ROOT}/node_modules/.bin/vinext"
 if [[ ! -x "${vinext}" ]]; then

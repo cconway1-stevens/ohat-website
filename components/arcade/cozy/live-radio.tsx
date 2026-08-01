@@ -227,7 +227,13 @@ export function LiveRadio() {
           <p className="silver-brand">OHAT <small>DE LUXE</small></p>
           <div className="silver-window">
             <div className="silver-station-line">
-              {station?.favicon ? <img src={station.favicon} alt="" /> : <span aria-hidden="true">OH</span>}
+              {station?.favicon ? (
+                // Station favicons come from arbitrary radio directory hosts.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={station.favicon} alt="" />
+              ) : (
+                <span aria-hidden="true">OH</span>
+              )}
               <p className="silver-station">{station ? station.name : "— — —"}</p>
             </div>
             <p className="silver-meta">

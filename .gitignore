@@ -40,6 +40,7 @@ next-env.d.ts
 /.sites-runtime/
 /outputs/
 /work/
+/artifacts/
 
 # vinext build cache (font cache bakes in machine-specific absolute paths)
 /.vinext/
