@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { phoneHref, SiteHeader } from "@/components/site-header";
 import { services } from "@/lib/services";
+import { ServiceIcon } from "@/components/service-icon";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbSchema, businessRef, shop } from "@/lib/shop";
 
@@ -92,6 +93,9 @@ export default function ServicesPage() {
                   Bay {String(index + 1).padStart(2, "0")}
                 </span>
                 <span className="catalog-card-tag">Call for quote</span>
+                {/* Sits in what used to be dead space between the bay number
+                    and the title — see components/service-icon.tsx. */}
+                <ServiceIcon slug={service.slug} />
                 <h2>{service.name}</h2>
                 <p>{service.short}</p>
                 <Link href={`/services/${service.slug}`}>Open catalog page →</Link>

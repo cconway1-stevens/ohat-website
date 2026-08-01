@@ -2997,7 +2997,10 @@ body.is-play-locked {
   width: min(100%, 215px);
   display: grid;
   place-content: center;
-  gap: .15rem;
+  /* Georgia's figures overrun the em box even at `line-height: 1`, so the
+     clearance between the number and its label comes from this gap rather
+     than from leading alone. */
+  gap: .55rem;
   justify-self: end;
   padding: 1rem;
   background: var(--yellow);
@@ -3015,7 +3018,11 @@ body.is-play-locked {
   opacity: .45;
   pointer-events: none;
 }
-.bay-counter strong { font-family: Georgia, serif; font-size: 4.4rem; line-height: .8; }
+/* `line-height: .8` made the line box shorter than the numerals themselves,
+   so the digits spilled out of their own box and printed over the label
+   underneath. Serif figures at this size need roughly their full em; the tight
+   look comes from the grid `gap`, not from crushing the leading. */
+.bay-counter strong { font-family: Georgia, serif; font-size: 4.4rem; line-height: 1; }
 .bay-counter span { font-size: .7rem; font-weight: 950; text-transform: uppercase; }
 .board-copy { grid-column: 1 / 2; max-width: 650px; color: #f7dede; font-size: 1.1rem; line-height: 1.65; }
 
@@ -3044,7 +3051,25 @@ body.is-play-locked {
 .service-directory article:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 12px 12px 0 var(--red); }
 .catalog-card-number { color: var(--red); font-size: .7rem; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; }
 .catalog-card-tag { position: absolute; right: -42px; top: 24px; width: 160px; padding: .35rem; background: var(--red); color: #fff; text-align: center; font-size: .62rem; font-weight: 900; text-transform: uppercase; transform: rotate(39deg); }
-.service-directory h2 { margin: auto 0 .75rem; font-family: Georgia, serif; font-size: 2.1rem; line-height: .98; }
+/* The heading no longer carries `margin-top: auto`. That pushed it to the
+   foot of the card and left ~130px of blank card above it; the icon below
+   takes over the job of absorbing the free space, so the gap becomes the
+   illustration instead of a hole. */
+.service-directory h2 { margin: 0 0 .6rem; font-family: Georgia, serif; font-size: 2.1rem; line-height: .98; }
+/* `margin: auto 0` centres the icon in whatever room is left between the bay
+   number and the title, so cards of differing text length still look
+   deliberate rather than top- or bottom-heavy. */
+.service-icon {
+  width: 46px;
+  height: 46px;
+  margin: auto 0 1.1rem;
+  color: var(--red);
+  opacity: .9;
+}
+/* On the blue card the red would go muddy; on yellow it stays legible. Both
+   inherit through currentColor rather than needing their own icon variant. */
+.service-directory article:nth-child(6n) .service-icon { color: var(--yellow); opacity: 1; }
+.service-directory article:hover .service-icon { opacity: 1; }
 .service-directory p { color: inherit; opacity: .75; line-height: 1.55; }
 .service-directory a { color: var(--red); font-weight: 950; }
 .service-directory article:nth-child(5n+2) a,
@@ -3125,8 +3150,14 @@ body.is-play-locked {
 .dropoff-hero-grid > div:first-child > p:not(.dropoff-route) { max-width: 600px; color: #e8dfd4; line-height: 1.65; }
 .dropoff-photo { position: relative; min-height: 480px; border: 8px solid var(--paper); outline: 4px solid var(--ink); box-shadow: 14px 14px 0 var(--yellow); transform: rotate(2deg); }
 .dropoff-photo img { object-fit: cover; }
-.dropoff-sign { position: absolute; right: -25px; bottom: -25px; width: 145px; height: 145px; display: grid; place-content: center; background: var(--red); border: 6px double var(--yellow); border-radius: 50%; text-align: center; transform: rotate(-6deg); }
-.dropoff-sign span { font-family: Georgia, serif; font-size: 3.8rem; line-height: .7; }
+.dropoff-sign { position: absolute; right: -25px; bottom: -25px; width: 168px; height: 168px; display: grid; place-content: center; gap: .3rem; background: var(--red); border: 6px double var(--yellow); border-radius: 50%; text-align: center; transform: rotate(-6deg); }
+/* Same fault as .bay-counter above: .7 leading on 3.8rem serif digits put
+   "24" straight through "HOUR". */
+/* Sized to fit. Giving the numerals honest leading (they used to sit on .7,
+   which printed "24" through "HOUR") made the stack taller than the old 145px
+   disc, so the disc grew and the figure came down a step — otherwise the last
+   line clips against the border. */
+.dropoff-sign span { font-family: Georgia, serif; font-size: 3rem; line-height: 1.05; }
 .dropoff-sign strong, .dropoff-sign small { color: var(--yellow-tint); font-weight: 950; letter-spacing: .1em; }
 .dropoff-steps { padding-bottom: 11rem; }
 .dropoff-grid { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 3rem; }
