@@ -4295,35 +4295,63 @@ body.is-play-locked {
   letter-spacing: .06em;
 }
 
-/* The card numbers become route shields, the way a state highway is marked. */
-.road-map .contact-grid article > span {
-  position: relative;
-  width: 62px;
-  height: 58px;
-  display: grid;
-  place-items: center;
-  margin-bottom: .15rem;
-  padding-top: .5rem;
-  color: var(--ink);
-  font-size: 1.5rem;
-  background: var(--paper);
-  border: 3px solid var(--ink);
-  border-radius: 26px 26px 9px 9px;
-  box-shadow: 3px 3px 0 rgba(23,20,18,.45);
+/* The route markers. The shield itself is drawn in components/route-shield.tsx;
+   everything here is size, palette and placement, so the sign's colours stay
+   with the rest of the theme rather than being hardcoded into the SVG. */
+.route-shield {
+  display: block;
+  width: 64px;
+  height: auto;
+  margin-bottom: .35rem;
+  overflow: visible;
+  filter: drop-shadow(3px 4px 0 rgba(23, 20, 18, .38));
 }
-.road-map .contact-grid article > span::before {
-  content: "ROUTE";
-  position: absolute;
-  top: 4px;
-  color: var(--red);
+/* The white sign blank, with the dark outline following the scallops. */
+.route-shield-blank {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.route-shield-band { fill: var(--red); }
+.route-shield-body { fill: var(--blue); }
+.route-shield-label,
+.route-shield-number {
+  fill: #fff;
+  text-anchor: middle;
   font-family: var(--font-geist-sans), Arial, sans-serif;
-  font-size: .42rem;
   font-weight: 900;
-  letter-spacing: .13em;
+  /* Painted signage is stroked, not hairline — keep the type solid at 58px. */
+  paint-order: stroke fill;
 }
-/* The third card is blue, so its shield keeps the paper face for contrast
-   rather than inheriting the card's white type colour. */
-.road-map .contact-grid article:nth-child(3) > span { color: var(--ink); }
+.route-shield-label { font-size: 15px; letter-spacing: .06em; }
+.route-shield-number { font-size: 38px; letter-spacing: -.01em; }
+
+/* The one card with a physical destination gets a map pin stuck in its top
+   corner — the paper-map equivalent of a pushpin marking "you're going here."
+   Same red as the legend's own "you are headed here" dot, so it reads as the
+   same mark rather than a second, unrelated icon. */
+.road-map .contact-grid article { position: relative; }
+.map-pin {
+  position: absolute;
+  top: -11px;
+  right: 22px;
+  width: 22px;
+  height: 28px;
+  transform: rotate(-40deg);
+  transform-origin: 50% 85%;
+  background: var(--red);
+  border: 2px solid var(--ink);
+  border-radius: 50% 50% 50% 2px;
+  box-shadow: 2px 3px 0 rgba(23, 20, 18, .4);
+}
+.map-pin::after {
+  content: "";
+  position: absolute;
+  inset: 5px 5px 8px;
+  border-radius: 50%;
+  background: var(--paper);
+}
 
 /* Map key strip, in the language of a paper map legend. */
 .road-legend {
