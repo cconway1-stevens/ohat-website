@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema } from "@/lib/shop";
 
-export const metadata: Metadata = {
-  title: "Our Family Auto Repair Shop",
+export const metadata = pageMetadata({
+  title: "Our Family Auto Repair Shop in Egg Harbor Township, NJ",
   description:
     "Meet Ocean Heights Auto & Tire, a family-run Egg Harbor Township shop with deep automotive experience, a welcoming waiting room, and modern diagnostic capability.",
-  alternates: { canonical: "/our-shop" },
-};
+  path: "/our-shop",
+  ogTitle: "Our Family Auto Repair Shop",
+});
 
 const gallery = [
   ["/media/1527173976927-building8-21-14.31.jpg", "Ocean Heights Auto and Tire exterior"],
@@ -23,6 +25,12 @@ export default function OurShopPage() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbSchema([["Our Shop", "/our-shop"]])),
+          }}
+        />
         <section className="inner-hero story-hero">
           <div className="shell">
             <p className="eyebrow">The modern family garage</p>

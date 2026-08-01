@@ -178,12 +178,16 @@ const priority = (route) =>
         ? "0.7"
         : "0.8";
 
+// `lastmod` is the one sitemap hint Google still acts on. The build date is
+// the honest value here: these pages are published by this build.
+const lastmod = new Date().toISOString().slice(0, 10);
+
 writeFileSync(
   join(OUT_DIR, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes
     .map(
       (route) =>
-        `  <url><loc>${SITE_URL}${route === "/" ? "/" : route}</loc><priority>${priority(route)}</priority></url>`,
+        `  <url><loc>${SITE_URL}${route === "/" ? "/" : route}</loc><lastmod>${lastmod}</lastmod><priority>${priority(route)}</priority></url>`,
     )
     .join("\n")}\n</urlset>\n`,
 );

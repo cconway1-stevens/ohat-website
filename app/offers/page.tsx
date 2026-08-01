@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema } from "@/lib/shop";
 
-export const metadata: Metadata = {
-  title: "Auto Repair Offers & Coupons",
+export const metadata = pageMetadata({
+  title: "Auto Repair Offers & Coupons in Egg Harbor Township, NJ",
   description:
-    "See current Ocean Heights Auto & Tire offers and call the shop to confirm availability before service.",
-  alternates: { canonical: "/offers" },
-};
+    "See current Ocean Heights Auto & Tire offers and coupons for oil changes, tires, brakes and diagnostics. Call the shop to confirm availability before service.",
+  path: "/offers",
+  ogTitle: "Auto Repair Offers & Coupons",
+});
 
 export default function OffersPage() {
   return (
@@ -16,6 +18,12 @@ export default function OffersPage() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbSchema([["Offers", "/offers"]])),
+          }}
+        />
         <section className="inner-hero">
           <div className="shell">
             <p className="eyebrow">Straightforward value</p>

@@ -5,7 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { serviceBySlug, services } from "@/lib/services";
-import { autoRepairSchema, shop } from "@/lib/shop";
+import { breadcrumbSchema, businessRef, faqSchema, shop } from "@/lib/shop";
+import { pageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }));
@@ -19,13 +20,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = serviceBySlug(slug);
   if (!service) return {};
-  return {
+  return pageMetadata({
     title: service.metaTitle ?? `${service.name} in Egg Harbor Township, NJ`,
     description:
       service.metaDescription ??
       `${service.short} Schedule ${service.name.toLowerCase()} with Ocean Heights Auto & Tire in Egg Harbor Township, NJ.`,
-    alternates: { canonical: `/services/${service.slug}` },
-  };
+    path: `/services/${service.slug}`,
+    ogTitle: `${service.name} | ${shop.name}`,
+  });
 }
 
 export default async function ServicePage({
@@ -36,41 +38,29 @@ export default async function ServicePage({
   const { slug } = await params;
   const service = serviceBySlug(slug);
   if (!service) notFound();
+  const url = `${shop.siteUrl}/services/${service.slug}`;
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${url}#service`,
     name: service.name,
     description: service.intro,
-    areaServed: {
-      "@type": "City",
-      name: shop.address.city,
-    },
-    provider: autoRepairSchema(),
+    url,
+    serviceType: service.name,
+    areaServed: shop.areaServed.map((name) => ({ "@type": "City", name })),
+    // A reference rather than a second copy of the business: the full node
+    // ships on the homepage, and repeating it here would ask Google to
+    // reconcile sixteen near-identical AutoRepair entities.
+    provider: businessRef,
   };
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: `${shop.siteUrl}/`,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Services",
-        item: `${shop.siteUrl}/services`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: service.name,
-        item: `${shop.siteUrl}/services/${service.slug}`,
-      },
-    ],
-  };
+  const breadcrumbs = breadcrumbSchema([
+    ["Services", "/services"],
+    [service.name, `/services/${service.slug}`],
+  ]);
+  // The questions and answers below are rendered on the page, which is what
+  // makes them eligible for FAQ rich results.
+  const faqs = faqSchema(service.faqs, { url });
+
   const serviceNumber = String(
     services.findIndex((item) => item.slug === service.slug) + 1,
   ).padStart(2, "0");
@@ -89,7 +79,11 @@ export default async function ServicePage({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqs) }}
         />
         <section className={`repair-ticket repair-ticket-${Number(serviceNumber) % 4}`}>
           <div className="shell repair-ticket-grid">

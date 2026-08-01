@@ -16,13 +16,38 @@ import { autoRepairSchema, shop } from "@/lib/shop";
 import { ShopHoursStatus } from "@/components/shop-hours-status";
 
 export default function Home() {
-  const localBusinessSchema = {
+  // One @graph rather than several stand-alone blocks, so the WebSite, the
+  // homepage and the business are linked nodes instead of three unrelated
+  // things Google has to guess a relationship between. The business node is
+  // the canonical copy; every other page references it by @id.
+  const homeSchema = {
     "@context": "https://schema.org",
-    ...autoRepairSchema({
-      image: `${shop.siteUrl}/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png`,
-      logo: `${shop.siteUrl}/ohat-logo.jpg`,
-      priceRange: "$$",
-    }),
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${shop.siteUrl}/#website`,
+        url: `${shop.siteUrl}/`,
+        name: shop.name,
+        inLanguage: "en-US",
+        publisher: { "@id": `${shop.siteUrl}/#business` },
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${shop.siteUrl}/#webpage`,
+        url: `${shop.siteUrl}/`,
+        name: "Auto Repair & Tire Shop in Egg Harbor Township, NJ",
+        isPartOf: { "@id": `${shop.siteUrl}/#website` },
+        about: { "@id": `${shop.siteUrl}/#business` },
+        primaryImageOfPage: `${shop.siteUrl}/media/ocean-heights-cover.jpg`,
+      },
+      autoRepairSchema({
+        image: `${shop.siteUrl}/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png`,
+        slogan: shop.tagline,
+        // The full catalogue lives on /services as an OfferCatalog attached
+        // to this same @id; listing it twice would only add noise.
+        knowsAbout: services.map((service) => service.name),
+      }),
+    ],
   };
 
   return (
@@ -34,7 +59,7 @@ export default function Home() {
       <main id="main-content">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(homeSchema) }}
         />
         <section className="catalog-cover-hero" id="top">
           <div className="cover-shell">
