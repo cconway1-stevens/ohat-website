@@ -3717,10 +3717,10 @@ body.is-play-locked {
   .repair-ticket-grid { grid-template-columns: .35fr 1fr; }
   .part-stamp { display: none; }
   .service-panel-signs,
+  .service-panel-includes { grid-column: span 6; }
   .service-panel-diagnosis,
   .service-panel-cost,
   .service-panel-cost-wide { grid-column: span 7; }
-  .service-panel-includes,
   .service-panel-why-us,
   .service-panel-resources,
   .service-panel-related { grid-column: span 5; }
