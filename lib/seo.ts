@@ -17,6 +17,7 @@ export function pageMetadata({
   description,
   path,
   ogTitle,
+  absoluteTitle = false,
 }: {
   title: string;
   description: string;
@@ -24,10 +25,16 @@ export function pageMetadata({
   path: string;
   /** Optional shorter title for share cards, which truncate sooner. */
   ogTitle?: string;
+  /**
+   * Skip the root title template when the supplied title already carries the
+   * complete search phrase. This keeps local service titles from having the
+   * full business name appended past the usual search-result display width.
+   */
+  absoluteTitle?: boolean;
 }): Metadata {
   const social = ogTitle ?? `${title} | ${shop.name}`;
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description,
     alternates: { canonical: path },
     openGraph: {

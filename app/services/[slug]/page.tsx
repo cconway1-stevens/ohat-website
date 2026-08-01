@@ -5,7 +5,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { serviceBySlug, services } from "@/lib/services";
-import { breadcrumbSchema, businessRef, faqSchema, shop } from "@/lib/shop";
+import {
+  autoRepairSchema,
+  breadcrumbSchema,
+  businessRef,
+  faqSchema,
+  shop,
+} from "@/lib/shop";
 import { pageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -27,6 +33,7 @@ export async function generateMetadata({
       `${service.short} Schedule ${service.name.toLowerCase()} with Ocean Heights Auto & Tire in Egg Harbor Township, NJ.`,
     path: `/services/${service.slug}`,
     ogTitle: `${service.name} | ${shop.name}`,
+    absoluteTitle: true,
   });
 }
 
@@ -79,6 +86,10 @@ export default async function ServicePage({
         />
         <script
           type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(autoRepairSchema()) }}
+        />
+        <script
+          type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
         />
         <script
@@ -92,7 +103,13 @@ export default async function ServicePage({
               <strong>{serviceNumber}</strong>
             </div>
             <div className="ticket-copy">
-              <Link className="back-link" href="/services">← Service board</Link>
+              <nav className="service-breadcrumbs" aria-label="Breadcrumb">
+                <ol>
+                  <li><Link href="/">Home</Link></li>
+                  <li><Link href="/services">Services</Link></li>
+                  <li aria-current="page">{service.name}</li>
+                </ol>
+              </nav>
               <p className="ticket-status">Now writing repair orders</p>
               <h1>
                 {service.name}{" "}<span className="ticket-locale">in {shop.address.city}, {shop.address.state}</span>

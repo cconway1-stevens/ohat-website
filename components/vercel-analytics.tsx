@@ -1,6 +1,7 @@
 "use client";
 
 import { Analytics } from "@vercel/analytics/react";
+import { isVercelHost } from "@/lib/analytics";
 
 /**
  * Vercel Web Analytics, via Vercel's own package.
@@ -13,9 +14,10 @@ import { Analytics } from "@vercel/analytics/react";
  * `scripts/production-readiness.mjs` still fails the build on any `/_vercel/`
  * script found in exported HTML.
  *
- * The package satisfies that check on its own terms: it injects the script
- * from a client effect, so the exported HTML stays free of provider-specific
- * tags, and it no-ops when the endpoint isn't there.
+ * The package injects the script from a client effect, so the exported HTML
+ * stays free of provider-specific tags. It does not, however, detect whether
+ * the current host serves Vercel's endpoint; without the gate below it asks
+ * every non-Vercel deployment for a file that can only return 404.
  *
  * `@vercel/analytics/react` rather than `/next`, deliberately. The `/next`
  * entry imports `usePathname` and `useSearchParams` from `next/navigation`.
@@ -28,5 +30,7 @@ import { Analytics } from "@vercel/analytics/react";
  * Cookieless and collects no personal data — see docs/privacy-compliance.md.
  */
 export function VercelAnalytics() {
-  return <Analytics />;
+  const enabled =
+    typeof window !== "undefined" && isVercelHost(window.location.hostname);
+  return enabled ? <Analytics /> : null;
 }

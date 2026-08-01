@@ -28,7 +28,7 @@ export const services: Service[] = [
     name: "Advanced Diagnostics",
     metaTitle: "Check Engine Light & Auto Diagnostics in Egg Harbor Township, NJ",
     metaDescription:
-      "Get evidence-based check-engine-light, electrical and drivability diagnostics from Ocean Heights Auto & Tire in Egg Harbor Township. Gas, diesel, hybrid and EV service.",
+      "Evidence-based check-engine-light, electrical and drivability diagnostics in Egg Harbor Township for gas, diesel, hybrid and electric vehicles.",
     short: "Check-engine lights, electrical faults, and the hard-to-find issues.",
     intro:
       "Modern vehicles are rolling computer networks. Our diagnostic process combines professional scan tools, live data, electrical testing, and hands-on experience to find the cause—not just clear the code.",
@@ -62,7 +62,7 @@ export const services: Service[] = [
     slug: "brake-repair",
     name: "Brake Repair",
     metaDescription:
-      "Brake inspections and repairs for pads, rotors, calipers, fluid, hoses and ABS concerns. Family-owned service from ASE-certified technicians in Egg Harbor Township.",
+      "Brake inspections and repair for pads, rotors, calipers, fluid, hoses and ABS from ASE-certified technicians in Egg Harbor Township.",
     short: "Confident stops, honest inspections, and complete brake service.",
     intro:
       "Ocean Heights Auto & Tire provides complete brake inspection and repair for cars, SUVs, light trucks, hybrids, EVs, diesels, and classic vehicles in Egg Harbor Township. Whether your brakes squeal, grind, pull, vibrate, or trigger a dashboard warning, our technicians inspect the complete braking system before recommending repairs.",
@@ -131,7 +131,7 @@ export const services: Service[] = [
     slug: "wheel-alignment",
     name: "Wheel Alignment",
     metaDescription:
-      "Computerized wheel alignment for pulling, uneven tire wear, crooked steering wheels and handling concerns. Call Ocean Heights Auto & Tire in Egg Harbor Township.",
+      "Computerized wheel alignment for pulling, uneven tire wear, crooked steering wheels and handling concerns in Egg Harbor Township.",
     short: "Computerized alignment for straight tracking and even tire wear.",
     intro:
       "If your vehicle pulls to one side, the steering wheel sits crooked, or your tires wear unevenly, the alignment is the first thing to check. Ocean Heights performs computerized four-wheel alignment for cars, SUVs, trucks, hybrids, EVs, and classics in Egg Harbor Township.",
@@ -166,7 +166,7 @@ export const services: Service[] = [
     name: "Oil & Scheduled Maintenance",
     metaTitle: "Oil Change & Scheduled Maintenance in Egg Harbor Township, NJ",
     metaDescription:
-      "Oil changes, filters, fluids, belts, hoses and mileage-based maintenance tailored to your vehicle and manufacturer schedule at Ocean Heights Auto & Tire.",
+      "Oil changes, filters, fluids, belts, hoses and factory-scheduled maintenance tailored to your vehicle in Egg Harbor Township at Ocean Heights Auto & Tire.",
     short: "Factory-aware maintenance that protects reliability and value.",
     intro:
       "We tailor maintenance to your vehicle, mileage, driving habits, and manufacturer schedule instead of applying a one-size-fits-all checklist.",
@@ -200,7 +200,7 @@ export const services: Service[] = [
     slug: "hybrid-ev-service",
     name: "Hybrid & EV Service",
     metaDescription:
-      "Hybrid and electric vehicle maintenance and diagnostics in Egg Harbor Township: brakes, tires, cooling, 12-volt systems and drivability from Ocean Heights Auto & Tire.",
+      "Hybrid and electric vehicle service in Egg Harbor Township for brakes, tires, cooling, 12-volt systems, maintenance and drivability concerns.",
     short: "Modern maintenance and diagnostics for electrified vehicles.",
     intro:
       "Hybrid and electric vehicles still need expert care for brakes, suspension, climate systems, tires, low-voltage electronics, cooling, and diagnostics.",
@@ -302,7 +302,7 @@ export const services: Service[] = [
     slug: "suspension-steering",
     name: "Suspension & Steering",
     metaDescription:
-      "Shocks, struts, wheel bearings, ball joints and steering repair in Egg Harbor Township from Ocean Heights Auto & Tire. Clunks, wandering and rough rides diagnosed.",
+      "Shocks, struts, wheel bearings, ball joints and steering repair in Egg Harbor Township for clunks, wandering, uneven wear and rough rides.",
     short: "Restore ride control, tire contact, and predictable handling.",
     intro:
       "A stable vehicle is a safer vehicle. We inspect steering and suspension components as a connected system before recommending repairs.",
@@ -439,7 +439,7 @@ export const services: Service[] = [
     name: "Vehicle Recall Checks",
     metaTitle: "Free Vehicle Recall Check in Egg Harbor Township, NJ",
     metaDescription:
-      "Check your vehicle for open safety recalls with the official NHTSA lookup, and get straight answers from Ocean Heights Auto & Tire about what to do next.",
+      "Check for open vehicle safety recalls with the official NHTSA lookup, plus clear next-step guidance in Egg Harbor Township from Ocean Heights Auto & Tire.",
     short: "Check your vehicle for open safety recalls and get straight answers on next steps.",
     intro:
       "Use the official NHTSA tool to check your vehicle for open safety recalls—it is free and takes about a minute with your VIN or license plate. Recall repairs are generally completed free of charge by an authorized manufacturer dealership. Ocean Heights can help you understand the result and take care of any unrelated maintenance, diagnostic, tire, brake, or drivability concerns.",
