@@ -179,7 +179,7 @@ export default function Home() {
               >
                 <div className="garage-proof-ticket garage-proof-ase">
                   <Image
-                    src="/media/ase-certified.jpg"
+                    src="/media/ase-certified.webp"
                     alt="ASE"
                     width={70}
                     height={52}

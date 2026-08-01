@@ -3837,6 +3837,10 @@ body.is-play-locked {
 }
 
 @media (max-width: 720px) {
+  /* Let the mobile LCP paint immediately. The desktop paper-sheet entrance is
+     decorative, but on a throttled phone its initial opacity can postpone the
+     hero's recorded paint by the full animation duration. */
+  .cover-sheet { animation: none; }
   body { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
   .shell { width: min(100% - 28px, 1180px); }
   .garage-strip { grid-template-columns: 1fr 1fr; padding-inline: 14px; }
