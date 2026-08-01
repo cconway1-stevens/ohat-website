@@ -74,7 +74,7 @@ export default function Home() {
 
               <h1>
                 Auto Repair &amp; Tire Shop
-                <em>in Egg Harbor Township, NJ</em>
+                <em>in EHT, NJ</em>
               </h1>
               <p className="cover-tagline">Car care, done right. No detours.</p>
               <p className="cover-lede">
