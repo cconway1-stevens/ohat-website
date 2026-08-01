@@ -15,13 +15,11 @@ import { autoRepairSchema, breadcrumbSchema, shop } from "@/lib/shop";
 // stale value sitting in a meta description.
 export const metadata: Metadata = {
   title: "Contact Ocean Heights Auto & Tire in Egg Harbor Township, NJ",
-  description:
-    `Call ${shop.phone.display}, email the shop, or get directions to ${shop.name}, an auto repair and tire shop at ${shop.address.full}. See hours, parking and after-hours drop-off details.`,
+  description: `Call ${shop.phone.display}, email the shop, or get directions to ${shop.name}, an auto repair and tire shop at ${shop.address.full}. See hours, parking and after-hours drop-off details.`,
   alternates: { canonical: "/contact" },
   openGraph: {
     title: `Contact ${shop.name}`,
-    description:
-      `Call ${shop.phone.display}, email the shop, or get directions to our Egg Harbor Township auto repair and tire shop.`,
+    description: `Call ${shop.phone.display}, email the shop, or get directions to our Egg Harbor Township auto repair and tire shop.`,
     url: "/contact",
     type: "website",
   },
@@ -68,7 +66,9 @@ export default function ContactPage() {
 
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
       <main id="main-content">
         <script
@@ -86,9 +86,9 @@ export default function ContactPage() {
               <p className="eyebrow">Egg Harbor Township auto repair</p>
               <h1>Contact {shop.name}</h1>
               <p>
-                Call, email, or stop by the shop on Ocean Heights Avenue. Tell
-                us what you&apos;re hearing, seeing, or feeling behind the wheel
-                and we&apos;ll find the right next step.
+                Call, email, or stop by the shop on Ocean Heights Avenue. Tell us what you&apos;re
+                hearing, seeing, or feeling behind the wheel and we&apos;ll find the right next
+                step.
               </p>
               <div className="contact-hero-actions">
                 <a className="button button-primary" href={phoneHref}>
@@ -97,11 +97,7 @@ export default function ContactPage() {
                 <a className="button button-ghost" href={`mailto:${contactEmail}`}>
                   Email the shop
                 </a>
-                <a
-                  className="button button-contact-card"
-                  href="/contact-card.vcf"
-                  download
-                >
+                <a className="button button-contact-card" href="/contact-card.vcf" download>
                   Add us to contacts
                 </a>
               </div>
@@ -155,11 +151,22 @@ export default function ContactPage() {
           </div>
           <div className="shell road-legend">
             <span className="road-legend-title">Map key</span>
-            <span><i className="key-swatch key-shop" aria-hidden="true" />You are headed here</span>
-            <span><i className="key-swatch key-route" aria-hidden="true" />Ocean Heights Ave</span>
-            <span><i className="key-swatch key-hours" aria-hidden="true" />Open Mon&ndash;Fri, 8&ndash;5</span>
+            <span>
+              <i className="key-swatch key-shop" aria-hidden="true" />
+              You are headed here
+            </span>
+            <span>
+              <i className="key-swatch key-route" aria-hidden="true" />
+              Ocean Heights Ave
+            </span>
+            <span>
+              <i className="key-swatch key-hours" aria-hidden="true" />
+              Open Mon&ndash;Fri, 8&ndash;5
+            </span>
             <span className="road-legend-scale" aria-hidden="true">
-              0<em /><em /><em />5 mi
+              0<em />
+              <em />
+              <em />5 mi
             </span>
           </div>
         </section>
@@ -186,8 +193,7 @@ export default function ContactPage() {
                   <ShopHoursStatus />
                   <p>
                     {shop.hours.closedNote} The{" "}
-                    <Link href="/vehicle-drop-off">secure night drop</Link>
-                    {" "}runs around the clock.
+                    <Link href="/vehicle-drop-off">secure night drop</Link> runs around the clock.
                   </p>
                 </div>
 
@@ -208,8 +214,7 @@ export default function ContactPage() {
                   <h3>Digital receipts come from {receiptsEmail}.</h3>
                   <p>
                     That mailbox is automated. For replies, write to{" "}
-                    <a href={`mailto:${contactEmail}`}>{contactEmail}</a> or
-                    call the shop.
+                    <a href={`mailto:${contactEmail}`}>{contactEmail}</a> or call the shop.
                   </p>
                   <CopyButton value={receiptsEmail} label="receipt address" />
                 </div>
@@ -247,13 +252,10 @@ export default function ContactPage() {
               <h2>Right here in Egg Harbor Township.</h2>
               <p>
                 On Ocean Heights Avenue in {shop.nickname}, minutes from{" "}
-                {shop.areaServed.slice(1).join(", ")} and the rest of{" "}
-                {shop.county}.
+                {shop.areaServed.slice(1).join(", ")} and the rest of {shop.county}.
               </p>
             </div>
-            <DirectionsTrigger className="button button-primary">
-              Get directions
-            </DirectionsTrigger>
+            <DirectionsTrigger className="button button-primary">Get directions</DirectionsTrigger>
           </div>
         </section>
       </main>

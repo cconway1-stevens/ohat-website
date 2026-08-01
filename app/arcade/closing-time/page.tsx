@@ -4,7 +4,8 @@ import { ClosingTime } from "@/components/arcade/cozy/closing-time";
 
 export const metadata: Metadata = {
   title: "Closing Time Garage - Garage Arcade",
-  description: "Dim the bays, put the carts away and listen to the rain in the Ocean Heights after-hours garage.",
+  description:
+    "Dim the bays, put the carts away and listen to the rain in the Ocean Heights after-hours garage.",
   alternates: { canonical: "/arcade/closing-time" },
 };
 

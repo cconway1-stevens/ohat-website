@@ -358,15 +358,31 @@ export function ShoreRun() {
           <h2>Shore run</h2>
         </div>
         <div className="shore-run-header-tools">
-          <button type="button" className="shore-run-command" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
+          <button
+            type="button"
+            className="shore-run-command"
+            onClick={() => setSound((on) => !on)}
+            aria-pressed={sound}
+          >
             Sound {sound ? "on" : "off"}
           </button>
           {!running ? (
-            <button type="button" className="shore-run-command" onClick={start}>{over ? "Run again" : "Start the run"}</button>
+            <button type="button" className="shore-run-command" onClick={start}>
+              {over ? "Run again" : "Start the run"}
+            </button>
           ) : null}
-          <button type="button" className="shore-run-road-toggle" onClick={() => setRoadSound((on) => !on)} aria-pressed={roadSound} aria-label={`Road sound ${roadSound ? "on" : "off"}`} disabled={!sound}>
+          <button
+            type="button"
+            className="shore-run-road-toggle"
+            onClick={() => setRoadSound((on) => !on)}
+            aria-pressed={roadSound}
+            aria-label={`Road sound ${roadSound ? "on" : "off"}`}
+            disabled={!sound}
+          >
             <span>Road sound</span>
-            <span className="shore-run-tire-toggle" aria-hidden="true"><span /></span>
+            <span className="shore-run-tire-toggle" aria-hidden="true">
+              <span />
+            </span>
           </button>
         </div>
       </header>
@@ -382,7 +398,9 @@ export function ShoreRun() {
           </div>
           <div>
             <dt>Coins</dt>
-            <dd>{coins}/{COINS_TO_WIN}</dd>
+            <dd>
+              {coins}/{COINS_TO_WIN}
+            </dd>
           </div>
         </dl>
       </div>
@@ -398,9 +416,11 @@ export function ShoreRun() {
       {(won || reachedNight) && over ? (
         <PrizeBanner
           sound={sound}
-          achievement={won
-            ? `${COINS_TO_WIN} coins collected on the Shore Run.`
-            : "You drove the Shore Run all the way into night."}
+          achievement={
+            won
+              ? `${COINS_TO_WIN} coins collected on the Shore Run.`
+              : "You drove the Shore Run all the way into night."
+          }
         />
       ) : null}
       <canvas
@@ -437,8 +457,12 @@ export function ShoreRun() {
         </button>
       </div>
       <p className="shore-run-keys">
-        <span><b>Space</b> / <b>↑</b> jump</span>
-        <span><b>↓</b> duck</span>
+        <span>
+          <b>Space</b> / <b>↑</b> jump
+        </span>
+        <span>
+          <b>↓</b> duck
+        </span>
         <span>Hold the duck through an underpass</span>
         <span>On a phone: tap to jump, hold low to duck</span>
       </p>
@@ -671,10 +695,7 @@ function drawCar(
       ctx.lineWidth = 1.6;
       ctx.beginPath();
       ctx.moveTo(wx, GROUND - 4 + g.y);
-      ctx.lineTo(
-        wx + Math.cos(g.wheelSpin) * 7,
-        GROUND - 4 + g.y + Math.sin(g.wheelSpin) * 7,
-      );
+      ctx.lineTo(wx + Math.cos(g.wheelSpin) * 7, GROUND - 4 + g.y + Math.sin(g.wheelSpin) * 7);
       ctx.stroke();
     }
   }

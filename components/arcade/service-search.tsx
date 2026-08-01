@@ -17,7 +17,10 @@ const CONFIG = arcadePresets.serviceSearch;
 
 function SearchExample() {
   return (
-    <div className="service-search-example" aria-label="Example: tap T first, then E, to select TIRE">
+    <div
+      className="service-search-example"
+      aria-label="Example: tap T first, then E, to select TIRE"
+    >
       <div className="service-search-example-word" aria-hidden="true">
         {Array.from("TIRE").map((letter, index) => (
           <span key={letter} className={index === 0 ? "is-start" : index === 3 ? "is-end" : ""}>
@@ -27,7 +30,10 @@ function SearchExample() {
           </span>
         ))}
       </div>
-      <p><strong>Example:</strong> For TIRE, tap <b>T</b> first, then <b>E</b>. Skip I and R; the game selects the whole word.</p>
+      <p>
+        <strong>Example:</strong> For TIRE, tap <b>T</b> first, then <b>E</b>. Skip I and R; the
+        game selects the whole word.
+      </p>
     </div>
   );
 }
@@ -41,7 +47,9 @@ export function ServiceSearch() {
   // so a revealed word still finishes the grid without quietly buying the
   // coupon — you can always start a fresh puzzle and go for the prize again.
   const [revealed, setRevealed] = useState<string[]>([]);
-  const [message, setMessage] = useState("Tap the first letter, then the last letter. Skip the letters in between.");
+  const [message, setMessage] = useState(
+    "Tap the first letter, then the last letter. Skip the letters in between.",
+  );
   const [sound, setSound] = useState(true);
 
   const prizeWords = CONFIG.difficulties[difficulty].prizeWords;
@@ -50,7 +58,10 @@ export function ServiceSearch() {
   const complete = Boolean(puzzle && solved.length === puzzle.words.length);
   const remaining = puzzle ? puzzle.words.filter((entry) => !solved.includes(entry.word)) : [];
   const cellsOf = (words: string[]) =>
-    new Set(puzzle?.words.filter((entry) => words.includes(entry.word)).flatMap((entry) => entry.cells) ?? []);
+    new Set(
+      puzzle?.words.filter((entry) => words.includes(entry.word)).flatMap((entry) => entry.cells) ??
+        [],
+    );
   const foundCells = cellsOf(found);
   const revealedCells = cellsOf(revealed);
 
@@ -71,9 +82,7 @@ export function ServiceSearch() {
     if (!next) return;
     setRevealed((current) => [...current, next.word]);
     setStart(null);
-    setMessage(
-      `${next.word} is marked on the grid. Revealed words don't count toward the coupon.`,
-    );
+    setMessage(`${next.word} is marked on the grid. Revealed words don't count toward the coupon.`);
     if (sound) garageAudio.beep(300);
   }
 
@@ -95,7 +104,7 @@ export function ServiceSearch() {
           type="button"
           className={difficulty === level ? "is-active" : ""}
           aria-pressed={difficulty === level}
-          onClick={() => puzzle ? startPuzzle(level) : setDifficulty(level)}
+          onClick={() => (puzzle ? startPuzzle(level) : setDifficulty(level))}
         >
           {CONFIG.difficulties[level].label}
         </button>
@@ -113,9 +122,11 @@ export function ServiceSearch() {
     }
 
     const selected = lineBetween(start, { row, col });
-    const match = puzzle.words.find((entry) =>
-      !solved.includes(entry.word) &&
-      (entry.cells.join("|") === selected.join("|") || entry.cells.join("|") === [...selected].reverse().join("|")),
+    const match = puzzle.words.find(
+      (entry) =>
+        !solved.includes(entry.word) &&
+        (entry.cells.join("|") === selected.join("|") ||
+          entry.cells.join("|") === [...selected].reverse().join("|")),
     );
     setStart(null);
     if (!match) {
@@ -164,11 +175,15 @@ export function ServiceSearch() {
           <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
             {sound ? "Sound on" : "Sound off"}
           </button>
-          <button type="button" onClick={() => startPuzzle()}>New puzzle</button>
+          <button type="button" onClick={() => startPuzzle()}>
+            New puzzle
+          </button>
         </div>
       </header>
 
-      <p className="match-game-status" role="status">{message}</p>
+      <p className="match-game-status" role="status">
+        {message}
+      </p>
       {/* Folded away once play starts: on a phone the worked example pushed
           the board itself below the fold. */}
       <details className="service-search-help">
@@ -181,21 +196,23 @@ export function ServiceSearch() {
           style={{ "--search-size": puzzle.grid.length } as CSSProperties}
           aria-label="Automotive word search"
         >
-          {puzzle.grid.flatMap((letters, row) => letters.map((letter, col) => {
-            const key = keyFor(row, col);
-            const selected = start?.row === row && start.col === col;
-            return (
-              <button
-                key={key}
-                type="button"
-                className={`${foundCells.has(key) ? "is-found" : revealedCells.has(key) ? "is-revealed" : ""}${selected ? " is-selected" : ""}`}
-                onClick={() => chooseCell(row, col)}
-                aria-label={`Row ${row + 1}, column ${col + 1}, letter ${letter}`}
-              >
-                {letter}
-              </button>
-            );
-          }))}
+          {puzzle.grid.flatMap((letters, row) =>
+            letters.map((letter, col) => {
+              const key = keyFor(row, col);
+              const selected = start?.row === row && start.col === col;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={`${foundCells.has(key) ? "is-found" : revealedCells.has(key) ? "is-revealed" : ""}${selected ? " is-selected" : ""}`}
+                  onClick={() => chooseCell(row, col)}
+                  aria-label={`Row ${row + 1}, column ${col + 1}, letter ${letter}`}
+                >
+                  {letter}
+                </button>
+              );
+            }),
+          )}
         </div>
         <aside className="service-search-list">
           <h3>Find these</h3>
@@ -234,7 +251,10 @@ export function ServiceSearch() {
       </div>
 
       {won && complete ? (
-        <PrizeBanner sound={sound} achievement={`${prizeWords} service words found in the morning paper.`} />
+        <PrizeBanner
+          sound={sound}
+          achievement={`${prizeWords} service words found in the morning paper.`}
+        />
       ) : null}
     </div>
   );

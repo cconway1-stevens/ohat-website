@@ -82,24 +82,21 @@ for (const file of htmlFiles) {
 let responsive = 0;
 for (const file of htmlFiles) {
   const html = readFileSync(file, "utf8");
-  const next = html.replace(
-    /(srcset|srcSet)="([^"]+)"/g,
-    (match, attr, value) => {
-      const entries = value.split(",").map((entry) => {
-        const [url, descriptor] = entry.trim().split(/\s+/);
-        const width = Number.parseInt(descriptor, 10);
-        const image = imageManifest[url];
-        if (!image || !Number.isFinite(width)) return entry.trim();
-        const variant = image.widths.find((candidate) => candidate >= width);
-        return variant
-          ? `/media/rs/${image.stem}-${variant}.${image.extension} ${descriptor}`
-          : entry.trim();
-      });
-      const rebuilt = entries.join(", ");
-      if (rebuilt !== value) responsive += 1;
-      return `${attr}="${rebuilt}"`;
-    },
-  );
+  const next = html.replace(/(srcset|srcSet)="([^"]+)"/g, (match, attr, value) => {
+    const entries = value.split(",").map((entry) => {
+      const [url, descriptor] = entry.trim().split(/\s+/);
+      const width = Number.parseInt(descriptor, 10);
+      const image = imageManifest[url];
+      if (!image || !Number.isFinite(width)) return entry.trim();
+      const variant = image.widths.find((candidate) => candidate >= width);
+      return variant
+        ? `/media/rs/${image.stem}-${variant}.${image.extension} ${descriptor}`
+        : entry.trim();
+    });
+    const rebuilt = entries.join(", ");
+    if (rebuilt !== value) responsive += 1;
+    return `${attr}="${rebuilt}"`;
+  });
   // Images rendered with `fill` come out with no srcset whatsoever — just a
   // full-size src — so give them the ladder outright, keeping the original as
   // the largest candidate for high-density desktop screens.
@@ -109,9 +106,7 @@ for (const file of htmlFiles) {
     const image = src && imageManifest[src];
     if (!image) return tag;
     const candidates = [
-      ...image.widths.map(
-        (w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`,
-      ),
+      ...image.widths.map((w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`),
       `${src} ${image.full}w`,
     ].join(", ");
     responsive += 1;
@@ -121,22 +116,17 @@ for (const file of htmlFiles) {
   // A priority image also gets a preload pointing at the full-size file. Left
   // alone it fetches the original *and* the srcset pick, so it needs the same
   // candidate list to choose from.
-  const withPreloads = withHeroSrcsets.replace(
-    /<link\b[^>]*rel="preload"[^>]*>/g,
-    (tag) => {
-      if (!/as="image"/.test(tag) || /imagesrcset=/i.test(tag)) return tag;
-      const href = tag.match(/\shref="([^"]+)"/)?.[1];
-      const image = href && imageManifest[href];
-      if (!image) return tag;
-      const candidates = [
-        ...image.widths.map(
-          (w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`,
-        ),
-        `${href} ${image.full}w`,
-      ].join(", ");
-      return tag.replace(/<link\b/, `<link imagesrcset="${candidates}"`);
-    },
-  );
+  const withPreloads = withHeroSrcsets.replace(/<link\b[^>]*rel="preload"[^>]*>/g, (tag) => {
+    if (!/as="image"/.test(tag) || /imagesrcset=/i.test(tag)) return tag;
+    const href = tag.match(/\shref="([^"]+)"/)?.[1];
+    const image = href && imageManifest[href];
+    if (!image) return tag;
+    const candidates = [
+      ...image.widths.map((w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`),
+      `${href} ${image.full}w`,
+    ].join(", ");
+    return tag.replace(/<link\b/, `<link imagesrcset="${candidates}"`);
+  });
 
   if (withPreloads !== html) writeFileSync(file, withPreloads);
 }

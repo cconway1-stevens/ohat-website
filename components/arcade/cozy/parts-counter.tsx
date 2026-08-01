@@ -10,7 +10,13 @@ const TAX = 0.06625; // New Jersey sales tax
 
 // Everything on the shelf, with the way a customer would actually ask for it.
 const STOCK = [
-  { id: "wipers", label: "Wiper blades", ask: "a pair of wiper blades", price: 24.99, tint: "#1a7183" },
+  {
+    id: "wipers",
+    label: "Wiper blades",
+    ask: "a pair of wiper blades",
+    price: 24.99,
+    tint: "#1a7183",
+  },
   { id: "oilfilter", label: "Oil filter", ask: "an oil filter", price: 8.49, tint: "#a8161c" },
   { id: "battery", label: "Battery", ask: "a battery", price: 149.95, tint: "#68a56f" },
   { id: "bulb", label: "Headlight bulb", ask: "a headlight bulb", price: 14.25, tint: "#f6bd38" },
@@ -19,13 +25,23 @@ const STOCK = [
   { id: "plugs", label: "Spark plugs", ask: "a set of spark plugs", price: 32.0, tint: "#cfc9b8" },
   { id: "fuses", label: "Fuse assortment", ask: "a fuse assortment", price: 6.99, tint: "#e49a42" },
   { id: "wax", label: "Wax", ask: "a tin of wax", price: 11.4, tint: "#c9a875" },
-  { id: "washer", label: "Washer fluid", ask: "a jug of washer fluid", price: 4.99, tint: "#7fb2d9" },
+  {
+    id: "washer",
+    label: "Washer fluid",
+    ask: "a jug of washer fluid",
+    price: 4.99,
+    tint: "#7fb2d9",
+  },
 ];
 
 const CUSTOMERS = [
-  "A regular in a work jacket", "Somebody's dad", "A woman with a toddler on her hip",
-  "A kid buying his first car part", "The landscaper from up the road",
-  "A guy still in his fishing waders", "A nurse coming off nights",
+  "A regular in a work jacket",
+  "Somebody's dad",
+  "A woman with a toddler on her hip",
+  "A kid buying his first car part",
+  "The landscaper from up the road",
+  "A guy still in his fishing waders",
+  "A nurse coming off nights",
 ];
 
 // Tendered amounts, not necessarily one physical bill: $200 and $300 represent
@@ -61,19 +77,37 @@ const money = (value: number) => `$${value.toFixed(2)}`;
 const moneyFromCents = (value: number) => money(value / 100);
 
 const STARTING_DRAWER: Drawer = {
-  10000: 0, 5000: 0, 2000: 2, 1000: 3, 500: 4,
-  100: 8, 25: 12, 10: 10, 5: 8, 1: 20,
+  10000: 0,
+  5000: 0,
+  2000: 2,
+  1000: 3,
+  500: 4,
+  100: 8,
+  25: 12,
+  10: 10,
+  5: 8,
+  1: 20,
 };
 
 function randomDrawer(): Drawer {
   const ranges: Record<number, [number, number]> = {
-    10000: [0, 1], 5000: [0, 1], 2000: [0, 3], 1000: [0, 4], 500: [0, 5],
-    100: [2, 12], 25: [0, 16], 10: [0, 12], 5: [0, 10], 1: [0, 30],
+    10000: [0, 1],
+    5000: [0, 1],
+    2000: [0, 3],
+    1000: [0, 4],
+    500: [0, 5],
+    100: [2, 12],
+    25: [0, 16],
+    10: [0, 12],
+    5: [0, 10],
+    1: [0, 30],
   };
-  return Object.fromEntries(DENOMINATIONS.map(({ cents }) => {
-    const [min, max] = ranges[cents];
-    return [cents, min + Math.floor(Math.random() * (max - min + 1))];
-  }));
+  return Object.fromEntries(
+    DENOMINATIONS.map(({ cents }) => {
+      const [min, max] = ranges[cents];
+      return [cents, min + Math.floor(Math.random() * (max - min + 1))];
+    }),
+  );
 }
 
 // Bounded change-making: only use bills and coins physically in the drawer.
@@ -134,8 +168,13 @@ export function PartsCounter() {
   // The first order is fixed so the server and browser agree, then reshuffled
   // on mount — randomising in the initialiser is a hydration error.
   const [order, setOrder] = useState<Order>({
-    items: [{ id: "wipers", quantity: 4 }], outOfStock: null, coupon: false,
-    taxExempt: false, coreCharge: false, customer: CUSTOMERS[0], slip: 1042,
+    items: [{ id: "wipers", quantity: 4 }],
+    outOfStock: null,
+    coupon: false,
+    taxExempt: false,
+    coreCharge: false,
+    customer: CUSTOMERS[0],
+    slip: 1042,
   });
   const [phase, setPhase] = useState<Phase>("browsing");
   const [tray, setTray] = useState<string[]>([]);
@@ -161,10 +200,16 @@ export function PartsCounter() {
   }, []);
 
   const wanted = order.items.filter((item) => !backOrdered.includes(item.id));
-  const outstanding = wanted.reduce((sum, item) => sum + Math.max(0, item.quantity - tray.filter((id) => id === item.id).length), 0);
+  const outstanding = wanted.reduce(
+    (sum, item) => sum + Math.max(0, item.quantity - tray.filter((id) => id === item.id).length),
+    0,
+  );
   const ready = outstanding === 0 && (tray.length > 0 || backOrdered.length > 0);
 
-  const lines = STOCK.map((entry) => ({ ...entry, quantity: tray.filter((id) => id === entry.id).length })).filter((entry) => entry.quantity > 0);
+  const lines = STOCK.map((entry) => ({
+    ...entry,
+    quantity: tray.filter((id) => id === entry.id).length,
+  })).filter((entry) => entry.quantity > 0);
   const subtotal = lines.reduce((sum, entry) => sum + entry.price * entry.quantity, 0);
   const discount = order.coupon ? subtotal * 0.1 : 0;
   const coreCharge = order.coreCharge ? 15 : 0;
@@ -174,103 +219,111 @@ export function PartsCounter() {
   const changeDueCents = Math.max(0, Math.round(change * 100));
   const changePickedCents = changePicks.reduce((sum, cents) => sum + cents, 0);
   const changeReady = tender?.kind !== "cash" || changePickedCents === changeDueCents;
-  const paymentReady = tender?.kind === "cash" ? changeReady : tender?.kind === "card" ? cardApproved : false;
-  const drawerTotalCents = DENOMINATIONS.reduce((sum, { cents }) => sum + cents * (drawer[cents] ?? 0), 0);
+  const paymentReady =
+    tender?.kind === "cash" ? changeReady : tender?.kind === "card" ? cardApproved : false;
+  const drawerTotalCents = DENOMINATIONS.reduce(
+    (sum, { cents }) => sum + cents * (drawer[cents] ?? 0),
+    0,
+  );
 
-  const canvasRef = useSceneCanvas((ctx, frame) => {
-    ctx.fillStyle = "#d9d2bd";
-    ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = "rgba(255,255,235,.5)";
-    ctx.fillRect(0, 0, W, 16);
-    if (frame % 220 < 3) {
-      ctx.fillStyle = "rgba(60,60,50,.14)";
+  const canvasRef = useSceneCanvas(
+    (ctx, frame) => {
+      ctx.fillStyle = "#d9d2bd";
       ctx.fillRect(0, 0, W, H);
-    }
+      ctx.fillStyle = "rgba(255,255,235,.5)";
+      ctx.fillRect(0, 0, W, 16);
+      if (frame % 220 < 3) {
+        ctx.fillStyle = "rgba(60,60,50,.14)";
+        ctx.fillRect(0, 0, W, H);
+      }
 
-    // Shelving. Wanted boxes are outlined; an out-of-stock hook is a gap.
-    for (let shelf = 0; shelf < 2; shelf += 1) {
-      const y = 30 + shelf * 52;
-      ctx.fillStyle = "#8d8676";
-      ctx.fillRect(16, y + 34, W - 32, 5);
-      for (let box = 0; box < 5; box += 1) {
-        const entry = STOCK[shelf * 5 + box];
-        const x = 24 + box * 88;
-        if (entry.id === order.outOfStock && !backOrdered.includes(entry.id)) {
-          ctx.fillStyle = "rgba(90,80,66,.22)";
+      // Shelving. Wanted boxes are outlined; an out-of-stock hook is a gap.
+      for (let shelf = 0; shelf < 2; shelf += 1) {
+        const y = 30 + shelf * 52;
+        ctx.fillStyle = "#8d8676";
+        ctx.fillRect(16, y + 34, W - 32, 5);
+        for (let box = 0; box < 5; box += 1) {
+          const entry = STOCK[shelf * 5 + box];
+          const x = 24 + box * 88;
+          if (entry.id === order.outOfStock && !backOrdered.includes(entry.id)) {
+            ctx.fillStyle = "rgba(90,80,66,.22)";
+            ctx.fillRect(x, y + 8, 62, 26);
+            continue;
+          }
+          const requested = wanted.find((item) => item.id === entry.id)?.quantity ?? 0;
+          const isWanted = tray.filter((id) => id === entry.id).length < requested;
+          ctx.fillStyle = entry.tint;
+          ctx.globalAlpha = tray.includes(entry.id) ? 0.28 : isWanted ? 1 : 0.6;
           ctx.fillRect(x, y + 8, 62, 26);
-          continue;
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = isWanted ? "#a8161c" : "rgba(23,20,18,.6)";
+          ctx.lineWidth = isWanted ? 2.5 : 1.5;
+          ctx.strokeRect(x, y + 8, 62, 26);
+          ctx.fillStyle = "rgba(23,20,18,.5)";
+          ctx.fillRect(x + 6, y + 15, 44, 3);
+          ctx.fillRect(x + 6, y + 22, 28, 3);
         }
-        const requested = wanted.find((item) => item.id === entry.id)?.quantity ?? 0;
-        const isWanted = tray.filter((id) => id === entry.id).length < requested;
+      }
+
+      // Counter.
+      ctx.fillStyle = "#7a5c3a";
+      ctx.fillRect(0, H - 62, W, 62);
+      ctx.fillStyle = "#6a4e30";
+      ctx.fillRect(0, H - 62, W, 7);
+
+      // The tray of picked parts waiting to be rung up.
+      tray.forEach((id, index) => {
+        const entry = STOCK.find((candidate) => candidate.id === id)!;
+        const x = 18 + index * 34;
         ctx.fillStyle = entry.tint;
-        ctx.globalAlpha = tray.includes(entry.id) ? 0.28 : isWanted ? 1 : 0.6;
-        ctx.fillRect(x, y + 8, 62, 26);
-        ctx.globalAlpha = 1;
-        ctx.strokeStyle = isWanted ? "#a8161c" : "rgba(23,20,18,.6)";
-        ctx.lineWidth = isWanted ? 2.5 : 1.5;
-        ctx.strokeRect(x, y + 8, 62, 26);
-        ctx.fillStyle = "rgba(23,20,18,.5)";
-        ctx.fillRect(x + 6, y + 15, 44, 3);
-        ctx.fillRect(x + 6, y + 22, 28, 3);
+        ctx.fillRect(x, H - 50, 28, 20);
+        ctx.strokeStyle = "rgba(23,20,18,.7)";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(x, H - 50, 28, 20);
+      });
+
+      // Register, with paper feeding out while it prints.
+      const rx = W - 132;
+      ctx.fillStyle = "#3b3630";
+      ctx.fillRect(rx, H - 96, 108, 62);
+      ctx.fillStyle = phase === "register" ? "#8fe0a0" : "#2a2f2c";
+      ctx.fillRect(rx + 8, H - 90, 92, 20);
+      ctx.fillStyle = "#1b1c20";
+      for (let row = 0; row < 2; row += 1) {
+        for (let col = 0; col < 4; col += 1) {
+          ctx.fillRect(rx + 10 + col * 23, H - 64 + row * 13, 17, 9);
+        }
       }
-    }
-
-    // Counter.
-    ctx.fillStyle = "#7a5c3a";
-    ctx.fillRect(0, H - 62, W, 62);
-    ctx.fillStyle = "#6a4e30";
-    ctx.fillRect(0, H - 62, W, 7);
-
-    // The tray of picked parts waiting to be rung up.
-    tray.forEach((id, index) => {
-      const entry = STOCK.find((candidate) => candidate.id === id)!;
-      const x = 18 + index * 34;
-      ctx.fillStyle = entry.tint;
-      ctx.fillRect(x, H - 50, 28, 20);
-      ctx.strokeStyle = "rgba(23,20,18,.7)";
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(x, H - 50, 28, 20);
-    });
-
-    // Register, with paper feeding out while it prints.
-    const rx = W - 132;
-    ctx.fillStyle = "#3b3630";
-    ctx.fillRect(rx, H - 96, 108, 62);
-    ctx.fillStyle = phase === "register" ? "#8fe0a0" : "#2a2f2c";
-    ctx.fillRect(rx + 8, H - 90, 92, 20);
-    ctx.fillStyle = "#1b1c20";
-    for (let row = 0; row < 2; row += 1) {
-      for (let col = 0; col < 4; col += 1) {
-        ctx.fillRect(rx + 10 + col * 23, H - 64 + row * 13, 17, 9);
+      if (phase === "receipt") {
+        const out = Math.min(48, (frame % 240) + 8);
+        ctx.fillStyle = "#f7f3e6";
+        ctx.fillRect(rx + 34, H - 100 - out, 42, out);
+        ctx.strokeStyle = "rgba(23,20,18,.25)";
+        ctx.lineWidth = 1;
+        for (let line = 6; line < out; line += 7) {
+          ctx.beginPath();
+          ctx.moveTo(rx + 38, H - 100 - out + line);
+          ctx.lineTo(rx + 70, H - 100 - out + line);
+          ctx.stroke();
+        }
       }
-    }
-    if (phase === "receipt") {
-      const out = Math.min(48, (frame % 240) + 8);
-      ctx.fillStyle = "#f7f3e6";
-      ctx.fillRect(rx + 34, H - 100 - out, 42, out);
-      ctx.strokeStyle = "rgba(23,20,18,.25)";
-      ctx.lineWidth = 1;
-      for (let line = 6; line < out; line += 7) {
+
+      // The customer, waiting.
+      if (phase !== "receipt") {
+        const bob = Math.sin(frame / 60) * 1.6;
+        ctx.fillStyle = "#3f4a55";
+        ctx.fillRect(150, H - 96 + bob, 40, 40);
+        ctx.fillStyle = "#c99f76";
         ctx.beginPath();
-        ctx.moveTo(rx + 38, H - 100 - out + line);
-        ctx.lineTo(rx + 70, H - 100 - out + line);
-        ctx.stroke();
+        ctx.arc(170, H - 106 + bob, 15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#2c3540";
+        ctx.fillRect(155, H - 120 + bob, 30, 9);
       }
-    }
-
-    // The customer, waiting.
-    if (phase !== "receipt") {
-      const bob = Math.sin(frame / 60) * 1.6;
-      ctx.fillStyle = "#3f4a55";
-      ctx.fillRect(150, H - 96 + bob, 40, 40);
-      ctx.fillStyle = "#c99f76";
-      ctx.beginPath();
-      ctx.arc(170, H - 106 + bob, 15, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#2c3540";
-      ctx.fillRect(155, H - 120 + bob, 30, 9);
-    }
-  }, W, H);
+    },
+    W,
+    H,
+  );
 
   function grab(id: string) {
     if (id === order.outOfStock && !backOrdered.includes(id)) {
@@ -303,7 +356,11 @@ export function PartsCounter() {
     setChangePicks([]);
     setCardApproved(false);
     setSwipeProgress(0);
-    setChangeNote(next.kind === "cash" ? "Count the change from what is actually in the drawer." : "Swipe the card all the way through the reader.");
+    setChangeNote(
+      next.kind === "cash"
+        ? "Count the change from what is actually in the drawer."
+        : "Swipe the card all the way through the reader.",
+    );
   }
 
   function swipeCard(progress: number) {
@@ -339,9 +396,14 @@ export function PartsCounter() {
 
   function restockDrawer() {
     cozyAudio.drawer();
-    setDrawer((current) => Object.fromEntries(
-      DENOMINATIONS.map(({ cents }) => [cents, (current[cents] ?? 0) + (STARTING_DRAWER[cents] ?? 0)]),
-    ));
+    setDrawer((current) =>
+      Object.fromEntries(
+        DENOMINATIONS.map(({ cents }) => [
+          cents,
+          (current[cents] ?? 0) + (STARTING_DRAWER[cents] ?? 0),
+        ]),
+      ),
+    );
     setChangePicks([]);
     setChangeNote("The manager brought a fresh change bank. Count it again when ready.");
   }
@@ -384,7 +446,13 @@ export function PartsCounter() {
       onSoundChange={setSound}
     >
       <div className="cozy-stage">
-        <canvas ref={canvasRef} width={W} height={H} role="img" aria-label="A parts counter with shelves of boxes, a tray and a register" />
+        <canvas
+          ref={canvasRef}
+          width={W}
+          height={H}
+          role="img"
+          aria-label="A parts counter with shelves of boxes, a tray and a register"
+        />
       </div>
 
       {phase === "browsing" ? (
@@ -392,11 +460,28 @@ export function PartsCounter() {
           <div className="counter-ticket" aria-live="polite">
             <p className="counter-who">{order.customer}</p>
             <p className="counter-ask">
-              &ldquo;I need {order.items.map((item) => `${item.quantity === 1 ? "" : `${item.quantity} × `}${STOCK.find((entry) => entry.id === item.id)!.ask}`).join(", and ")}.&rdquo;
+              &ldquo;I need{" "}
+              {order.items
+                .map(
+                  (item) =>
+                    `${item.quantity === 1 ? "" : `${item.quantity} × `}${STOCK.find((entry) => entry.id === item.id)!.ask}`,
+                )
+                .join(", and ")}
+              .&rdquo;
             </p>
-            {order.coupon ? <p className="counter-reply">They slide a 10% coupon across the counter.</p> : null}
-            {order.taxExempt ? <p className="counter-reply">It is a shop account with a tax-exempt certificate on file.</p> : null}
-            {order.coreCharge ? <p className="counter-reply">No old battery today, so the refundable core charge applies.</p> : null}
+            {order.coupon ? (
+              <p className="counter-reply">They slide a 10% coupon across the counter.</p>
+            ) : null}
+            {order.taxExempt ? (
+              <p className="counter-reply">
+                It is a shop account with a tax-exempt certificate on file.
+              </p>
+            ) : null}
+            {order.coreCharge ? (
+              <p className="counter-reply">
+                No old battery today, so the refundable core charge applies.
+              </p>
+            ) : null}
             {note ? <p className="counter-reply">{note}</p> : null}
           </div>
 
@@ -413,7 +498,8 @@ export function PartsCounter() {
                   onClick={() => grab(entry.id)}
                   style={{ borderBottom: `6px solid ${gap ? "#8d8676" : entry.tint}` }}
                 >
-                  {entry.label}{gap ? " — empty" : needed > 1 ? ` ${held}/${needed}` : held ? " ✓" : ""}
+                  {entry.label}
+                  {gap ? " — empty" : needed > 1 ? ` ${held}/${needed}` : held ? " ✓" : ""}
                 </button>
               );
             })}
@@ -432,7 +518,14 @@ export function PartsCounter() {
                 Back-order the {STOCK.find((e) => e.id === order.outOfStock)!.label.toLowerCase()}
               </button>
             ) : null}
-            <button type="button" disabled={!ready} onClick={() => { cozyAudio.click(); setPhase("register"); }}>
+            <button
+              type="button"
+              disabled={!ready}
+              onClick={() => {
+                cozyAudio.click();
+                setPhase("register");
+              }}
+            >
               Take it to the register
             </button>
           </div>
@@ -444,40 +537,85 @@ export function PartsCounter() {
           <p className="pos-head">Register 1 · Slip #{order.slip}</p>
           <ul className="pos-lines">
             {lines.map((entry) => (
-              <li key={entry.id}><span>{entry.quantity} × {entry.label}</span><b>{money(entry.price * entry.quantity)}</b></li>
+              <li key={entry.id}>
+                <span>
+                  {entry.quantity} × {entry.label}
+                </span>
+                <b>{money(entry.price * entry.quantity)}</b>
+              </li>
             ))}
             {backOrdered.map((id) => (
-              <li key={id} className="is-void"><span>{STOCK.find((e) => e.id === id)!.label} — back-ordered</span><b>—</b></li>
+              <li key={id} className="is-void">
+                <span>{STOCK.find((e) => e.id === id)!.label} — back-ordered</span>
+                <b>—</b>
+              </li>
             ))}
           </ul>
           <dl className="pos-totals">
-            <div><dt>Subtotal</dt><dd>{money(subtotal)}</dd></div>
-            {order.coupon ? <div className="is-off"><dt>Coupon 10%</dt><dd>-{money(discount)}</dd></div> : null}
-            {order.coreCharge ? <div><dt>Battery core</dt><dd>{money(coreCharge)}</dd></div> : null}
-            <div><dt>NJ tax{order.taxExempt ? " — exempt" : ""}</dt><dd>{money(taxed)}</dd></div>
-            <div className="is-total"><dt>Total</dt><dd>{money(total)}</dd></div>
+            <div>
+              <dt>Subtotal</dt>
+              <dd>{money(subtotal)}</dd>
+            </div>
+            {order.coupon ? (
+              <div className="is-off">
+                <dt>Coupon 10%</dt>
+                <dd>-{money(discount)}</dd>
+              </div>
+            ) : null}
+            {order.coreCharge ? (
+              <div>
+                <dt>Battery core</dt>
+                <dd>{money(coreCharge)}</dd>
+              </div>
+            ) : null}
+            <div>
+              <dt>NJ tax{order.taxExempt ? " — exempt" : ""}</dt>
+              <dd>{money(taxed)}</dd>
+            </div>
+            <div className="is-total">
+              <dt>Total</dt>
+              <dd>{money(total)}</dd>
+            </div>
           </dl>
 
           <p className="pos-prompt">How are they paying?</p>
           <div className="cozy-actions">
-            <button type="button" className={tender?.kind === "card" ? "is-on" : ""} onClick={() => chooseTender({ kind: "card" })}>
+            <button
+              type="button"
+              className={tender?.kind === "card" ? "is-on" : ""}
+              onClick={() => chooseTender({ kind: "card" })}
+            >
               Card
             </button>
             {BILLS.filter((bill) => bill >= total).map((bill) => (
-              <button key={bill} type="button" className={tender?.bill === bill ? "is-on" : ""} onClick={() => chooseTender({ kind: "cash", bill })}>
+              <button
+                key={bill}
+                type="button"
+                className={tender?.bill === bill ? "is-on" : ""}
+                onClick={() => chooseTender({ kind: "cash", bill })}
+              >
                 Cash ${bill}
               </button>
             ))}
           </div>
           {tender?.kind === "card" ? (
-            <section className={`card-reader${cardApproved ? " is-approved" : ""}`} aria-label="Credit card reader">
+            <section
+              className={`card-reader${cardApproved ? " is-approved" : ""}`}
+              aria-label="Credit card reader"
+            >
               <div className="card-reader-screen" aria-live="polite">
                 <span>{cardApproved ? "APPROVED" : "SWIPE CARD"}</span>
                 <b>{cardApproved ? "THANK YOU" : money(total)}</b>
               </div>
               <div className="card-swipe-track">
-                <div className="payment-card" style={{ left: `${swipeProgress * 64}%` }} aria-hidden="true">
-                  <i aria-hidden="true" /><b>OHAT BANK</b><span>•••• 1546</span>
+                <div
+                  className="payment-card"
+                  style={{ left: `${swipeProgress * 64}%` }}
+                  aria-hidden="true"
+                >
+                  <i aria-hidden="true" />
+                  <b>OHAT BANK</b>
+                  <span>•••• 1546</span>
                 </div>
                 <input
                   className="card-swipe-input"
@@ -501,7 +639,9 @@ export function PartsCounter() {
                   <p id="cash-drawer-title">Cash drawer</p>
                   <span>Drawer total {moneyFromCents(drawerTotalCents)}</span>
                 </div>
-                <p className="pos-change">Change due <b>{moneyFromCents(changeDueCents)}</b></p>
+                <p className="pos-change">
+                  Change due <b>{moneyFromCents(changeDueCents)}</b>
+                </p>
               </div>
 
               <div className="cash-slots" aria-label="Money available in the cash drawer">
@@ -516,7 +656,8 @@ export function PartsCounter() {
                       onClick={() => addChange(cents)}
                       aria-label={`Give ${label}; ${remaining} left in drawer`}
                     >
-                      <b>{label}</b><span>{remaining} left</span>
+                      <b>{label}</b>
+                      <span>{remaining} left</span>
                     </button>
                   );
                 })}
@@ -525,77 +666,164 @@ export function PartsCounter() {
               <div className={`change-tray${changeReady ? " is-exact" : ""}`} aria-live="polite">
                 <span>On the counter</span>
                 <b>{moneyFromCents(changePickedCents)}</b>
-                <small>{changeReady ? "Exact change ready" : `${moneyFromCents(changeDueCents - changePickedCents)} still due`}</small>
+                <small>
+                  {changeReady
+                    ? "Exact change ready"
+                    : `${moneyFromCents(changeDueCents - changePickedCents)} still due`}
+                </small>
               </div>
               {changePicks.length > 0 ? (
                 <p className="change-breakdown">
-                  {DENOMINATIONS.filter(({ cents }) => changePicks.includes(cents)).map(({ cents, label }) => (
-                    <span key={cents}>{changePicks.filter((value) => value === cents).length} × {label}</span>
-                  ))}
+                  {DENOMINATIONS.filter(({ cents }) => changePicks.includes(cents)).map(
+                    ({ cents, label }) => (
+                      <span key={cents}>
+                        {changePicks.filter((value) => value === cents).length} × {label}
+                      </span>
+                    ),
+                  )}
                 </p>
               ) : null}
               {changeNote ? <p className="cash-note">{changeNote}</p> : null}
 
               <div className="cozy-actions cash-actions">
-                <button type="button" onClick={autoCountChange}>Count automatically</button>
+                <button type="button" onClick={autoCountChange}>
+                  Count automatically
+                </button>
                 <button
                   type="button"
                   disabled={changePicks.length === 0}
-                  onClick={() => { setChangePicks((current) => current.slice(0, -1)); setChangeNote(""); }}
+                  onClick={() => {
+                    setChangePicks((current) => current.slice(0, -1));
+                    setChangeNote("");
+                  }}
                 >
                   Undo last
                 </button>
-                <button type="button" onClick={restockDrawer}>Ask manager to restock</button>
+                <button type="button" onClick={restockDrawer}>
+                  Ask manager to restock
+                </button>
               </div>
             </section>
           ) : null}
 
           <div className="cozy-actions">
-            <button type="button" onClick={() => { setTender(null); setChangePicks([]); setChangeNote(""); setPhase("browsing"); }}>Back to the shelf</button>
-            <button type="button" disabled={!paymentReady} onClick={ringUp}>Ring it up</button>
+            <button
+              type="button"
+              onClick={() => {
+                setTender(null);
+                setChangePicks([]);
+                setChangeNote("");
+                setPhase("browsing");
+              }}
+            >
+              Back to the shelf
+            </button>
+            <button type="button" disabled={!paymentReady} onClick={ringUp}>
+              Ring it up
+            </button>
           </div>
         </div>
       ) : null}
 
       {phase === "receipt" ? (
         <>
-          <div className="receipt" role="img" aria-label={`Receipt, ${lines.reduce((sum, entry) => sum + entry.quantity, 0)} items, total ${money(total)}`}>
+          <div
+            className="receipt"
+            role="img"
+            aria-label={`Receipt, ${lines.reduce((sum, entry) => sum + entry.quantity, 0)} items, total ${money(total)}`}
+          >
             <div className="receipt-body">
-              <p className="receipt-shop">OCEAN HEIGHTS<br />AUTO &amp; TIRE</p>
-              <p className="receipt-addr">1178 OCEAN HEIGHTS AVE<br />EGG HARBOR TWP, NJ<br />(609) 241-1546</p>
+              <p className="receipt-shop">
+                OCEAN HEIGHTS
+                <br />
+                AUTO &amp; TIRE
+              </p>
+              <p className="receipt-addr">
+                1178 OCEAN HEIGHTS AVE
+                <br />
+                EGG HARBOR TWP, NJ
+                <br />
+                (609) 241-1546
+              </p>
               <p className="receipt-rule">* * * * * * * * * * * *</p>
-              <p className="receipt-meta">REG 1 &nbsp; SLIP #{order.slip}<br />PARTS COUNTER</p>
+              <p className="receipt-meta">
+                REG 1 &nbsp; SLIP #{order.slip}
+                <br />
+                PARTS COUNTER
+              </p>
               <p className="receipt-rule">- - - - - - - - - - - -</p>
               <ul>
                 {lines.map((entry) => (
-                  <li key={entry.id}><span>{entry.quantity}× {entry.label.toUpperCase()}</span><b>{money(entry.price * entry.quantity)}</b></li>
+                  <li key={entry.id}>
+                    <span>
+                      {entry.quantity}× {entry.label.toUpperCase()}
+                    </span>
+                    <b>{money(entry.price * entry.quantity)}</b>
+                  </li>
                 ))}
                 {backOrdered.map((id) => (
-                  <li key={id} className="is-void"><span>{STOCK.find((e) => e.id === id)!.label.toUpperCase()} B/O</span><b>0.00</b></li>
+                  <li key={id} className="is-void">
+                    <span>{STOCK.find((e) => e.id === id)!.label.toUpperCase()} B/O</span>
+                    <b>0.00</b>
+                  </li>
                 ))}
               </ul>
               <p className="receipt-rule">- - - - - - - - - - - -</p>
               <ul>
-                <li><span>SUBTOTAL</span><b>{money(subtotal)}</b></li>
-                {order.coupon ? <li><span>COUPON 10%</span><b>-{money(discount)}</b></li> : null}
-                {order.coreCharge ? <li><span>BATTERY CORE</span><b>{money(coreCharge)}</b></li> : null}
-                <li><span>TAX 6.625%</span><b>{money(taxed)}</b></li>
-                <li className="is-total"><span>TOTAL</span><b>{money(total)}</b></li>
+                <li>
+                  <span>SUBTOTAL</span>
+                  <b>{money(subtotal)}</b>
+                </li>
+                {order.coupon ? (
+                  <li>
+                    <span>COUPON 10%</span>
+                    <b>-{money(discount)}</b>
+                  </li>
+                ) : null}
+                {order.coreCharge ? (
+                  <li>
+                    <span>BATTERY CORE</span>
+                    <b>{money(coreCharge)}</b>
+                  </li>
+                ) : null}
+                <li>
+                  <span>TAX 6.625%</span>
+                  <b>{money(taxed)}</b>
+                </li>
+                <li className="is-total">
+                  <span>TOTAL</span>
+                  <b>{money(total)}</b>
+                </li>
                 <li>
                   <span>{tender?.kind === "card" ? "CARD" : `CASH $${tender?.bill}.00`}</span>
                   <b>{tender?.kind === "card" ? money(total) : money(tender?.bill ?? 0)}</b>
                 </li>
-                {tender?.kind === "cash" ? <li><span>CHANGE</span><b>{money(change)}</b></li> : null}
+                {tender?.kind === "cash" ? (
+                  <li>
+                    <span>CHANGE</span>
+                    <b>{money(change)}</b>
+                  </li>
+                ) : null}
               </ul>
               <p className="receipt-rule">* * * * * * * * * * * *</p>
-              <p className="receipt-thanks">THANK YOU<br />ASK ABOUT OUR OIL CHANGE</p>
+              <p className="receipt-thanks">
+                THANK YOU
+                <br />
+                ASK ABOUT OUR OIL CHANGE
+              </p>
               {/* Stated outright: this is a game prop, not a record of a sale. */}
-              <p className="receipt-note">GARAGE ARCADE PRACTICE SLIP<br />NOT A REAL TRANSACTION</p>
+              <p className="receipt-note">
+                GARAGE ARCADE PRACTICE SLIP
+                <br />
+                NOT A REAL TRANSACTION
+              </p>
             </div>
           </div>
 
           <div className="cozy-actions">
-            <button type="button" onClick={nextCustomer}>Next customer</button>
+            <button type="button" onClick={nextCustomer}>
+              Next customer
+            </button>
           </div>
         </>
       ) : null}

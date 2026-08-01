@@ -27,7 +27,10 @@ const NOISE: { layer: AmbienceLayer; label: string }[] = [
 ];
 
 function readPresets(): number[] {
-  const fallback = stations.filter((s) => s.band === "FM").slice(0, PRESET_COUNT).map((s) => s.dial);
+  const fallback = stations
+    .filter((s) => s.band === "FM")
+    .slice(0, PRESET_COUNT)
+    .map((s) => s.dial);
   try {
     const stored = JSON.parse(window.localStorage.getItem(PRESET_KEY) ?? "null");
     if (Array.isArray(stored) && stored.length === PRESET_COUNT) return stored;
@@ -45,7 +48,13 @@ function readPresets(): number[] {
  * Hold a preset to store whatever you are tuned to — saved on the device.
  * Nothing streams: every station is synthesised in lib/garage-audio.ts.
  */
-export function RadioSet({ on, onPowerChange }: { on: boolean; onPowerChange: (on: boolean) => void }) {
+export function RadioSet({
+  on,
+  onPowerChange,
+}: {
+  on: boolean;
+  onPowerChange: (on: boolean) => void;
+}) {
   const [band, setBand] = useState<Band>("FM");
   const [dial, setDial] = useState(89.9);
   const [volume, setVolume] = useState(0.6);
@@ -55,7 +64,11 @@ export function RadioSet({ on, onPowerChange }: { on: boolean; onPowerChange: (o
   // below actually attaches its listeners.
   const [dragging, setDragging] = useState<"tune" | "volume" | null>(null);
   const [presets, setPresets] = useState<number[]>(() =>
-    stations.filter((s) => s.band === "FM").slice(0, PRESET_COUNT).map((s) => s.dial));
+    stations
+      .filter((s) => s.band === "FM")
+      .slice(0, PRESET_COUNT)
+      .map((s) => s.dial),
+  );
   const [held, setHeld] = useState(-1);
   const [flash, setFlash] = useState("");
 
@@ -78,12 +91,18 @@ export function RadioSet({ on, onPowerChange }: { on: boolean; onPowerChange: (o
   // Leaving the scene must not leave the radio playing.
   useEffect(() => () => radio.off(), []);
 
-  const nudge = useCallback((steps: number) => {
-    setDial((value) => {
-      const next = value + steps * range.step;
-      return Math.min(range.max, Math.max(range.min, Number(next.toFixed(band === "AM" ? 0 : 1))));
-    });
-  }, [range.max, range.min, range.step, band]);
+  const nudge = useCallback(
+    (steps: number) => {
+      setDial((value) => {
+        const next = value + steps * range.step;
+        return Math.min(
+          range.max,
+          Math.max(range.min, Number(next.toFixed(band === "AM" ? 0 : 1))),
+        );
+      });
+    },
+    [range.max, range.min, range.step, band],
+  );
 
   useEffect(() => {
     if (!dragging) return undefined;
@@ -111,7 +130,11 @@ export function RadioSet({ on, onPowerChange }: { on: boolean; onPowerChange: (o
   function storePreset(slot: number) {
     const next = presets.map((value, index) => (index === slot ? dial : value));
     setPresets(next);
-    try { window.localStorage.setItem(PRESET_KEY, JSON.stringify(next)); } catch { /* fine */ }
+    try {
+      window.localStorage.setItem(PRESET_KEY, JSON.stringify(next));
+    } catch {
+      /* fine */
+    }
     cozyAudio.coin();
     setFlash(`Preset ${slot + 1} set to ${dial.toFixed(band === "AM" ? 0 : 1)}`);
     window.setTimeout(() => setFlash(""), 1800);
@@ -173,7 +196,9 @@ export function RadioSet({ on, onPowerChange }: { on: boolean; onPowerChange: (o
             <b>{dial.toFixed(band === "AM" ? 0 : 1)}</b>
             <span className="car-band">{band}</span>
             <span className={`car-stereo${on && tuned && band === "FM" ? " is-lit" : ""}`}>ST</span>
-            <em>{!on ? "Off" : tuned ? `${station.name} · ${station.genre}` : "· · · static · · ·"}</em>
+            <em>
+              {!on ? "Off" : tuned ? `${station.name} · ${station.genre}` : "· · · static · · ·"}
+            </em>
           </div>
 
           <input
@@ -213,7 +238,10 @@ export function RadioSet({ on, onPowerChange }: { on: boolean; onPowerChange: (o
           type="button"
           className={`car-push car-power${on ? " is-down" : ""}`}
           aria-pressed={on}
-          onClick={() => { cozyAudio.click(); onPowerChange(!on); }}
+          onClick={() => {
+            cozyAudio.click();
+            onPowerChange(!on);
+          }}
         >
           <span>{on ? "ON" : "OFF"}</span>
         </button>
@@ -268,25 +296,43 @@ export function RadioSet({ on, onPowerChange }: { on: boolean; onPowerChange: (o
       </div>
 
       <p className="car-hint" aria-live="polite">
-        {flash || "Press a preset to recall it. Hold one for a moment to store what you're tuned to."}
+        {flash ||
+          "Press a preset to recall it. Hold one for a moment to store what you're tuned to."}
       </p>
 
       <div className="car-sliders">
         <label>
           <span>Tone</span>
-          <input type="range" min={0} max={1} step={0.05} value={tone} onChange={(e) => setTone(Number(e.target.value))} />
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={tone}
+            onChange={(e) => setTone(Number(e.target.value))}
+          />
           <small>{tone < 0.34 ? "mellow" : tone > 0.7 ? "bright" : "flat"}</small>
         </label>
         <label>
           <span>Balance</span>
-          <input type="range" min={-1} max={1} step={0.1} value={balance} onChange={(e) => setBalance(Number(e.target.value))} />
+          <input
+            type="range"
+            min={-1}
+            max={1}
+            step={0.1}
+            value={balance}
+            onChange={(e) => setBalance(Number(e.target.value))}
+          />
           <small>{balance < -0.1 ? "left" : balance > 0.1 ? "right" : "centre"}</small>
         </label>
       </div>
 
       <details className="car-noise">
         <summary>Background noise</summary>
-        <p>Blend your own room under the station. Everything here is generated on the spot — no downloads.</p>
+        <p>
+          Blend your own room under the station. Everything here is generated on the spot — no
+          downloads.
+        </p>
         <div>
           {NOISE.map((entry) => (
             <NoiseSlider key={entry.layer} layer={entry.layer} label={entry.label} />

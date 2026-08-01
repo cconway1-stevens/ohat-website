@@ -21,7 +21,6 @@ export type CrosswordPuzzle = {
   entries: PuzzleEntry[];
 };
 
-
 export const keyFor = (row: number, col: number) => `${row},${col}`;
 
 function shuffled<T>(items: readonly T[]) {
@@ -50,9 +49,7 @@ export function createCrossword(difficulty: Difficulty): CrosswordPuzzle {
 
   for (let attempt = 0; attempt < 40; attempt += 1) {
     const words = shuffled(availableWords);
-    const entries: WorkingEntry[] = [
-      { ...words[0], row: 0, col: 0, direction: "across" },
-    ];
+    const entries: WorkingEntry[] = [{ ...words[0], row: 0, col: 0, direction: "across" }];
     const letters = new Map<string, string>();
     const directions = new Map<string, Set<Direction>>();
 
@@ -80,12 +77,11 @@ export function createCrossword(difficulty: Difficulty): CrosswordPuzzle {
             const col = crossCol - (direction === "across" ? letterIndex : 0);
             const candidate: WorkingEntry = { ...word, row, col, direction };
             const positions = cellsFor(candidate);
-            const before = direction === "across"
-              ? keyFor(row, col - 1)
-              : keyFor(row - 1, col);
-            const after = direction === "across"
-              ? keyFor(row, col + word.answer.length)
-              : keyFor(row + word.answer.length, col);
+            const before = direction === "across" ? keyFor(row, col - 1) : keyFor(row - 1, col);
+            const after =
+              direction === "across"
+                ? keyFor(row, col + word.answer.length)
+                : keyFor(row + word.answer.length, col);
             if (letters.has(before) || letters.has(after)) continue;
 
             let crossings = 0;
@@ -95,18 +91,22 @@ export function createCrossword(difficulty: Difficulty): CrosswordPuzzle {
               const key = keyFor(position.row, position.col);
               const existing = letters.get(key);
               if (existing) {
-                if (
-                  existing !== word.answer[index] ||
-                  directions.get(key)?.has(direction)
-                ) {
+                if (existing !== word.answer[index] || directions.get(key)?.has(direction)) {
                   valid = false;
                   break;
                 }
                 crossings += 1;
               } else {
-                const neighbors = direction === "across"
-                  ? [keyFor(position.row - 1, position.col), keyFor(position.row + 1, position.col)]
-                  : [keyFor(position.row, position.col - 1), keyFor(position.row, position.col + 1)];
+                const neighbors =
+                  direction === "across"
+                    ? [
+                        keyFor(position.row - 1, position.col),
+                        keyFor(position.row + 1, position.col),
+                      ]
+                    : [
+                        keyFor(position.row, position.col - 1),
+                        keyFor(position.row, position.col + 1),
+                      ];
                 if (neighbors.some((neighbor) => letters.has(neighbor))) {
                   valid = false;
                   break;
@@ -181,4 +181,3 @@ export function createCrossword(difficulty: Difficulty): CrosswordPuzzle {
     entries,
   };
 }
-

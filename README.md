@@ -26,19 +26,19 @@ surfaces).
 
 ## Site map
 
-| Route | Purpose |
-|---|---|
-| `/` | Catalog-cover homepage: hero, credentials, services, diagnostics, makes, reviews, visit |
-| `/services` | The service board — all 12 service categories |
-| `/services/[slug]` | Bay-ticket detail page per service (12 pages, data in `lib/services.ts`) |
-| `/our-shop` | Family story and shop photo gallery |
-| `/reviews` | Review themes plus CARFAX / Yelp / Facebook profiles |
-| `/offers` | Current offers and the preserved legacy coupon |
-| `/contact` | Call, visit, and after-hours contact options |
-| `/vehicle-drop-off` | Secure after-hours key-drop guide |
-| `/links` | Link-tree hub for social bios |
-| `/contact-card.vcf` | Downloadable vCard |
-| Legacy: `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments` | Permanent redirects to the new structure |
+| Route                                                                                              | Purpose                                                                                 |
+| -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `/`                                                                                                | Catalog-cover homepage: hero, credentials, services, diagnostics, makes, reviews, visit |
+| `/services`                                                                                        | The service board — all 12 service categories                                           |
+| `/services/[slug]`                                                                                 | Bay-ticket detail page per service (12 pages, data in `lib/services.ts`)                |
+| `/our-shop`                                                                                        | Family story and shop photo gallery                                                     |
+| `/reviews`                                                                                         | Review themes plus CARFAX / Yelp / Facebook profiles                                    |
+| `/offers`                                                                                          | Current offers and the preserved legacy coupon                                          |
+| `/contact`                                                                                         | Call, visit, and after-hours contact options                                            |
+| `/vehicle-drop-off`                                                                                | Secure after-hours key-drop guide                                                       |
+| `/links`                                                                                           | Link-tree hub for social bios                                                           |
+| `/contact-card.vcf`                                                                                | Downloadable vCard                                                                      |
+| Legacy: `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments` | Permanent redirects to the new structure                                                |
 
 A branded 404 ("Bay 404") handles everything else. `sitemap.xml` and
 `robots.txt` are generated from `app/sitemap.ts` and `app/robots.ts`.

@@ -76,11 +76,32 @@ function safely(effect: (audio: AudioContext) => void) {
 export const garageAudio = {
   /** Short upward rev — flipping a card, moving a lane. */
   rev: () =>
-    safely((audio) => voice(audio, "sawtooth", [[0, 70], [0.12, 180]], 0.16, 0.06)),
+    safely((audio) =>
+      voice(
+        audio,
+        "sawtooth",
+        [
+          [0, 70],
+          [0.12, 180],
+        ],
+        0.16,
+        0.06,
+      ),
+    ),
   /** Starter motor catching — dealing a deck, starting a run. */
   ignition: () =>
     safely((audio) => {
-      voice(audio, "square", [[0, 55], [0.1, 50], [0.22, 90]], 0.3, 0.05);
+      voice(
+        audio,
+        "square",
+        [
+          [0, 55],
+          [0.1, 50],
+          [0.22, 90],
+        ],
+        0.3,
+        0.05,
+      );
       noise(audio, 0.22, 700, 0.02);
     }),
   /** A soft continuous engine loop. Call the returned function to stop it. */
@@ -140,17 +161,41 @@ export const garageAudio = {
   skid: () =>
     safely((audio) => {
       noise(audio, 0.3, 1800, 0.05);
-      voice(audio, "sawtooth", [[0, 220], [0.26, 90]], 0.28, 0.03);
+      voice(
+        audio,
+        "sawtooth",
+        [
+          [0, 220],
+          [0.26, 90],
+        ],
+        0.28,
+        0.03,
+      );
     }),
   /** A short low dip for ducking under an obstacle. */
   duck: () =>
-    safely((audio) => voice(audio, "triangle", [[0, 260], [0.11, 130]], 0.14, 0.035)),
+    safely((audio) =>
+      voice(
+        audio,
+        "triangle",
+        [
+          [0, 260],
+          [0.11, 130],
+        ],
+        0.14,
+        0.035,
+      ),
+    ),
   /** Race-start beep, the lights going up. */
   beep: (hz = 392) => safely((audio) => voice(audio, "square", [[0, hz]], 0.14, 0.05)),
   /** A little victory fanfare on horns. */
   fanfare: () =>
     safely((audio) => {
-      const notes: Array<[number, number]> = [[523, 0], [659, 0.12], [784, 0.24]];
+      const notes: Array<[number, number]> = [
+        [523, 0],
+        [659, 0.12],
+        [784, 0.24],
+      ];
       for (const [hz, delay] of notes) {
         const gain = audio.createGain();
         const start = audio.currentTime + delay;
@@ -169,7 +214,12 @@ export const garageAudio = {
   /** A short, bright table-win cue. It is generated locally, not a casino recording. */
   blackjackWin: () =>
     safely((audio) => {
-      const notes: Array<[number, number]> = [[523, 0], [659, 0.1], [784, 0.2], [1047, 0.32]];
+      const notes: Array<[number, number]> = [
+        [523, 0],
+        [659, 0.1],
+        [784, 0.2],
+        [1047, 0.32],
+      ];
       for (const [hz, delay] of notes) {
         const gain = audio.createGain();
         const start = audio.currentTime + delay;
@@ -186,20 +236,41 @@ export const garageAudio = {
       }
     }),
   /** Soft shop ambience, used by the no-pressure arcade scenes. */
-  hum: () => safely((audio) => voice(audio, "sine", [[0, 92], [.55, 87]], .62, .025)),
+  hum: () =>
+    safely((audio) =>
+      voice(
+        audio,
+        "sine",
+        [
+          [0, 92],
+          [0.55, 87],
+        ],
+        0.62,
+        0.025,
+      ),
+    ),
   /** A short wash-bay burst. */
-  spray: () => safely((audio) => noise(audio, .28, 1800, .028)),
+  spray: () => safely((audio) => noise(audio, 0.28, 1800, 0.028)),
   /** A small counter bell. */
   chime: () =>
     safely((audio) => {
-      voice(audio, "sine", [[0, 880]], .42, .045);
-      voice(audio, "sine", [[0, 1320]], .34, .025);
+      voice(audio, "sine", [[0, 880]], 0.42, 0.045);
+      voice(audio, "sine", [[0, 1320]], 0.34, 0.025);
     }),
   /** A low radio-like flutter without shipping audio files. */
   radio: () =>
     safely((audio) => {
-      noise(audio, .16, 950, .018);
-      voice(audio, "triangle", [[0, 240], [.14, 310]], .18, .025);
+      noise(audio, 0.16, 950, 0.018);
+      voice(
+        audio,
+        "triangle",
+        [
+          [0, 240],
+          [0.14, 310],
+        ],
+        0.18,
+        0.025,
+      );
     }),
 };
 
@@ -221,7 +292,16 @@ export const cozyAudio = {
   drawer: () =>
     safely((audio) => {
       noise(audio, 0.34, 420, 0.03);
-      voice(audio, "triangle", [[0, 120], [0.3, 78]], 0.34, 0.018);
+      voice(
+        audio,
+        "triangle",
+        [
+          [0, 120],
+          [0.3, 78],
+        ],
+        0.34,
+        0.018,
+      );
     }),
   /** Receipt printer chattering out a slip. */
   printer: () =>
@@ -236,19 +316,47 @@ export const cozyAudio = {
   pour: () =>
     safely((audio) => {
       noise(audio, 0.9, 900, 0.02);
-      voice(audio, "sine", [[0, 320], [0.85, 520]], 0.9, 0.012);
+      voice(
+        audio,
+        "sine",
+        [
+          [0, 320],
+          [0.85, 520],
+        ],
+        0.9,
+        0.012,
+      );
     }),
   /** Air compressor topping itself up, then cutting out. */
   compressor: () =>
     safely((audio) => {
-      voice(audio, "sawtooth", [[0, 58], [0.1, 74], [1.4, 70]], 1.6, 0.02);
+      voice(
+        audio,
+        "sawtooth",
+        [
+          [0, 58],
+          [0.1, 74],
+          [1.4, 70],
+        ],
+        1.6,
+        0.02,
+      );
       window.setTimeout(() => safely((a) => noise(a, 0.5, 600, 0.03)), 1500);
     }),
   /** One sweep of a wiper blade across glass. */
   wiper: () =>
     safely((audio) => {
       noise(audio, 0.26, 1400, 0.016);
-      voice(audio, "sine", [[0, 210], [0.24, 150]], 0.26, 0.01);
+      voice(
+        audio,
+        "sine",
+        [
+          [0, 210],
+          [0.24, 150],
+        ],
+        0.26,
+        0.01,
+      );
     }),
   /** A magazine page turning. */
   page: () => safely((audio) => noise(audio, 0.22, 3200, 0.016)),
@@ -265,7 +373,7 @@ export const cozyAudio = {
 /* --- sustained beds ------------------------------------------------ */
 
 export type AmbienceLayer =
-  | "rain" | "shopHum" | "road" | "water" | "fluorescent" | "static" | "traffic" | "casino";
+  "rain" | "shopHum" | "road" | "water" | "fluorescent" | "static" | "traffic" | "casino";
 
 type Bed = { gain: GainNode; stop: () => void };
 
@@ -325,9 +433,17 @@ function makeCasinoBed(audio: AudioContext): Bed {
   return {
     gain: master,
     stop: () => {
-      try { room.stop(); } catch { /* already stopped */ }
+      try {
+        room.stop();
+      } catch {
+        /* already stopped */
+      }
       for (const voice of voices) {
-        try { voice.stop(); } catch { /* already stopped */ }
+        try {
+          voice.stop();
+        } catch {
+          /* already stopped */
+        }
       }
     },
   };
@@ -353,7 +469,16 @@ function makeBed(audio: AudioContext, layer: AmbienceLayer): Bed {
   gain.gain.value = 0;
   source.connect(filter).connect(gain).connect(audio.destination);
   source.start();
-  return { gain, stop: () => { try { source.stop(); } catch { /* already stopped */ } } };
+  return {
+    gain,
+    stop: () => {
+      try {
+        source.stop();
+      } catch {
+        /* already stopped */
+      }
+    },
+  };
 }
 
 /**
@@ -411,15 +536,94 @@ export type Station = {
 };
 
 export const stations: Station[] = [
-  { id: "pop", name: "WHTZ Hot Hits", genre: "Top 40", band: "FM", dial: 89.9, notes: [440, 554, 659, 880], wave: "square", pulse: 2, arp: true },
-  { id: "pulse", name: "WPLS Pulse FM", genre: "Dance pop", band: "FM", dial: 92.3, notes: [392, 523, 587, 784], wave: "sawtooth", pulse: 2.2, arp: true },
-  { id: "shore", name: "WSHR Shore Gold", genre: "Oldies", band: "FM", dial: 95.5, notes: [196, 247, 294, 392], wave: "sine" },
-  { id: "boulevard", name: "WBLV The Boulevard", genre: "Soft rock", band: "FM", dial: 98.7, notes: [147, 185, 220, 294], wave: "triangle", pulse: 1.1 },
-  { id: "latenight", name: "WLNT Late Night", genre: "Jazz", band: "FM", dial: 103.3, notes: [131, 165, 196, 262], wave: "triangle" },
-  { id: "country", name: "WPNE Pinelands", genre: "Country", band: "FM", dial: 106.1, notes: [175, 220, 262, 349], wave: "triangle", pulse: 1.4, arp: true },
-  { id: "talk", name: "WOHT Shop Talk", genre: "Talk", band: "AM", dial: 1010, notes: [110, 165], wave: "sawtooth" },
-  { id: "ball", name: "WGME Ball Game", genre: "Sports", band: "AM", dial: 1290, notes: [131, 196], wave: "square" },
-  { id: "news", name: "WNWS All News", genre: "News", band: "AM", dial: 1560, notes: [147, 220], wave: "sawtooth" },
+  {
+    id: "pop",
+    name: "WHTZ Hot Hits",
+    genre: "Top 40",
+    band: "FM",
+    dial: 89.9,
+    notes: [440, 554, 659, 880],
+    wave: "square",
+    pulse: 2,
+    arp: true,
+  },
+  {
+    id: "pulse",
+    name: "WPLS Pulse FM",
+    genre: "Dance pop",
+    band: "FM",
+    dial: 92.3,
+    notes: [392, 523, 587, 784],
+    wave: "sawtooth",
+    pulse: 2.2,
+    arp: true,
+  },
+  {
+    id: "shore",
+    name: "WSHR Shore Gold",
+    genre: "Oldies",
+    band: "FM",
+    dial: 95.5,
+    notes: [196, 247, 294, 392],
+    wave: "sine",
+  },
+  {
+    id: "boulevard",
+    name: "WBLV The Boulevard",
+    genre: "Soft rock",
+    band: "FM",
+    dial: 98.7,
+    notes: [147, 185, 220, 294],
+    wave: "triangle",
+    pulse: 1.1,
+  },
+  {
+    id: "latenight",
+    name: "WLNT Late Night",
+    genre: "Jazz",
+    band: "FM",
+    dial: 103.3,
+    notes: [131, 165, 196, 262],
+    wave: "triangle",
+  },
+  {
+    id: "country",
+    name: "WPNE Pinelands",
+    genre: "Country",
+    band: "FM",
+    dial: 106.1,
+    notes: [175, 220, 262, 349],
+    wave: "triangle",
+    pulse: 1.4,
+    arp: true,
+  },
+  {
+    id: "talk",
+    name: "WOHT Shop Talk",
+    genre: "Talk",
+    band: "AM",
+    dial: 1010,
+    notes: [110, 165],
+    wave: "sawtooth",
+  },
+  {
+    id: "ball",
+    name: "WGME Ball Game",
+    genre: "Sports",
+    band: "AM",
+    dial: 1290,
+    notes: [131, 196],
+    wave: "square",
+  },
+  {
+    id: "news",
+    name: "WNWS All News",
+    genre: "News",
+    band: "AM",
+    dial: 1560,
+    notes: [147, 220],
+    wave: "sawtooth",
+  },
 ];
 
 export const BANDS: Record<Band, { min: number; max: number; step: number }> = {
@@ -445,7 +649,10 @@ export function stationLock(dial: number, band: Band = "FM") {
   let bestGap = Infinity;
   for (const entry of inBand) {
     const gap = Math.abs(entry.dial - dial);
-    if (gap < bestGap) { bestGap = gap; best = entry; }
+    if (gap < bestGap) {
+      bestGap = gap;
+      best = entry;
+    }
   }
   // AM dials are numerically much wider, so the tolerance scales with the band.
   const tolerance = band === "AM" ? 14 : 0.6;
@@ -479,7 +686,13 @@ export const radio = {
 
       // Rebuild the voices only when the station actually changes.
       if (loaded !== station.id) {
-        for (const osc of radioVoices) { try { osc.stop(); } catch { /* gone */ } }
+        for (const osc of radioVoices) {
+          try {
+            osc.stop();
+          } catch {
+            /* gone */
+          }
+        }
         radioVoices = [];
         radioPulse?.disconnect();
         radioPulse = null;
@@ -532,7 +745,13 @@ export const radio = {
   },
   off() {
     safely(() => {
-      for (const osc of radioVoices) { try { osc.stop(); } catch { /* gone */ } }
+      for (const osc of radioVoices) {
+        try {
+          osc.stop();
+        } catch {
+          /* gone */
+        }
+      }
       radioVoices = [];
       radioPulse = null;
       loaded = "";

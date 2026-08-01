@@ -45,8 +45,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Ocean Heights Auto & Tire",
-    description:
-      "Family-owned auto repair in Egg Harbor Township, NJ — classics to EVs.",
+    description: "Family-owned auto repair in Egg Harbor Township, NJ — classics to EVs.",
     images: ["/media/ocean-heights-cover.jpg"],
   },
   formatDetection: { telephone: true },
@@ -88,10 +87,7 @@ export default function RootLayout({
               covered controller, so this is us honouring the signal because
               it is the right default, not because we are compelled to.
             See docs/privacy-compliance.md for the full analysis. */}
-        <script
-          async
-          src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-        />
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer = window.dataLayer || [];

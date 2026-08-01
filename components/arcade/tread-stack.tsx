@@ -32,7 +32,8 @@ function TreadStackRun({
 
   useEffect(() => {
     const last = previous.current;
-    const engineRestarted = last.cleared > cleared || (last.filled > 0 && filled === 0 && cleared === 0);
+    const engineRestarted =
+      last.cleared > cleared || (last.filled > 0 && filled === 0 && cleared === 0);
     if (engineRestarted) onRunEnd(last.cleared);
     else onLines(cleared);
     previous.current = { cleared, filled };
@@ -58,11 +59,41 @@ function TreadStackRun({
         </aside>
       </div>
       <div className="tread-stack-controls" aria-label="Tread Stack controls">
-        <button type="button" onClick={() => dispatch({ type: "LEFT" })} aria-label="Move left" title="Move left">←</button>
-        <button type="button" onClick={() => dispatch({ type: "ROTATE" })} aria-label="Rotate tire load" title="Rotate">↻</button>
-        <button type="button" onClick={() => dispatch({ type: "RIGHT" })} aria-label="Move right" title="Move right">→</button>
-        <button type="button" onClick={() => dispatch({ type: "DOWN" })} aria-label="Move down" title="Move down">↓</button>
-        <button type="button" className="is-drop" onClick={() => dispatch({ type: "DROP" })}>Drop</button>
+        <button
+          type="button"
+          onClick={() => dispatch({ type: "LEFT" })}
+          aria-label="Move left"
+          title="Move left"
+        >
+          ←
+        </button>
+        <button
+          type="button"
+          onClick={() => dispatch({ type: "ROTATE" })}
+          aria-label="Rotate tire load"
+          title="Rotate"
+        >
+          ↻
+        </button>
+        <button
+          type="button"
+          onClick={() => dispatch({ type: "RIGHT" })}
+          aria-label="Move right"
+          title="Move right"
+        >
+          →
+        </button>
+        <button
+          type="button"
+          onClick={() => dispatch({ type: "DOWN" })}
+          aria-label="Move down"
+          title="Move down"
+        >
+          ↓
+        </button>
+        <button type="button" className="is-drop" onClick={() => dispatch({ type: "DROP" })}>
+          Drop
+        </button>
       </div>
     </>
   );
@@ -82,21 +113,24 @@ export function TreadStack() {
     setQualified(nextLines >= CONFIG.linesToWin);
   }, []);
 
-  const finishRun = useCallback((finalLines: number) => {
-    setLines(finalLines);
-    setOver(true);
-    setQualified(finalLines >= CONFIG.linesToWin);
-    setBest((current) => {
-      if (finalLines <= current) return current;
-      try {
-        window.localStorage.setItem(BEST_KEY, String(finalLines));
-      } catch {
-        // A private browser can still play without storing the best score.
-      }
-      return finalLines;
-    });
-    if (sound) garageAudio.skid();
-  }, [sound]);
+  const finishRun = useCallback(
+    (finalLines: number) => {
+      setLines(finalLines);
+      setOver(true);
+      setQualified(finalLines >= CONFIG.linesToWin);
+      setBest((current) => {
+        if (finalLines <= current) return current;
+        try {
+          window.localStorage.setItem(BEST_KEY, String(finalLines));
+        } catch {
+          // A private browser can still play without storing the best score.
+        }
+        return finalLines;
+      });
+      if (sound) garageAudio.skid();
+    },
+    [sound],
+  );
 
   function start() {
     setBest(readBest());
@@ -113,8 +147,13 @@ export function TreadStack() {
       <div className="paper-game paper-game-start">
         <p className="paper-game-edition">Ocean Heights Tire Warehouse</p>
         <h2>Tread Stack</h2>
-        <p>Turn and stack the incoming tire loads. Clear {CONFIG.linesToWin} complete rows to qualify, then keep the rack open until it tops out.</p>
-        <button type="button" className="button button-primary" onClick={start}>Open the tire rack</button>
+        <p>
+          Turn and stack the incoming tire loads. Clear {CONFIG.linesToWin} complete rows to
+          qualify, then keep the rack open until it tops out.
+        </p>
+        <button type="button" className="button button-primary" onClick={start}>
+          Open the tire rack
+        </button>
       </div>
     );
   }
@@ -127,15 +166,30 @@ export function TreadStack() {
           <h2>Tread Stack</h2>
         </div>
         <div className="match-game-controls">
-          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>{sound ? "Sound on" : "Sound off"}</button>
-          {over ? <button type="button" onClick={start}>New shift</button> : null}
+          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
+            {sound ? "Sound on" : "Sound off"}
+          </button>
+          {over ? (
+            <button type="button" onClick={start}>
+              New shift
+            </button>
+          ) : null}
         </div>
       </header>
       <div className="match-game-bar">
         <dl className="match-game-score">
-          <div><dt>Rows cleared</dt><dd>{lines}</dd></div>
-          <div><dt>Best</dt><dd>{best}</dd></div>
-          <div><dt>Prize at</dt><dd>{CONFIG.linesToWin}</dd></div>
+          <div>
+            <dt>Rows cleared</dt>
+            <dd>{lines}</dd>
+          </div>
+          <div>
+            <dt>Best</dt>
+            <dd>{best}</dd>
+          </div>
+          <div>
+            <dt>Prize at</dt>
+            <dd>{CONFIG.linesToWin}</dd>
+          </div>
         </dl>
       </div>
       <p className="match-game-status" role="status">
@@ -148,7 +202,12 @@ export function TreadStack() {
       <Tetris.Provider key={runKey} playground={{ rows: CONFIG.rows, columns: CONFIG.columns }}>
         <TreadStackRun stopped={over} onLines={updateLines} onRunEnd={finishRun} />
       </Tetris.Provider>
-      {qualified && over ? <PrizeBanner sound={sound} achievement={`${CONFIG.linesToWin} tire rows cleared in Tread Stack.`} /> : null}
+      {qualified && over ? (
+        <PrizeBanner
+          sound={sound}
+          achievement={`${CONFIG.linesToWin} tire rows cleared in Tread Stack.`}
+        />
+      ) : null}
       <p className="tread-stack-keys">Keyboard: arrows to move and rotate, space to drop.</p>
     </div>
   );

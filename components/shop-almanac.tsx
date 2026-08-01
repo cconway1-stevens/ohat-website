@@ -46,10 +46,7 @@ function readCache(): string | null {
 
 function writeCache(reading: string) {
   try {
-    window.sessionStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ reading, at: Date.now() }),
-    );
+    window.sessionStorage.setItem(CACHE_KEY, JSON.stringify({ reading, at: Date.now() }));
   } catch {
     // Storage being unavailable just means a fetch per page view again.
   }
@@ -81,11 +78,7 @@ const serverSnapshot = () => null;
 const subscribeNever = () => () => {};
 
 export function ShopAlmanac() {
-  const initial = useSyncExternalStore(
-    subscribeNever,
-    clientSnapshot,
-    serverSnapshot,
-  );
+  const initial = useSyncExternalStore(subscribeNever, clientSnapshot, serverSnapshot);
   const [fetched, setFetched] = useState<string | null>(null);
   const reading = initial?.reading ?? fetched;
 
@@ -123,11 +116,15 @@ export function ShopAlmanac() {
       <span className="garage-almanac-place">{shop.address.region}</span>
       {initial ? (
         <>
-          <span className="garage-almanac-rule" aria-hidden="true">·</span>
+          <span className="garage-almanac-rule" aria-hidden="true">
+            ·
+          </span>
           <span className="garage-almanac-date">{initial.date}</span>
           {reading ? (
             <>
-              <span className="garage-almanac-rule" aria-hidden="true">·</span>
+              <span className="garage-almanac-rule" aria-hidden="true">
+                ·
+              </span>
               <a
                 className="garage-almanac-reading"
                 href={SOURCE_URL}
@@ -136,9 +133,7 @@ export function ShopAlmanac() {
                 title="Current conditions at the shop — weather data by Open-Meteo"
               >
                 {reading}
-                <span className="sr-only">
-                  {" "}— weather data by Open-Meteo (opens in a new tab)
-                </span>
+                <span className="sr-only"> — weather data by Open-Meteo (opens in a new tab)</span>
               </a>
             </>
           ) : null}

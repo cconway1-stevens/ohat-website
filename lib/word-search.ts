@@ -14,10 +14,14 @@ export type SearchPuzzle = { grid: string[][]; words: HiddenWord[] };
 // left-to-right and top-to-bottom first, then the two reversals, then the
 // diagonals. Kids therefore never get a word spelled backwards.
 export const DIRECTIONS: Point[] = [
-  { row: 0, col: 1 }, { row: 1, col: 0 },
-  { row: 0, col: -1 }, { row: -1, col: 0 },
-  { row: 1, col: 1 }, { row: 1, col: -1 },
-  { row: -1, col: 1 }, { row: -1, col: -1 },
+  { row: 0, col: 1 },
+  { row: 1, col: 0 },
+  { row: 0, col: -1 },
+  { row: -1, col: 0 },
+  { row: 1, col: 1 },
+  { row: 1, col: -1 },
+  { row: -1, col: 1 },
+  { row: -1, col: -1 },
 ];
 const FILLERS = "AAAABCDEEEEFGHIIIIKLLMMNNNOOOOPRRRSSTTTTUWY";
 export const keyFor = (row: number, col: number) => `${row},${col}`;
@@ -52,21 +56,35 @@ export function createSearch(difficulty: Difficulty): SearchPuzzle {
             row: row + direction.row * index,
             col: col + direction.col * index,
           }));
-          if (cells.some((cell) => cell.row < 0 || cell.col < 0 || cell.row >= size || cell.col >= size)) continue;
-          if (cells.some((cell, index) => grid[cell.row][cell.col] && grid[cell.row][cell.col] !== word[index])) continue;
+          if (
+            cells.some(
+              (cell) => cell.row < 0 || cell.col < 0 || cell.row >= size || cell.col >= size,
+            )
+          )
+            continue;
+          if (
+            cells.some(
+              (cell, index) => grid[cell.row][cell.col] && grid[cell.row][cell.col] !== word[index],
+            )
+          )
+            continue;
           options.push(cells);
         }
       }
     }
     if (options.length === 0) continue;
     const cells = options[Math.floor(Math.random() * options.length)];
-    cells.forEach((cell, index) => { grid[cell.row][cell.col] = word[index]; });
+    cells.forEach((cell, index) => {
+      grid[cell.row][cell.col] = word[index];
+    });
     words.push({ word, cells: cells.map((cell) => keyFor(cell.row, cell.col)) });
   }
 
-  grid.forEach((row) => row.forEach((letter, col) => {
-    if (!letter) row[col] = FILLERS[Math.floor(Math.random() * FILLERS.length)];
-  }));
+  grid.forEach((row) =>
+    row.forEach((letter, col) => {
+      if (!letter) row[col] = FILLERS[Math.floor(Math.random() * FILLERS.length)];
+    }),
+  );
   return { grid, words };
 }
 
@@ -77,9 +95,7 @@ export function lineBetween(start: Point, end: Point) {
   const rowStep = Math.sign(rowDelta);
   const colStep = Math.sign(colDelta);
   const length = Math.max(Math.abs(rowDelta), Math.abs(colDelta)) + 1;
-  return Array.from({ length }, (_, index) => keyFor(
-    start.row + rowStep * index,
-    start.col + colStep * index,
-  ));
+  return Array.from({ length }, (_, index) =>
+    keyFor(start.row + rowStep * index, start.col + colStep * index),
+  );
 }
-

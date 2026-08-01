@@ -15,7 +15,7 @@ Privacy and analytics are audited separately in
 NJDPA does not reach a business this size, Google's Analytics terms did require
 a privacy policy, and that policy now exists.
 
-## 1. Advertising claims and substantiation — *fixed*
+## 1. Advertising claims and substantiation — _fixed_
 
 New Jersey's general advertising rules (N.J.A.C. 13:45A-9.2) require an
 advertiser to **substantiate any claim about the safety, performance,
@@ -30,15 +30,15 @@ or misleading and that the dealer knows or should know is untrue or misleading.
 
 Claims inventoried on the site, and where each one stands:
 
-| Claim | Where | Status |
-| --- | --- | --- |
-| "CARFAX customers **currently** rate Ocean Heights 5.0 out of 5" | homepage | **Fixed** — see below |
-| "5.0-star rating across hundreds of verified reviews" | /reviews, /links | **Fixed** — now dated |
-| "ASE-certified technicians" | metadata, /our-shop, service pages | Verifiable; keep certificates on file |
-| "40+ years" / "more than 15 years running a repair shop" | homepage, /our-shop | Owner's own history; substantiable |
-| "Dealer-level diagnostics / tools / scan capability" | homepage, service pages | Capability claim; tie to actual equipment |
-| Named review excerpts (Jim K., Kimberly J., Kevin B.) | /reviews | **Gated** — not rendering until verified |
-| Legacy coupon image | /offers | Already well disclaimed |
+| Claim                                                            | Where                              | Status                                    |
+| ---------------------------------------------------------------- | ---------------------------------- | ----------------------------------------- |
+| "CARFAX customers **currently** rate Ocean Heights 5.0 out of 5" | homepage                           | **Fixed** — see below                     |
+| "5.0-star rating across hundreds of verified reviews"            | /reviews, /links                   | **Fixed** — now dated                     |
+| "ASE-certified technicians"                                      | metadata, /our-shop, service pages | Verifiable; keep certificates on file     |
+| "40+ years" / "more than 15 years running a repair shop"         | homepage, /our-shop                | Owner's own history; substantiable        |
+| "Dealer-level diagnostics / tools / scan capability"             | homepage, service pages            | Capability claim; tie to actual equipment |
+| Named review excerpts (Jim K., Kimberly J., Kevin B.)            | /reviews                           | **Gated** — not rendering until verified  |
+| Legacy coupon image                                              | /offers                            | Already well disclaimed                   |
 
 ### The one that mattered
 
@@ -80,11 +80,12 @@ first. A stale date is honest; a moved date that nobody verified is not.
   testimonial that cannot be traced to a real review is deceptive under both
   the state rule and the FTC's rule on consumer reviews, and unlike a stale
   statistic there is no innocent reading of it.
+
 - **"Dealer-level."** Defensible if the shop genuinely runs factory-level scan
   tools and subscribes to factory service information. Worth being able to name
   the specific equipment if asked.
 
-## 2. The coupon page — *no change needed*
+## 2. The coupon page — _no change needed_
 
 `/offers` displays a coupon image carried over from the old website. NJ rules
 on gifts and discount offers (N.J.A.C. 13:45A-16.2 and the price-advertising
@@ -103,7 +104,7 @@ amounts today, the cleanest position is to retire the image or overlay it
 plainly as expired. Left as-is because the disclaimers are prominent and this is
 a judgement call for the owner, not a defect.
 
-## 3. Vehicle-drop-off page vs. the estimate rules — *already correct*
+## 3. Vehicle-drop-off page vs. the estimate rules — _already correct_
 
 N.J.A.C. 13:45A-26C.2 prohibits commencing repair work for compensation without
 a written estimate and the customer's signed authorization stating the nature
@@ -120,7 +121,7 @@ with what the authorization has to record. No change needed. **Do not let this
 sentence get edited away** in future copy passes; it is the page's most
 important line.
 
-## 4. Accessibility (ADA / WCAG) — *good, no defects found*
+## 4. Accessibility (ADA / WCAG) — _good, no defects found_
 
 Not New Jersey–specific, but the most common source of demand letters against
 small-business websites in the US. Title III claims over inaccessible sites are
@@ -140,7 +141,7 @@ The site is in unusually good shape here — this was clearly built with care:
 **One thing that looks like a bug and is not:** copying the footer's text
 yields "Google(opens in a new tab)". That string is a `.sr-only` span, and
 `.sr-only` is implemented correctly — clipped to a 1px box, off-screen,
-invisible on the page. It is *supposed* to be in the DOM: it is how a screen
+invisible on the page. It is _supposed_ to be in the DOM: it is how a screen
 reader warns that the link opens a new tab, which is a WCAG recommendation
 rather than a defect. It surfaces only when the page text is copied
 wholesale. Left exactly as it is.
@@ -150,7 +151,7 @@ audit and check colour contrast on the cream-on-yellow and muted-grey text
 combinations. Contrast is the one category a static source review cannot settle,
 because it depends on the computed colours.
 
-## 5. Third-party content and licensing — *check one item*
+## 5. Third-party content and licensing — _check one item_
 
 - **Photography** appears to be the shop's own — building exteriors, bays,
   waiting area, the drop box.
@@ -164,7 +165,7 @@ because it depends on the computed colours.
   generally permits display by shops that actually employ certified
   technicians. Contingent on item 1 above being true.
 
-## 6. Terms of use — *deliberately not added*
+## 6. Terms of use — _deliberately not added_
 
 A brochure site with no accounts, no forms, no e-commerce and no user-generated
 content gets very little from a terms-of-use page. There is nothing for a

@@ -87,8 +87,14 @@ export function TowChain() {
       ctx.strokeStyle = "rgba(246,189,56,.18)";
       ctx.lineWidth = 1;
       for (let i = 1; i < GRID; i += 1) {
-        ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, SIZE); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(SIZE, i * CELL); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(i * CELL, 0);
+        ctx.lineTo(i * CELL, SIZE);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, i * CELL);
+        ctx.lineTo(SIZE, i * CELL);
+        ctx.stroke();
       }
       // Stranded car: pale body, dark windows, red hazard marker.
       const pickupX = s.pickup.x * CELL;
@@ -106,14 +112,19 @@ export function TowChain() {
         const by = s.bonus.y * CELL;
         // Blinks out as the caller loses patience.
         if (s.bonus.ticksLeft > 12 || s.bonus.ticksLeft % 2 === 0) {
-          ctx.fillStyle = s.bonus.kind === "ghost" ? "#8fb7c4" : s.bonus.kind === "slow" ? "#68a56f" : "#f6bd38";
+          ctx.fillStyle =
+            s.bonus.kind === "ghost" ? "#8fb7c4" : s.bonus.kind === "slow" ? "#68a56f" : "#f6bd38";
           ctx.beginPath();
           ctx.arc(bx + 12, by + 12, 9, 0, Math.PI * 2);
           ctx.fill();
           ctx.fillStyle = "#171412";
           ctx.font = "900 11px Georgia, serif";
           ctx.textAlign = "center";
-          ctx.fillText(s.bonus.kind === "ghost" ? "G" : s.bonus.kind === "slow" ? "S" : "T", bx + 12, by + 16);
+          ctx.fillText(
+            s.bonus.kind === "ghost" ? "G" : s.bonus.kind === "slow" ? "S" : "T",
+            bx + 12,
+            by + 16,
+          );
         }
       }
 
@@ -215,7 +226,9 @@ export function TowChain() {
             {sound ? "Sound on" : "Sound off"}
           </button>
           {!running ? (
-            <button type="button" onClick={() => start()}>{over ? "New shift" : "Start the shift"}</button>
+            <button type="button" onClick={() => start()}>
+              {over ? "New shift" : "Start the shift"}
+            </button>
           ) : null}
         </div>
       </header>
@@ -231,7 +244,9 @@ export function TowChain() {
           </div>
         </dl>
         {active ? (
-          <p className="tow-chain-bonus" role="status">{BONUS_LABEL[active]}</p>
+          <p className="tow-chain-bonus" role="status">
+            {BONUS_LABEL[active]}
+          </p>
         ) : null}
       </div>
       <p className="match-game-status" role="status">
@@ -243,7 +258,9 @@ export function TowChain() {
             ? `Shift over: ${score} car${score === 1 ? "" : "s"} towed back to the shop.`
             : `Every pickup makes the chain longer. Tow ${CARS_TO_WIN} to win a coupon.`}
       </p>
-      {won && over ? <PrizeBanner sound={sound} achievement={`${CARS_TO_WIN} cars towed in one shift.`} /> : null}
+      {won && over ? (
+        <PrizeBanner sound={sound} achievement={`${CARS_TO_WIN} cars towed in one shift.`} />
+      ) : null}
       <canvas
         ref={canvasRef}
         className="tow-chain-lot"
@@ -268,11 +285,39 @@ export function TowChain() {
         }}
       />
       <div className="tow-controls" aria-label="Tow truck steering controls">
-        <button type="button" className="tow-up" onPointerDown={() => drive({ x: 0, y: -1 })} aria-label="Drive up">↑</button>
-        <button type="button" className="tow-left" onPointerDown={() => drive({ x: -1, y: 0 })} aria-label="Drive left">←</button>
+        <button
+          type="button"
+          className="tow-up"
+          onPointerDown={() => drive({ x: 0, y: -1 })}
+          aria-label="Drive up"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          className="tow-left"
+          onPointerDown={() => drive({ x: -1, y: 0 })}
+          aria-label="Drive left"
+        >
+          ←
+        </button>
         <span aria-hidden="true">OHAT</span>
-        <button type="button" className="tow-right" onPointerDown={() => drive({ x: 1, y: 0 })} aria-label="Drive right">→</button>
-        <button type="button" className="tow-down" onPointerDown={() => drive({ x: 0, y: 1 })} aria-label="Drive down">↓</button>
+        <button
+          type="button"
+          className="tow-right"
+          onPointerDown={() => drive({ x: 1, y: 0 })}
+          aria-label="Drive right"
+        >
+          →
+        </button>
+        <button
+          type="button"
+          className="tow-down"
+          onPointerDown={() => drive({ x: 0, y: 1 })}
+          aria-label="Drive down"
+        >
+          ↓
+        </button>
       </div>
     </div>
   );

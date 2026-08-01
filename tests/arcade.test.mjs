@@ -84,11 +84,7 @@ test("every Garage Guess word has a clue that doesn't give it away", () => {
   for (const word of garageGuessWords) {
     const clue = garageGuessClues[word];
     assert.ok(clue && clue.trim().length > 0, `${word} has no clue`);
-    assert.equal(
-      clue.toUpperCase().includes(word),
-      false,
-      `clue for ${word} contains the answer`,
-    );
+    assert.equal(clue.toUpperCase().includes(word), false, `clue for ${word} contains the answer`);
   }
 });
 
@@ -108,7 +104,8 @@ for (const level of LEVELS) {
     );
     // Kids must never be handed shop jargon just because it happens to be short.
     if (level === "kids") {
-      for (const entry of pool) assert.equal(entry.level, "kids", `${entry.answer} is not a kids word`);
+      for (const entry of pool)
+        assert.equal(entry.level, "kids", `${entry.answer} is not a kids word`);
     }
   });
 
@@ -121,8 +118,10 @@ for (const level of LEVELS) {
         settings.wordsPerPuzzle,
         `${level} round ${round} produced ${puzzle.entries.length} clues`,
       );
-      assert.ok(puzzle.rows <= settings.maxGrid && puzzle.cols <= settings.maxGrid,
-        `${level} round ${round} grid is ${puzzle.rows}x${puzzle.cols}`);
+      assert.ok(
+        puzzle.rows <= settings.maxGrid && puzzle.cols <= settings.maxGrid,
+        `${level} round ${round} grid is ${puzzle.rows}x${puzzle.cols}`,
+      );
 
       for (const entry of puzzle.entries) {
         // The letters actually sitting in the grid must spell the answer the
@@ -211,8 +210,14 @@ test("kids word search never hides a word backwards or diagonally", () => {
   // direction list happened to start with the two horizontal directions.
   const forwardOnly = DIRECTIONS.slice(0, arcadePresets.serviceSearch.difficulties.kids.directions);
   for (const option of forwardOnly) {
-    assert.ok(option.row >= 0 && option.col >= 0, `kids direction ${JSON.stringify(option)} reverses`);
-    assert.ok(option.row === 0 || option.col === 0, `kids direction ${JSON.stringify(option)} is diagonal`);
+    assert.ok(
+      option.row >= 0 && option.col >= 0,
+      `kids direction ${JSON.stringify(option)} reverses`,
+    );
+    assert.ok(
+      option.row === 0 || option.col === 0,
+      `kids direction ${JSON.stringify(option)} is diagonal`,
+    );
   }
 });
 
@@ -253,8 +258,13 @@ test("Tow Chain: a ghost run passes through the chain, and normally you crash", 
   // (6,7) has to be a middle segment: the tail vacates its cell on the same
   // tick, so driving into the last car is legitimately not a crash.
   const layout = [
-    { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 },
-    { x: 4, y: 7 }, { x: 5, y: 7 }, { x: 6, y: 7 }, { x: 7, y: 7 },
+    { x: 6, y: 6 },
+    { x: 5, y: 6 },
+    { x: 4, y: 6 },
+    { x: 4, y: 7 },
+    { x: 5, y: 7 },
+    { x: 6, y: 7 },
+    { x: 7, y: 7 },
   ];
   const rig = (ghost) => {
     const state = freshState();

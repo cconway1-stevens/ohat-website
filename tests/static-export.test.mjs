@@ -31,9 +31,7 @@ test("build tooling depends only on npm-installed packages", () => {
   // build image does not carry. Anything the build needs must come from
   // node_modules so the deployment environment cannot differ from ours.
   const scriptsDir = join(root, "scripts");
-  const buildScripts = readdirSync(scriptsDir).filter((file) =>
-    file.endsWith(".mjs"),
-  );
+  const buildScripts = readdirSync(scriptsDir).filter((file) => file.endsWith(".mjs"));
   assert.ok(buildScripts.length > 0, "expected build scripts to scan");
 
   const foreignTooling = /\bpython3?\b|\bpip\b|\bmagick\b|\bimagemagick\b|\bffmpeg\b/i;
@@ -69,9 +67,7 @@ test("every service page exports as its own HTML document", () => {
   // Read the slugs from the source of truth so a new service cannot ship
   // without a corresponding exported page.
   const servicesSource = readFileSync(join(root, "lib/services.ts"), "utf8");
-  const slugs = [...servicesSource.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map(
-    (match) => match[1],
-  );
+  const slugs = [...servicesSource.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map((match) => match[1]);
   assert.ok(slugs.length >= 12, `expected the full service list, got ${slugs.length}`);
 
   for (const slug of slugs) {

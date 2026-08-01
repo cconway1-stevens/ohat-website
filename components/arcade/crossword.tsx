@@ -3,12 +3,7 @@
 import { type CSSProperties, useState } from "react";
 import { garageAudio } from "@/lib/garage-audio";
 import { arcadePresets } from "@/lib/arcade";
-import {
-  createCrossword,
-  type CrosswordPuzzle,
-  type Difficulty,
-  keyFor,
-} from "@/lib/crossword";
+import { createCrossword, type CrosswordPuzzle, type Difficulty, keyFor } from "@/lib/crossword";
 import { PrizeBanner } from "./prize";
 
 const CONFIG = arcadePresets.crossword;
@@ -44,7 +39,7 @@ export function GarageCrossword() {
           type="button"
           className={difficulty === level ? "is-active" : ""}
           aria-pressed={difficulty === level}
-          onClick={() => puzzle ? startPuzzle(level) : setDifficulty(level)}
+          onClick={() => (puzzle ? startPuzzle(level) : setDifficulty(level))}
         >
           {CONFIG.difficulties[level].label}
         </button>
@@ -131,7 +126,9 @@ export function GarageCrossword() {
           <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
             {sound ? "Sound on" : "Sound off"}
           </button>
-          <button type="button" onClick={() => startPuzzle()}>New puzzle</button>
+          <button type="button" onClick={() => startPuzzle()}>
+            New puzzle
+          </button>
         </div>
       </header>
 
@@ -146,10 +143,12 @@ export function GarageCrossword() {
       <div className="crossword-layout">
         <div
           className="crossword-grid"
-          style={{
-            "--crossword-cols": puzzle.cols,
-            "--crossword-rows": puzzle.rows,
-          } as CSSProperties}
+          style={
+            {
+              "--crossword-cols": puzzle.cols,
+              "--crossword-rows": puzzle.rows,
+            } as CSSProperties
+          }
           aria-label="Automotive crossword puzzle"
         >
           {Array.from({ length: puzzle.rows * puzzle.cols }, (_, index) => {
@@ -183,7 +182,10 @@ export function GarageCrossword() {
                     event.target.select();
                   }}
                   onChange={(event) => {
-                    const letter = event.target.value.toUpperCase().replace(/[^A-Z]/g, "").slice(-1);
+                    const letter = event.target.value
+                      .toUpperCase()
+                      .replace(/[^A-Z]/g, "")
+                      .slice(-1);
                     setAnswers((current) => ({ ...current, [key]: letter }));
                     setChecked(false);
                     if (letter) {
@@ -213,20 +215,22 @@ export function GarageCrossword() {
             <section key={direction}>
               <h3>{direction}</h3>
               <ol>
-                {puzzle.entries.filter((entry) => entry.direction === direction).map((entry) => (
-                  <li key={entry.id} value={entry.number}>
-                    <button
-                      type="button"
-                      className={entry.id === activeId ? "is-active" : ""}
-                      onClick={() => {
-                        setActiveId(entry.id);
-                        focusCell(entry.cells.find((key) => !answers[key]) ?? entry.cells[0]);
-                      }}
-                    >
-                      <b>{entry.number}.</b> {entry.clue}
-                    </button>
-                  </li>
-                ))}
+                {puzzle.entries
+                  .filter((entry) => entry.direction === direction)
+                  .map((entry) => (
+                    <li key={entry.id} value={entry.number}>
+                      <button
+                        type="button"
+                        className={entry.id === activeId ? "is-active" : ""}
+                        onClick={() => {
+                          setActiveId(entry.id);
+                          focusCell(entry.cells.find((key) => !answers[key]) ?? entry.cells[0]);
+                        }}
+                      >
+                        <b>{entry.number}.</b> {entry.clue}
+                      </button>
+                    </li>
+                  ))}
               </ol>
             </section>
           ))}
@@ -238,7 +242,9 @@ export function GarageCrossword() {
           type="button"
           onClick={() => {
             if (!activeEntry) return;
-            const hintKey = activeEntry.cells.find((key) => !answers[key] || answers[key] !== puzzle.cells[key].letter);
+            const hintKey = activeEntry.cells.find(
+              (key) => !answers[key] || answers[key] !== puzzle.cells[key].letter,
+            );
             if (!hintKey) return;
             setAnswers((current) => ({ ...current, [hintKey]: puzzle.cells[hintKey].letter }));
             setChecked(false);
@@ -247,10 +253,14 @@ export function GarageCrossword() {
         >
           Reveal one letter
         </button>
-        <button type="button" onClick={() => setChecked(true)}>Check answers</button>
+        <button type="button" onClick={() => setChecked(true)}>
+          Check answers
+        </button>
       </div>
 
-      {solved ? <PrizeBanner sound={sound} achievement="Garage crossword solved from bumper to bumper." /> : null}
+      {solved ? (
+        <PrizeBanner sound={sound} achievement="Garage crossword solved from bumper to bumper." />
+      ) : null}
     </div>
   );
 }

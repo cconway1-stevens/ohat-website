@@ -29,7 +29,15 @@ const GENRES: Genre[] = [
   { id: "news", label: "News talk", tag: "news" },
 ];
 
-type Station = { id: string; name: string; url: string; country: string; bitrate: number; codec: string; favicon: string };
+type Station = {
+  id: string;
+  name: string;
+  url: string;
+  country: string;
+  bitrate: number;
+  codec: string;
+  favicon: string;
+};
 
 const DECADES = [
   { id: "fifties", label: "'50s", sub: "Doo-wop", tag: "50s" },
@@ -43,7 +51,11 @@ type Decade = (typeof DECADES)[number]["id"];
 
 export function LiveRadio() {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const graphRef = useRef<{ bass: BiquadFilterNode; mid: BiquadFilterNode; treble: BiquadFilterNode } | null>(null);
+  const graphRef = useRef<{
+    bass: BiquadFilterNode;
+    mid: BiquadFilterNode;
+    treble: BiquadFilterNode;
+  } | null>(null);
 
   const [genre, setGenre] = useState<Genre>(GENRES[0]);
   const [list, setList] = useState<Station[]>([]);
@@ -96,7 +108,12 @@ export function LiveRadio() {
   }, [volume]);
 
   // Stop the stream on the way out — nothing should keep playing off-screen.
-  useEffect(() => () => { audioRef.current?.pause(); }, []);
+  useEffect(
+    () => () => {
+      audioRef.current?.pause();
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!dragging) return undefined;
@@ -121,35 +138,54 @@ export function LiveRadio() {
     setList([]);
     try {
       const params = new URLSearchParams({
-        tag, hidebroken: "true", order: "clickcount",
-        reverse: "true", limit: "24",
+        tag,
+        hidebroken: "true",
+        order: "clickcount",
+        reverse: "true",
+        limit: "24",
       });
       const response = await fetch(`${DIRECTORY}?${params}`);
       if (!response.ok) throw new Error("directory said no");
       const data = await response.json();
       const usable: Station[] = data
-        .filter((entry: { name?: string; url_resolved?: string }) => entry.name && entry.url_resolved)
+        .filter(
+          (entry: { name?: string; url_resolved?: string }) => entry.name && entry.url_resolved,
+        )
         // Only https, so the browser will not block it as mixed content.
         .filter((entry: { url_resolved: string }) => entry.url_resolved.startsWith("https://"))
         .filter((entry: { codec?: string }) => !entry.codec || /mp3|aac/i.test(entry.codec))
         .slice(0, 12)
-        .map((entry: { stationuuid: string; name: string; url_resolved: string; country: string; bitrate: number; codec?: string; favicon?: string }) => ({
-          id: entry.stationuuid,
-          name: entry.name.trim().slice(0, 42),
-          url: entry.url_resolved,
-          country: entry.country || "—",
-          bitrate: entry.bitrate || 0,
-          codec: entry.codec || "stream",
-          favicon: entry.favicon?.startsWith("https://") ? entry.favicon : "",
-        }));
+        .map(
+          (entry: {
+            stationuuid: string;
+            name: string;
+            url_resolved: string;
+            country: string;
+            bitrate: number;
+            codec?: string;
+            favicon?: string;
+          }) => ({
+            id: entry.stationuuid,
+            name: entry.name.trim().slice(0, 42),
+            url: entry.url_resolved,
+            country: entry.country || "—",
+            bitrate: entry.bitrate || 0,
+            codec: entry.codec || "stream",
+            favicon: entry.favicon?.startsWith("https://") ? entry.favicon : "",
+          }),
+        );
       setList(usable);
       setIndex(0);
-      setStatus(usable.length
-        ? `${usable.length} stations found. Press play or turn the tuning knob.`
-        : "Nothing came back for that band. Try another.");
+      setStatus(
+        usable.length
+          ? `${usable.length} stations found. Press play or turn the tuning knob.`
+          : "Nothing came back for that band. Try another.",
+      );
       setSignal(usable.length ? 3 : 0);
     } catch {
-      setStatus("The station directory is not answering. It is someone else's server — try again in a minute, or use the dash radio.");
+      setStatus(
+        "The station directory is not answering. It is someone else's server — try again in a minute, or use the dash radio.",
+      );
     }
   }
 
@@ -201,9 +237,16 @@ export function LiveRadio() {
         ref={audioRef}
         preload="none"
         crossOrigin="anonymous"
-        onWaiting={() => { setSignal(1); setStatus("Signal fading… buffering the station."); }}
+        onWaiting={() => {
+          setSignal(1);
+          setStatus("Signal fading… buffering the station.");
+        }}
         onPlaying={() => setSignal((value) => Math.max(value, 3))}
-        onError={() => { setPlaying(false); setSignal(0); setStatus("Signal lost. Press SEEK for the next station."); }}
+        onError={() => {
+          setPlaying(false);
+          setSignal(0);
+          setStatus("Signal lost. Press SEEK for the next station.");
+        }}
       />
 
       <div className="silver-decades" role="group" aria-label="Dashboard era">
@@ -224,7 +267,9 @@ export function LiveRadio() {
       <div className="silver-top">
         <div className="silver-grille" aria-hidden="true" />
         <div className="silver-dial">
-          <p className="silver-brand">OHAT <small>DE LUXE</small></p>
+          <p className="silver-brand">
+            OHAT <small>DE LUXE</small>
+          </p>
           <div className="silver-window">
             <div className="silver-station-line">
               {station?.favicon ? (
@@ -237,14 +282,20 @@ export function LiveRadio() {
               <p className="silver-station">{station ? station.name : "— — —"}</p>
             </div>
             <p className="silver-meta">
-              {station ? `${station.country} · ${station.codec} · ${station.bitrate || "?"} kbps` : "no station"}
+              {station
+                ? `${station.country} · ${station.codec} · ${station.bitrate || "?"} kbps`
+                : "no station"}
               <em className={playing ? "is-lit" : ""}>ON AIR</em>
             </p>
             <div className="silver-signal" aria-label={`Signal strength ${signal} of 5`}>
-              {[1, 2, 3, 4, 5].map((bar) => <i key={bar} className={bar <= signal ? "is-lit" : ""} />)}
+              {[1, 2, 3, 4, 5].map((bar) => (
+                <i key={bar} className={bar <= signal ? "is-lit" : ""} />
+              ))}
             </div>
           </div>
-          <p className="silver-status" aria-live="polite">{status}</p>
+          <p className="silver-status" aria-live="polite">
+            {status}
+          </p>
         </div>
         <div className="silver-knob-col">
           <button
@@ -265,8 +316,22 @@ export function LiveRadio() {
       </div>
 
       <div className="silver-tuner" aria-hidden="true">
-        <span>88</span><i /><span>92</span><i /><span>96</span><i /><span>100</span><i /><span>104</span><i /><span>108</span>
-        <b style={{ left: list.length ? `${8 + (index / Math.max(1, list.length - 1)) * 84}%` : "8%" }} />
+        <span>88</span>
+        <i />
+        <span>92</span>
+        <i />
+        <span>96</span>
+        <i />
+        <span>100</span>
+        <i />
+        <span>104</span>
+        <i />
+        <span>108</span>
+        <b
+          style={{
+            left: list.length ? `${8 + (index / Math.max(1, list.length - 1)) * 84}%` : "8%",
+          }}
+        />
       </div>
 
       <div className="silver-bands" role="group" aria-label="Band">
@@ -283,7 +348,14 @@ export function LiveRadio() {
       </div>
 
       <div className="silver-transport">
-        <button type="button" onClick={() => seek(-1)} disabled={!list.length} aria-label="Previous station">◀◀</button>
+        <button
+          type="button"
+          onClick={() => seek(-1)}
+          disabled={!list.length}
+          aria-label="Previous station"
+        >
+          ◀◀
+        </button>
         <button
           type="button"
           className="is-play"
@@ -292,28 +364,49 @@ export function LiveRadio() {
         >
           {playing ? "❚❚ Pause" : "▶ Play"}
         </button>
-        <button type="button" onClick={() => seek(1)} disabled={!list.length} aria-label="Next station">▶▶</button>
+        <button
+          type="button"
+          onClick={() => seek(1)}
+          disabled={!list.length}
+          aria-label="Next station"
+        >
+          ▶▶
+        </button>
         <span className="silver-count">{list.length ? `${index + 1}/${list.length}` : "—"}</span>
       </div>
 
       <div className="silver-tone">
-        {([["Bass", bass, setBass], ["Mid", mid, setMid], ["Treble", treble, setTreble]] as const).map(
-          ([label, value, set]) => (
-            <label key={label}>
-              <span>{label}</span>
-              <input
-                type="range" min={-1} max={1} step={0.1} value={value}
-                onChange={(event) => set(Number(event.target.value))}
-              />
-              <small>{value === 0 ? "flat" : value > 0 ? `+${Math.round(value * 10)}` : Math.round(value * 10)}</small>
-            </label>
-          ),
-        )}
+        {(
+          [
+            ["Bass", bass, setBass],
+            ["Mid", mid, setMid],
+            ["Treble", treble, setTreble],
+          ] as const
+        ).map(([label, value, set]) => (
+          <label key={label}>
+            <span>{label}</span>
+            <input
+              type="range"
+              min={-1}
+              max={1}
+              step={0.1}
+              value={value}
+              onChange={(event) => set(Number(event.target.value))}
+            />
+            <small>
+              {value === 0
+                ? "flat"
+                : value > 0
+                  ? `+${Math.round(value * 10)}`
+                  : Math.round(value * 10)}
+            </small>
+          </label>
+        ))}
       </div>
 
       <p className="silver-note">
-        Live stations come from the public Radio Browser directory. The audio is
-        broadcast by other people — we do not choose or control what is on.
+        Live stations come from the public Radio Browser directory. The audio is broadcast by other
+        people — we do not choose or control what is on.
       </p>
     </div>
   );

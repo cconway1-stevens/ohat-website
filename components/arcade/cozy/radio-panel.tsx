@@ -88,7 +88,15 @@ function AmbienceDeck() {
   );
 }
 
-function AmbienceSlider({ layer, label, hint }: { layer: AmbienceLayer; label: string; hint: string }) {
+function AmbienceSlider({
+  layer,
+  label,
+  hint,
+}: {
+  layer: AmbienceLayer;
+  label: string;
+  hint: string;
+}) {
   const [level, setLevel] = useState(0);
 
   useEffect(() => {

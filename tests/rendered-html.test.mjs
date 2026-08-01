@@ -24,19 +24,13 @@ test("renders production metadata", async () => {
   );
 
   assert.equal(response.status, 200);
-  assert.match(
-    response.headers.get("content-type") ?? "",
-    /^text\/html\b/i,
-  );
+  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(
     html,
     /<title>Auto Repair &amp; Tire Shop in Egg Harbor Township, NJ \| Ocean Heights<\/title>/,
   );
-  assert.match(
-    html,
-    /<meta property="og:site_name" content="Ocean Heights Auto &amp; Tire"/,
-  );
+  assert.match(html, /<meta property="og:site_name" content="Ocean Heights Auto &amp; Tire"/);
   assert.doesNotMatch(html, codexPreviewMeta);
 });
 
@@ -69,21 +63,9 @@ test("renders the shared directions chooser on every location route", async () =
       /class="directions-dialog"/,
       `${route} should include the shared directions chooser`,
     );
-    assert.match(
-      html,
-      />Apple Maps</,
-      `${route} should offer Apple Maps`,
-    );
-    assert.match(
-      html,
-      />Google Maps</,
-      `${route} should offer Google Maps`,
-    );
+    assert.match(html, />Apple Maps</, `${route} should offer Apple Maps`);
+    assert.match(html, />Google Maps</, `${route} should offer Google Maps`);
     assert.match(html, />Waze</, `${route} should offer Waze`);
-    assert.match(
-      html,
-      />Copy address</,
-      `${route} should offer Copy Address`,
-    );
+    assert.match(html, />Copy address</, `${route} should offer Copy Address`);
   }
 });

@@ -31,9 +31,7 @@ export function MakeGrid() {
     if (next === order) return;
     setOrder(next);
     setWall((current) =>
-      next === "alphabetical"
-        ? [...current].sort((a, b) => a.localeCompare(b))
-        : shuffle(current),
+      next === "alphabetical" ? [...current].sort((a, b) => a.localeCompare(b)) : shuffle(current),
     );
     setDealt((count) => count + 1);
   }
@@ -92,12 +90,14 @@ export function MakeGrid() {
               </li>
             ))}
           </ul>
-          <p className="sr-only" aria-live="polite">Logo wall ordered {shown}.</p>
+          <p className="sr-only" aria-live="polite">
+            Logo wall ordered {shown}.
+          </p>
           {/* Rendered with the wall rather than after this component, so game
               mode never has the caption colliding with the play area. */}
           <p className="make-note">
-            Representative makes shown. We service virtually all makes and
-            models. Brand marks belong to their respective owners.
+            Representative makes shown. We service virtually all makes and models. Brand marks
+            belong to their respective owners.
           </p>
         </>
       )}

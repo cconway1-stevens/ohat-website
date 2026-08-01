@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  type ReactNode,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { shop } from "@/lib/shop";
 import { ShopHoursStatus } from "./shop-hours-status";
 
@@ -84,19 +78,10 @@ export function DirectionsTrigger({
 
   return (
     <>
-      <button
-        type="button"
-        className={className}
-        aria-label={label}
-        onClick={openDialog}
-      >
+      <button type="button" className={className} aria-label={label} onClick={openDialog}>
         {children}
       </button>
-      <dialog
-        ref={dialogRef}
-        className="directions-dialog"
-        aria-labelledby={titleId}
-      >
+      <dialog ref={dialogRef} className="directions-dialog" aria-labelledby={titleId}>
         <div className="directions-dialog-card">
           <button
             type="button"
@@ -129,9 +114,7 @@ export function DirectionsTrigger({
               <small>Open route ↗︎</small>
             </a>
             <button type="button" onClick={copyAddress}>
-              <span aria-hidden="true">
-                {copyLabel === "Address copied!" ? "✓" : "⧉"}
-              </span>
+              <span aria-hidden="true">{copyLabel === "Address copied!" ? "✓" : "⧉"}</span>
               <strong aria-live="polite">{copyLabel}</strong>
               <small>Full street address</small>
             </button>

@@ -19,12 +19,13 @@ export default function LinksQrPage() {
         <p className="link-hub-kicker">Pass it along</p>
         <h1 id="links-qr-title">Scan for every link.</h1>
         <p className="link-hub-intro">
-          Point a phone camera here and it opens our link hub — calls,
-          directions, drop-off, reviews, all of it. Print it for the counter or
-          share it straight from this page.
+          Point a phone camera here and it opens our link hub — calls, directions, drop-off,
+          reviews, all of it. Print it for the counter or share it straight from this page.
         </p>
         <LinksQrPageBody />
-        <Link className="link-hub-home" href="/links">← Back to the links</Link>
+        <Link className="link-hub-home" href="/links">
+          ← Back to the links
+        </Link>
       </section>
     </main>
   );

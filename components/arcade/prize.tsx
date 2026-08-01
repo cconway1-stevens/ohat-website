@@ -87,30 +87,21 @@ export function PrizeBanner({
 
   return (
     <div className="prize-popup-backdrop" role="presentation">
-      <div
-        aria-label="Arcade prize"
-        aria-modal="false"
-        className="prize-banner"
-        role="dialog"
-      >
+      <div aria-label="Arcade prize" aria-modal="false" className="prize-banner" role="dialog">
         <Confetti />
         <div className="prize-banner-body">
           <p className="prize-banner-kicker">You won a coupon</p>
           <h3>{achievement}</h3>
           <p className="prize-terms">
-            Head to the deals page and we&apos;ll help match the current offer
-            to your visit. Terms and conditions may apply, and the shop has the
-            final say on what applies to your vehicle.
+            Head to the deals page and we&apos;ll help match the current offer to your visit. Terms
+            and conditions may apply, and the shop has the final say on what applies to your
+            vehicle.
           </p>
           <div className="prize-actions">
             <Link className="button button-primary prize-redeem" href="/offers">
               Redeem prize
             </Link>
-            <button
-              className="prize-dismiss"
-              onClick={() => setDismissed(true)}
-              type="button"
-            >
+            <button className="prize-dismiss" onClick={() => setDismissed(true)} type="button">
               Keep playing
             </button>
           </div>

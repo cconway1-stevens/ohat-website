@@ -90,25 +90,33 @@ export function GarageGuess() {
     }
   }, [answer, draft, guesses, over, sound]);
 
-  const press = useCallback((key: string) => {
-    if (!answer || over) return;
-    if (key === "ENTER") {
-      submit();
-      return;
-    }
-    if (key === "BACKSPACE") {
-      setDraft((value) => value.slice(0, -1));
-      return;
-    }
-    if (/^[A-Z]$/.test(key) && draft.length < CONFIG.wordLength) {
-      setDraft((value) => value + key);
-    }
-  }, [answer, draft.length, over, submit]);
+  const press = useCallback(
+    (key: string) => {
+      if (!answer || over) return;
+      if (key === "ENTER") {
+        submit();
+        return;
+      }
+      if (key === "BACKSPACE") {
+        setDraft((value) => value.slice(0, -1));
+        return;
+      }
+      if (/^[A-Z]$/.test(key) && draft.length < CONFIG.wordLength) {
+        setDraft((value) => value + key);
+      }
+    },
+    [answer, draft.length, over, submit],
+  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!answer || over) return;
-      const key = event.key === "Enter" ? "ENTER" : event.key === "Backspace" ? "BACKSPACE" : event.key.toUpperCase();
+      const key =
+        event.key === "Enter"
+          ? "ENTER"
+          : event.key === "Backspace"
+            ? "BACKSPACE"
+            : event.key.toUpperCase();
       if (key === "ENTER" || key === "BACKSPACE" || /^[A-Z]$/.test(key)) {
         event.preventDefault();
         press(key);
@@ -122,7 +130,8 @@ export function GarageGuess() {
     scoreGuess(guess, answer).forEach((state, index) => {
       const letter = guess[index];
       const current = states[letter];
-      if (!current || state === "correct" || (state === "present" && current === "absent")) states[letter] = state;
+      if (!current || state === "correct" || (state === "present" && current === "absent"))
+        states[letter] = state;
     });
     return states;
   }, {});
@@ -132,8 +141,13 @@ export function GarageGuess() {
       <div className="paper-game paper-game-start">
         <p className="paper-game-edition">The Ocean Heights Motoring Page</p>
         <h2>Garage Guess</h2>
-        <p>Find a five-letter automotive word from the shop word bank. Any five-letter guess is allowed.</p>
-        <button type="button" className="button button-primary" onClick={start}>Start a word</button>
+        <p>
+          Find a five-letter automotive word from the shop word bank. Any five-letter guess is
+          allowed.
+        </p>
+        <button type="button" className="button button-primary" onClick={start}>
+          Start a word
+        </button>
       </div>
     );
   }
@@ -146,21 +160,39 @@ export function GarageGuess() {
           <h2>Garage Guess</h2>
         </div>
         <div className="match-game-controls">
-          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>{sound ? "Sound on" : "Sound off"}</button>
-          <button type="button" onClick={start}>New word</button>
+          <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
+            {sound ? "Sound on" : "Sound off"}
+          </button>
+          <button type="button" onClick={start}>
+            New word
+          </button>
         </div>
       </header>
-      <p className="match-game-status" role="status">{message}</p>
+      <p className="match-game-status" role="status">
+        {message}
+      </p>
       <div className="garage-guess-progress" aria-label="Garage Guess progress">
-        <span>Guess {currentGuess} of {CONFIG.maxGuesses}</span>
-        <span>{draft.length} of {CONFIG.wordLength} letters</span>
+        <span>
+          Guess {currentGuess} of {CONFIG.maxGuesses}
+        </span>
+        <span>
+          {draft.length} of {CONFIG.wordLength} letters
+        </span>
       </div>
       {/* Hidden until asked for, so it never spoils the puzzle by accident. */}
       <p className="garage-guess-clue">
         {showClue ? (
-          <span><b>Clue:</b> {garageGuessClues[answer]}</span>
+          <span>
+            <b>Clue:</b> {garageGuessClues[answer]}
+          </span>
         ) : (
-          <button type="button" onClick={() => { setShowClue(true); if (sound) garageAudio.beep(300); }}>
+          <button
+            type="button"
+            onClick={() => {
+              setShowClue(true);
+              if (sound) garageAudio.beep(300);
+            }}
+          >
             Need a clue?
           </button>
         )}
@@ -181,21 +213,38 @@ export function GarageGuess() {
         })}
       </div>
       <div className="garage-guess-legend" aria-label="Garage Guess color key">
-        <span><b className="is-correct">A</b> Right spot</span>
-        <span><b className="is-present">A</b> In word</span>
-        <span><b className="is-absent">A</b> Not in word</span>
+        <span>
+          <b className="is-correct">A</b> Right spot
+        </span>
+        <span>
+          <b className="is-present">A</b> In word
+        </span>
+        <span>
+          <b className="is-absent">A</b> Not in word
+        </span>
       </div>
       <div className="garage-guess-keys" aria-label="Garage Guess keyboard">
         {KEY_ROWS.map((row) => (
           <div key={row}>
             {row.split("").map((letter) => (
-              <button key={letter} type="button" className={letterStates[letter] ? `is-${letterStates[letter]}` : ""} onClick={() => press(letter)}>{letter}</button>
+              <button
+                key={letter}
+                type="button"
+                className={letterStates[letter] ? `is-${letterStates[letter]}` : ""}
+                onClick={() => press(letter)}
+              >
+                {letter}
+              </button>
             ))}
           </div>
         ))}
         <div>
-          <button type="button" className="is-wide" onClick={() => press("ENTER")}>Enter</button>
-          <button type="button" className="is-wide" onClick={() => press("BACKSPACE")}>Delete</button>
+          <button type="button" className="is-wide" onClick={() => press("ENTER")}>
+            Enter
+          </button>
+          <button type="button" className="is-wide" onClick={() => press("BACKSPACE")}>
+            Delete
+          </button>
         </div>
       </div>
       <div className="paper-game-actions">
@@ -203,7 +252,9 @@ export function GarageGuess() {
           Show me the word
         </button>
       </div>
-      {won ? <PrizeBanner sound={sound} achievement="Garage Guess solved in six tries or less." /> : null}
+      {won ? (
+        <PrizeBanner sound={sound} achievement="Garage Guess solved in six tries or less." />
+      ) : null}
     </div>
   );
 }

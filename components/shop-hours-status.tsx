@@ -93,14 +93,12 @@ export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
       >
         <span className="shop-status-dot" aria-hidden="true" />
         <span className="shop-status-copy">
-          {statusLines.map((line) => <span key={line}>{line}</span>)}
+          {statusLines.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
         </span>
       </span>
-      {status.holiday ? (
-        <span className="shop-hours-holiday">
-          {status.holidayNotice}
-        </span>
-      ) : null}
+      {status.holiday ? <span className="shop-hours-holiday">{status.holidayNotice}</span> : null}
     </span>
   );
 }

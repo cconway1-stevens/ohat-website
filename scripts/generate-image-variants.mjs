@@ -28,9 +28,7 @@ await sharp(join(SOURCE_DIR, "ase-certified.jpg"))
   .webp({ quality: 78, effort: 6 })
   .toFile(join(SOURCE_DIR, "ase-certified.webp"));
 
-const sources = readdirSync(SOURCE_DIR).filter((file) =>
-  /\.(jpe?g|png)$/i.test(file),
-);
+const sources = readdirSync(SOURCE_DIR).filter((file) => /\.(jpe?g|png)$/i.test(file));
 
 mkdirSync(OUT_DIR, { recursive: true });
 
@@ -49,10 +47,7 @@ for (const name of sources) {
     if (w >= width) continue;
     const out = join(OUT_DIR, `${stem}-${w}.${RESPONSIVE_EXTENSION}`);
     if (!existsSync(out)) {
-      await sharp(path)
-        .resize(w)
-        .avif({ quality: 50, effort: 5 })
-        .toFile(out);
+      await sharp(path).resize(w).avif({ quality: 50, effort: 5 }).toFile(out);
     }
     available.push(w);
   }

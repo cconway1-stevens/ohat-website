@@ -17,17 +17,17 @@ The primary conversion on every page is:
 
 ## Current progress — reset July 30, 2026
 
-| Workstream | Status | Next proof required |
-|---|---|---|
-| Legacy page inventory | Complete | 9 public destinations captured and mapped |
-| External trust sources | Complete with owner follow-ups | Links verified; unsupported badge/year claims omitted |
-| Image and media import | Complete | 22 legacy assets imported, opened, and reviewed |
-| Consolidated page plan | Complete | 6 primary destinations plus focused service pages |
-| New design system | Complete | Modern Family Garage system implemented |
-| Next.js rebuild | Complete | Core pages, 12 service pages, and legacy routes built |
-| SEO and conversion work | Complete | Metadata, schema, sitemap, internal links, and call CTAs added |
-| Accessibility and device QA | In progress | Final build and route validation pending |
-| Production publishing | In progress | Final checkpoint and deployment verification pending |
+| Workstream                  | Status                         | Next proof required                                            |
+| --------------------------- | ------------------------------ | -------------------------------------------------------------- |
+| Legacy page inventory       | Complete                       | 9 public destinations captured and mapped                      |
+| External trust sources      | Complete with owner follow-ups | Links verified; unsupported badge/year claims omitted          |
+| Image and media import      | Complete                       | 22 legacy assets imported, opened, and reviewed                |
+| Consolidated page plan      | Complete                       | 6 primary destinations plus focused service pages              |
+| New design system           | Complete                       | Modern Family Garage system implemented                        |
+| Next.js rebuild             | Complete                       | Core pages, 12 service pages, and legacy routes built          |
+| SEO and conversion work     | Complete                       | Metadata, schema, sitemap, internal links, and call CTAs added |
+| Accessibility and device QA | In progress                    | Final build and route validation pending                       |
+| Production publishing       | In progress                    | Final checkpoint and deployment verification pending           |
 
 Only items backed by an audit record or completed test should be checked off.
 
@@ -81,10 +81,10 @@ Only items backed by an audit record or completed test should be checked off.
 - [x] Audit the Contact page.
 - [x] Audit the Reviews page.
 - [x] Record the phone number, address, hours, service area, warranty,
-  ASE-certification claim, family-owned positioning, and current calls to
-  action.
+      ASE-certification claim, family-owned positioning, and current calls to
+      action.
 - [ ] Export a final legacy URL inventory with page title, purpose, media,
-  CTA, target new page, and redirect.
+      CTA, target new page, and redirect.
 - [ ] Re-check that no indexed, utility, or media-only URL was missed.
 - [ ] Verify every imported image opens correctly and record where it appeared.
 - [ ] Preserve every valuable image locally before redesign work begins.
@@ -105,34 +105,34 @@ Approved profile links:
 Verification tracker:
 
 - [x] Confirm the Facebook URL belongs to Ocean Heights Auto & Tire in Egg
-  Harbor Township.
+      Harbor Township.
 - [x] Confirm the CARFAX URL belongs to Ocean Heights Auto & Tire at 1178 Ocean
-  Heights Avenue in Egg Harbor Township.
+      Heights Avenue in Egg Harbor Township.
 - [x] Record the current CARFAX trust signals: CARFAX Top-Rated Service Center,
-  5.0 overall rating, 498 verified reviews, and 1,480 shop favorites as observed
-  on July 30, 2026.
+      5.0 overall rating, 498 verified reviews, and 1,480 shop favorites as observed
+      on July 30, 2026.
 - [x] Record CARFAX’s listed service coverage, including maintenance, brakes,
-  diagnostics, electrical repair, engines, tires, transmissions, and
-  alignments.
+      diagnostics, electrical repair, engines, tires, transmissions, and
+      alignments.
 - [x] Record CARFAX’s “all makes and models” shop description and the
-  Chevrolet, Ford, Honda, Jeep, and Toyota examples shown in its service
-  history.
+      Chevrolet, Ford, Honda, Jeep, and Toyota examples shown in its service
+      history.
 - [ ] Confirm the exact CARFAX Top-Rated Service Center award years before
-  publishing a multi-year claim.
+      publishing a multi-year claim.
 - [ ] Confirm whether CARFAX’s (609) 566-8325 or the current website’s
-  (609) 241-1546 is the preferred public booking number.
+      (609) 241-1546 is the preferred public booking number.
 - [ ] Manually verify Yelp’s live rating, review count, business details, and
-  reusable review themes; automated access is blocked.
+      reusable review themes; automated access is blocked.
 - [ ] Confirm whether Yelp, Facebook, and CARFAX logos/badges may be displayed
-  under their current brand-use rules; otherwise use labeled text links.
+      under their current brand-use rules; otherwise use labeled text links.
 - [ ] Select review excerpts only after confirming quotation permission,
-  attribution, date, and current availability.
+      attribution, date, and current availability.
 - [ ] Add the three profiles to the site footer, Reviews page, Contact page,
-  and relevant trust callouts.
+      and relevant trust callouts.
 - [ ] Add the canonical profile URLs to LocalBusiness structured data using
-  `sameAs`.
+      `sameAs`.
 - [ ] Add external-link labels and safe new-tab behavior without interrupting
-  the primary call-to-book journey.
+      the primary call-to-book journey.
 
 **Completion gate:** Every published rating, review count, award, phone number,
 badge, and quotation is current, attributable, and verified.
@@ -207,18 +207,18 @@ under a minute, and fun without being distracting.
 
 - [ ] Write unique titles and descriptions for every indexable page.
 - [ ] Add local service language for Egg Harbor Township, Mays Landing, and
-  Linwood without keyword stuffing.
+      Linwood without keyword stuffing.
 - [ ] Add AutoRepair structured data with accurate address, phone, hours, and
-  service area.
+      service area.
 - [ ] Add service and breadcrumb structured data where appropriate.
 - [ ] Preserve legacy URLs and internal linking.
 - [ ] Publish sitemap and crawler rules.
 - [ ] Make phone and directions actions prominent on mobile.
 - [ ] Connect reviews, CARFAX recognition, ASE certification, warranty, and
-  community roots to conversion points.
+      community roots to conversion points.
 - [ ] Add Yelp, Facebook, and CARFAX as verified `sameAs` profiles.
 - [ ] Do not place third-party review ratings in structured data unless current
-  eligibility and markup rules are confirmed.
+      eligibility and markup rules are confirmed.
 
 **Completion gate:** Search engines and customers can immediately understand
 who the shop serves, what it repairs, why it is trustworthy, and how to book.
@@ -231,7 +231,7 @@ who the shop serves, what it repairs, why it is trustworthy, and how to book.
 - [ ] Test phone, directions, CARFAX, and social links.
 - [ ] Test Yelp, Facebook, and CARFAX links on phone and desktop.
 - [ ] Re-check all time-sensitive review counts, ratings, and awards immediately
-  before publishing.
+      before publishing.
 - [ ] Test at common phone, tablet, laptop, and wide-desktop sizes.
 - [ ] Test keyboard-only navigation.
 - [ ] Test visible focus and skip navigation.
@@ -268,11 +268,11 @@ page clearly invites visitors to call and book.
 
 - [x] Replace overlapping hero decorations with protected layout lanes.
 - [x] Keep the ASE, Family Run, CARFAX, shop photo, and animated wheel from
-  covering one another.
+      covering one another.
 - [x] Restyle the trust marks as distinct vintage garage stickers.
 - [x] Replace the “Old soul or new spark” headline and redesign the full
-  vehicle-capability section.
+      vehicle-capability section.
 - [x] Create and install a transparent Ocean Heights logo without the white
-  background.
+      background.
 - [ ] Re-run responsive, accessibility, route, and production checks.
 - [ ] Publish and verify the completed refinement.

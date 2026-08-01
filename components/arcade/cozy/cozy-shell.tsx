@@ -31,11 +31,7 @@ export function CozyShell({
           <h2>{title}</h2>
         </div>
         <div className="match-game-controls">
-          <button
-            type="button"
-            aria-pressed={soundOn}
-            onClick={() => onSoundChange(!soundOn)}
-          >
+          <button type="button" aria-pressed={soundOn} onClick={() => onSoundChange(!soundOn)}>
             {soundOn ? "Ambience on" : "Ambience off"}
           </button>
         </div>
