@@ -1222,7 +1222,22 @@ img { max-width: 100%; }
 /* The call tile rings instead of tilting, matching the header's call button. */
 .link-hub-list .link-hub-primary:hover > span:first-child { animation: phone-ring .45s ease-in-out 2; }
 
-.link-hub-hours { margin: 1.5rem 0 .7rem; font-size: .7rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+/* Hours and the status placard used to sit side by side and get centred as a
+   single unit, so neither lined up with anything: the text ran left of centre
+   and the plate hung off to the right, on a page where every other element is
+   centred. Stacked and centred individually now, so both sit on the page's
+   own axis. */
+.link-hub-hours {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .55rem;
+  margin: 1.5rem 0 .9rem;
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
 .link-hub-share { margin: 0 0 .9rem; }
 .link-hub-share a { color: var(--red); font-size: .8rem; font-weight: 950; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 
