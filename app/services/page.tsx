@@ -1,22 +1,72 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { phoneHref, SiteHeader } from "@/components/site-header";
 import { services } from "@/lib/services";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, businessRef, shop } from "@/lib/shop";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Auto Repair Services in Egg Harbor Township, NJ",
   description:
     "Explore complete auto repair, tires, diagnostics, brakes, maintenance, hybrid, EV, diesel and electrical service from Ocean Heights Auto & Tire.",
-  alternates: { canonical: "/services" },
-};
+  path: "/services",
+  ogTitle: "Auto Repair Services in Egg Harbor Township, NJ",
+});
 
 export default function ServicesPage() {
+  // An ItemList of the catalogue gives Google the shape of the section: one
+  // hub page linking sixteen distinct services, each at its own URL.
+  const catalogSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `Auto repair services at ${shop.name}`,
+    itemListElement: services.map((service, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: service.name,
+      url: `${shop.siteUrl}/services/${service.slug}`,
+    })),
+  };
+  // Attached to the business node by @id rather than restating it: this is
+  // the same shop, described here with the catalogue it offers.
+  const offerSchema = {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    ...businessRef,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Auto repair and tire services",
+      itemListElement: services.map((service) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service.name,
+          description: service.short,
+          url: `${shop.siteUrl}/services/${service.slug}`,
+        },
+      })),
+    },
+  };
+
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(offerSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbSchema([["Services", "/services"]])),
+          }}
+        />
         <section className="services-board">
           <div className="shell services-board-grid">
             <div>

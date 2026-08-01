@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { phoneHref, SiteHeader } from "@/components/site-header";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema } from "@/lib/shop";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Customer Reviews",
   description:
-    "Read what drivers say about Ocean Heights Auto & Tire and visit verified CARFAX, Yelp, and Facebook profiles.",
-  alternates: { canonical: "/reviews" },
-};
+    "Read what drivers say about Ocean Heights Auto & Tire in Egg Harbor Township, NJ, and visit our verified CARFAX, Yelp, and Facebook profiles.",
+  path: "/reviews",
+});
 
 import { carfaxUrl, profileLinks } from "@/lib/business";
 
@@ -44,6 +45,16 @@ export default function ReviewsPage() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">
+        {/* Breadcrumbs only. The quotes below are real CARFAX reviews, but
+            self-serving Review/AggregateRating markup — a business rating
+            itself on its own site — is explicitly ineligible for review rich
+            results, so marking them up would add risk and no benefit. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbSchema([["Reviews", "/reviews"]])),
+          }}
+        />
         <section className="inner-hero reviews-hero">
           <div className="shell reviews-hero-grid">
             <div className="reviews-hero-copy">

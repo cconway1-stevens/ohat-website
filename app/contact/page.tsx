@@ -7,7 +7,7 @@ import { CopyButton } from "@/components/copy-field";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { contactEmail, receiptsEmail } from "@/lib/business";
 import { ShopHoursStatus } from "@/components/shop-hours-status";
-import { autoRepairSchema, shop } from "@/lib/shop";
+import { autoRepairSchema, breadcrumbSchema, shop } from "@/lib/shop";
 
 // The wording is page-specific SEO copy and stays here, but the details
 // inside it come from the config so a number or address change can't leave a
@@ -63,6 +63,7 @@ export default function ContactPage() {
     url: `${shop.siteUrl}/contact`,
     mainEntity: autoRepairSchema(),
   };
+  const breadcrumbs = breadcrumbSchema([["Contact", "/contact"]]);
 
   return (
     <>
@@ -72,6 +73,10 @@ export default function ContactPage() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
         />
 
         <section className="inner-hero contact-hero">

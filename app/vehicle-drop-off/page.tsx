@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import {
@@ -7,13 +6,16 @@ import {
   SiteHeader,
 } from "@/components/site-header";
 import { DirectionsTrigger } from "@/components/directions-dialog";
+import { pageMetadata } from "@/lib/seo";
+import { breadcrumbSchema } from "@/lib/shop";
 
-export const metadata: Metadata = {
-  title: "After-Hours Vehicle Drop-Off",
+export const metadata = pageMetadata({
+  title: "After-Hours Vehicle Drop-Off in Egg Harbor Township, NJ",
   description:
-    "Use the secure early-bird and night-owl vehicle drop-off at Ocean Heights Auto & Tire in Egg Harbor Township, NJ.",
-  alternates: { canonical: "/vehicle-drop-off" },
-};
+    "Use the secure early-bird and night-owl vehicle drop-off at Ocean Heights Auto & Tire in Egg Harbor Township, NJ. Four steps, a key envelope, and a call back when we open.",
+  path: "/vehicle-drop-off",
+  ogTitle: "After-Hours Vehicle Drop-Off",
+});
 
 const steps = [
   {
@@ -44,6 +46,14 @@ export default function VehicleDropOffPage() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              breadcrumbSchema([["Vehicle Drop-Off", "/vehicle-drop-off"]]),
+            ),
+          }}
+        />
         <section className="dropoff-arrival">
           <div className="shell dropoff-hero-grid">
             <div>

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { DirectionsTrigger } from "@/components/directions-dialog";
@@ -8,18 +7,20 @@ import {
 } from "@/components/site-header";
 import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/business";
 import { shop } from "@/lib/shop";
+import { pageMetadata } from "@/lib/seo";
 import { ShopHoursStatus } from "@/components/shop-hours-status";
 
 // Deliberately not chasing "auto repair Egg Harbor Township" here — /contact
 // and the service pages own those queries, and a second page competing for
 // them would just split the signal. This title describes the hub for what it
 // is: the destination behind the shop's social-profile bio links.
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "All Our Links",
   description:
     "Every Ocean Heights Auto & Tire link in one place: call the shop, get directions, save our contact card, browse services, and read verified customer reviews.",
-  alternates: { canonical: "/links" },
-};
+  path: "/links",
+  ogTitle: "Ocean Heights Auto & Tire — all our links",
+});
 
 const socials = [
   { name: "Google", label: "Google reviews", href: googleUrl, glyph: "G" },
