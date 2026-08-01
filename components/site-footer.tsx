@@ -65,6 +65,12 @@ export function SiteFooter() {
               <br />
               {shop.address.cityLine}
             </DirectionsTrigger>
+            {/* The Visit column was two lines tall next to a six-link Connect
+                column. These are the two things someone looking up the
+                address most often wants next, so they balance the row and
+                earn their place rather than padding it. */}
+            <Link href="/vehicle-drop-off">After-hours drop-off</Link>
+            <Link href="/our-shop">About the shop</Link>
           </div>
           <div>
             <strong>Call</strong>

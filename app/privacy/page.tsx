@@ -106,7 +106,12 @@ export default function PrivacyPage() {
             <ul>
               <li>
                 <strong>Google</strong> hosts the analytics script and the
-                site&rsquo;s typeface.
+                site&rsquo;s typeface, and supplies the embedded map on our{" "}
+                <Link href="/contact">contact page</Link>. That map is a Google
+                Maps frame, so opening the contact page loads content from
+                Google and Google may set its own cookies for it. Every other
+                &ldquo;get directions&rdquo; control on this site is a plain
+                link that does nothing until you click it.
               </li>
               <li>
                 <strong>Open-Meteo</strong> supplies the current weather shown

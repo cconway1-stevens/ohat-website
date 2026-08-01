@@ -80,7 +80,8 @@ export default function Home() {
               <p className="cover-lede">
                 Dealer-level diagnostics. Family-garage honesty. From
                 carbureted classics to brand-new EVs, every car in your
-                driveway is welcome here.
+                driveway is welcome here — and every driver in EHT, Atlantic
+                County, and the shore towns around us.
               </p>
 
               <div className="cover-actions">
@@ -388,10 +389,11 @@ export default function Home() {
               <p className="eyebrow">Recognition earned from real service</p>
               <h2>A CARFAX Top-Rated Service Center.</h2>
               <p>
-                CARFAX customers currently rate Ocean Heights 5.0 out of 5
-                across hundreds of verified reviews. That recognition reflects
-                what our regulars already know: honest advice, fair rates, and
-                repairs done with care.
+                {shop.rating.source} customers rated Ocean Heights{" "}
+                {shop.rating.value} out of {shop.rating.scale} across hundreds
+                of verified reviews, as of {shop.rating.observed}. That
+                recognition reflects what our regulars already know: honest
+                advice, fair rates, and repairs done with care.
               </p>
               <a className="button button-ghost" href={carfaxUrl}>
                 Read verified CARFAX reviews <span aria-hidden="true">↗︎</span>

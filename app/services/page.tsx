@@ -80,6 +80,7 @@ export default function ServicesPage() {
             <p className="board-copy">
               Gas, diesel, hybrid, EV, old favorite, or brand-new daily driver:
               choose what your vehicle needs, then call us to reserve a time.
+              We look after drivers across {shop.nickname} and {shop.county}.
             </p>
           </div>
         </section>

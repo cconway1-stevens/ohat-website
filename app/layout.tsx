@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   // Google ignores the keywords meta tag, so none is emitted here — keywords
   // belong in titles, headings, and body copy instead.
   description:
-    "Family-owned auto repair and tire service in Egg Harbor Township. ASE-certified technicians for diagnostics, brakes, tires, maintenance, diesel, hybrid, EV and classic vehicles. Call Ocean Heights Auto & Tire.",
+    "Family-owned auto repair and tire service in Egg Harbor Township (EHT), Atlantic County NJ. ASE-certified technicians for diagnostics, brakes, tires, maintenance, diesel, hybrid, EV and classic vehicles. Call Ocean Heights Auto & Tire.",
   alternates: {
     canonical: "/",
   },

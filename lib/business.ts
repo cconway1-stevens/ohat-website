@@ -16,7 +16,7 @@ export const profileLinks = [
   {
     name: "CARFAX",
     href: carfaxUrl,
-    detail: "5.0-star rating across hundreds of verified reviews",
+    detail: `${shop.rating.value}-star rating across hundreds of verified reviews, as of ${shop.rating.observed}`,
   },
   {
     name: "Yelp",
