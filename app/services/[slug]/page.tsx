@@ -5,13 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { serviceBySlug, services } from "@/lib/services";
-import {
-  autoRepairSchema,
-  breadcrumbSchema,
-  businessRef,
-  faqSchema,
-  shop,
-} from "@/lib/shop";
+import { autoRepairSchema, breadcrumbSchema, businessRef, faqSchema, shop } from "@/lib/shop";
 import { pageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -37,11 +31,7 @@ export async function generateMetadata({
   });
 }
 
-export default async function ServicePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const service = serviceBySlug(slug);
   if (!service) notFound();
@@ -77,7 +67,9 @@ export default async function ServicePage({
 
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
       <main id="main-content">
         <script
@@ -105,14 +97,21 @@ export default async function ServicePage({
             <div className="ticket-copy">
               <nav className="service-breadcrumbs" aria-label="Breadcrumb">
                 <ol>
-                  <li><Link href="/">Home</Link></li>
-                  <li><Link href="/services">Services</Link></li>
+                  <li>
+                    <Link href="/">Home</Link>
+                  </li>
+                  <li>
+                    <Link href="/services">Services</Link>
+                  </li>
                   <li aria-current="page">{service.name}</li>
                 </ol>
               </nav>
               <p className="ticket-status">Now writing repair orders</p>
               <h1>
-                {service.name}{" "}<span className="ticket-locale">in {shop.address.city}, {shop.address.state}</span>
+                {service.name}{" "}
+                <span className="ticket-locale">
+                  in {shop.address.city}, {shop.address.state}
+                </span>
               </h1>
               <p>{service.intro}</p>
               <div className="ticket-actions">
@@ -125,7 +124,12 @@ export default async function ServicePage({
               </div>
             </div>
             <div className="part-stamp" aria-hidden="true">
-              <i /><i /><i /><i /><i /><i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
               <span>OHAT</span>
             </div>
           </div>
@@ -136,64 +140,74 @@ export default async function ServicePage({
               <p className="eyebrow dark">When to call us</p>
               <h2>Signs your vehicle needs attention</h2>
               <ul>
-                {service.signs.map((sign) => <li key={sign}>{sign}</li>)}
+                {service.signs.map((sign) => (
+                  <li key={sign}>{sign}</li>
+                ))}
               </ul>
             </article>
             <article className="service-panel service-panel-includes">
               <p className="eyebrow dark">What we handle</p>
               <h2>Complete, evidence-led service</h2>
               <ul>
-                {service.includes.map((item) => <li key={item}>{item}</li>)}
+                {service.includes.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </article>
             <article className="service-panel service-panel-diagnosis">
-              <span className="service-panel-index" aria-hidden="true">01 / inspect</span>
+              <span className="service-panel-index" aria-hidden="true">
+                01 / inspect
+              </span>
               <p className="eyebrow dark">How the work starts</p>
               <h2>How we inspect and diagnose</h2>
               <p>{service.diagnosis}</p>
             </article>
             <article className="service-panel service-panel-why-us">
-              <span className="service-panel-index" aria-hidden="true">02 / explain</span>
+              <span className="service-panel-index" aria-hidden="true">
+                02 / explain
+              </span>
               <p className="eyebrow dark">The family-shop difference</p>
               <h2>Why Egg Harbor Township drivers choose us</h2>
               <p>{service.whyUs}</p>
             </article>
-            <article className={`service-panel service-panel-cost${service.resources ? "" : " service-panel-cost-wide"}`}>
-              <span className="service-panel-index" aria-hidden="true">03 / approve</span>
+            <article
+              className={`service-panel service-panel-cost${service.resources ? "" : " service-panel-cost-wide"}`}
+            >
+              <span className="service-panel-index" aria-hidden="true">
+                03 / approve
+              </span>
               <p className="eyebrow dark">Straight talk on pricing</p>
               <h2>What affects the cost</h2>
               <p className="service-cost-copy">{service.cost}</p>
             </article>
             {service.resources ? (
               <article className="service-panel service-panel-resources">
-              <p className="eyebrow dark">Official resources</p>
-              <h2>Check for yourself, free</h2>
-              <ul className="service-resource-list">
-                {service.resources.map((resource) => (
-                  <li key={resource.href}>
-                    <a href={resource.href} target="_blank" rel="noreferrer">
-                      {resource.label} ↗︎
-                      <span className="sr-only"> (opens in a new tab)</span>
-                    </a>
-                    <p>{resource.note}</p>
-                  </li>
-                ))}
-              </ul>
+                <p className="eyebrow dark">Official resources</p>
+                <h2>Check for yourself, free</h2>
+                <ul className="service-resource-list">
+                  {service.resources.map((resource) => (
+                    <li key={resource.href}>
+                      <a href={resource.href} target="_blank" rel="noreferrer">
+                        {resource.label} ↗︎
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                      <p>{resource.note}</p>
+                    </li>
+                  ))}
+                </ul>
               </article>
             ) : null}
             {relatedServices.length > 0 ? (
               <aside className="service-panel service-panel-related">
-              <p className="eyebrow dark">Related services</p>
-              <h2>Often serviced together</h2>
-              <ul className="service-related-list">
-                {relatedServices.map((related) => (
-                  <li key={related.slug}>
-                    <Link href={`/services/${related.slug}`}>
-                      {related.name} →
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+                <p className="eyebrow dark">Related services</p>
+                <h2>Often serviced together</h2>
+                <ul className="service-related-list">
+                  {relatedServices.map((related) => (
+                    <li key={related.slug}>
+                      <Link href={`/services/${related.slug}`}>{related.name} →</Link>
+                    </li>
+                  ))}
+                </ul>
               </aside>
             ) : null}
           </div>
@@ -219,7 +233,9 @@ export default async function ServicePage({
               <p className="eyebrow">Classic care. Modern capability.</p>
               <h2>Let’s get you safely back on the road.</h2>
             </div>
-            <a className="button button-primary" href={phoneHref}>Schedule by phone</a>
+            <a className="button button-primary" href={phoneHref}>
+              Schedule by phone
+            </a>
           </div>
         </section>
       </main>

@@ -22,7 +22,9 @@ const gallery = [
 export default function OurShopPage() {
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
       <main id="main-content">
         <script
@@ -36,9 +38,9 @@ export default function OurShopPage() {
             <p className="eyebrow">The modern family garage</p>
             <h1>We know cars. We know our neighbors.</h1>
             <p>
-              Ocean Heights is family-run, family-first, and proudly rooted in
-              Egg Harbor Township. We pair decades of parts and repair
-              experience with the modern tools today&apos;s vehicles demand.
+              Ocean Heights is family-run, family-first, and proudly rooted in Egg Harbor Township.
+              We pair decades of parts and repair experience with the modern tools today&apos;s
+              vehicles demand.
             </p>
             <a className="button button-primary" href={phoneHref}>
               Call {phoneDisplay}
@@ -54,18 +56,16 @@ export default function OurShopPage() {
             </div>
             <div className="story-copy">
               <p>
-                The family&apos;s automotive background spans more than 40
-                years in auto parts and more than 15 years running a repair
-                shop. That experience shapes how we work: listen carefully,
-                test thoroughly, explain clearly, and recommend only what the
-                vehicle needs.
+                The family&apos;s automotive background spans more than 40 years in auto parts and
+                more than 15 years running a repair shop. That experience shapes how we work: listen
+                carefully, test thoroughly, explain clearly, and recommend only what the vehicle
+                needs.
               </p>
               <p>
-                Our ASE-certified technicians service the cars families drive
-                every day—imports, domestics, work vehicles, classics, diesel,
-                hybrid, and electric models. Advanced equipment helps us take
-                on many of the same complex jobs drivers expect from a dealer,
-                with local accountability and competitive rates.
+                Our ASE-certified technicians service the cars families drive every day—imports,
+                domestics, work vehicles, classics, diesel, hybrid, and electric models. Advanced
+                equipment helps us take on many of the same complex jobs drivers expect from a
+                dealer, with local accountability and competitive rates.
               </p>
             </div>
           </div>
@@ -90,14 +90,11 @@ export default function OurShopPage() {
             <span aria-hidden="true">EHT</span>
             <div>
               <p className="eyebrow">Built to keep our town moving</p>
-              <h2>
-                Proud to support the Egg Harbor Township community.
-              </h2>
+              <h2>Proud to support the Egg Harbor Township community.</h2>
               <p>
-                Your car carries the people and plans that matter. Our job is
-                to help keep those everyday miles safe, dependable, and a
-                little less stressful — for our neighbours in EHT and across
-                Atlantic County.
+                Your car carries the people and plans that matter. Our job is to help keep those
+                everyday miles safe, dependable, and a little less stressful — for our neighbours in
+                EHT and across Atlantic County.
               </p>
             </div>
           </div>

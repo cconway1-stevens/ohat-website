@@ -1,19 +1,16 @@
 #!/usr/bin/env node
 import { createServer } from "node:net";
-import {
-  mkdirSync,
-  readFileSync,
-  readdirSync,
-  statSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { spawn } from "node:child_process";
 import { chromium } from "playwright";
 
 const root = new URL("..", import.meta.url).pathname;
 const artifactRoot = join(root, "artifacts", "production-readiness");
-const stamp = new Date().toISOString().replaceAll(":", "-").replace(/\.\d+Z$/, "Z");
+const stamp = new Date()
+  .toISOString()
+  .replaceAll(":", "-")
+  .replace(/\.\d+Z$/, "Z");
 const runDir = join(artifactRoot, stamp);
 const screenshotDir = join(runDir, "screenshots");
 const commandLogDir = join(runDir, "command-logs");
@@ -206,16 +203,15 @@ async function waitForRasterImages(page) {
     );
     await Promise.race([
       Promise.all(
-        images.map(
-          (img) =>
-            new Promise((resolve) => {
-              if (img.complete) {
-                resolve();
-                return;
-              }
-              img.addEventListener("load", resolve, { once: true });
-              img.addEventListener("error", resolve, { once: true });
-            }).then(() => img.decode?.().catch(() => undefined)),
+        images.map((img) =>
+          new Promise((resolve) => {
+            if (img.complete) {
+              resolve();
+              return;
+            }
+            img.addEventListener("load", resolve, { once: true });
+            img.addEventListener("error", resolve, { once: true });
+          }).then(() => img.decode?.().catch(() => undefined)),
         ),
       ),
       new Promise((resolve) => setTimeout(resolve, 5_000)),
@@ -365,12 +361,7 @@ async function launchBrowser() {
       throw error;
     }
     console.log("Playwright browser runtime missing; installing Chromium...");
-    await runCommand("playwright-install-chromium", [
-      "npx",
-      "playwright",
-      "install",
-      "chromium",
-    ]);
+    await runCommand("playwright-install-chromium", ["npx", "playwright", "install", "chromium"]);
     return chromium.launch();
   }
 }
@@ -425,7 +416,8 @@ function validateRouteResult(result, expectedStatus = 200) {
     });
   }
   const badResponses = result.badResponses.filter(
-    (entry) => !entry.url.endsWith(result.route) && !entry.url.includes("/__production-readiness-missing-"),
+    (entry) =>
+      !entry.url.endsWith(result.route) && !entry.url.includes("/__production-readiness-missing-"),
   );
   if (badResponses.length || result.requestFailures.length) {
     fail("Route had failed same-origin resources", {
@@ -483,7 +475,13 @@ async function main() {
       await checkTextEndpoint(baseUrl, "/robots.txt", 200, "Sitemap:", "robots"),
       await checkBinaryEndpoint(baseUrl, "/favicon.ico", 200, "image/x-icon", "favicon ico"),
       await checkBinaryEndpoint(baseUrl, "/favicon-32.png", 200, "image/png", "favicon png"),
-      await checkBinaryEndpoint(baseUrl, "/apple-touch-icon.png", 200, "image/png", "apple touch icon"),
+      await checkBinaryEndpoint(
+        baseUrl,
+        "/apple-touch-icon.png",
+        200,
+        "image/png",
+        "apple touch icon",
+      ),
     ];
 
     const report = {
@@ -517,7 +515,9 @@ async function main() {
     );
 
     if (failures.length) {
-      console.error(`Production QA failed with ${failures.length} issue(s). See ${relative(root, runDir)}.`);
+      console.error(
+        `Production QA failed with ${failures.length} issue(s). See ${relative(root, runDir)}.`,
+      );
       process.exitCode = 1;
     } else {
       console.log(`Production QA passed. Captures saved to ${relative(root, runDir)}.`);

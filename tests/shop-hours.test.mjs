@@ -26,7 +26,10 @@ test("warns on every configured observed federal holiday", () => {
     ["2026-12-25T17:00:00Z", "Christmas Day"],
   ];
 
-  assert.equal(observed2026.length, shop.hours.federalHolidays.fixed.length + shop.hours.federalHolidays.floating.length);
+  assert.equal(
+    observed2026.length,
+    shop.hours.federalHolidays.fixed.length + shop.hours.federalHolidays.floating.length,
+  );
   for (const [iso, holiday] of observed2026) {
     const status = getShopHoursStatus(new Date(iso));
     assert.equal(status.status, "closed");

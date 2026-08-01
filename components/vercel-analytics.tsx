@@ -30,7 +30,6 @@ import { isVercelHost } from "@/lib/analytics";
  * Cookieless and collects no personal data — see docs/privacy-compliance.md.
  */
 export function VercelAnalytics() {
-  const enabled =
-    typeof window !== "undefined" && isVercelHost(window.location.hostname);
+  const enabled = typeof window !== "undefined" && isVercelHost(window.location.hostname);
   return enabled ? <Analytics /> : null;
 }

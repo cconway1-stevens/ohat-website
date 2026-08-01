@@ -1,10 +1,6 @@
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
-import {
-  phoneDisplay,
-  phoneHref,
-  SiteHeader,
-} from "@/components/site-header";
+import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbSchema } from "@/lib/shop";
@@ -43,31 +39,39 @@ const steps = [
 export default function VehicleDropOffPage() {
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
       <main id="main-content">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
-              breadcrumbSchema([["Vehicle Drop-Off", "/vehicle-drop-off"]]),
-            ),
+            __html: JSON.stringify(breadcrumbSchema([["Vehicle Drop-Off", "/vehicle-drop-off"]])),
           }}
         />
         <section className="dropoff-arrival">
           <div className="shell dropoff-hero-grid">
             <div>
               <p className="dropoff-route">After-hours route → secure side door</p>
-              <h1>Park it.<br /><span>Drop it.</span><br />We’ll take it from here.</h1>
+              <h1>
+                Park it.
+                <br />
+                <span>Drop it.</span>
+                <br />
+                We’ll take it from here.
+              </h1>
               <p>
-                When the shop is closed, our secure key-drop system makes it
-                easy to leave your vehicle for the next business day.
+                When the shop is closed, our secure key-drop system makes it easy to leave your
+                vehicle for the next business day.
               </p>
               <div className="hero-actions">
                 <DirectionsTrigger className="button button-primary">
                   Get directions
                 </DirectionsTrigger>
-                <a className="button button-ghost" href={phoneHref}>Call {phoneDisplay}</a>
+                <a className="button button-ghost" href={phoneHref}>
+                  Call {phoneDisplay}
+                </a>
               </div>
             </div>
             <div className="dropoff-photo">
@@ -115,9 +119,9 @@ export default function VehicleDropOffPage() {
               <p className="eyebrow dark">Find the key box</p>
               <h2>Use the side door beside the service bays.</h2>
               <p>
-                The secure strong box is mounted by the shop&apos;s side
-                entrance. Look for the key-drop signage shown here. Please do
-                not leave keys loose, under a mat, or inside an unlocked car.
+                The secure strong box is mounted by the shop&apos;s side entrance. Look for the
+                key-drop signage shown here. Please do not leave keys loose, under a mat, or inside
+                an unlocked car.
               </p>
               <DirectionsTrigger className="button button-primary">
                 Open directions
@@ -145,9 +149,9 @@ export default function VehicleDropOffPage() {
           <div className="shell">
             <strong>Important:</strong>
             <p>
-              The key drop is for scheduled or non-emergency service. If the
-              vehicle is unsafe to drive, arrange a tow. Leaving a vehicle does
-              not authorize repairs—we’ll speak with you before proceeding.
+              The key drop is for scheduled or non-emergency service. If the vehicle is unsafe to
+              drive, arrange a tow. Leaving a vehicle does not authorize repairs—we’ll speak with
+              you before proceeding.
             </p>
           </div>
         </section>

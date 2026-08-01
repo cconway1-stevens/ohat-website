@@ -26,7 +26,9 @@ export function ArcadeFrame({
     <>
       <section className="inner-hero game-hero">
         <div className="shell">
-          <Link className="back-link" href="/arcade">← All cabinets</Link>
+          <Link className="back-link" href="/arcade">
+            ← All cabinets
+          </Link>
           <p className="eyebrow">Garage arcade · a take on {game?.classic.toLowerCase()}</p>
           <h1>{game?.name}.</h1>
           <p>{lede}</p>

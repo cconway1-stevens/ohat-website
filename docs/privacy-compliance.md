@@ -17,7 +17,7 @@ business: it is roughly two orders of magnitude below the volume thresholds
 that make an entity a covered controller. The new NJ data broker law does not
 apply either — the shop neither sells nor licenses personal data.
 
-The obligation that *does* bind, regardless of size, is contractual: Google's
+The obligation that _does_ bind, regardless of size, is contractual: Google's
 Analytics Terms of Service require any site running the tag to publish a
 privacy policy disclosing the use of analytics and cookies. The site had no
 privacy policy at all, so adding GA4 put it out of compliance with Google's
@@ -31,7 +31,7 @@ calendar year, either:
 1. controls or processes the personal data of **at least 100,000 consumers**
    (excluding data processed solely to complete a payment transaction), or
 2. controls or processes the personal data of **at least 25,000 consumers**
-   *and* derives revenue or a price discount from the **sale** of personal
+   _and_ derives revenue or a price discount from the **sale** of personal
    data.
 
 Two features matter for a small business. First, "consumers" means New Jersey
@@ -46,14 +46,13 @@ in a year. Its customer base is in the thousands, and website visitors are in
 the same order. Even counting every unique visitor as a "consumer" whose data
 is processed, the shop is far below the line.
 
-**Against threshold 2:** it requires *sale* of personal data. The shop sells
+**Against threshold 2:** it requires _sale_ of personal data. The shop sells
 none. See the note on "sale" below, which is the only part of this worth
 watching.
 
 **Conclusion: not a covered controller.** The obligations that follow from
 coverage — a conforming privacy notice, data protection assessments, honouring
-universal opt-out signals, the 30-day cure window (which sunset around July
-2026) — are not currently triggered.
+universal opt-out signals, the 30-day cure window (which sunset around July 2026) — are not currently triggered.
 
 ## Is running Google Analytics a "sale"?
 
@@ -69,15 +68,15 @@ that "we don't sell data" would get considerably weaker.
 
 The tag is therefore configured to stay strictly on the measurement side:
 
-| Setting | Value | Why |
-| --- | --- | --- |
-| `ad_storage` | denied | No advertising cookies |
-| `ad_user_data` | denied | Nothing sent to Google for ad purposes |
-| `ad_personalization` | denied | No personalised advertising |
-| `allow_google_signals` | false | No cross-device tracking from signed-in Google users |
-| `allow_ad_personalization_signals` | false | Belt and braces on the above |
-| `anonymize_ip` | true | Truncates the visitor's IP |
-| `analytics_storage` | follows GPC | Cookieless when the visitor signals opt-out |
+| Setting                            | Value       | Why                                                  |
+| ---------------------------------- | ----------- | ---------------------------------------------------- |
+| `ad_storage`                       | denied      | No advertising cookies                               |
+| `ad_user_data`                     | denied      | Nothing sent to Google for ad purposes               |
+| `ad_personalization`               | denied      | No personalised advertising                          |
+| `allow_google_signals`             | false       | No cross-device tracking from signed-in Google users |
+| `allow_ad_personalization_signals` | false       | Belt and braces on the above                         |
+| `anonymize_ip`                     | true        | Truncates the visitor's IP                           |
+| `analytics_storage`                | follows GPC | Cookieless when the visitor signals opt-out          |
 
 With advertising off across the board, this is first-party measurement, and the
 "no sale" position is a straightforward one to defend. **If anyone later
@@ -90,10 +89,10 @@ Signed June 30, 2026. It creates an annual registration regime, with the first
 registration window running April 1 – June 30, 2027, and bans the sale or
 licensing of sensitive data. It reaches two categories:
 
-- **Data broker** — collects or buys personal data about consumers it has *no
-  direct relationship with*, and sells or licenses it.
+- **Data broker** — collects or buys personal data about consumers it has _no
+  direct relationship with_, and sells or licenses it.
 - **Data collector** — has a direct relationship with the consumer and sells or
-  licenses their personal data *to a data broker*.
+  licenses their personal data _to a data broker_.
 
 The shop is neither. It has a direct relationship with its customers (so not a
 broker) and sells or licenses their data to nobody (so not a collector). **No

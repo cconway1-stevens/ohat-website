@@ -51,7 +51,10 @@ export function randomCell(exclude: Point[], pick = Math.random): Point {
   return free[Math.floor(pick() * free.length)] ?? { x: 0, y: 0 };
 }
 
-export function freshState(initialDirection: Point = { x: 1, y: 0 }, pick = Math.random): ChainState {
+export function freshState(
+  initialDirection: Point = { x: 1, y: 0 },
+  pick = Math.random,
+): ChainState {
   const start = { x: 6, y: 6 };
   return {
     chain: [start],
@@ -93,8 +96,7 @@ export function tick(state: ChainState, pick = Math.random): TickOutcome {
   // The last car moves out of its cell on this same tick unless we're growing,
   // so driving into it isn't a crash. A ghost run passes through the lot.
   const body = ate ? state.chain : state.chain.slice(0, -1);
-  const hitChain =
-    state.ghost === 0 && body.some((cell) => cell.x === head.x && cell.y === head.y);
+  const hitChain = state.ghost === 0 && body.some((cell) => cell.x === head.x && cell.y === head.y);
 
   if (hitFence || hitChain) return { skipped: false, dead: true, ate: false, took: null };
 

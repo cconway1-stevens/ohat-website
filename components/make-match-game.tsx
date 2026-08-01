@@ -18,11 +18,12 @@ function pairCount(gridSize: number) {
 
 function maxGridForWidth(width: number) {
   const assetLimit = Math.floor(Math.sqrt(makes.length * 2));
-  const screenLimit = width >= MATCH_CONFIG.breakpoints.desktop
-    ? MATCH_CONFIG.responsiveMaxGrid.desktop
-    : width >= MATCH_CONFIG.breakpoints.tablet
-      ? MATCH_CONFIG.responsiveMaxGrid.tablet
-      : MATCH_CONFIG.responsiveMaxGrid.mobile;
+  const screenLimit =
+    width >= MATCH_CONFIG.breakpoints.desktop
+      ? MATCH_CONFIG.responsiveMaxGrid.desktop
+      : width >= MATCH_CONFIG.breakpoints.tablet
+        ? MATCH_CONFIG.responsiveMaxGrid.tablet
+        : MATCH_CONFIG.responsiveMaxGrid.mobile;
   return Math.min(assetLimit, screenLimit);
 }
 
@@ -30,9 +31,10 @@ function maxGridForWidth(width: number) {
 // leaves an even number of logo tiles, so every badge still has one true pair.
 function buildDeck(gridSize: number): Tile[] {
   const logos = shuffle(makes).slice(0, pairCount(gridSize));
-  const tiles: Omit<Tile, "id">[] = shuffle(
-    logos.flatMap((name) => [name, name]),
-  ).map((name) => ({ name, matched: false }));
+  const tiles: Omit<Tile, "id">[] = shuffle(logos.flatMap((name) => [name, name])).map((name) => ({
+    name,
+    matched: false,
+  }));
 
   if (gridSize % 2 === 1) {
     tiles.splice(Math.floor(tiles.length / 2), 0, {
@@ -253,7 +255,9 @@ export function MakeMatchGame({
         >
           Open this garage
         </button>
-        <small>This screen supports boards up to {maxGrid}x{maxGrid}.</small>
+        <small>
+          This screen supports boards up to {maxGrid}x{maxGrid}.
+        </small>
       </section>
     </div>
   ) : null;
@@ -264,8 +268,8 @@ export function MakeMatchGame({
         {paper ? <p className="paper-game-edition">The Ocean Heights Motoring Page</p> : null}
         <Heading className="match-game-title">Logo match</Heading>
         <p>
-          Open the service bays and match the vehicle badges. Pick a quick
-          shift or build a custom garage.
+          Open the service bays and match the vehicle badges. Pick a quick shift or build a custom
+          garage.
         </p>
         {modeControls}
         {customDialog}
@@ -285,7 +289,9 @@ export function MakeMatchGame({
             <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
               {sound ? "Sound on" : "Sound off"}
             </button>
-            <button type="button" onClick={() => deal()}>New game</button>
+            <button type="button" onClick={() => deal()}>
+              New game
+            </button>
           </div>
         </header>
       ) : null}
@@ -294,7 +300,9 @@ export function MakeMatchGame({
         <dl className="match-game-score">
           <div>
             <dt>Bays cleared</dt>
-            <dd>{matched}/{totalPairs}</dd>
+            <dd>
+              {matched}/{totalPairs}
+            </dd>
           </div>
           <div>
             <dt>Moves</dt>
@@ -313,14 +321,12 @@ export function MakeMatchGame({
         </dl>
         {paper ? null : (
           <div className="match-game-controls">
-            <button
-              type="button"
-              onClick={() => setSound((on) => !on)}
-              aria-pressed={sound}
-            >
+            <button type="button" onClick={() => setSound((on) => !on)} aria-pressed={sound}>
               {sound ? "Sound on" : "Sound off"}
             </button>
-            <button type="button" onClick={() => deal()}>New game</button>
+            <button type="button" onClick={() => deal()}>
+              New game
+            </button>
           </div>
         )}
       </div>
@@ -345,7 +351,9 @@ export function MakeMatchGame({
                 className={`match-tile${showing ? " is-showing" : ""}${tile.matched ? " is-matched" : ""}${tile.free ? " is-free" : ""}`}
                 onClick={() => choose(tile)}
                 disabled={tile.matched}
-                aria-label={tile.free ? "Free Bay" : showing ? tile.name : "Hidden tile - flip to reveal"}
+                aria-label={
+                  tile.free ? "Free Bay" : showing ? tile.name : "Hidden tile - flip to reveal"
+                }
               >
                 <span className="match-tile-inner">
                   <span className="match-tile-back" aria-hidden="true">
@@ -377,7 +385,12 @@ export function MakeMatchGame({
         })}
       </ul>
 
-      {won ? <PrizeBanner sound={sound} achievement={`Every pair matched on the ${gridSize}x${gridSize} board.`} /> : null}
+      {won ? (
+        <PrizeBanner
+          sound={sound}
+          achievement={`Every pair matched on the ${gridSize}x${gridSize} board.`}
+        />
+      ) : null}
       {customDialog}
     </div>
   );

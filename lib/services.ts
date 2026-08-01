@@ -32,8 +32,18 @@ export const services: Service[] = [
     short: "Check-engine lights, electrical faults, and the hard-to-find issues.",
     intro:
       "Modern vehicles are rolling computer networks. Our diagnostic process combines professional scan tools, live data, electrical testing, and hands-on experience to find the cause—not just clear the code.",
-    signs: ["Warning lights", "Intermittent stalling", "Electrical glitches", "A repair that did not solve the issue"],
-    includes: ["Full-system scan", "Live-data testing", "Electrical circuit diagnosis", "Clear repair recommendations"],
+    signs: [
+      "Warning lights",
+      "Intermittent stalling",
+      "Electrical glitches",
+      "A repair that did not solve the issue",
+    ],
+    includes: [
+      "Full-system scan",
+      "Live-data testing",
+      "Electrical circuit diagnosis",
+      "Clear repair recommendations",
+    ],
     diagnosis:
       "We start with a full-system scan of every module in the vehicle, not just the engine computer, then compare live sensor data against known-good values. When a code points at a circuit rather than a part, we test that circuit—power, ground, and signal—before recommending anything. That is the difference between diagnosing a fault and replacing parts until the light goes out.",
     whyUs:
@@ -66,7 +76,12 @@ export const services: Service[] = [
     short: "Confident stops, honest inspections, and complete brake service.",
     intro:
       "Ocean Heights Auto & Tire provides complete brake inspection and repair for cars, SUVs, light trucks, hybrids, EVs, diesels, and classic vehicles in Egg Harbor Township. Whether your brakes squeal, grind, pull, vibrate, or trigger a dashboard warning, our technicians inspect the complete braking system before recommending repairs.",
-    signs: ["Squealing or grinding", "Soft brake pedal", "Vehicle pulls while braking", "Brake warning light"],
+    signs: [
+      "Squealing or grinding",
+      "Soft brake pedal",
+      "Vehicle pulls while braking",
+      "Brake warning light",
+    ],
     includes: ["Pads and rotors", "Calipers and hoses", "Brake fluid service", "ABS diagnosis"],
     diagnosis:
       "A brake inspection here covers the whole system: pad and rotor measurements at every wheel, caliper and slide operation, hoses and lines, fluid condition, the parking brake, and any ABS or brake warning codes. We show you the measurements and explain what needs attention now, what can wait, and why—so you are never guessing whether a repair was necessary.",
@@ -101,8 +116,18 @@ export const services: Service[] = [
     short: "Tire sales, flat repair, balancing, rotation, and TPMS service.",
     intro:
       "The right tires are the foundation of safety, ride quality, fuel economy, and braking distance. Ocean Heights sells and installs new tires, repairs flats, balances and rotates, and services tire-pressure monitoring systems for cars, trucks, hybrids, and EVs in Egg Harbor Township.",
-    signs: ["Uneven or rapid tread wear", "Vibration at speed", "Low tire pressure light", "A puncture, bubble, or sidewall damage"],
-    includes: ["New tire sales and installation", "Flat and puncture repair", "Balancing and rotation", "TPMS diagnosis and service"],
+    signs: [
+      "Uneven or rapid tread wear",
+      "Vibration at speed",
+      "Low tire pressure light",
+      "A puncture, bubble, or sidewall damage",
+    ],
+    includes: [
+      "New tire sales and installation",
+      "Flat and puncture repair",
+      "Balancing and rotation",
+      "TPMS diagnosis and service",
+    ],
     diagnosis:
       "Before recommending tires, we look at how the old set wore: even wear says the tires simply aged out, while edge wear, center wear, cupping, or one-sided wear point at inflation, alignment, or suspension causes that would destroy a new set just as fast. Every installation includes balancing, new valve hardware where appropriate, and a TPMS relearn so the pressure warning system works the way it should.",
     whyUs:
@@ -135,8 +160,18 @@ export const services: Service[] = [
     short: "Computerized alignment for straight tracking and even tire wear.",
     intro:
       "If your vehicle pulls to one side, the steering wheel sits crooked, or your tires wear unevenly, the alignment is the first thing to check. Ocean Heights performs computerized four-wheel alignment for cars, SUVs, trucks, hybrids, EVs, and classics in Egg Harbor Township.",
-    signs: ["Pulling or drifting to one side", "Steering wheel off-center", "Uneven or feathered tire wear", "Wandering after hitting a pothole or curb"],
-    includes: ["Computerized four-wheel alignment", "Steering and suspension inspection", "Before-and-after alignment readings", "Custom alignment settings on request"],
+    signs: [
+      "Pulling or drifting to one side",
+      "Steering wheel off-center",
+      "Uneven or feathered tire wear",
+      "Wandering after hitting a pothole or curb",
+    ],
+    includes: [
+      "Computerized four-wheel alignment",
+      "Steering and suspension inspection",
+      "Before-and-after alignment readings",
+      "Custom alignment settings on request",
+    ],
     diagnosis:
       "An alignment is only as good as the parts being aligned, so we inspect tie rods, ball joints, bushings, and wheel bearings before putting the vehicle on the alignment system. You get printed before-and-after readings for camber, caster, and toe, and we explain any measurement that could not be brought into specification and why.",
     whyUs:
@@ -171,7 +206,12 @@ export const services: Service[] = [
     intro:
       "We tailor maintenance to your vehicle, mileage, driving habits, and manufacturer schedule instead of applying a one-size-fits-all checklist.",
     signs: ["Maintenance reminder", "Overdue service", "Fluid leaks", "Planning for a road trip"],
-    includes: ["Oil and filter", "Fluids and filters", "Belts and hoses", "Mileage-based inspections"],
+    includes: [
+      "Oil and filter",
+      "Fluids and filters",
+      "Belts and hoses",
+      "Mileage-based inspections",
+    ],
     diagnosis:
       "Every oil service includes more than draining and filling: we use the oil grade your manufacturer specifies, inspect belts, hoses, fluids, tires, and the underside while the vehicle is up, and check your mileage against the factory maintenance schedule. You leave knowing what is due now, what is coming, and what can genuinely wait.",
     whyUs:
@@ -205,7 +245,12 @@ export const services: Service[] = [
     intro:
       "Hybrid and electric vehicles still need expert care for brakes, suspension, climate systems, tires, low-voltage electronics, cooling, and diagnostics.",
     signs: ["EV or hybrid warning", "Reduced range", "Charging concern", "Unusual brake feel"],
-    includes: ["System diagnostics", "Cooling system service", "12-volt electrical", "Chassis, brakes, tires, and A/C"],
+    includes: [
+      "System diagnostics",
+      "Cooling system service",
+      "12-volt electrical",
+      "Chassis, brakes, tires, and A/C",
+    ],
     diagnosis:
       "Electrified vehicles put their own demands on diagnosis: hybrid warning lights, range complaints, and charging concerns require reading the vehicle's high-voltage system data with capable scan tools, while everyday problems—brakes, suspension, tires, the 12-volt battery—still need traditional inspection. We do both, and we tell you plainly when a concern belongs at the manufacturer, such as a high-voltage battery still under its long federal warranty.",
     whyUs:
@@ -238,8 +283,18 @@ export const services: Service[] = [
     short: "Cool air, reliable heat, and complete climate-system diagnosis.",
     intro:
       "We find leaks, test controls, evaluate compressor operation, and restore comfort without guessing at expensive parts.",
-    signs: ["Warm air from vents", "Weak airflow", "Unusual compressor noise", "Windows will not defog"],
-    includes: ["Performance testing", "Leak diagnosis", "Electrical controls", "Heating and cooling repair"],
+    signs: [
+      "Warm air from vents",
+      "Weak airflow",
+      "Unusual compressor noise",
+      "Windows will not defog",
+    ],
+    includes: [
+      "Performance testing",
+      "Leak diagnosis",
+      "Electrical controls",
+      "Heating and cooling repair",
+    ],
     diagnosis:
       "We begin with a performance test—vent temperatures, system pressures, and compressor operation—then find where the refrigerant went before adding more. A system that is low has a leak; recharging without finding it just schedules the same failure for later in the summer. Electrical climate controls, blend doors, fans, and heater output get tested the same way: measure first, replace second.",
     whyUs:
@@ -307,7 +362,12 @@ export const services: Service[] = [
     intro:
       "A stable vehicle is a safer vehicle. We inspect steering and suspension components as a connected system before recommending repairs.",
     signs: ["Clunks over bumps", "Loose steering", "Bouncy ride", "Uneven tire wear"],
-    includes: ["Shocks and struts", "Ball joints and tie rods", "Wheel bearings", "Steering diagnosis"],
+    includes: [
+      "Shocks and struts",
+      "Ball joints and tie rods",
+      "Wheel bearings",
+      "Steering diagnosis",
+    ],
     diagnosis:
       "Suspension noises travel, so we never diagnose a clunk from the driver's seat. The vehicle goes up on the lift for a hands-on inspection of ball joints, tie rods, bushings, sway-bar links, mounts, and wheel bearings, checking each for the specific play or wear that produces your symptom. South Jersey's salt air is hard on this hardware, and catching a worn joint early is much cheaper than the tire wear and alignment problems it causes later.",
     whyUs:
@@ -340,7 +400,12 @@ export const services: Service[] = [
     short: "Fluid service and diagnosis for power delivery concerns.",
     intro:
       "Shifting concerns are not always a failed transmission. We evaluate controls, fluids, mounts, axles, and related systems before drawing conclusions.",
-    signs: ["Harsh or delayed shifts", "Vibration on acceleration", "Fluid leak", "Clicking while turning"],
+    signs: [
+      "Harsh or delayed shifts",
+      "Vibration on acceleration",
+      "Fluid leak",
+      "Clicking while turning",
+    ],
     includes: ["Transmission service", "CV axles", "Differentials", "Driveline diagnosis"],
     diagnosis:
       "Many 'transmission problems' turn out to be something else—a failing mount, a worn CV axle, low fluid from a leak, or an electronic control fault. Before anyone talks about a rebuild, we check fluid level and condition, scan the transmission control module, road-test to reproduce the symptom, and inspect the driveline. That order of operations regularly saves customers from repairs they did not need.",
@@ -375,7 +440,12 @@ export const services: Service[] = [
     intro:
       "Electrical faults require a measured approach. We test the battery, charging system, circuits, and modules to identify the real failure.",
     signs: ["Slow crank", "Battery light", "Flickering lights", "Repeated dead battery"],
-    includes: ["Battery testing", "Alternator and starter", "Parasitic draw testing", "Wiring and circuit repair"],
+    includes: [
+      "Battery testing",
+      "Alternator and starter",
+      "Parasitic draw testing",
+      "Wiring and circuit repair",
+    ],
     diagnosis:
       "A no-start or dead battery gets the full starting-and-charging test: battery condition under load, alternator output, starter draw, and connection voltage drops. A battery that keeps dying gets a parasitic-draw test to find which circuit is staying awake overnight. Electrical gremlins—flickering lights, intermittent accessories—are traced with wiring diagrams and circuit testing rather than replaced parts and hope.",
     whyUs:
@@ -409,7 +479,12 @@ export const services: Service[] = [
     intro:
       "Diesel systems demand the right testing and service practices. We handle common maintenance and drivability needs with care.",
     signs: ["Hard starting", "Loss of power", "Excessive smoke", "Diesel warning light"],
-    includes: ["Filters and fluids", "Engine diagnostics", "Cooling and intake", "Light-duty diesel maintenance"],
+    includes: [
+      "Filters and fluids",
+      "Engine diagnostics",
+      "Cooling and intake",
+      "Light-duty diesel maintenance",
+    ],
     diagnosis:
       "Diesel diagnosis follows the fuel: filtration, fuel quality, injection system data, glow-plug operation for hard cold starts, and intake and emissions systems for power loss and smoke. Modern light-duty diesels also carry emissions equipment—EGR, DPF, and DEF systems—whose warning lights have specific causes we read and test rather than guess at.",
     whyUs:
@@ -494,8 +569,18 @@ export const services: Service[] = [
     short: "Quiet operation, clean performance, and exhaust-system repair.",
     intro:
       "We inspect exhaust leaks, mounts, sensors, catalytic performance, and related engine controls to make a complete recommendation.",
-    signs: ["Loud exhaust", "Rattling underneath", "Exhaust odor", "Emissions-related warning light"],
-    includes: ["Exhaust inspection", "Mufflers and pipes", "Oxygen sensors", "Emissions diagnostics"],
+    signs: [
+      "Loud exhaust",
+      "Rattling underneath",
+      "Exhaust odor",
+      "Emissions-related warning light",
+    ],
+    includes: [
+      "Exhaust inspection",
+      "Mufflers and pipes",
+      "Oxygen sensors",
+      "Emissions diagnostics",
+    ],
     diagnosis:
       "An exhaust complaint gets a lift inspection from the manifold back—leaks, rusted hangers and mounts, damaged pipes, and rattling heat shields—while an emissions warning light gets diagnostic testing of the sensors and engine controls upstream. That distinction matters: a catalytic-converter code is often caused by an oxygen sensor, an exhaust leak, or an engine misfire, and replacing the converter without fixing the cause just kills the new one.",
     whyUs:
@@ -522,5 +607,4 @@ export const services: Service[] = [
   },
 ];
 
-export const serviceBySlug = (slug: string) =>
-  services.find((service) => service.slug === slug);
+export const serviceBySlug = (slug: string) => services.find((service) => service.slug === slug);

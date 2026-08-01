@@ -3,10 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import {
-  addressDisplay,
-  DirectionsTrigger,
-} from "./directions-dialog";
+import { addressDisplay, DirectionsTrigger } from "./directions-dialog";
 import { ShopAlmanac } from "./shop-almanac";
 import { shop } from "@/lib/shop";
 
@@ -18,7 +15,12 @@ export const phoneHref = shop.phone.href;
 const logoHoldMs = 650;
 
 const primaryLinks = [
-  { number: "01", label: "Service catalog", href: "/services", note: "Repairs, tires & diagnostics" },
+  {
+    number: "01",
+    label: "Service catalog",
+    href: "/services",
+    note: "Repairs, tires & diagnostics",
+  },
   { number: "02", label: "Meet the garage", href: "/our-shop", note: "Our family, shop & story" },
   { number: "03", label: "Night drop", href: "/vehicle-drop-off", note: "After-hours key drop" },
   { number: "04", label: "Shore reviews", href: "/reviews", note: "What local drivers say" },
@@ -130,7 +132,9 @@ export function SiteHeader() {
             ))}
           </nav>
           <a className="button button-small retro-call-button" href={phoneHref}>
-            <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
+            <span className="retro-phone-mark" aria-hidden="true">
+              ☎︎
+            </span>
             <span>
               <small>Mechanic on the line</small>
               <strong>Call the garage</strong>
@@ -145,12 +149,11 @@ export function SiteHeader() {
             <summary aria-label="Open navigation">Menu</summary>
             <nav aria-label="Mobile navigation">
               {primaryLinks.map((item) => (
-                <Link
-                  href={item.href}
-                  key={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <span><small>{item.number}</small>{item.label}</span>
+                <Link href={item.href} key={item.href} onClick={() => setMobileMenuOpen(false)}>
+                  <span>
+                    <small>{item.number}</small>
+                    {item.label}
+                  </span>
                   <em>{item.note}</em>
                 </Link>
               ))}
@@ -159,17 +162,31 @@ export function SiteHeader() {
                 href={phoneHref}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
-                <span><small>Mechanic on the line</small><strong>{phoneDisplay}</strong></span>
+                <span className="retro-phone-mark" aria-hidden="true">
+                  ☎︎
+                </span>
+                <span>
+                  <small>Mechanic on the line</small>
+                  <strong>{phoneDisplay}</strong>
+                </span>
               </a>
             </nav>
           </details>
         </div>
       </div>
       <aside className="booking-dock" aria-label="Quick shop actions">
-        <a className="booking-phone" href={phoneHref} aria-label={`Call Ocean Heights Auto and Tire at ${phoneDisplay}`}>
-          <span className="retro-phone-mark" aria-hidden="true">☎︎</span>
-          <span><small>Mechanic on the line</small><strong>{phoneDisplay}</strong></span>
+        <a
+          className="booking-phone"
+          href={phoneHref}
+          aria-label={`Call Ocean Heights Auto and Tire at ${phoneDisplay}`}
+        >
+          <span className="retro-phone-mark" aria-hidden="true">
+            ☎︎
+          </span>
+          <span>
+            <small>Mechanic on the line</small>
+            <strong>{phoneDisplay}</strong>
+          </span>
         </a>
         <Link className="booking-links" href="/links">
           <small>Everything in one place</small>

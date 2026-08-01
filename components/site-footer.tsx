@@ -27,22 +27,20 @@ export function SiteFooter() {
           <div className="car-track">
             {/* Easter egg: the little car that drives across the footer is
                 also the door to the garage arcade — catch it to find out. */}
-            <Link
-              className="classic-car"
-              href="/arcade"
-              title="Where's this car headed?"
-            >
-              <span className="sr-only">
-                Follow the little car to the garage arcade
-              </span>
+            <Link className="classic-car" href="/arcade" title="Where's this car headed?">
+              <span className="sr-only">Follow the little car to the garage arcade</span>
               <span aria-hidden="true" className="classic-car-shell">
                 <span className="car-roof" />
                 <span className="car-body">
                   <i className="headlight" />
                   <i className="bumper" />
                 </span>
-                <span className="car-wheel car-wheel-back"><span /></span>
-                <span className="car-wheel car-wheel-front"><span /></span>
+                <span className="car-wheel car-wheel-back">
+                  <span />
+                </span>
+                <span className="car-wheel car-wheel-front">
+                  <span />
+                </span>
               </span>
             </Link>
           </div>
@@ -58,9 +56,9 @@ export function SiteFooter() {
             <BrandMark />
             <p className="footer-tagline">{shop.tagline}</p>
             <p>
-              Family-owned auto repair in {shop.address.city} ({shop.nickname}),
-              serving {shop.county} and {shop.region}. Gas, diesel, hybrid,
-              electric and classic vehicles all welcome.
+              Family-owned auto repair in {shop.address.city} ({shop.nickname}), serving{" "}
+              {shop.county} and {shop.region}. Gas, diesel, hybrid, electric and classic vehicles
+              all welcome.
             </p>
           </div>
 
@@ -78,7 +76,9 @@ export function SiteFooter() {
 
           <div className="footer-col footer-call">
             <strong>Call</strong>
-            <a className="footer-phone" href={phoneHref}>{phoneDisplay}</a>
+            <a className="footer-phone" href={phoneHref}>
+              {phoneDisplay}
+            </a>
             <span>{shop.hours.display}</span>
             <span className="footer-closed-note">{shop.hours.closedNote}</span>
             <ShopHoursStatus onDark />
@@ -87,7 +87,9 @@ export function SiteFooter() {
           <div className="footer-col">
             <strong>Connect</strong>
             <Link href="/links">Quick links</Link>
-            <a href="/contact-card.vcf" download>Add us to contacts</a>
+            <a href="/contact-card.vcf" download>
+              Add us to contacts
+            </a>
             <Link href="/reviews">Customer reviews</Link>
             <div className="footer-socials">
               {socialLinks.map(([label, href]) => (
@@ -101,7 +103,9 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="shell footer-bottom">
-          <span>© {new Date().getFullYear()} {shop.name}</span>
+          <span>
+            © {new Date().getFullYear()} {shop.name}
+          </span>
           <span className="footer-makes">
             All makes &amp; models · Gas · Diesel · Hybrid · Electric
           </span>

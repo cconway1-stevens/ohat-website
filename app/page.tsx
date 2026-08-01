@@ -1,11 +1,7 @@
 import { SiteFooter } from "@/components/site-footer";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  phoneDisplay,
-  phoneHref,
-  SiteHeader,
-} from "@/components/site-header";
+import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { services } from "@/lib/services";
 import { MakeGrid } from "@/components/make-grid";
@@ -66,9 +62,7 @@ export default function Home() {
             <article className="cover-sheet">
               <p className="cover-topline" aria-label="Catalog edition">
                 <span>Egg Harbor Township, N.J.</span>
-                <span className="cover-topline-title">
-                  Service &amp; repair annual
-                </span>
+                <span className="cover-topline-title">Service &amp; repair annual</span>
                 <span>Issue No. 1178</span>
               </p>
 
@@ -78,10 +72,9 @@ export default function Home() {
               </h1>
               <p className="cover-tagline">Car care, done right. No detours.</p>
               <p className="cover-lede">
-                Dealer-level diagnostics. Family-garage honesty. From
-                carbureted classics to brand-new EVs, every car in your
-                driveway is welcome here — and every driver in EHT, Atlantic
-                County, and the shore towns around us.
+                Dealer-level diagnostics. Family-garage honesty. From carbureted classics to
+                brand-new EVs, every car in your driveway is welcome here — and every driver in EHT,
+                Atlantic County, and the shore towns around us.
               </p>
 
               <div className="cover-actions">
@@ -93,10 +86,7 @@ export default function Home() {
                 </DirectionsTrigger>
               </div>
 
-              <ul
-                className="cover-index"
-                aria-label="Why drivers choose Ocean Heights"
-              >
+              <ul className="cover-index" aria-label="Why drivers choose Ocean Heights">
                 <li>
                   <span>No. 01</span>
                   <strong>Dealer-level tools</strong>
@@ -136,92 +126,79 @@ export default function Home() {
           </div>
         </section>
 
-        <section
-            className="garage-credentials"
-            aria-labelledby="garage-credentials-title"
-          >
-            <div className="garage-locator">
-              <DirectionsTrigger
-                className="garage-locator-address"
-                label={`Choose a directions app for ${shop.address.street}`}
-              >
-                <span>Find us down the Shore</span>
-                <strong>{shop.address.street}</strong>
-                <em>{shop.address.region}</em>
-              </DirectionsTrigger>
-              <DirectionsTrigger className="garage-locator-trigger">
-                Get directions <span aria-hidden="true">↗︎</span>
-              </DirectionsTrigger>
+        <section className="garage-credentials" aria-labelledby="garage-credentials-title">
+          <div className="garage-locator">
+            <DirectionsTrigger
+              className="garage-locator-address"
+              label={`Choose a directions app for ${shop.address.street}`}
+            >
+              <span>Find us down the Shore</span>
+              <strong>{shop.address.street}</strong>
+              <em>{shop.address.region}</em>
+            </DirectionsTrigger>
+            <DirectionsTrigger className="garage-locator-trigger">
+              Get directions <span aria-hidden="true">↗︎</span>
+            </DirectionsTrigger>
+          </div>
+
+          <div className="garage-credentials-grid">
+            <div className="garage-service-promise">
+              <p className="garage-issue-line">Service counter · all makes desk</p>
+              <h2 id="garage-credentials-title">Every car in the driveway. One family garage.</h2>
+              <p>
+                New commuter, old favorite, work truck, or weekend classic—we have the tools and
+                experience to keep it moving.
+              </p>
+              <ul aria-label="Vehicle types serviced">
+                {["Gas", "Diesel", "Hybrid", "Electric", "Classic"].map((type) => (
+                  <li key={type}>{type}</li>
+                ))}
+              </ul>
             </div>
 
-            <div className="garage-credentials-grid">
-              <div className="garage-service-promise">
-                <p className="garage-issue-line">
-                  Service counter · all makes desk
-                </p>
-                <h2 id="garage-credentials-title">
-                  Every car in the driveway. One family garage.
-                </h2>
-                <p>
-                  New commuter, old favorite, work truck, or weekend classic—we
-                  have the tools and experience to keep it moving.
-                </p>
-                <ul aria-label="Vehicle types serviced">
-                  {["Gas", "Diesel", "Hybrid", "Electric", "Classic"].map((type) => (
-                    <li key={type}>{type}</li>
-                  ))}
-                </ul>
+            <div className="garage-proof-tickets" aria-label="Shop credentials">
+              <div className="garage-proof-ticket garage-proof-ase">
+                <Image
+                  src="/media/ase-certified.webp"
+                  alt="ASE"
+                  width={70}
+                  height={52}
+                  unoptimized
+                />
+                <span>
+                  <strong>ASE Certified</strong>
+                  <small>Technicians</small>
+                </span>
               </div>
-
-              <div
-                className="garage-proof-tickets"
-                aria-label="Shop credentials"
-              >
-                <div className="garage-proof-ticket garage-proof-ase">
-                  <Image
-                    src="/media/ase-certified.webp"
-                    alt="ASE"
-                    width={70}
-                    height={52}
-                    unoptimized
-                  />
-                  <span>
-                    <strong>ASE Certified</strong>
-                    <small>Technicians</small>
-                  </span>
-                </div>
-                <div className="garage-proof-ticket garage-proof-family">
-                  <span className="garage-ticket-number">40+</span>
-                  <span>
-                    <strong>Family Run</strong>
-                    <small>Local &amp; proud</small>
-                  </span>
-                </div>
-                <a
-                  className="garage-proof-ticket garage-proof-carfax"
-                  href={carfaxUrl}
-                >
-                  <span className="garage-carfax-seal" aria-hidden="true">
-                    <small>CARFAX</small>
-                    <b>★★★★★</b>
-                  </span>
-                  <span>
-                    <strong>2025 Top-Rated</strong>
-                    <small>CARFAX Service Center</small>
-                  </span>
-                </a>
+              <div className="garage-proof-ticket garage-proof-family">
+                <span className="garage-ticket-number">40+</span>
+                <span>
+                  <strong>Family Run</strong>
+                  <small>Local &amp; proud</small>
+                </span>
               </div>
+              <a className="garage-proof-ticket garage-proof-carfax" href={carfaxUrl}>
+                <span className="garage-carfax-seal" aria-hidden="true">
+                  <small>CARFAX</small>
+                  <b>★★★★★</b>
+                </span>
+                <span>
+                  <strong>2025 Top-Rated</strong>
+                  <small>CARFAX Service Center</small>
+                </span>
+              </a>
             </div>
+          </div>
 
-            <div className="garage-makes-deck">
-              <div className="garage-makes-label">
-                <strong>All makes</strong>
-                <span>All eras</span>
-              </div>
-              <div className="catalog-make-marquee">
+          <div className="garage-makes-deck">
+            <div className="garage-makes-label">
+              <strong>All makes</strong>
+              <span>All eras</span>
+            </div>
+            <div className="catalog-make-marquee">
               <span className="sr-only">
-                We service Toyota, Ford, Honda, Chevrolet, Jeep, Subaru,
-                Volkswagen, BMW, Audi, Tesla, Volvo, Porsche, and more.
+                We service Toyota, Ford, Honda, Chevrolet, Jeep, Subaru, Volkswagen, BMW, Audi,
+                Tesla, Volvo, Porsche, and more.
               </span>
               <div className="catalog-make-track" aria-hidden="true">
                 {[...heroMakes, ...heroMakes].map((name, index) => (
@@ -231,9 +208,9 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-              </div>
             </div>
-            <div className="garage-credentials-checker" aria-hidden="true" />
+          </div>
+          <div className="garage-credentials-checker" aria-hidden="true" />
         </section>
 
         <section className="section services-intro" id="services">
@@ -244,18 +221,29 @@ export default function Home() {
                 <h2>One trusted shop. Every mile covered.</h2>
               </div>
               <p>
-                From routine maintenance to difficult diagnostics, our family
-                takes the time to find the real problem, explain your options,
-                and fix it right. And if a recall notice shows up in the mail,
-                we&rsquo;ll help you check it against the official NHTSA lookup
-                and explain exactly what to do next.
+                From routine maintenance to difficult diagnostics, our family takes the time to find
+                the real problem, explain your options, and fix it right. And if a recall notice
+                shows up in the mail, we&rsquo;ll help you check it against the official NHTSA
+                lookup and explain exactly what to do next.
               </p>
             </div>
             <div className="service-preview">
               {[
-                ["Diagnostics", "Check-engine lights & complex electrical", "/services/advanced-diagnostics"],
-                ["Brakes & tires", "Safer stops, smoother rides, and longer tread life", "/services/tires"],
-                ["Maintenance", "Oil, fluids, filters & factory schedules", "/services/oil-maintenance"],
+                [
+                  "Diagnostics",
+                  "Check-engine lights & complex electrical",
+                  "/services/advanced-diagnostics",
+                ],
+                [
+                  "Brakes & tires",
+                  "Safer stops, smoother rides, and longer tread life",
+                  "/services/tires",
+                ],
+                [
+                  "Maintenance",
+                  "Oil, fluids, filters & factory schedules",
+                  "/services/oil-maintenance",
+                ],
               ].map(([title, copy, href], index) => (
                 <article key={title}>
                   <span aria-hidden="true">0{index + 1}</span>
@@ -277,16 +265,14 @@ export default function Home() {
               <p className="eyebrow">Dealer-level technology</p>
               <h2>We don’t guess. We test.</h2>
               <p>
-                Today’s vehicles demand more than a basic code reader. Our
-                cutting-edge diagnostic process combines full-system scanning,
-                live data, circuit testing, technical information, and real
-                mechanical experience.
+                Today’s vehicles demand more than a basic code reader. Our cutting-edge diagnostic
+                process combines full-system scanning, live data, circuit testing, technical
+                information, and real mechanical experience.
               </p>
               <p>
-                That capability often finds the root cause after a dealership
-                or another shop has left the problem unresolved—without losing
-                the clear explanations and personal accountability of a
-                family-owned shop.
+                That capability often finds the root cause after a dealership or another shop has
+                left the problem unresolved—without losing the clear explanations and personal
+                accountability of a family-owned shop.
               </p>
               <ul className="tech-list">
                 <li>Full-system computer diagnostics</li>
@@ -305,7 +291,15 @@ export default function Home() {
               </div>
               <div className="scan-lines" aria-hidden="true">
                 {[78, 92, 64, 86, 71, 96].map((width, index) => (
-                  <span key={width} style={{ "--scan-width": `${width}%`, "--delay": `${index * 120}ms` } as React.CSSProperties} />
+                  <span
+                    key={width}
+                    style={
+                      {
+                        "--scan-width": `${width}%`,
+                        "--delay": `${index * 120}ms`,
+                      } as React.CSSProperties
+                    }
+                  />
                 ))}
               </div>
               <div className="scan-result">
@@ -327,9 +321,8 @@ export default function Home() {
                 <h2 id="makes-title">Your whole driveway. One family garage.</h2>
               </div>
               <p>
-                Gas, diesel, hybrid, electric, imports, domestics, work trucks,
-                performance cars, and classics. Dealer-level know-how meets
-                family-garage care.
+                Gas, diesel, hybrid, electric, imports, domestics, work trucks, performance cars,
+                and classics. Dealer-level know-how meets family-garage care.
               </p>
             </div>
             <ul className="ride-track" aria-label="Vehicle types we service">
@@ -390,11 +383,10 @@ export default function Home() {
               <p className="eyebrow">Recognition earned from real service</p>
               <h2>A CARFAX Top-Rated Service Center.</h2>
               <p>
-                {shop.rating.source} customers rated Ocean Heights{" "}
-                {shop.rating.value} out of {shop.rating.scale} across hundreds
-                of verified reviews, as of {shop.rating.observed}. That
-                recognition reflects what our regulars already know: honest
-                advice, fair rates, and repairs done with care.
+                {shop.rating.source} customers rated Ocean Heights {shop.rating.value} out of{" "}
+                {shop.rating.scale} across hundreds of verified reviews, as of{" "}
+                {shop.rating.observed}. That recognition reflects what our regulars already know:
+                honest advice, fair rates, and repairs done with care.
               </p>
               <a className="button button-ghost" href={carfaxUrl}>
                 Read verified CARFAX reviews <span aria-hidden="true">↗︎</span>
@@ -410,30 +402,29 @@ export default function Home() {
                 <p className="eyebrow dark">Community trusted</p>
                 <h2>People remember how you treat them.</h2>
               </div>
-              <a className="text-link" href={carfaxUrl}>See CARFAX reviews →</a>
+              <a className="text-link" href={carfaxUrl}>
+                See CARFAX reviews →
+              </a>
             </div>
             <div className="review-grid">
               <blockquote>
                 <div aria-label="5 out of 5 stars">★★★★★</div>
-                <p>
-                  “It&apos;s been a long time since I really trusted a place
-                  with my car.”
-                </p>
+                <p>“It&apos;s been a long time since I really trusted a place with my car.”</p>
                 <cite>Jim K.</cite>
               </blockquote>
               <blockquote>
                 <div aria-label="5 out of 5 stars">★★★★★</div>
                 <p>
-                  “You won&apos;t find a more honest and affordable mechanic in
-                  the area. They make sure our cars are fixed right.”
+                  “You won&apos;t find a more honest and affordable mechanic in the area. They make
+                  sure our cars are fixed right.”
                 </p>
                 <cite>Kimberly J.</cite>
               </blockquote>
               <blockquote>
                 <div aria-label="5 out of 5 stars">★★★★★</div>
                 <p>
-                  “They handled even my exacting custom camber and toe request
-                  perfectly—and took time to explain the tradeoffs.”
+                  “They handled even my exacting custom camber and toe request perfectly—and took
+                  time to explain the tradeoffs.”
                 </p>
                 <cite>Kevin B.</cite>
               </blockquote>
@@ -447,9 +438,8 @@ export default function Home() {
               <p className="eyebrow">Let’s take care of your car</p>
               <h2>Easy to reach. Easy to trust.</h2>
               <p>
-                Call to schedule, stop in during business hours, or use our
-                secure early-bird and night-owl key drop when your day doesn’t
-                fit ours.
+                Call to schedule, stop in during business hours, or use our secure early-bird and
+                night-owl key drop when your day doesn’t fit ours.
               </p>
               <div className="visit-actions">
                 <a className="button button-primary" href={phoneHref}>

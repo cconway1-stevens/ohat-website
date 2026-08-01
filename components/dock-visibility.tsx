@@ -17,10 +17,7 @@ export function DockVisibility() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        document.documentElement.classList.toggle(
-          "at-footer",
-          entry.isIntersecting,
-        );
+        document.documentElement.classList.toggle("at-footer", entry.isIntersecting);
       },
       { rootMargin: "0px 0px -8px 0px" },
     );

@@ -63,16 +63,30 @@ const reviewExcerpts: {
 const verifiedExcerpts = reviewExcerpts.filter((e) => e.verifiedOn !== null);
 
 const reviewThemes = [
-  ["Honest answers", "Drivers repeatedly mention trust, fair recommendations, and no unnecessary repairs."],
-  ["Clear explanations", "Customers value knowing what was found, what it costs, and what can wait."],
-  ["Broad capability", "Reviews describe service across family fleets, older vehicles, imports, trucks, and hybrids."],
-  ["A comfortable visit", "Friendly staff, timely communication, and a clean waiting area make service easier."],
+  [
+    "Honest answers",
+    "Drivers repeatedly mention trust, fair recommendations, and no unnecessary repairs.",
+  ],
+  [
+    "Clear explanations",
+    "Customers value knowing what was found, what it costs, and what can wait.",
+  ],
+  [
+    "Broad capability",
+    "Reviews describe service across family fleets, older vehicles, imports, trucks, and hybrids.",
+  ],
+  [
+    "A comfortable visit",
+    "Friendly staff, timely communication, and a clean waiting area make service easier.",
+  ],
 ];
 
 export default function ReviewsPage() {
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
       <main id="main-content">
         {/* Breadcrumbs only. No Review/AggregateRating markup: a business
@@ -91,11 +105,14 @@ export default function ReviewsPage() {
               <p className="eyebrow">The local recommendation</p>
               <h1>Good service makes waves down the Shore.</h1>
               <p>
-                Around here, a trusted shop gets passed from neighbor to
-                neighbor, family to family, and key ring to key ring.
+                Around here, a trusted shop gets passed from neighbor to neighbor, family to family,
+                and key ring to key ring.
               </p>
             </div>
-            <div className="shore-sticker-board" aria-label="What local drivers say about Ocean Heights">
+            <div
+              className="shore-sticker-board"
+              aria-label="What local drivers say about Ocean Heights"
+            >
               <div className="shore-sticker shore-sticker-red">
                 <span>Shore drivers</span>
                 <strong>Know where to steer their friends.</strong>
@@ -162,13 +179,12 @@ export default function ReviewsPage() {
                 <p className="eyebrow dark">Straight from the source</p>
                 <h3>Read them where they were written.</h3>
                 <p>
-                  Rather than reprint reviews here, we send you to the profiles
-                  themselves — every review dated, attributed, and outside our
-                  control. That is worth more than a quote on our own website.
+                  Rather than reprint reviews here, we send you to the profiles themselves — every
+                  review dated, attributed, and outside our control. That is worth more than a quote
+                  on our own website.
                 </p>
                 <a className="button button-primary" href={carfaxUrl}>
-                  Read the reviews on CARFAX{" "}
-                  <span aria-hidden="true">↗︎</span>
+                  Read the reviews on CARFAX <span aria-hidden="true">↗︎</span>
                 </a>
               </div>
             )}
@@ -178,12 +194,23 @@ export default function ReviewsPage() {
         <section className="profile-section" id="review-profiles">
           <div className="shell profile-grid">
             {profileLinks.map((profile, index) => (
-              <a key={profile.name} href={profile.href} target="_blank" rel="noreferrer" className="review-source-card">
-                <span className="review-source-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <a
+                key={profile.name}
+                href={profile.href}
+                target="_blank"
+                rel="noreferrer"
+                className="review-source-card"
+              >
+                <span className="review-source-number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <span className="review-source-label">Review source</span>
                 <strong>{profile.name}</strong>
                 <p>{profile.detail}</p>
-                <b>Open {profile.name} <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></b>
+                <b>
+                  Open {profile.name} <span aria-hidden="true">↗</span>
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </b>
               </a>
             ))}
           </div>
@@ -195,7 +222,9 @@ export default function ReviewsPage() {
               <p className="eyebrow">Ready for a better shop experience?</p>
               <h2>From warning light to green light.</h2>
             </div>
-            <a className="button button-primary" href={phoneHref}>Call to book</a>
+            <a className="button button-primary" href={phoneHref}>
+              Call to book
+            </a>
           </div>
         </section>
       </main>

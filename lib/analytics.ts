@@ -24,7 +24,6 @@ export const vercelHosts = {
 export function isVercelHost(hostname: string): boolean {
   const host = hostname.toLowerCase();
   return (
-    vercelHosts.exact.includes(host) ||
-    vercelHosts.suffixes.some((suffix) => host.endsWith(suffix))
+    vercelHosts.exact.includes(host) || vercelHosts.suffixes.some((suffix) => host.endsWith(suffix))
   );
 }

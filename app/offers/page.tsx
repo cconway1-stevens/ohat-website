@@ -15,7 +15,9 @@ export const metadata = pageMetadata({
 export default function OffersPage() {
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
       <main id="main-content">
         <script
@@ -29,8 +31,8 @@ export default function OffersPage() {
             <p className="eyebrow">Straightforward value</p>
             <h1>Good care. Fair rates. No fine-print games.</h1>
             <p>
-              Offers can change. Call before your visit and we&apos;ll confirm
-              what currently applies to your vehicle and service.
+              Offers can change. Call before your visit and we&apos;ll confirm what currently
+              applies to your vehicle and service.
             </p>
             <a className="button button-primary" href={phoneHref}>
               Call {phoneDisplay}
@@ -44,11 +46,12 @@ export default function OffersPage() {
               <p className="eyebrow dark">Legacy coupon</p>
               <h2>Saved from the original website.</h2>
               <p>
-                This historical offer image is preserved for continuity.
-                Pricing and eligibility may have changed; please call the shop
-                before relying on any pictured discount.
+                This historical offer image is preserved for continuity. Pricing and eligibility may
+                have changed; please call the shop before relying on any pictured discount.
               </p>
-              <a className="button button-primary" href={phoneHref}>Confirm an offer</a>
+              <a className="button button-primary" href={phoneHref}>
+                Confirm an offer
+              </a>
             </div>
             <figure>
               <Image

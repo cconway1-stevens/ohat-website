@@ -15,9 +15,7 @@ function parseDuration(value) {
 
 const [timeoutValue, killAfterValue, command, ...args] = process.argv.slice(2);
 if (!timeoutValue || !killAfterValue || !command) {
-  console.error(
-    "usage: run-with-timeout.mjs timeout kill-after command [args...]",
-  );
+  console.error("usage: run-with-timeout.mjs timeout kill-after command [args...]");
   process.exit(64);
 }
 

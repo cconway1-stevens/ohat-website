@@ -6,9 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const serviceSource = readFileSync(join(root, "lib/services.ts"), "utf8");
-const slugs = [...serviceSource.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map(
-  (match) => match[1],
-);
+const slugs = [...serviceSource.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map((match) => match[1]);
 
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
 workerUrl.searchParams.set("service-seo", `${process.pid}-${Date.now()}`);
@@ -62,11 +60,27 @@ test("every service page ships complete, unique local-search signals", async () 
     const html = await response.text();
 
     assert.equal(response.status, 200, `${path} should render`);
-    assert.doesNotMatch(html, /<meta name="robots" content="noindex/i, `${path} should be indexable`);
-    assert.match(html, new RegExp(`<link rel="canonical" href="https://oceanheightsautorepair\\.com${path}"`), `${path} needs its own canonical URL`);
-    assert.match(html, /<nav class="service-breadcrumbs" aria-label="Breadcrumb">/, `${path} needs visible breadcrumbs`);
+    assert.doesNotMatch(
+      html,
+      /<meta name="robots" content="noindex/i,
+      `${path} should be indexable`,
+    );
+    assert.match(
+      html,
+      new RegExp(`<link rel="canonical" href="https://oceanheightsautorepair\\.com${path}"`),
+      `${path} needs its own canonical URL`,
+    );
+    assert.match(
+      html,
+      /<nav class="service-breadcrumbs" aria-label="Breadcrumb">/,
+      `${path} needs visible breadcrumbs`,
+    );
     assert.match(html, /href="tel:\+16092411546"/, `${path} needs a direct booking action`);
-    assert.match(html, /<h1[^>]*>.*Egg Harbor Township.*NJ.*<\/h1>/s, `${path} needs one locally specific primary heading`);
+    assert.match(
+      html,
+      /<h1[^>]*>.*Egg Harbor Township.*NJ.*<\/h1>/s,
+      `${path} needs one locally specific primary heading`,
+    );
 
     const rawTitle = html.match(/<title>(.*?)<\/title>/s)?.[1];
     const title = rawTitle ? decodeHtml(rawTitle) : undefined;
@@ -79,8 +93,15 @@ test("every service page ships complete, unique local-search signals", async () 
     const rawDescription = contentOf(html, "name", "description");
     const description = rawDescription ? decodeHtml(rawDescription) : undefined;
     assert.ok(description, `${path} needs a meta description`);
-    assert.ok(description.length >= 120 && description.length <= 160, `${path} description should be 120-160 characters (${description.length})`);
-    assert.match(description, /Egg Harbor Township/, `${path} description needs the service location`);
+    assert.ok(
+      description.length >= 120 && description.length <= 160,
+      `${path} description should be 120-160 characters (${description.length})`,
+    );
+    assert.match(
+      description,
+      /Egg Harbor Township/,
+      `${path} description needs the service location`,
+    );
     assert.ok(!descriptions.has(description), `${path} duplicates another service description`);
     descriptions.add(description);
 

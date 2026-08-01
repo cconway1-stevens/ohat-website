@@ -136,8 +136,12 @@ export function LotDefender() {
   const levelRef = useRef<Intensity>(CONFIG.defaultLevel);
   const run = useRef<Run>(freshRun(CONFIG.defaultLevel));
 
-  useEffect(() => { soundOn.current = sound; }, [sound]);
-  useEffect(() => { levelRef.current = level; }, [level]);
+  useEffect(() => {
+    soundOn.current = sound;
+  }, [sound]);
+  useEffect(() => {
+    levelRef.current = level;
+  }, [level]);
 
   const fire = useCallback(() => {
     const r = run.current;
@@ -170,8 +174,14 @@ export function LotDefender() {
   useEffect(() => {
     const down = (event: KeyboardEvent) => {
       const r = run.current;
-      if (["ArrowLeft", "KeyA"].includes(event.code)) { r.moving = -1; event.preventDefault(); }
-      if (["ArrowRight", "KeyD"].includes(event.code)) { r.moving = 1; event.preventDefault(); }
+      if (["ArrowLeft", "KeyA"].includes(event.code)) {
+        r.moving = -1;
+        event.preventDefault();
+      }
+      if (["ArrowRight", "KeyD"].includes(event.code)) {
+        r.moving = 1;
+        event.preventDefault();
+      }
       if (event.code === "Space") {
         event.preventDefault();
         if (runningRef.current) fire();
@@ -209,7 +219,11 @@ export function LotDefender() {
       const total = run.current.cleared;
       setBest((current) => {
         if (total <= current) return current;
-        try { window.localStorage.setItem(BEST_KEY, String(total)); } catch { /* fine without */ }
+        try {
+          window.localStorage.setItem(BEST_KEY, String(total));
+        } catch {
+          /* fine without */
+        }
         return total;
       });
       if (soundOn.current) (didWin ? garageAudio.fanfare : garageAudio.skid)();
@@ -220,7 +234,10 @@ export function LotDefender() {
       const r = run.current;
       frame += 1;
 
-      r.truckX = Math.max(TRUCK_W / 2, Math.min(W - TRUCK_W / 2, r.truckX + r.moving * settings.truckSpeed));
+      r.truckX = Math.max(
+        TRUCK_W / 2,
+        Math.min(W - TRUCK_W / 2, r.truckX + r.moving * settings.truckSpeed),
+      );
       if (r.cooldown > 0) r.cooldown -= 1;
       if (r.flash > 0) r.flash -= 1;
       if (r.rapid > 0) r.rapid -= 1;
@@ -230,7 +247,11 @@ export function LotDefender() {
       // Crates fall to the sweeper's lane and are picked up by driving into them.
       for (const crate of r.crates) crate.y += 1.3;
       for (const crate of r.crates) {
-        if (Math.abs(crate.x - r.truckX) < TRUCK_W / 2 + 4 && crate.y > TRUCK_Y - 12 && crate.y < TRUCK_Y + 12) {
+        if (
+          Math.abs(crate.x - r.truckX) < TRUCK_W / 2 + 4 &&
+          crate.y > TRUCK_Y - 12 &&
+          crate.y < TRUCK_Y + 12
+        ) {
           crate.y = H + 99;
           if (crate.kind === "spare") r.lives = Math.min(6, r.lives + 1);
           if (crate.kind === "rapid") r.rapid = POWER_FRAMES;
@@ -245,7 +266,9 @@ export function LotDefender() {
       r.marchIn -= 1;
       if (r.marchIn <= 0) {
         const alive = r.hazards.filter((h) => h.alive);
-        const hitEdge = alive.some((h) => h.x + r.marchDir * 8 < 12 || h.x + r.marchDir * 8 > W - 12);
+        const hitEdge = alive.some(
+          (h) => h.x + r.marchDir * 8 < 12 || h.x + r.marchDir * 8 > W - 12,
+        );
         if (hitEdge) {
           r.marchDir = (r.marchDir * -1) as 1 | -1;
           for (const h of alive) h.y += settings.dropStep;
@@ -253,7 +276,10 @@ export function LotDefender() {
           for (const h of alive) h.x += r.marchDir * 8;
         }
         // Fewer left = faster, the pressure everyone remembers from the original.
-        const pace = Math.max(6, Math.round(settings.marchFrames * (alive.length / r.hazards.length)));
+        const pace = Math.max(
+          6,
+          Math.round(settings.marchFrames * (alive.length / r.hazards.length)),
+        );
         r.marchIn = r.slow > 0 ? Math.round(pace * 1.75) : pace;
         if (soundOn.current && frame > 30) garageAudio.beep(120 + alive.length);
       }
@@ -284,7 +310,11 @@ export function LotDefender() {
             r.cleared += 1;
             if (Math.random() < settings.powerChance) {
               const pool = settings.powers;
-              r.crates.push({ x: h.x, y: h.y, kind: pool[Math.floor(Math.random() * pool.length)] as PowerKind });
+              r.crates.push({
+                x: h.x,
+                y: h.y,
+                kind: pool[Math.floor(Math.random() * pool.length)] as PowerKind,
+              });
             }
             if (soundOn.current) garageAudio.horn();
             break;
@@ -295,7 +325,11 @@ export function LotDefender() {
 
       // Falling hazards vs the sweeper
       for (const drop of r.falling) {
-        if (Math.abs(drop.x - r.truckX) < TRUCK_W / 2 && drop.y > TRUCK_Y - 8 && drop.y < TRUCK_Y + 10) {
+        if (
+          Math.abs(drop.x - r.truckX) < TRUCK_W / 2 &&
+          drop.y > TRUCK_Y - 8 &&
+          drop.y < TRUCK_Y + 10
+        ) {
           drop.y = H + 1;
           r.lives -= 1;
           r.flash = 12;
@@ -364,14 +398,11 @@ export function LotDefender() {
         <p className="paper-game-edition">Ocean Heights Overnight Lot</p>
         <h2>Lot Defender</h2>
         <p>
-          A storm of nails and bolts is drifting down onto the cars parked out
-          back. Run the magnet sweeper along the bottom line and pick them off
-          before they reach the tires.
+          A storm of nails and bolts is drifting down onto the cars parked out back. Run the magnet
+          sweeper along the bottom line and pick them off before they reach the tires.
         </p>
         {levelControls}
-        <p className="lot-defender-brief">
-          {CONFIG.levels[level].brief}
-        </p>
+        <p className="lot-defender-brief">{CONFIG.levels[level].brief}</p>
         <button type="button" className="button button-primary" onClick={() => start()}>
           Start the sweep
         </button>
@@ -394,17 +425,33 @@ export function LotDefender() {
             {sound ? "Sound on" : "Sound off"}
           </button>
           {!running ? (
-            <button type="button" onClick={() => start()}>{over ? "New sweep" : "Start the sweep"}</button>
+            <button type="button" onClick={() => start()}>
+              {over ? "New sweep" : "Start the sweep"}
+            </button>
           ) : null}
         </div>
       </header>
 
       <div className="match-game-bar">
         <dl className="match-game-score">
-          <div><dt>Swept</dt><dd>{hud.cleared}</dd></div>
-          <div><dt>Wave</dt><dd>{hud.wave}/{settings.wavesToWin}</dd></div>
-          <div><dt>Sweeper</dt><dd>{"●".repeat(Math.max(0, hud.lives)) || "—"}</dd></div>
-          <div><dt>Best</dt><dd>{best}</dd></div>
+          <div>
+            <dt>Swept</dt>
+            <dd>{hud.cleared}</dd>
+          </div>
+          <div>
+            <dt>Wave</dt>
+            <dd>
+              {hud.wave}/{settings.wavesToWin}
+            </dd>
+          </div>
+          <div>
+            <dt>Sweeper</dt>
+            <dd>{"●".repeat(Math.max(0, hud.lives)) || "—"}</dd>
+          </div>
+          <div>
+            <dt>Best</dt>
+            <dd>{best}</dd>
+          </div>
         </dl>
         {hud.powers.length > 0 ? (
           <ul className="lot-defender-powers" aria-label="Active upgrades">
@@ -436,24 +483,50 @@ export function LotDefender() {
         <button
           type="button"
           aria-label="Sweep left"
-          onPointerDown={() => { run.current.moving = -1; }}
-          onPointerUp={() => { run.current.moving = 0; }}
-          onPointerLeave={() => { run.current.moving = 0; }}
-          onPointerCancel={() => { run.current.moving = 0; }}
-        >←</button>
-        <button type="button" className="is-fire" onPointerDown={fire}>Sweep</button>
+          onPointerDown={() => {
+            run.current.moving = -1;
+          }}
+          onPointerUp={() => {
+            run.current.moving = 0;
+          }}
+          onPointerLeave={() => {
+            run.current.moving = 0;
+          }}
+          onPointerCancel={() => {
+            run.current.moving = 0;
+          }}
+        >
+          ←
+        </button>
+        <button type="button" className="is-fire" onPointerDown={fire}>
+          Sweep
+        </button>
         <button
           type="button"
           aria-label="Sweep right"
-          onPointerDown={() => { run.current.moving = 1; }}
-          onPointerUp={() => { run.current.moving = 0; }}
-          onPointerLeave={() => { run.current.moving = 0; }}
-          onPointerCancel={() => { run.current.moving = 0; }}
-        >→</button>
+          onPointerDown={() => {
+            run.current.moving = 1;
+          }}
+          onPointerUp={() => {
+            run.current.moving = 0;
+          }}
+          onPointerLeave={() => {
+            run.current.moving = 0;
+          }}
+          onPointerCancel={() => {
+            run.current.moving = 0;
+          }}
+        >
+          →
+        </button>
       </div>
       <p className="shore-run-keys">
-        <span><b>←</b> <b>→</b> move</span>
-        <span><b>Space</b> sweep</span>
+        <span>
+          <b>←</b> <b>→</b> move
+        </span>
+        <span>
+          <b>Space</b> sweep
+        </span>
         <span>On a phone: hold the arrows, tap Sweep</span>
       </p>
 
@@ -508,7 +581,8 @@ function draw(ctx: CanvasRenderingContext2D, r: Run, ended: boolean, didWin: boo
         const a = (Math.PI / 3) * i - Math.PI / 6;
         const px = h.x + Math.cos(a) * 7;
         const py = h.y + Math.sin(a) * 7;
-        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
       }
       ctx.closePath();
       ctx.fill();

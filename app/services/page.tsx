@@ -51,7 +51,9 @@ export default function ServicesPage() {
 
   return (
     <>
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
       <main id="main-content">
         <script
@@ -72,16 +74,24 @@ export default function ServicesPage() {
           <div className="shell services-board-grid">
             <div>
               <p className="board-label">The service board</p>
-              <h1>Every system.<br /><span>One trusted pit crew.</span></h1>
+              <h1>
+                Every system.
+                <br />
+                <span>One trusted pit crew.</span>
+              </h1>
             </div>
             <div className="bay-counter" aria-label={`${services.length} service categories`}>
               <strong>{services.length}</strong>
-              <span>service bays<br />under one roof</span>
+              <span>
+                service bays
+                <br />
+                under one roof
+              </span>
             </div>
             <p className="board-copy">
-              Gas, diesel, hybrid, EV, old favorite, or brand-new daily driver:
-              choose what your vehicle needs, then call us to reserve a time.
-              We look after drivers across {shop.nickname} and {shop.county}.
+              Gas, diesel, hybrid, EV, old favorite, or brand-new daily driver: choose what your
+              vehicle needs, then call us to reserve a time. We look after drivers across{" "}
+              {shop.nickname} and {shop.county}.
             </p>
           </div>
         </section>
@@ -120,7 +130,9 @@ export default function ServicesPage() {
               <p className="eyebrow">Not sure what you need?</p>
               <h2>Tell us what the vehicle is doing.</h2>
             </div>
-            <a className="button button-primary" href={phoneHref}>Call the shop</a>
+            <a className="button button-primary" href={phoneHref}>
+              Call the shop
+            </a>
           </div>
         </section>
       </main>

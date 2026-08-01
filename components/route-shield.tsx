@@ -49,10 +49,7 @@ export function RouteShield({ number }: { number: string }) {
         <clipPath id={clipId}>
           {/* The same outline, inset, so the white blank reads as the sign's
               painted border rather than a stroke sitting on top of it. */}
-          <path
-            d={SHIELD}
-            transform="translate(50 55) scale(.86) translate(-50 -55)"
-          />
+          <path d={SHIELD} transform="translate(50 55) scale(.86) translate(-50 -55)" />
         </clipPath>
       </defs>
 

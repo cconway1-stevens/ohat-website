@@ -18,7 +18,7 @@ under "Not changed" below, which need the owner rather than code.
 
 ## Fixed in this change
 
-### 1. Every shared link previewed as the homepage — *high impact*
+### 1. Every shared link previewed as the homepage — _high impact_
 
 The root layout set a site-wide `openGraph.title` and `description`. Next
 merges parent metadata into children, so a page that overrode only `title`
@@ -32,7 +32,7 @@ Open Graph block and the Twitter card from one page title so they cannot drift
 apart. Applied to `/services`, every `/services/<slug>`, `/reviews`, `/offers`,
 `/our-shop`, `/vehicle-drop-off` and `/links`.
 
-### 2. Service FAQs were invisible to Google — *high impact*
+### 2. Service FAQs were invisible to Google — _high impact_
 
 All 16 service pages already render real, service-specific Q&A (48 questions
 in total) — good content that carried no `FAQPage` markup, so none of it was
@@ -41,7 +41,7 @@ service template. The markup is generated from the same `service.faqs` data
 the page renders, which is what keeps it compliant: Google drops FAQ markup
 whose answers a visitor cannot see.
 
-### 3. Seventeen competing copies of the business — *medium impact*
+### 3. Seventeen competing copies of the business — _medium impact_
 
 `autoRepairSchema()` was inlined in full on the homepage, the contact page and
 as `provider` on all 16 service pages, with no `@id`. That asks Google to
@@ -51,7 +51,7 @@ Now the business has a stable `@id` (`/#business`), the homepage carries the
 one canonical copy inside an `@graph` alongside `WebSite` and `WebPage` nodes,
 and every other page references it by `@id` via `businessRef`.
 
-### 4. Thin business schema — *medium impact*
+### 4. Thin business schema — _medium impact_
 
 Added to the shared block, so it lands on every page at once:
 `image`, `logo`, `priceRange`, `paymentAccepted`, `currenciesAccepted`,
@@ -60,26 +60,26 @@ bare strings to typed `City` nodes with `containedInPlace: New Jersey`.
 Weekend closure is now stated explicitly (`opens`/`closes` both `00:00`)
 rather than left to be inferred from a missing rule.
 
-### 5. Breadcrumbs on one page out of eight — *medium impact*
+### 5. Breadcrumbs on one page out of eight — _medium impact_
 
 Only service detail pages had `BreadcrumbList`. Added a shared
 `breadcrumbSchema()` and applied it to `/services`, `/contact`, `/reviews`,
 `/offers`, `/our-shop` and `/vehicle-drop-off`. Breadcrumbs are what turn a
 raw URL into a readable path in the search result.
 
-### 6. `/services` had no structured data — *medium impact*
+### 6. `/services` had no structured data — _medium impact_
 
 The hub page linking all 16 services described itself to Google purely as
 prose. Added an `ItemList` of the catalogue plus an `OfferCatalog` attached to
 the business `@id`.
 
-### 7. No `lastmod` in either sitemap — *low impact*
+### 7. No `lastmod` in either sitemap — _low impact_
 
 `lastmod` is the one sitemap hint Google still acts on; neither the Next
 sitemap route nor the static export emitted it. Both now carry the build date,
 which is the honest value: these pages are published by that build.
 
-### 8. The site never used the names locals actually search — *high impact*
+### 8. The site never used the names locals actually search — _high impact_
 
 Added 2026-08-01, at the owner's prompting, and it was a good catch.
 
@@ -116,7 +116,7 @@ short drive, but if any of them is not realistic, trim the list in
 ## Not changed, deliberately
 
 - **No `AggregateRating` / `Review` markup on `/reviews`.** A business rating
-  *itself* on its own site is explicitly ineligible for review rich results,
+  _itself_ on its own site is explicitly ineligible for review rich results,
   so marking it up adds manual-action risk and no upside. That holds
   regardless of whether the quotes are verified — and as of this audit they
   are not; see the legal audit. The right move is third-party reviews on the
@@ -135,7 +135,7 @@ These are the highest-value items left and none of them are code:
 1. **Google Business Profile.** For a local shop this outranks everything on
    this list combined. Claim/verify it, confirm the service categories, hours
    and photos, and keep it consistent with the site. Once claimed, replace the
-   Maps *search* URL in `lib/shop.mjs` (`profiles.google`) with the profile's
+   Maps _search_ URL in `lib/shop.mjs` (`profiles.google`) with the profile's
    real URL and add it to `sameAs` — right now the code links a search query
    because no verified profile URL exists yet.
 2. **Ask for reviews.** Steady recent Google reviews move local rankings more

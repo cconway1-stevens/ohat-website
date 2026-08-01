@@ -4,7 +4,9 @@ import { arcadeCategories, arcadeGames } from "@/lib/arcade";
 
 // Derived, not typed out: the copy said "five" long after a sixth cabinet
 // was added.
-const COUNT = ["zero","one","two","three","four","five","six","seven","eight"][arcadeGames.length] ?? String(arcadeGames.length);
+const COUNT =
+  ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"][arcadeGames.length] ??
+  String(arcadeGames.length);
 
 // Cabinets render grouped by category, so number them in that visible order
 // instead of their storage order in the game roster.
@@ -16,8 +18,7 @@ const cabinetNumbers = new Map(
 
 export const metadata: Metadata = {
   title: "The Garage Arcade",
-  description:
-    `You found the Ocean Heights garage arcade — ${COUNT} little car games for the waiting room.`,
+  description: `You found the Ocean Heights garage arcade — ${COUNT} little car games for the waiting room.`,
   alternates: { canonical: "/arcade" },
 };
 
@@ -29,9 +30,8 @@ export default function ArcadePage() {
           <p className="eyebrow">You found the back room</p>
           <h1>The garage arcade.</h1>
           <p>
-            {COUNT[0].toUpperCase() + COUNT.slice(1)} little games for the waiting room — all car, all free, no
-            countdowns breathing down your neck. High scores stay on your own
-            device.
+            {COUNT[0].toUpperCase() + COUNT.slice(1)} little games for the waiting room — all car,
+            all free, no countdowns breathing down your neck. High scores stay on your own device.
           </p>
         </div>
       </section>
@@ -42,7 +42,10 @@ export default function ArcadePage() {
               <p className="eyebrow">Choose a cabinet</p>
               <h2>Pick a game. Park for a minute.</h2>
             </div>
-            <p>{COUNT[0].toUpperCase() + COUNT.slice(1)} quick car games, built for a short wait and a little friendly competition.</p>
+            <p>
+              {COUNT[0].toUpperCase() + COUNT.slice(1)} quick car games, built for a short wait and
+              a little friendly competition.
+            </p>
           </div>
           {arcadeCategories.map((group) => {
             const games = arcadeGames.filter((game) => game.category === group.id);
@@ -58,11 +61,7 @@ export default function ArcadePage() {
                 </div>
                 <div className="arcade-cabinets">
                   {games.map((game) => (
-                    <Link
-                      key={game.slug}
-                      className="arcade-cabinet"
-                      href={`/arcade/${game.slug}`}
-                    >
+                    <Link key={game.slug} className="arcade-cabinet" href={`/arcade/${game.slug}`}>
                       <span className="arcade-cabinet-number" aria-hidden="true">
                         {cabinetNumbers.get(game.slug)}
                       </span>
@@ -75,7 +74,9 @@ export default function ArcadePage() {
                       </div>
                       <div className="arcade-cabinet-footer">
                         <small>Garage {game.classic}</small>
-                        <b aria-hidden="true">Play now <span>→</span></b>
+                        <b aria-hidden="true">
+                          Play now <span>→</span>
+                        </b>
                       </div>
                     </Link>
                   ))}

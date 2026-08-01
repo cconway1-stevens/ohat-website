@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.next/
+.wrangler/
+coverage/
+
+# Generated data and image variants are rebuilt by project scripts.
+drizzle/meta/
+lib/image-manifest.json
+public/media/rs/
+
+# Keep third-party and hand-optimized vector assets byte-for-byte stable.
+public/**/*.svg

@@ -18,12 +18,28 @@ export const arcadeCategories: {
   label: string;
   blurb: string;
 }[] = [
-  { id: "word", label: "Word & clue", blurb: "Paper puzzles for a slow wait. Pick a difficulty and take your time." },
-  { id: "puzzle", label: "Puzzle & memory", blurb: "Shapes and badges. Easy to start, harder to put down." },
-  { id: "action", label: "Arcade action", blurb: "Thumbs and reflexes. Short rounds, scores stay on your own device." },
+  {
+    id: "word",
+    label: "Word & clue",
+    blurb: "Paper puzzles for a slow wait. Pick a difficulty and take your time.",
+  },
+  {
+    id: "puzzle",
+    label: "Puzzle & memory",
+    blurb: "Shapes and badges. Easy to start, harder to put down.",
+  },
+  {
+    id: "action",
+    label: "Arcade action",
+    blurb: "Thumbs and reflexes. Short rounds, scores stay on your own device.",
+  },
   // Last on purpose: the games people came to play lead, and the cozy corner
   // waits at the end for whoever wants to sit in it.
-  { id: "cozy", label: "Cozy garage", blurb: "No score, no clock, nothing to lose. Put the shop on and stay as long as you like." },
+  {
+    id: "cozy",
+    label: "Cozy garage",
+    blurb: "No score, no clock, nothing to lose. Put the shop on and stay as long as you like.",
+  },
 ];
 
 // One place to tune round length, prize difficulty, and game speed.
@@ -48,9 +64,30 @@ export const arcadePresets = {
   crossword: {
     defaultDifficulty: "easy",
     difficulties: {
-      kids: { label: "Kids", level: "kids", wordsPerPuzzle: 5, maxGrid: 9, minLength: 3, maxLength: 6 },
-      easy: { label: "Easy", level: "easy", wordsPerPuzzle: 7, maxGrid: 12, minLength: 3, maxLength: 8 },
-      advanced: { label: "Advanced", level: "advanced", wordsPerPuzzle: 10, maxGrid: 15, minLength: 4, maxLength: 13 },
+      kids: {
+        label: "Kids",
+        level: "kids",
+        wordsPerPuzzle: 5,
+        maxGrid: 9,
+        minLength: 3,
+        maxLength: 6,
+      },
+      easy: {
+        label: "Easy",
+        level: "easy",
+        wordsPerPuzzle: 7,
+        maxGrid: 12,
+        minLength: 3,
+        maxLength: 8,
+      },
+      advanced: {
+        label: "Advanced",
+        level: "advanced",
+        wordsPerPuzzle: 10,
+        maxGrid: 15,
+        minLength: 4,
+        maxLength: 13,
+      },
     },
   },
   // `directions` counts into the DIRECTIONS list in service-search.tsx, which
@@ -59,9 +96,30 @@ export const arcadePresets = {
   serviceSearch: {
     defaultDifficulty: "easy",
     difficulties: {
-      kids: { label: "Kids", level: "kids", gridSize: 8, wordsPerPuzzle: 4, prizeWords: 3, directions: 2 },
-      easy: { label: "Easy", level: "easy", gridSize: 10, wordsPerPuzzle: 6, prizeWords: 4, directions: 4 },
-      advanced: { label: "Advanced", level: "advanced", gridSize: 12, wordsPerPuzzle: 9, prizeWords: 6, directions: 8 },
+      kids: {
+        label: "Kids",
+        level: "kids",
+        gridSize: 8,
+        wordsPerPuzzle: 4,
+        prizeWords: 3,
+        directions: 2,
+      },
+      easy: {
+        label: "Easy",
+        level: "easy",
+        gridSize: 10,
+        wordsPerPuzzle: 6,
+        prizeWords: 4,
+        directions: 4,
+      },
+      advanced: {
+        label: "Advanced",
+        level: "advanced",
+        gridSize: 12,
+        wordsPerPuzzle: 9,
+        prizeWords: 6,
+        directions: 8,
+      },
     },
   },
   garageGuess: { wordLength: 5, maxGuesses: 6 },
@@ -76,22 +134,52 @@ export const arcadePresets = {
       // Kids gets only the two obviously-good ones so the screen never turns
       // into a puzzle about which badge does what.
       kids: {
-        label: "Kids", brief: "A slow drift, nothing falls back at you, and five sweeps in hand.",
-        rows: 2, cols: 5, marchFrames: 46, dropStep: 6, dropSpeed: 1.1,
-        fireFrames: 9999, shotCooldown: 10, truckSpeed: 3, lives: 5, wavesToWin: 1,
-        powerChance: 0.24, powers: ["spare", "rapid"],
+        label: "Kids",
+        brief: "A slow drift, nothing falls back at you, and five sweeps in hand.",
+        rows: 2,
+        cols: 5,
+        marchFrames: 46,
+        dropStep: 6,
+        dropSpeed: 1.1,
+        fireFrames: 9999,
+        shotCooldown: 10,
+        truckSpeed: 3,
+        lives: 5,
+        wavesToWin: 1,
+        powerChance: 0.24,
+        powers: ["spare", "rapid"],
       },
       easy: {
-        label: "Easy", brief: "A steady drift with the odd bolt shaking loose. Two waves to clear.",
-        rows: 3, cols: 6, marchFrames: 34, dropStep: 8, dropSpeed: 1.6,
-        fireFrames: 110, shotCooldown: 12, truckSpeed: 3, lives: 3, wavesToWin: 2,
-        powerChance: 0.16, powers: ["spare", "rapid", "twin", "slow"],
+        label: "Easy",
+        brief: "A steady drift with the odd bolt shaking loose. Two waves to clear.",
+        rows: 3,
+        cols: 6,
+        marchFrames: 34,
+        dropStep: 8,
+        dropSpeed: 1.6,
+        fireFrames: 110,
+        shotCooldown: 12,
+        truckSpeed: 3,
+        lives: 3,
+        wavesToWin: 2,
+        powerChance: 0.16,
+        powers: ["spare", "rapid", "twin", "slow"],
       },
       advanced: {
-        label: "Advanced", brief: "A full lot, hardware raining down, three waves. Keep moving.",
-        rows: 4, cols: 8, marchFrames: 24, dropStep: 10, dropSpeed: 2.2,
-        fireFrames: 62, shotCooldown: 14, truckSpeed: 3.4, lives: 3, wavesToWin: 3,
-        powerChance: 0.12, powers: ["spare", "rapid", "twin", "slow"],
+        label: "Advanced",
+        brief: "A full lot, hardware raining down, three waves. Keep moving.",
+        rows: 4,
+        cols: 8,
+        marchFrames: 24,
+        dropStep: 10,
+        dropSpeed: 2.2,
+        fireFrames: 62,
+        shotCooldown: 14,
+        truckSpeed: 3.4,
+        lives: 3,
+        wavesToWin: 3,
+        powerChance: 0.12,
+        powers: ["spare", "rapid", "twin", "slow"],
       },
     },
   },
@@ -278,12 +366,9 @@ const GARAGE_GUESS: [word: string, clue: string][] = [
 
 export const garageGuessWords: string[] = GARAGE_GUESS.map(([word]) => word);
 
-export const garageGuessClues: Record<string, string> =
-  Object.fromEntries(GARAGE_GUESS);
+export const garageGuessClues: Record<string, string> = Object.fromEntries(GARAGE_GUESS);
 
 // Exported so a test can assert it, rather than trusting the list by eye.
 export function badGarageGuessWords() {
-  return garageGuessWords.filter(
-    (word) => word.length !== arcadePresets.garageGuess.wordLength,
-  );
+  return garageGuessWords.filter((word) => word.length !== arcadePresets.garageGuess.wordLength);
 }
