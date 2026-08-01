@@ -86,21 +86,32 @@ export default function ServicesPage() {
           </div>
         </section>
         <section className="section">
-          <div className="shell service-directory">
-            {services.map((service, index) => (
-              <article key={service.slug}>
-                <span className="catalog-card-number" aria-hidden="true">
-                  Bay {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="catalog-card-tag">Call for quote</span>
-                {/* Sits in what used to be dead space between the bay number
-                    and the title — see components/service-icon.tsx. */}
-                <ServiceIcon slug={service.slug} />
-                <h2>{service.name}</h2>
-                <p>{service.short}</p>
-                <Link href={`/services/${service.slug}`}>Open catalog page →</Link>
-              </article>
-            ))}
+          <div className="shell service-directory-frame">
+            <div className="service-directory-heading" aria-hidden="true">
+              <span>Service catalog</span>
+              <span>Bays 01—{String(services.length).padStart(2, "0")}</span>
+            </div>
+            <div className="service-directory">
+              {services.map((service, index) => {
+                const followsCurve = index % 4 === 1 || index % 4 === 2;
+
+                return (
+                  <article
+                    className={followsCurve ? "service-card-reverse" : undefined}
+                    key={service.slug}
+                  >
+                    <span className="catalog-card-number" aria-hidden="true">
+                      Bay {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="catalog-card-tag">Call for quote</span>
+                    <ServiceIcon slug={service.slug} />
+                    <h2>{service.name}</h2>
+                    <p>{service.short}</p>
+                    <Link href={`/services/${service.slug}`}>Open catalog page →</Link>
+                  </article>
+                );
+              })}
+            </div>
           </div>
         </section>
         <section className="inner-cta">
