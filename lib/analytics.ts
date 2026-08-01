@@ -1,3 +1,5 @@
+import { shop } from "./shop";
+
 /**
  * Google Analytics 4 measurement ID for the shop's property.
  *
@@ -8,20 +10,35 @@
 export const gaMeasurementId = "G-GXWDZMS0FL";
 
 /**
- * Vercel Web Analytics ships from Vercel's own edge at `/_vercel/insights/*`.
- * That path only exists on a Vercel deployment, and this site is published to
- * two places at once — Vercel (vercel.json) and GitHub Pages
- * (.github/workflows/deploy-pages.yml) — so a hardcoded tag 404s on every
- * Pages page load. That is why the tag was removed rather than kept.
+ * Hosts served by Vercel, where Vercel Web Analytics can actually load.
  *
- * Hence a host check instead of a build flag: the static export is a single
- * set of files served from both hosts, so which analytics is available cannot
- * be known until the page is actually running somewhere.
+ * The script comes from Vercel's own edge at `/_vercel/insights/*`, a path
+ * that exists only on a Vercel deployment. A hardcoded tag therefore 404s
+ * anywhere else, which is why it was removed once already, and why
+ * `scripts/production-readiness.mjs` fails the build if it finds one in a
+ * rendered page.
+ *
+ * The list has to include the production domain, not just `*.vercel.app`.
+ * A custom domain pointed at Vercel is still a Vercel deployment, but its
+ * hostname looks nothing like a preview URL — matching only the preview
+ * suffix would quietly switch analytics off on the one host that matters.
+ *
+ * `shop.siteUrl` is the source for the production host so it cannot drift
+ * from the canonical URL used everywhere else.
  */
-export const vercelHostSuffixes = [".vercel.app"];
+const productionHost = new URL(shop.siteUrl).hostname;
+
+export const vercelHosts = {
+  /** Preview and default deployment URLs. */
+  suffixes: [".vercel.app"],
+  /** Exact hostnames, with and without `www.`. */
+  exact: [productionHost, `www.${productionHost}`],
+};
 
 export function isVercelHost(hostname: string): boolean {
-  return vercelHostSuffixes.some(
-    (suffix) => hostname === suffix.slice(1) || hostname.endsWith(suffix),
+  const host = hostname.toLowerCase();
+  return (
+    vercelHosts.exact.includes(host) ||
+    vercelHosts.suffixes.some((suffix) => host.endsWith(suffix))
   );
 }
