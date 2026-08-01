@@ -17,7 +17,13 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+/* The canvas behind everything. Without this, `body`'s cream propagated to
+   the canvas, so rubber-banding past the dark footer exposed a pale band that
+   read as a white gap at the bottom of every page. Ink matches both ends —
+   the footer below and the header above are both dark — so overscroll in
+   either direction now looks like more page rather than a hole. `body` keeps
+   its cream, which paints the content box as before. */
+html { scroll-behavior: smooth; background: var(--ink); }
 body {
   margin: 0;
   overflow-x: hidden;
@@ -271,10 +277,56 @@ img { max-width: 100%; }
 }
 .directions-dialog-hours a { color: var(--red); }
 .directions-dialog-hours a:hover { text-decoration: underline; }
+/* The shop status reads as a placard hung on the door rather than a line of
+   shouted text. It used to set both lines in bold uppercase at the same
+   weight, which made an ordinary "we're shut, back Monday" feel curt — and
+   the second line wrapped, stranding a lone "AM". Now the status is the
+   headline and the detail sits under it in sentence case, on its own plate. */
 .shop-hours-status-wrap { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .35rem .65rem; }
-.shop-hours-status { display: inline-flex; align-items: center; gap: .35rem; font-size: .7rem; font-weight: 950; letter-spacing: .06em; text-transform: uppercase; user-select: none; touch-action: manipulation; }
-.shop-status-dot { width: .48rem; height: .48rem; flex: 0 0 auto; border-radius: 50%; background: currentColor; }
-.shop-status-copy { display: inline-flex; flex-wrap: wrap; gap: 0 .35rem; }
+.shop-hours-status {
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0 .45rem;
+  padding: .4rem .6rem;
+  background: var(--paper);
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  box-shadow: 2px 2px 0 rgba(23, 20, 18, .22);
+  font-size: .7rem;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  user-select: none;
+  touch-action: manipulation;
+}
+.shop-status-dot {
+  width: .5rem;
+  height: .5rem;
+  flex: 0 0 auto;
+  margin-top: .28rem;
+  border-radius: 50%;
+  background: currentColor;
+  /* A soft halo, the way a lit sign bleeds a little into its face. */
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+}
+.shop-status-copy { display: grid; gap: .1rem; min-width: 0; }
+/* Line one is the state; line two is the detail, and it is the tone fix —
+   sentence case, lighter, no tracking. Shouting the reopening time is what
+   made the old badge feel like a slammed door. */
+.shop-status-copy > span:first-child { line-height: 1.25; }
+.shop-status-copy > span:not(:first-child) {
+  color: var(--muted);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  line-height: 1.35;
+  text-transform: none;
+  /* If the detail line has to wrap in a narrow column, wrap it evenly rather
+     than letting a lone "AM" fall to its own line. Presentation stays here;
+     the label itself is left as clean data. */
+  text-wrap: balance;
+}
 .shop-hours-status.is-open { color: #187a42; }
 .shop-hours-status.is-opening-soon, .shop-hours-status.is-closing-soon { color: #a65d00; }
 .shop-hours-status:is(.is-opening-soon, .is-sign-preview) {
@@ -1184,7 +1236,7 @@ img { max-width: 100%; }
 @media print {
   /* The printout is the QR and the address, nothing else. */
   .site-header, .site-footer, .drive-cta, .link-hub-checker, .share-links-buttons,
-  .links-qr-print, .link-hub-home, .booking-dock, .mkr-band { display: none !important; }
+  .links-qr-print, .link-hub-home, .booking-dock, .mkr-mount { display: none !important; }
   .link-hub { background: #fff; min-height: auto; }
   .link-hub-card { border: none; box-shadow: none; }
 }
@@ -3303,8 +3355,50 @@ body.is-play-locked {
    brand blurb and the least to Connect — the one column with six links in it.
    Evened out, and the block tightened: 4.5rem of padding over a footer whose
    tallest column is six short links left a visible band of empty ink. */
-.footer-grid { display: grid; grid-template-columns: 1.1fr .95fr .95fr .9fr; gap: 2.5rem; padding: 3.25rem 0 2.5rem; align-items: start; }
-.footer-grid > div { display: flex; flex-direction: column; gap: .65rem; }
+.footer-grid { display: grid; grid-template-columns: 1.25fr .9fr .95fr .9fr; gap: 2.25rem 2.5rem; padding: 3.25rem 0 2.5rem; align-items: start; }
+.footer-grid > div { display: flex; flex-direction: column; gap: .6rem; }
+/* Section headings get a rule under them, the way a catalog's back page
+   separates its columns. */
+.footer-grid > div > strong {
+  padding-bottom: .5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, .16);
+}
+.footer-tagline {
+  color: var(--yellow) !important;
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  letter-spacing: .01em;
+}
+.footer-phone {
+  color: #fff;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
+}
+.footer-closed-note { font-size: .78rem !important; }
+/* Profile links as a wrapped row of chips rather than four more lines in a
+   stack — they are a different kind of link from the site's own pages, and
+   they read better grouped. */
+.footer-socials { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .25rem; }
+.footer-socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .3rem .6rem;
+  border: 2px solid rgba(255, 255, 255, .22);
+  border-radius: 2px;
+  font-size: .78rem;
+  line-height: 1.2;
+  transition: border-color .18s ease, background .18s ease;
+}
+.footer-socials a:hover {
+  background: rgba(255, 255, 255, .07);
+  border-color: var(--yellow);
+}
+.footer-socials i { font-style: normal; font-size: .7em; opacity: .7; }
+.footer-makes { text-align: center; }
 .footer-grid .brand img { width: 132px; height: 82px; }
 .footer-grid p { max-width: 320px; color: #bdb5ab; line-height: 1.65; }
 .footer-grid > div > strong { color: var(--yellow); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; }
@@ -3315,24 +3409,19 @@ body.is-play-locked {
 .footer-grid span { color: #aaa298; font-size: .85rem; }
 .footer-grid > div:nth-child(3) > a { color: #fff; font-size: clamp(1.25rem, 2vw, 1.55rem); font-variant-numeric: tabular-nums; }
 .footer-grid > div:nth-child(3) > span { color: #bdb5ab; }
-.footer-grid > div:nth-child(3) .shop-hours-status-wrap { width: 100%; }
-.footer-grid > div:nth-child(3) .shop-hours-status {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: .2rem .55rem;
+/* The dark-surface plate. Previously this was reached through
+   `.footer-grid > div:nth-child(3)`, which meant reordering a footer column
+   silently restyled the sign. It is a prop on the component now, so the badge
+   looks the same everywhere and the footer only changes what it sits on. */
+.shop-hours-status-wrap.on-dark { width: 100%; }
+.on-dark .shop-hours-status {
   width: 100%;
-  padding: .7rem .75rem;
-  border-left: 4px solid currentColor;
-  background: rgba(255,255,255,.06);
-  font-size: .66rem;
-  letter-spacing: .08em;
-  line-height: 1.35;
+  background: rgba(255, 255, 255, .07);
+  border-color: color-mix(in srgb, currentColor 55%, transparent);
+  border-left-width: 4px;
+  box-shadow: none;
 }
-.footer-grid > div:nth-child(3) .shop-status-dot { margin-top: .25rem; color: inherit; }
-.footer-grid > div:nth-child(3) .shop-status-copy { display: grid; gap: .08rem; min-width: 0; color: inherit; }
-.footer-grid > div:nth-child(3) .shop-status-copy > span { color: inherit; font-size: inherit; }
-.footer-grid > div:nth-child(3) .shop-status-copy span:last-child { color: #f0d6d2; }
+.on-dark .shop-status-copy > span:not(:first-child) { color: #cdc4ba; }
 /* The bottom padding is deliberate clearance for the fixed call dock, which
    parks bottom-right; it is not dead space. Trimmed from 6rem to 4rem, which
    still clears the dock at its tallest. */

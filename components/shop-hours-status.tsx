@@ -4,7 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { getShopHoursStatus, getShopStatusLabel } from "@/lib/shop-hours";
 import { shop } from "@/lib/shop";
 
-export function ShopHoursStatus() {
+/**
+ * The shop's open/closed placard.
+ *
+ * One component, one look, every placement — header, footer, contact page,
+ * link hub and the directions dialog all render the same sign. `onDark` is
+ * the only variation, and it exists because the footer sits on ink rather
+ * than paper; it swaps the plate's fill, not its design.
+ *
+ * The wording all comes from `shop.hours.status.labels`, so the sign can be
+ * reworded without touching this file or the scheduling logic.
+ */
+export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
   const [status, setStatus] = useState(() => getShopHoursStatus());
   const [previewState, setPreviewState] = useState<string | null>(null);
   const holdTimer = useRef<number | null>(null);
@@ -57,7 +68,7 @@ export function ShopHoursStatus() {
   const statusLines = shownLabel.split(". ").filter(Boolean);
 
   return (
-    <span className="shop-hours-status-wrap">
+    <span className={`shop-hours-status-wrap${onDark ? " on-dark" : ""}`}>
       <span
         aria-label={`Shop status: ${shownLabel}. ${preview.hint}.`}
         aria-live="polite"

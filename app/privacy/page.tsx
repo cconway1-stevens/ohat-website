@@ -8,7 +8,7 @@ import { shop } from "@/lib/shop";
 export const metadata = pageMetadata({
   title: "Privacy Policy",
   description:
-    `How Ocean Heights Auto & Tire handles information on this website: what the site measures, the cookies it sets, and the choices you have. We do not sell personal data.`,
+    "What this website collects, the cookies it sets, the other services your browser contacts, and the choices you have. The site does not sell personal data.",
   path: "/privacy",
   ogTitle: "Privacy Policy",
 });
@@ -32,40 +32,50 @@ export default function PrivacyPage() {
             <p className="eyebrow">Straight answers</p>
             <h1>Privacy policy</h1>
             <p>
-              We run a repair shop, not a data business. This page explains
-              exactly what this website collects, who else your browser talks
-              to when you visit, and how to turn the measurement off. Last
-              updated {lastUpdated}.
+              This page explains exactly what this website collects, who else
+              your browser talks to when you visit, and how to turn the
+              measurement off. It covers the site itself — not the shop&rsquo;s
+              counter records. Last updated {lastUpdated}.
             </p>
           </div>
         </section>
 
         <section className="section">
           <div className="shell legal-doc">
-            <h2>The short version</h2>
+            <h2>What this policy covers</h2>
             <p>
-              We do not sell your personal information. We do not share it for
-              targeted advertising. There is no contact form on this site, so
-              unless you call us, email us, or drop off a vehicle, we never
-              receive your name at all. The website measures which pages people
-              read and which pages lead to a phone call, and that is the whole
-              purpose.
+              This policy is about <strong>this website</strong> — what it
+              collects while you browse, and who else your browser talks to
+              while you are here. It does not describe how the shop handles
+              customer and vehicle records at the counter; that is the
+              business&rsquo;s own recordkeeping, and questions about it should
+              go to the shop directly using the details at the bottom of this
+              page.
             </p>
 
-            <h2>Information you give us directly</h2>
+            <h2>The short version</h2>
             <p>
-              If you call {phoneDisplay}, email us, or leave a vehicle for
-              service, we collect what you tell us: your name, phone number,
-              email address, vehicle details, and the service history we need
-              to work on your car. We use it to do the work, to reach you about
-              it, and to keep the records a repair shop is expected to keep. We
-              do not sell it, rent it, or hand it to advertisers.
+              This site does not sell your personal information or share it for
+              targeted advertising. It has no contact form, no accounts and no
+              payments, so it never receives your name at all. It measures
+              which pages people read and which pages lead to a phone call, and
+              that is the whole purpose.
+            </p>
+
+            <h2>What this site does not collect</h2>
+            <p>
+              This website has no contact form, no booking form, no accounts and
+              no payment processing. There is nothing here to type your details
+              into.
             </p>
             <p>
-              This website itself has no forms and no accounts. Every &ldquo;get
-              in touch&rdquo; link here opens your own phone app or email
-              program, so that message goes straight to us and passes through
-              nothing on this site along the way.
+              Every &ldquo;get in touch&rdquo; control is a plain link that
+              hands off to your own phone app or email program. Calling{" "}
+              {phoneDisplay} or emailing the shop starts a conversation directly
+              with the business — that message never passes through this site,
+              and this site never sees it. Whatever the shop then keeps about
+              your visit and your vehicle is its own record, outside what this
+              policy describes.
             </p>
 
             <h2>What the website measures automatically</h2>
@@ -157,10 +167,11 @@ export default function PrivacyPage() {
                 .
               </li>
               <li>
-                <strong>Just ask.</strong> Call or email and ask what we have
-                about you, ask for a correction, or ask us to delete it. We will
-                do it. You do not need to cite a statute or fill in a form, and
-                we will not treat you any differently for asking.
+                <strong>Just ask.</strong> If you want to know what the shop
+                holds about you, or want it corrected or deleted, call or email
+                and ask. You do not need to cite a statute or fill in a form.
+                That request goes to the business, since it is the business
+                — not this website — that keeps those records.
               </li>
             </ul>
 
@@ -175,28 +186,34 @@ export default function PrivacyPage() {
               those obligations do not fall on us.
             </p>
             <p>
-              We would rather not lean on that. We honour the requests above
-              from anyone who asks, whether or not the law requires it, we
-              honour Global Privacy Control, and we do not sell personal data or
-              use it for targeted advertising — which is what most of those
-              rights exist to protect you from in the first place.
+              We would rather not lean on that. This site honours Global
+              Privacy Control whether or not it has to, sells no personal data,
+              and runs no targeted advertising — which is what most of those
+              rights exist to protect you from in the first place. Requests
+              about the shop&rsquo;s own records are always welcome by phone or
+              email.
             </p>
 
             <h2>Children</h2>
             <p>
-              This site is meant for people arranging vehicle service and is not
-              directed at children. We do not knowingly collect personal
-              information from anyone under 13. The arcade is a bit of fun for
-              whoever finds it; it asks for nothing and keeps its scores on your
-              own device.
+              This site is meant for people arranging vehicle service and is
+              not directed at children, and it knowingly collects no personal
+              information from anyone under 13 — it collects no names from
+              anyone at all. The arcade is a bit of fun for whoever finds it; it
+              asks for nothing and keeps its scores on your own device.
             </p>
 
-            <h2>Security and retention</h2>
+            <h2>Retention</h2>
             <p>
-              Customer and vehicle records are kept as long as we need them to
-              service your vehicle, stand behind our work, and meet tax and
-              recordkeeping obligations. We limit access to the people who need
-              it to do their jobs.
+              This website stores nothing about you itself. The analytics
+              described above are retained by Google under its own schedule,
+              and the items in your browser&rsquo;s local storage stay until you
+              clear them.
+            </p>
+            <p>
+              How long the shop keeps customer and vehicle records is a matter
+              for the business rather than this site — ask the shop if you would
+              like to know.
             </p>
 
             <h2>Changes</h2>

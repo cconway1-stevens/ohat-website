@@ -51,50 +51,63 @@ export function SiteFooter() {
       <footer className="site-footer">
         <div className="footer-checker" aria-hidden="true" />
         <div className="shell footer-grid">
-          <div>
+          {/* The masthead block: who we are, in the shop's own words. Every
+              value here comes from lib/shop.mjs so the footer can never
+              disagree with the header, the contact page or the vCard. */}
+          <div className="footer-brand">
             <BrandMark />
+            <p className="footer-tagline">{shop.tagline}</p>
             <p>
-              Family-owned auto repair with classic care, modern technology, and
-              honest service for every kind of vehicle.
+              Family-owned auto repair in {shop.address.city} ({shop.nickname}),
+              serving {shop.county} and {shop.region}. Gas, diesel, hybrid,
+              electric and classic vehicles all welcome.
             </p>
           </div>
-          <div>
+
+          <div className="footer-col">
             <strong>Visit</strong>
             <DirectionsTrigger className="footer-address-trigger">
               {shop.address.street}
               <br />
               {shop.address.cityLine}
             </DirectionsTrigger>
-            {/* The Visit column was two lines tall next to a six-link Connect
-                column. These are the two things someone looking up the
-                address most often wants next, so they balance the row and
-                earn their place rather than padding it. */}
             <Link href="/vehicle-drop-off">After-hours drop-off</Link>
             <Link href="/our-shop">About the shop</Link>
+            <Link href="/services">Service catalog</Link>
           </div>
-          <div>
+
+          <div className="footer-col footer-call">
             <strong>Call</strong>
-            <a href={phoneHref}>{phoneDisplay}</a>
+            <a className="footer-phone" href={phoneHref}>{phoneDisplay}</a>
             <span>{shop.hours.display}</span>
-            <ShopHoursStatus />
+            <span className="footer-closed-note">{shop.hours.closedNote}</span>
+            <ShopHoursStatus onDark />
           </div>
-          <div>
+
+          <div className="footer-col">
             <strong>Connect</strong>
-            <a href="/links">Quick links</a>
+            <Link href="/links">Quick links</Link>
             <a href="/contact-card.vcf" download>Add us to contacts</a>
-            {socialLinks.map(([label, href]) => (
-              <a key={label} href={href} target="_blank" rel="noreferrer">
-                {label} <span className="sr-only">(opens in a new tab)</span>
-              </a>
-            ))}
+            <Link href="/reviews">Customer reviews</Link>
+            <div className="footer-socials">
+              {socialLinks.map(([label, href]) => (
+                <a key={label} href={href} target="_blank" rel="noreferrer">
+                  {label}
+                  <span className="sr-only"> (opens in a new tab)</span>
+                  <i aria-hidden="true">↗</i>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
         <div className="shell footer-bottom">
           <span>© {new Date().getFullYear()} {shop.name}</span>
-          <span>All makes &amp; models · Gas · Diesel · Hybrid · Electric</span>
+          <span className="footer-makes">
+            All makes &amp; models · Gas · Diesel · Hybrid · Electric
+          </span>
           {/* Sitewide footer link because a privacy notice has to be
               "reasonably accessible" from anywhere on the site to count. */}
-          <a href="/privacy">Privacy</a>
+          <Link href="/privacy">Privacy</Link>
         </div>
         {/* Watched by DockVisibility so the floating call dock steps aside
             once the bottom of the footer is on screen. */}
