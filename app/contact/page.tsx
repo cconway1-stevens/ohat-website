@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { CopyButton } from "@/components/copy-field";
+import { RouteShield } from "@/components/route-shield";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { contactEmail, receiptsEmail } from "@/lib/business";
 import { ShopHoursStatus } from "@/components/shop-hours-status";
@@ -124,7 +125,16 @@ export default function ContactPage() {
           <div className="shell contact-grid">
             {ways.map((way) => (
               <article key={way.number}>
-                <span>{way.number}</span>
+                {/* A highway route shield standing in for the step number.
+                    Decorative and sequential only — the heading right after
+                    it is what actually says what the step is. */}
+                <RouteShield number={way.number} />
+                {way.action.kind === "directions" ? (
+                  // The one card with a physical destination gets the map's
+                  // own "you are headed here" pin, tying it to the same red
+                  // dot in the legend below rather than inventing new iconography.
+                  <span className="map-pin" aria-hidden="true" />
+                ) : null}
                 <h2>{way.title}</h2>
                 {way.action.kind === "directions" ? (
                   <DirectionsTrigger className="contact-address-trigger">
