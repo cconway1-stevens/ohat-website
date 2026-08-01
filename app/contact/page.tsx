@@ -114,7 +114,13 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="section contact-section">
+        <section className="section contact-section road-map">
+          {/* Decorative only: the folded-map paper, the route running behind
+              the cards, and the compass. All aria-hidden — none of it carries
+              meaning a screen reader needs. */}
+          <span className="road-map-compass" aria-hidden="true">
+            <b>N</b>
+          </span>
           <div className="shell contact-grid">
             {ways.map((way) => (
               <article key={way.number}>
@@ -136,6 +142,15 @@ export default function ContactPage() {
                 ) : null}
               </article>
             ))}
+          </div>
+          <div className="shell road-legend">
+            <span className="road-legend-title">Map key</span>
+            <span><i className="key-swatch key-shop" aria-hidden="true" />You are headed here</span>
+            <span><i className="key-swatch key-route" aria-hidden="true" />Ocean Heights Ave</span>
+            <span><i className="key-swatch key-hours" aria-hidden="true" />Open Mon&ndash;Fri, 8&ndash;5</span>
+            <span className="road-legend-scale" aria-hidden="true">
+              0<em /><em /><em />5 mi
+            </span>
           </div>
         </section>
 
