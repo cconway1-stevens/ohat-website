@@ -1136,8 +1136,12 @@ img { max-width: 100%; }
   border-top: 3px double rgba(168,22,28,.34);
 }
 .link-hub-list { display: grid; gap: .7rem; }
-.link-hub-list a,
-.link-hub-list button {
+/* Only the list's own tiles get the link-hub treatment. DirectionsTrigger
+   renders the shared dialog beside its trigger button; broad descendant
+   selectors here used to restyle every route link, copy button, and close
+   control inside that dialog, making it look unlike the main-site popup. */
+.link-hub-list > a,
+.link-hub-list > button {
   min-height: 70px;
   display: grid;
   grid-template-columns: 46px 1fr 22px;
@@ -1153,12 +1157,12 @@ img { max-width: 100%; }
   cursor: pointer;
   font: inherit;
 }
-.link-hub-list a::after,
-.link-hub-list button::after { content: "→"; font-weight: 950; }
-.link-hub-list a:hover,
-.link-hub-list button:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
-.link-hub-list a > span:first-child,
-.link-hub-list button > span:first-child {
+.link-hub-list > a::after,
+.link-hub-list > button::after { content: "→"; font-weight: 950; }
+.link-hub-list > a:hover,
+.link-hub-list > button:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
+.link-hub-list > a > span:first-child,
+.link-hub-list > button > span:first-child {
   display: grid;
   place-items: center;
   width: 42px;
@@ -1170,14 +1174,15 @@ img { max-width: 100%; }
   font-size: 1.2rem;
   font-weight: 900;
 }
-.link-hub-list a > span:nth-child(2),
-.link-hub-list button > span:nth-child(2) { display: grid; gap: .15rem; }
-.link-hub-list small { color: var(--muted); font-size: .7rem; }
-.link-hub-list .link-hub-primary { background: var(--red); color: #fff; }
+.link-hub-list > a > span:nth-child(2),
+.link-hub-list > button > span:nth-child(2) { display: grid; gap: .15rem; }
+.link-hub-list > a small,
+.link-hub-list > button small { color: var(--muted); font-size: .7rem; }
+.link-hub-list > .link-hub-primary { background: var(--red); color: #fff; }
 /* The icon disc stays yellow on this red tile, so it must not inherit the
    tile's white text colour. */
-.link-hub-list .link-hub-primary > span:first-child { color: var(--ink); }
-.link-hub-list .link-hub-primary small { color: #ffe9bb; }
+.link-hub-list > .link-hub-primary > span:first-child { color: var(--ink); }
+.link-hub-list > .link-hub-primary small { color: #ffe9bb; }
 /* The four review and social profiles, compacted into one row of chips. */
 .link-hub-socials { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }
 .link-hub-socials a {
@@ -1215,12 +1220,12 @@ img { max-width: 100%; }
 .link-hub-group:nth-of-type(1) { animation-delay: .16s; }
 .link-hub-group:nth-of-type(2) { animation-delay: .27s; }
 .link-hub-group:nth-of-type(3) { animation-delay: .38s; }
-.link-hub-list a > span:first-child,
-.link-hub-list button > span:first-child { transition: transform .18s ease; }
-.link-hub-list a:not(.link-hub-primary):hover > span:first-child,
-.link-hub-list button:hover > span:first-child { transform: rotate(-9deg) scale(1.08); }
+.link-hub-list > a > span:first-child,
+.link-hub-list > button > span:first-child { transition: transform .18s ease; }
+.link-hub-list > a:not(.link-hub-primary):hover > span:first-child,
+.link-hub-list > button:hover > span:first-child { transform: rotate(-9deg) scale(1.08); }
 /* The call tile rings instead of tilting, matching the header's call button. */
-.link-hub-list .link-hub-primary:hover > span:first-child { animation: phone-ring .45s ease-in-out 2; }
+.link-hub-list > .link-hub-primary:hover > span:first-child { animation: phone-ring .45s ease-in-out 2; }
 
 /* Hours and the status placard used to sit side by side and get centred as a
    single unit, so neither lined up with anything: the text ran left of centre
