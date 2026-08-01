@@ -118,17 +118,21 @@ Audited by reading the source, not by assumption:
 - **Google Analytics 4** — page views plus a `call_click` event on taps of any
   phone-number link. Sets cookies. Configured as in the table above.
 - **Vercel Web Analytics** — page-view counts, cookieless, no personal data.
-  Restored after being removed, and worth recording why it moved twice. The
-  site is published to two hosts from one static export: Vercel (`vercel.json`)
-  and GitHub Pages (`.github/workflows/deploy-pages.yml`). The script lives at
-  `/_vercel/insights/script.js`, a path that exists only on Vercel's edge, so a
-  hardcoded tag 404'd on every GitHub Pages page load — which is why "Prepare
-  production deployment checks" pulled it and added a readiness check that
-  fails on any `/_vercel/` script in a rendered page. It is now injected at
-  runtime by `components/vercel-analytics.tsx` only when the hostname is a
-  Vercel one, so the export stays clean, the readiness check still passes, and
-  analytics works where it can. Being cookieless, it changes nothing about the
-  consent analysis.
+  Loaded through Vercel's own `@vercel/analytics` package.
+
+  Worth recording, because this tag has moved three times. It began as a plain
+  `<script src="/_vercel/insights/script.js">` in the layout. That path is
+  served only by Vercel's edge, and the site was then published to GitHub Pages
+  as well, so it 404'd on every Pages page load — which is why "Prepare
+  production deployment checks" removed it and added a readiness check that
+  fails on any `/_vercel/` script. GitHub Pages has since been retired, and the
+  official package is now used instead: it injects from a client effect, so the
+  exported HTML stays free of provider tags and the readiness check is
+  satisfied on its own terms. That check was narrowed to scan the built HTML
+  rather than the live DOM, since the runtime injection is the legitimate case.
+
+  Cookieless, so it changes nothing in the consent analysis above.
+
 - **Local storage** — arcade high scores, game settings, and a 30-minute
   weather cache. Never transmitted; lives on the visitor's device.
 - **Third-party requests that necessarily expose the visitor's IP:** Google

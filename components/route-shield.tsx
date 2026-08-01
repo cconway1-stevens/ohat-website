@@ -18,14 +18,18 @@
 // Concave shoulders, a shallow waist, and a rounded point. Symmetric about
 // x=50. The crown dip is deliberately shallow — taken much lower and the
 // silhouette stops reading as a road sign and starts reading as a heart.
-// The tangents leaving the crown are near-horizontal on purpose. Steeper ones
-// turn the centre into a sharp V and the sign reads as a heart, however
-// shallow the dip itself is.
+// An Interstate shield: a broad, nearly flat crown that flares up at the two
+// top corners, the widest point high on the sign, then a long taper to a
+// rounded point.
+//
+// The crown is the whole trick. Earlier versions dipped it in the middle and
+// met it with steep tangents, which reads unmistakably as a heart — the top
+// has to stay almost level, with the corners doing the lifting.
 const SHIELD =
-  "M50 5 C46 4 40 0 30 1 C18 2 8 8 3 15 C9 24 12 33 11 41 " +
-  "C10 50 6 57 2 63 C12 71 22 79 30 87 C38 94 45 100 50 103 " +
-  "C55 100 62 94 70 87 C78 79 88 71 98 63 C94 57 90 50 89 41 " +
-  "C88 33 91 24 97 15 C92 8 82 2 70 1 C60 0 54 4 50 5 Z";
+  "M50 2 C61 2 70 3 78 5 C86 7 93 11 97 16 " +
+  "C93 26 91 34 91 42 C91 52 88 61 82 69 C74 80 63 91 50 102 " +
+  "C37 91 26 80 18 69 C12 61 9 52 9 42 " +
+  "C9 34 7 26 3 16 C7 11 14 7 22 5 C30 3 39 2 50 2 Z";
 
 export function RouteShield({ number }: { number: string }) {
   // Clip ids are document-global, so they're namespaced per sign — three of
@@ -59,10 +63,12 @@ export function RouteShield({ number }: { number: string }) {
         <rect x="0" y="41" width="100" height="63" className="route-shield-body" />
       </g>
 
-      <text x="50" y="27" className="route-shield-label">
+      <text x="50" y="26" className="route-shield-label">
         ROUTE
       </text>
-      <text x="50" y="82" className="route-shield-number">
+      {/* Sits high in the body rather than centred in it: the shield tapers
+          to a point, so optical centre is well above geometric centre. */}
+      <text x="50" y="75" className="route-shield-number">
         {number}
       </text>
     </svg>

@@ -2,6 +2,7 @@
 import { createServer } from "node:net";
 import {
   mkdirSync,
+  readFileSync,
   readdirSync,
   statSync,
   writeFileSync,
@@ -50,6 +51,31 @@ function walk(dir) {
     const full = join(dir, entry);
     return statSync(full).isDirectory() ? walk(full) : [full];
   });
+}
+
+/**
+ * Provider-specific tags hardcoded into the *exported HTML* are the hazard:
+ * those files ship to whatever host serves them, and a `/_vercel/` path 404s
+ * on every page load anywhere but Vercel. This is what bit the site before.
+ *
+ * Deliberately reads the built files rather than the live DOM. The DOM check
+ * this replaces also flagged scripts appended at runtime by a client
+ * component — which is exactly how the official @vercel/analytics package
+ * loads, and which is safe, since it no-ops when the endpoint is absent.
+ */
+function checkExportedProviderScripts() {
+  const clientDir = join(root, "dist", "client");
+  const offenders = walk(clientDir)
+    .filter((file) => file.endsWith(".html"))
+    .filter((file) => /<script[^>]+src=["'][^"']*\/_vercel\//.test(readFileSync(file, "utf8")))
+    .map((file) => relative(clientDir, file).split(sep).join("/"));
+
+  if (offenders.length) {
+    fail("Exported HTML hardcodes a provider-specific script", {
+      files: offenders.slice(0, 10),
+      total: offenders.length,
+    });
+  }
 }
 
 function exportedRoutes() {
@@ -205,9 +231,6 @@ async function inspectPage(page) {
     bodyHasAppError: /Application error|Unhandled Runtime Error|This page could not be found/i.test(
       document.body?.innerText ?? "",
     ),
-    providerSpecificScripts: Array.from(document.scripts)
-      .map((script) => script.src)
-      .filter((src) => src.includes("/_vercel/")),
     brokenRasterImages: Array.from(document.images)
       .filter((img) => !/\.svg(?:$|[?#])/i.test(img.currentSrc || img.src))
       .filter((img) => {
@@ -384,14 +407,6 @@ function validateRouteResult(result, expectedStatus = 200) {
       screenshot: result.screenshot,
     });
   }
-  if (state.providerSpecificScripts.length) {
-    fail("Route emitted provider-specific script before host is chosen", {
-      route: result.route,
-      viewport: result.viewport,
-      scripts: state.providerSpecificScripts,
-      screenshot: result.screenshot,
-    });
-  }
   if (state.brokenRasterImages.length) {
     fail("Route has broken raster images", {
       route: result.route,
@@ -436,6 +451,8 @@ async function main() {
       await runCommand(name, command);
     }
   }
+
+  checkExportedProviderScripts();
 
   const allRoutes = exportedRoutes();
   const pageRoutes = allRoutes.filter((route) => route !== "/404");
