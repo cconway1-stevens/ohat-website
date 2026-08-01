@@ -17,21 +17,20 @@
 }
 
 * { box-sizing: border-box; }
-/* The canvas behind everything. Without this, `body`'s cream propagated to
-   the canvas, so rubber-banding past the dark footer exposed a pale band that
-   read as a white gap at the bottom of every page. Ink matches both ends —
-   the footer below and the header above are both dark — so overscroll in
-   either direction now looks like more page rather than a hole. `body` keeps
-   its cream, which paints the content box as before. */
+/* Keep the browser canvas dark at both ends of the document. Mobile Safari
+   can use the body's paint (rather than the root's) during bottom overscroll,
+   so both surfaces must match the footer. The main element owns the cream
+   content canvas instead. */
 html { scroll-behavior: smooth; background: var(--ink); }
 body {
   margin: 0;
   overflow-x: hidden;
-  background: var(--cream);
+  background: var(--ink);
   color: var(--ink);
   font-family: var(--font-geist-sans), Arial, sans-serif;
   text-rendering: optimizeLegibility;
 }
+main { background: var(--cream); }
 
 body::before {
   content: "";
@@ -3619,7 +3618,11 @@ body.is-play-locked {
 .headlight { position: absolute; right: 3px; top: 9px; width: 12px; height: 9px; background: var(--yellow); }
 .bumper { position: absolute; right: -9px; bottom: 3px; width: 25px; height: 6px; background: #bbb; border: 2px solid var(--ink); }
 
-.site-footer { background: var(--ink); color: #fff; }
+.site-footer {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--ink);
+  color: #fff;
+}
 /* The columns used to run 1.3/1/.9/.7, which gave the most width to the
    brand blurb and the least to Connect — the one column with six links in it.
    Evened out, and the block tightened: 4.5rem of padding over a footer whose
