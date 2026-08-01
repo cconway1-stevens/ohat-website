@@ -5,6 +5,7 @@ import { useEffect } from "react";
 declare global {
   interface Window {
     va?: (event: string, properties?: Record<string, unknown>) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -15,8 +16,9 @@ declare global {
  *
  * Delegated from the document because call links appear in the header, the
  * sticky dock, the footer, and inline on most pages. It reports through
- * whatever analytics is present (Vercel's `window.va`) and is inert when none
- * is loaded, so it never blocks a call from going through.
+ * whatever analytics is present — Vercel's `window.va` and Google Analytics'
+ * `window.gtag` — and is inert when neither is loaded, so it never blocks a
+ * call from going through.
  */
 export function CallTracking() {
   useEffect(() => {
@@ -25,9 +27,19 @@ export function CallTracking() {
       const link = target?.closest?.('a[href^="tel:"]');
       if (!link) return;
 
+      const path = window.location.pathname;
+
       window.va?.("event", {
         name: "call_click",
-        data: { path: window.location.pathname },
+        data: { path },
+      });
+
+      // GA4 counts page views on its own; this is the event worth marking as
+      // a conversion in the GA console, since a phone call is the only thing
+      // this site is really trying to produce.
+      window.gtag?.("event", "call_click", {
+        page_path: path,
+        link_url: link.getAttribute("href"),
       });
     }
 

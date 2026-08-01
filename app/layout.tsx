@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { CallTracking } from "@/components/analytics";
+import { gaMeasurementId } from "@/lib/analytics";
 import { shop } from "@/lib/shop";
 import "tetris-kit/layout.css";
 import "./globals.css";
@@ -70,6 +71,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google tag (gtag.js). Google's install instructions ask for this
+            immediately after <head>, so it stays first: gtag.js records the
+            page view as soon as it loads, and anything queued before it
+            arrives is replayed from `dataLayer`. */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaMeasurementId}');`,
+          }}
+        />
         {/* Host-relative so the icon resolves on whatever domain serves the
             site — see the note on `icons` in the metadata above. */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
