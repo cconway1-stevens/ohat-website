@@ -1936,8 +1936,14 @@ img { max-width: 100%; }
   box-shadow: 3px 3px 0 var(--ink);
 }
 .copy-button:hover { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
-.contact-facts { padding-block: clamp(3.5rem, 7vw, 5.5rem); background: var(--cream); }
-.contact-dashboard { display: grid; grid-template-columns: minmax(0, .92fr) minmax(360px, 1.08fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+.contact-facts { padding-block: clamp(2.5rem, 5vw, 4rem); background: var(--cream); }
+/* `align-items: start` left the map column ending high above the taller copy
+   column, with a large empty rectangle beneath it. Stretching lets the map
+   grow to meet the bottom of the row instead. */
+.contact-dashboard { display: grid; grid-template-columns: minmax(0, .92fr) minmax(360px, 1.08fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: stretch; }
+.contact-map-panel { display: flex; flex-direction: column; }
+.contact-map-panel .shop-map { display: flex; flex-direction: column; flex: 1; margin: 0; }
+.contact-map-panel .shop-map-frame { flex: 1; }
 .contact-dashboard > *,
 .contact-facts-grid > * { min-width: 0; }
 .contact-dashboard-copy > h2,
@@ -3103,18 +3109,27 @@ body.is-play-locked {
 .community-band .shell > span { font-family: Georgia, serif; font-size: clamp(5rem, 13vw, 10rem); font-weight: 900; color: var(--yellow); text-shadow: 8px 8px 0 var(--red); transform: rotate(-5deg); }
 .community-band p:not(.eyebrow) { max-width: 680px; color: #dceff1; line-height: 1.7; }
 
-.contact-hero { padding-bottom: clamp(3.5rem, 6vw, 5rem); }
+.contact-hero { padding-bottom: clamp(2.5rem, 4.5vw, 3.75rem); }
 .contact-hero-grid { display: grid; grid-template-columns: 1fr .78fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
 .contact-hero-grid img { border: 7px solid var(--paper); outline: 4px solid var(--ink); box-shadow: 13px 13px 0 var(--yellow); transform: rotate(2deg); }
-.contact-section { padding-block: clamp(3.25rem, 7vw, 5.75rem); }
+.contact-section { padding-block: clamp(2.25rem, 4vw, 3.5rem); }
 .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-.contact-grid article { min-height: 230px; display: flex; flex-direction: column; padding: 1.45rem; background: var(--paper); border: 3px solid var(--ink); box-shadow: 7px 7px 0 var(--ink); transition: transform .2s ease, box-shadow .2s ease; }
-.contact-grid article:nth-child(2) { margin-top: .75rem; background: var(--yellow); }
-.contact-grid article:nth-child(3) { margin-top: 1.5rem; background: var(--blue); color: #fff; }
+/* All three cards share a top and a bottom edge. They used to be offset in a
+   staircase (.75rem, 1.5rem) which read as misalignment rather than style,
+   and left the last card colliding with the floating call dock. The colour
+   change alone carries the variety. */
+.contact-grid article { display: flex; flex-direction: column; padding: 1.45rem; background: var(--paper); border: 3px solid var(--ink); box-shadow: 7px 7px 0 var(--ink); transition: transform .2s ease, box-shadow .2s ease; }
+.contact-grid article:nth-child(2) { background: var(--yellow); }
+.contact-grid article:nth-child(3) { background: var(--blue); color: #fff; }
 .contact-grid article:hover { transform: translateY(-5px); box-shadow: 10px 11px 0 var(--ink); }
 .contact-grid article > span { color: var(--red); font-family: Georgia, serif; font-size: 2.4rem; font-weight: 900; line-height: .9; }
 .contact-grid article:nth-child(3) > span { color: var(--yellow); }
-.contact-grid h2 { margin: auto 0 .75rem; font-family: Georgia, serif; font-size: 1.7rem; }
+/* `margin-top: auto` here used to shove the heading to the foot of the card,
+   so a short card opened with a band of empty paper and no two headings sat
+   on the same line. The headings now follow the number directly; the copy
+   button below takes over the job of hugging the bottom edge. */
+.contact-grid h2 { margin: .55rem 0 .75rem; font-family: Georgia, serif; font-size: 1.7rem; }
+.contact-grid article > .copy-button { margin-top: auto; }
 .contact-grid a { font-weight: 950; text-decoration: underline; text-underline-offset: 4px; }
 .contact-address-trigger {
   padding: 0;
@@ -3128,7 +3143,7 @@ body.is-play-locked {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.contact-grid p { margin-bottom: 0; opacity: .76; line-height: 1.48; }
+.contact-grid p { margin-bottom: .9rem; opacity: .76; line-height: 1.48; }
 .contact-grid article:nth-child(3) p { opacity: 1; color: var(--blue-tint); }
 /* Contact-page shop map */
 .shop-map {
@@ -3187,7 +3202,7 @@ body.is-play-locked {
 }
 .shop-map-cta:hover { color: var(--ink); }
 
-.directions-band { padding: 7rem 0; background: var(--blue); color: #fff; }
+.directions-band { padding: clamp(3.25rem, 6vw, 4.75rem) 0; background: var(--blue); color: #fff; }
 .directions-band .shell { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
 .directions-band p:not(.eyebrow) { color: #dceff1; }
 
@@ -3705,7 +3720,7 @@ body.is-play-locked {
   .contact-receipts { grid-column: auto; }
   .shop-map-frame { min-height: 230px; }
   .dropoff-grid::before { display: none; }
-  .dropoff-grid article, .dropoff-grid article:nth-child(even), .theme-grid article, .theme-grid article:nth-child(even), .contact-grid article, .contact-grid article:nth-child(2), .contact-grid article:nth-child(3), .profile-grid > a:last-child { min-height: 240px; margin-top: 0; transform: none; grid-column: auto; }
+  .dropoff-grid article, .dropoff-grid article:nth-child(even), .theme-grid article, .theme-grid article:nth-child(even), .contact-grid article, .profile-grid > a:last-child { min-height: 200px; margin-top: 0; transform: none; grid-column: auto; }
   .dropoff-steps { padding-bottom: 5.5rem; }
   .dropoff-location img { box-shadow: 8px 8px 0 var(--blue); }
   .dropoff-note .shell { align-items: flex-start; flex-direction: column; }
