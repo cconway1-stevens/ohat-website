@@ -4084,3 +4084,14 @@ body.is-play-locked {
   .silver-count { grid-column: 1 / -1; text-align: center; }
   .silver-tone label { flex-basis: 100%; }
 }
+
+/* Long-form legal copy: /privacy. Narrower than the marketing sections
+   because unbroken prose gets hard to track past about 70 characters. */
+.legal-doc { max-width: 68ch; }
+.legal-doc h2 { margin: 2.75rem 0 .85rem; font-size: clamp(1.15rem, 2.1vw, 1.5rem); line-height: 1.25; }
+.legal-doc > h2:first-child { margin-top: 0; }
+.legal-doc p, .legal-doc li { color: var(--muted); line-height: 1.7; }
+.legal-doc p { margin: 0 0 1rem; }
+.legal-doc ul { margin: 0 0 1.35rem; padding-left: 1.15rem; display: grid; gap: .7rem; }
+.legal-doc strong { color: var(--ink); }
+.legal-doc a { color: inherit; text-underline-offset: .18em; }

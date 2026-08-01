@@ -74,7 +74,22 @@ export default function RootLayout({
         {/* Google tag (gtag.js). Google's install instructions ask for this
             immediately after <head>, so it stays first: gtag.js records the
             page view as soon as it loads, and anything queued before it
-            arrives is replayed from `dataLayer`. */}
+            arrives is replayed from `dataLayer`.
+
+            The consent defaults below are deliberate, and they are what keeps
+            this a measurement tool rather than an advertising one:
+            - Advertising storage and personalisation are denied outright, and
+              Google Signals is off. Nothing here feeds ad targeting, which is
+              what stops routine analytics from looking like a "sale" or
+              "targeted advertising" under state privacy law.
+            - `analytics_storage` follows the browser's Global Privacy Control
+              signal, so a visitor who has set GPC is measured without cookies
+              and without a banner to click. New Jersey has required covered
+              controllers to honour a universal opt-out mechanism since July
+              2025; this shop is well under the thresholds that make it a
+              covered controller, so this is us honouring the signal because
+              it is the right default, not because we are compelled to.
+            See docs/privacy-compliance.md for the full analysis. */}
         <script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
@@ -84,7 +99,17 @@ export default function RootLayout({
             __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', '${gaMeasurementId}');`,
+gtag('consent', 'default', {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: navigator.globalPrivacyControl === true ? 'denied' : 'granted'
+});
+gtag('config', '${gaMeasurementId}', {
+  anonymize_ip: true,
+  allow_google_signals: false,
+  allow_ad_personalization_signals: false
+});`,
           }}
         />
         {/* Host-relative so the icon resolves on whatever domain serves the
@@ -96,8 +121,11 @@ gtag('config', '${gaMeasurementId}');`,
       <body className={`${geistSans.variable} antialiased`}>
         {children}
         <CallTracking />
-        {/* Vercel Web Analytics: cookieless, no consent banner needed, and a
-            404 on any other host rather than an error. */}
+        {/* Vercel Web Analytics: cookieless, and a 404 on any other host
+            rather than an error. (The "no consent banner needed" note that
+            used to sit here was true of Vercel alone; the Google tag above
+            does set cookies, so see docs/privacy-compliance.md for where the
+            banner question actually lands.) */}
         <script defer src="/_vercel/insights/script.js" />
       </body>
     </html>
