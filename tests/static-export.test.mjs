@@ -143,6 +143,18 @@ test("exported pages carry no Worker-only image URLs", () => {
   }
 });
 
+test("mobile homepage images use compact modern formats", () => {
+  const html = readFileSync(join(outDir, "index.html"), "utf8");
+
+  assert.match(html, /\/media\/logo-transparent\.avif/);
+  assert.match(html, /\/media\/ase-certified\.webp/);
+  assert.match(
+    html,
+    /\/media\/rs\/cecf1b30-365d-430d-b925-1fd22429c9e1-768\.avif 768w/,
+    "homepage hero should offer a phone-sized AVIF candidate",
+  );
+});
+
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = join(dir, entry.name);

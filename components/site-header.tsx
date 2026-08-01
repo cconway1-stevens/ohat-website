@@ -69,7 +69,7 @@ export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {
       onPointerUp={clearLogoHold}
     >
       <Image
-        src="/media/logo-transparent.png"
+        src="/media/logo-transparent.avif"
         width={315}
         height={231}
         alt="Ocean Heights Auto and Tire"

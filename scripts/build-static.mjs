@@ -92,7 +92,7 @@ for (const file of htmlFiles) {
         if (!image || !Number.isFinite(width)) return entry.trim();
         const variant = image.widths.find((candidate) => candidate >= width);
         return variant
-          ? `/media/rs/${image.stem}-${variant}.jpg ${descriptor}`
+          ? `/media/rs/${image.stem}-${variant}.${image.extension} ${descriptor}`
           : entry.trim();
       });
       const rebuilt = entries.join(", ");
@@ -109,7 +109,9 @@ for (const file of htmlFiles) {
     const image = src && imageManifest[src];
     if (!image) return tag;
     const candidates = [
-      ...image.widths.map((w) => `/media/rs/${image.stem}-${w}.jpg ${w}w`),
+      ...image.widths.map(
+        (w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`,
+      ),
       `${src} ${image.full}w`,
     ].join(", ");
     responsive += 1;
@@ -127,7 +129,9 @@ for (const file of htmlFiles) {
       const image = href && imageManifest[href];
       if (!image) return tag;
       const candidates = [
-        ...image.widths.map((w) => `/media/rs/${image.stem}-${w}.jpg ${w}w`),
+        ...image.widths.map(
+          (w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`,
+        ),
         `${href} ${image.full}w`,
       ].join(", ");
       return tag.replace(/<link\b/, `<link imagesrcset="${candidates}"`);
