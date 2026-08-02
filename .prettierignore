@@ -9,5 +9,10 @@ drizzle/meta/
 lib/image-manifest.json
 public/media/rs/
 
+# Vercel may normalize this project file in its prepared build workspace
+# before `buildCommand` runs. Its functional values are asserted separately
+# by tests/static-export.test.mjs.
+vercel.json
+
 # Keep third-party and hand-optimized vector assets byte-for-byte stable.
 public/**/*.svg
