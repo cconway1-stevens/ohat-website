@@ -1,11 +1,38 @@
 # Ocean Heights Auto & Tire — Website
 
+[![CI](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml)
+[![GitHub Pages build](https://github.com/cconway1-stevens/ohat-website/actions/workflows/deploy-pages.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/deploy-pages.yml)
+[![Production website](https://img.shields.io/website?url=https%3A%2F%2Fohat-website.vercel.app%2F&up_message=online&down_message=offline&label=production)](https://ohat-website.vercel.app/)
+
 The website for **Ocean Heights Auto & Tire**, a family-run auto repair shop
 at 1178 Ocean Heights Avenue, Egg Harbor Township, NJ. Built as a retro
 service-catalog experience — "Service & Repair Annual, Issue No. 1178" — with
 a modern Next.js stack on Cloudflare.
 
 The primary conversion on every page: **call (609) 241-1546 to book service.**
+
+## Website status
+
+| Area                    | Status                                                                 | What it means                                                                                                                                                   |
+| ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production              | **Online** — [open the Vercel site](https://ohat-website.vercel.app/)  | The homepage returned HTTP 200 when verified on August 1, 2026. The badge above checks availability continuously.                                               |
+| Main-branch quality     | **Passing locally; CI enforced on GitHub**                             | Every push and pull request runs formatting, lint, both production builds, rendered-route tests, service SEO checks, hours logic, and static-export validation. |
+| Static deployment       | **Latest completed workflow passed**                                   | GitHub Pages builds the same static artifact configured for Vercel and publishes it when Pages is served from a domain root.                                    |
+| Last PageSpeed snapshot | **Mobile: 78 performance; 100 accessibility, best practices, and SEO** | Measured August 1, 2026 before the latest AVIF/responsive-image improvements. Re-run PageSpeed after deployment before treating 78 as the current score.        |
+
+The status badges are the fastest way to read health: **CI** proves the checked-in code builds and passes tests, **GitHub Pages build** proves the static deployment path works, and **Production website** confirms the public URL responds.
+
+## Build and test workflow
+
+GitHub Actions is the visible source of truth for repository health:
+
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push to `main`, every pull request targeting `main`, and manual dispatch. It uses Node.js 24, installs from the lockfile, runs ESLint, and executes the full test command.
+- `npm test` first runs the Cloudflare/Sites production build, then rendered HTML, service SEO, and shop-hours tests. It also builds the Vercel/static export and validates every exported route and asset URL.
+- Prettier is a build gate. Both `npm run build` and `npm run build:static` stop if maintained files are not formatted.
+- [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) builds the static site on `main` and publishes it when GitHub Pages is configured at a domain root.
+- [`vercel.json`](vercel.json) tells Vercel to run the same `npm run build:static` path and serve `dist/client`.
+
+To investigate a failure, open the failing badge, select the newest run, then open the failed step. A red **Lint** step points to source-quality errors; a red **Full test suite** step can identify a production build, route, SEO, hours, or static-export regression.
 
 ## Design language
 
@@ -29,8 +56,8 @@ surfaces).
 | Route                                                                                              | Purpose                                                                                 |
 | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `/`                                                                                                | Catalog-cover homepage: hero, credentials, services, diagnostics, makes, reviews, visit |
-| `/services`                                                                                        | The service board — all 12 service categories                                           |
-| `/services/[slug]`                                                                                 | Bay-ticket detail page per service (12 pages, data in `lib/services.ts`)                |
+| `/services`                                                                                        | The service board — all 14 service categories                                           |
+| `/services/[slug]`                                                                                 | Bay-ticket detail page per service (14 pages, data in `lib/services.ts`)                |
 | `/our-shop`                                                                                        | Family story and shop photo gallery                                                     |
 | `/reviews`                                                                                         | Review themes plus CARFAX / Yelp / Facebook profiles                                    |
 | `/offers`                                                                                          | Current offers and the preserved legacy coupon                                          |
@@ -52,8 +79,9 @@ These are maintained deliberately — please keep them green when contributing:
   support.
 - **SEO:** per-page titles/descriptions/canonicals, Open Graph + Twitter
   cards, `LocalBusiness`, `Service`, and `BreadcrumbList` JSON-LD.
-- **Performance:** optimized media (the hero ships as a 372 KB progressive
-  JPEG), self-hosted fonts, no external image dependencies on the homepage.
+- **Performance:** responsive AVIF photo ladders, a roughly 25 KB phone-sized
+  hero candidate, a 6.5 KB AVIF masthead logo, self-hosted fonts, and no
+  external image dependencies on the homepage.
 
 ## Stack
 
@@ -84,11 +112,13 @@ inventory, and owner follow-ups.
 
 ## Development
 
-Requires Node.js `>= 22.13.0` (Linux with `flock`, `curl`, GNU `timeout`).
+Requires Node.js `24.x` (Linux with `flock`, `curl`, GNU `timeout`).
 
 ```bash
 npm run install:ci   # one bounded lockfile install
 npm run dev          # Vite dev server at http://localhost:5173
+npm run format       # format all maintained repository files
+npm run format:check # verify formatting without changing files
 npm run lint         # ESLint
 npm test             # production build + rendered-HTML tests
 npm run build        # build and validate the deployable Sites artifact
