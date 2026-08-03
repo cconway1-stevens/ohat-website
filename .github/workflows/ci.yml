@@ -30,6 +30,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Formatting is checked here rather than in `build:static`, on purpose.
+      # It used to run as the first step of the production build, which meant
+      # an unformatted file — even one nobody had looked at — failed the Vercel
+      # deploy and took the site's updates down with it. A style rule should
+      # never be able to block a deploy. Failing here is loud, safe, and fixed
+      # with `npm run check:fix`.
+      - name: Formatting
+        run: npm run format:check
+
       - name: Lint
         run: npm run lint
 
