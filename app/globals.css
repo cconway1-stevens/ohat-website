@@ -897,6 +897,19 @@ img {
   text-transform: uppercase;
   text-wrap: balance;
 }
+.cover-business-name {
+  display: block;
+}
+.cover-service-name {
+  display: block;
+  margin-top: 0.68rem;
+  color: var(--ink);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-size: clamp(1rem, 1.65vw, 1.38rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
 .cover-location {
   width: fit-content;
   margin: clamp(0.85rem, 1.7vw, 1.2rem) 0 0;
