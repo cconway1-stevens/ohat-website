@@ -86,7 +86,7 @@ export const services: Service[] = [
       "Vehicle pulls while braking",
       "Brake warning light",
       "Longer stopping distances",
-      "A pedal that sinks slowly at a light",
+      "Pedal sinks while stopped",
     ],
     includes: [
       "Pads and rotors",
