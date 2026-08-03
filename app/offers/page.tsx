@@ -59,6 +59,7 @@ export default function OffersPage() {
                 width={1000}
                 height={627}
                 alt="Historical Ocean Heights Auto and Tire coupon; call to confirm current offers"
+                unoptimized
               />
               <figcaption>Historical coupon—call to confirm current terms.</figcaption>
             </figure>

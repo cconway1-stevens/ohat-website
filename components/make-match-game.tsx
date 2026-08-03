@@ -373,6 +373,7 @@ export function MakeMatchGame({
                           height={44}
                           alt=""
                           aria-hidden="true"
+                          unoptimized
                         />
                         <small>{tile.name}</small>
                       </>

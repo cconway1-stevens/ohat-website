@@ -107,6 +107,7 @@ export default function ContactPage() {
               width={750}
               height={520}
               alt="Ocean Heights Auto and Tire shop exterior"
+              unoptimized
             />
           </div>
         </section>
