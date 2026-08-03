@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteImage } from "@/components/site-image";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbSchema } from "@/lib/shop";
@@ -54,12 +54,11 @@ export default function OffersPage() {
               </a>
             </div>
             <figure>
-              <Image
+              <SiteImage
                 src="/media/auto-tire-coupon.jpg"
                 width={1000}
                 height={627}
                 alt="Historical Ocean Heights Auto and Tire coupon; call to confirm current offers"
-                unoptimized
               />
               <figcaption>Historical coupon—call to confirm current terms.</figcaption>
             </figure>

@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteImage } from "@/components/site-image";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbSchema } from "@/lib/shop";
@@ -78,7 +78,7 @@ export default function OurShopPage() {
             <div className="gallery-grid">
               {gallery.map(([src, alt], index) => (
                 <figure key={src} className={index === 0 ? "gallery-wide" : ""}>
-                  <Image src={src} width={1200} height={800} alt={alt} unoptimized />
+                  <SiteImage src={src} width={1200} height={800} alt={alt} />
                 </figure>
               ))}
             </div>

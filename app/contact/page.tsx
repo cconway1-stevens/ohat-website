@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { SiteImage } from "@/components/site-image";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { DirectionsTrigger } from "@/components/directions-dialog";
@@ -102,12 +102,11 @@ export default function ContactPage() {
                 </a>
               </div>
             </div>
-            <Image
+            <SiteImage
               src="/media/building8-21-14.4.jpg"
               width={750}
               height={520}
               alt="Ocean Heights Auto and Tire shop exterior"
-              unoptimized
             />
           </div>
         </section>

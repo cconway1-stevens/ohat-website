@@ -1,5 +1,5 @@
 import { SiteFooter } from "@/components/site-footer";
-import Image from "next/image";
+import { SiteImage } from "@/components/site-image";
 import Link from "next/link";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { DirectionsTrigger } from "@/components/directions-dialog";
@@ -106,13 +106,12 @@ export default function Home() {
 
               <figure className="cover-plate">
                 <div className="cover-plate-image">
-                  <Image
+                  <SiteImage
                     src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
                     alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
                     fill
                     priority
                     sizes="(max-width: 1220px) 100vw, 1180px"
-                    unoptimized
                   />
                 </div>
                 <span className="cover-stamp" aria-hidden="true">
@@ -159,13 +158,7 @@ export default function Home() {
 
             <div className="garage-proof-tickets" aria-label="Shop credentials">
               <div className="garage-proof-ticket garage-proof-ase">
-                <Image
-                  src="/media/ase-certified.webp"
-                  alt="ASE"
-                  width={70}
-                  height={52}
-                  unoptimized
-                />
+                <SiteImage src="/media/ase-certified.webp" alt="ASE" width={70} height={52} />
                 <span>
                   <strong>ASE Certified</strong>
                   <small>Technicians</small>
@@ -204,7 +197,7 @@ export default function Home() {
               <div className="catalog-make-track" aria-hidden="true">
                 {[...heroMakes, ...heroMakes].map((name, index) => (
                   <span className="catalog-make-logo" key={`${name}-${index}`}>
-                    <Image src={brandSrc(name)} width={40} height={40} alt="" unoptimized />
+                    <SiteImage src={brandSrc(name)} width={40} height={40} alt="" />
                     <strong>{name}</strong>
                   </span>
                 ))}

@@ -20,6 +20,15 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 FIX=0
 [[ "${1:-}" == "--fix" ]] && FIX=1
 
+# Every tool below is the pinned copy from node_modules, never `npx`. When a
+# package is missing, npx quietly downloads a *different* version and reports
+# success — which is exactly how a file that passed locally failed the build
+# on Vercel, where the pinned version is the one installed.
+if [[ ! -x ./node_modules/.bin/prettier ]]; then
+  echo "node_modules is incomplete — run 'npm install' first." >&2
+  exit 1
+fi
+
 FAILED=()
 step() {
   local name="$1"; shift
@@ -35,9 +44,9 @@ step() {
 # 1. Formatting. The build enforces this, so an unformatted file breaks every
 #    build until someone notices — worth catching first and cheapest.
 if [[ $FIX -eq 1 ]]; then
-  step "prettier (writing)" npx prettier --write . --log-level warn
+  step "prettier (writing)" ./node_modules/.bin/prettier --write . --log-level warn
 else
-  step "prettier --check" npx prettier --check . --log-level warn
+  step "prettier --check" ./node_modules/.bin/prettier --check . --log-level warn
 fi
 
 # 2. Lint and types.
@@ -45,7 +54,7 @@ step "eslint" npm run lint
 # tsc has pre-existing errors in worker/ and a few untyped deps, so this
 # reports without failing the run; read it, do not ignore it.
 printf '\n\033[1m▶ typecheck (advisory)\033[0m\n'
-npx tsc --noEmit 2>&1 | head -20 || true
+./node_modules/.bin/tsc --noEmit 2>&1 | head -20 || true
 
 # 3. Tests, which include the static export checks.
 step "tests" npm test
