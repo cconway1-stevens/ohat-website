@@ -568,7 +568,7 @@ img {
   border-bottom: 1px solid rgba(255, 255, 255, 0.28);
 }
 .nav-wrap {
-  min-height: 106px;
+  min-height: 112px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -580,8 +580,8 @@ img {
   align-items: center;
 }
 .brand img {
-  width: 156px;
-  height: 82px;
+  width: 176px;
+  height: 92px;
   object-fit: contain;
   filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.34));
   transform: rotate(-1deg);
@@ -7657,11 +7657,11 @@ body.is-play-locked {
     grid-template-columns: 1fr;
   }
   .nav-wrap {
-    min-height: 88px;
+    min-height: 96px;
   }
   .brand img {
-    width: 112px;
-    height: 66px;
+    width: 128px;
+    height: 74px;
   }
   .nav-wrap > .button-small {
     display: none;
