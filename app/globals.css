@@ -1935,12 +1935,12 @@ img {
 .makes-section::before {
   content: "FULL-SERVICE GARAGE • ALL GENERATIONS WELCOME";
   position: absolute;
-  top: 2.2rem;
-  left: clamp(1.5rem, 6vw, 6rem);
-  right: clamp(1.5rem, 6vw, 6rem);
+  top: 2rem;
+  left: 50%;
+  width: min(calc(100% - 56px), 760px);
   box-sizing: border-box;
-  padding: 0.55rem 1.25rem;
-  border-block: 3px solid var(--ink);
+  padding: 0.58rem 1.35rem;
+  border: 3px solid var(--ink);
   background: var(--yellow);
   color: var(--ink);
   font-size: 0.62rem;
@@ -1949,7 +1949,8 @@ img {
   line-height: 1.35;
   text-align: center;
   white-space: nowrap;
-  transform: rotate(1.4deg);
+  box-shadow: 5px 5px 0 rgba(23, 20, 18, 0.18);
+  transform: translateX(-50%);
   transform-origin: center;
 }
 .makes-section::after {
@@ -7963,12 +7964,10 @@ body.is-play-locked {
   }
   .makes-section::before {
     top: 1.35rem;
-    left: 1rem;
-    right: 1rem;
-    padding-inline: 0.4rem;
+    width: calc(100% - 28px);
+    padding-inline: 0.55rem;
     font-size: 0.52rem;
     letter-spacing: 0.07em;
-    transform: rotate(0.7deg);
   }
   .makes-section h2 {
     font-size: clamp(2.65rem, 12.5vw, 3.6rem);
