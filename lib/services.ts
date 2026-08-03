@@ -37,12 +37,16 @@ export const services: Service[] = [
       "Intermittent stalling",
       "Electrical glitches",
       "A repair that did not solve the issue",
+      "Rough idle or hesitation",
+      "A check-engine light that keeps returning",
     ],
     includes: [
       "Full-system scan",
       "Live-data testing",
       "Electrical circuit diagnosis",
       "Clear repair recommendations",
+      "Module and network testing",
+      "Written findings you keep",
     ],
     diagnosis:
       "We start with a full-system scan of every module in the vehicle, not just the engine computer, then compare live sensor data against known-good values. When a code points at a circuit rather than a part, we test that circuit—power, ground, and signal—before recommending anything. That is the difference between diagnosing a fault and replacing parts until the light goes out.",
@@ -81,8 +85,17 @@ export const services: Service[] = [
       "Soft brake pedal",
       "Vehicle pulls while braking",
       "Brake warning light",
+      "Longer stopping distances",
+      "A pedal that sinks slowly at a light",
     ],
-    includes: ["Pads and rotors", "Calipers and hoses", "Brake fluid service", "ABS diagnosis"],
+    includes: [
+      "Pads and rotors",
+      "Calipers and hoses",
+      "Brake fluid service",
+      "ABS diagnosis",
+      "Rotor resurfacing or replacement",
+      "Parking brake adjustment",
+    ],
     diagnosis:
       "A brake inspection here covers the whole system: pad and rotor measurements at every wheel, caliper and slide operation, hoses and lines, fluid condition, the parking brake, and any ABS or brake warning codes. We show you the measurements and explain what needs attention now, what can wait, and why—so you are never guessing whether a repair was necessary.",
     whyUs:
@@ -121,12 +134,16 @@ export const services: Service[] = [
       "Vibration at speed",
       "Low tire pressure light",
       "A puncture, bubble, or sidewall damage",
+      "Uneven or cupped tread wear",
+      "A slow leak you keep topping up",
     ],
     includes: [
       "New tire sales and installation",
       "Flat and puncture repair",
       "Balancing and rotation",
       "TPMS diagnosis and service",
+      "Valve stem and TPMS sensor service",
+      "Tread depth and safety checks",
     ],
     diagnosis:
       "Before recommending tires, we look at how the old set wore: even wear says the tires simply aged out, while edge wear, center wear, cupping, or one-sided wear point at inflation, alignment, or suspension causes that would destroy a new set just as fast. Every installation includes balancing, new valve hardware where appropriate, and a TPMS relearn so the pressure warning system works the way it should.",
@@ -165,12 +182,16 @@ export const services: Service[] = [
       "Steering wheel off-center",
       "Uneven or feathered tire wear",
       "Wandering after hitting a pothole or curb",
+      "Steering wheel off-center on a straight road",
+      "New tires wearing out quickly",
     ],
     includes: [
       "Computerized four-wheel alignment",
       "Steering and suspension inspection",
       "Before-and-after alignment readings",
       "Custom alignment settings on request",
+      "Camber, caster and toe adjustment",
+      "Steering angle sensor reset",
     ],
     diagnosis:
       "An alignment is only as good as the parts being aligned, so we inspect tie rods, ball joints, bushings, and wheel bearings before putting the vehicle on the alignment system. You get printed before-and-after readings for camber, caster, and toe, and we explain any measurement that could not be brought into specification and why.",
@@ -205,12 +226,21 @@ export const services: Service[] = [
     short: "Factory-aware maintenance that protects reliability and value.",
     intro:
       "We tailor maintenance to your vehicle, mileage, driving habits, and manufacturer schedule instead of applying a one-size-fits-all checklist.",
-    signs: ["Maintenance reminder", "Overdue service", "Fluid leaks", "Planning for a road trip"],
+    signs: [
+      "Maintenance reminder",
+      "Overdue service",
+      "Fluid leaks",
+      "Planning for a road trip",
+      "A service reminder on the dash",
+      "Oil low or dark on the dipstick",
+    ],
     includes: [
       "Oil and filter",
       "Fluids and filters",
       "Belts and hoses",
       "Mileage-based inspections",
+      "Filter and fluid level checks",
+      "Servicing to the manufacturer schedule",
     ],
     diagnosis:
       "Every oil service includes more than draining and filling: we use the oil grade your manufacturer specifies, inspect belts, hoses, fluids, tires, and the underside while the vehicle is up, and check your mileage against the factory maintenance schedule. You leave knowing what is due now, what is coming, and what can genuinely wait.",
@@ -244,12 +274,21 @@ export const services: Service[] = [
     short: "Modern maintenance and diagnostics for electrified vehicles.",
     intro:
       "Hybrid and electric vehicles still need expert care for brakes, suspension, climate systems, tires, low-voltage electronics, cooling, and diagnostics.",
-    signs: ["EV or hybrid warning", "Reduced range", "Charging concern", "Unusual brake feel"],
+    signs: [
+      "EV or hybrid warning",
+      "Reduced range",
+      "Charging concern",
+      "Unusual brake feel",
+      "Reduced electric-only range",
+      "A warning light for the hybrid system",
+    ],
     includes: [
       "System diagnostics",
       "Cooling system service",
       "12-volt electrical",
       "Chassis, brakes, tires, and A/C",
+      "12-volt battery testing and replacement",
+      "Regenerative braking service",
     ],
     diagnosis:
       "Electrified vehicles put their own demands on diagnosis: hybrid warning lights, range complaints, and charging concerns require reading the vehicle's high-voltage system data with capable scan tools, while everyday problems—brakes, suspension, tires, the 12-volt battery—still need traditional inspection. We do both, and we tell you plainly when a concern belongs at the manufacturer, such as a high-voltage battery still under its long federal warranty.",
@@ -288,12 +327,16 @@ export const services: Service[] = [
       "Weak airflow",
       "Unusual compressor noise",
       "Windows will not defog",
+      "Air that smells musty",
+      "A defroster that clears slowly",
     ],
     includes: [
       "Performance testing",
       "Leak diagnosis",
       "Electrical controls",
       "Heating and cooling repair",
+      "Cabin air filter replacement",
+      "Leak detection and recharge",
     ],
     diagnosis:
       "We begin with a performance test—vent temperatures, system pressures, and compressor operation—then find where the refrigerant went before adding more. A system that is low has a leak; recharging without finding it just schedules the same failure for later in the summer. Electrical climate controls, blend doors, fans, and heater output get tested the same way: measure first, replace second.",
@@ -327,8 +370,22 @@ export const services: Service[] = [
     short: "Cooling, fuel, ignition, drivability, and engine repair.",
     intro:
       "Overheating, rough running, and power loss can have many causes. We test methodically and build a repair plan around evidence.",
-    signs: ["Overheating", "Rough idle", "Loss of power", "Smoke or unusual odor"],
-    includes: ["Cooling systems", "Fuel and ignition", "Belts and hoses", "Engine performance"],
+    signs: [
+      "Overheating",
+      "Rough idle",
+      "Loss of power",
+      "Smoke or unusual odor",
+      "Temperature climbing in stop-and-go traffic",
+      "A sweet coolant smell or drips on the driveway",
+    ],
+    includes: [
+      "Cooling systems",
+      "Fuel and ignition",
+      "Belts and hoses",
+      "Engine performance",
+      "Thermostat and water pump service",
+      "Cooling system pressure testing",
+    ],
     diagnosis:
       "Overheating gets a system test—pressure testing for leaks, thermostat and fan operation, radiator flow, and head-gasket checks when the evidence points that way. Drivability complaints like rough idle and power loss get the same treatment through fuel, ignition, and compression testing. The goal is always the same: identify the failed component with evidence before recommending the repair.",
     whyUs:
@@ -361,12 +418,21 @@ export const services: Service[] = [
     short: "Restore ride control, tire contact, and predictable handling.",
     intro:
       "A stable vehicle is a safer vehicle. We inspect steering and suspension components as a connected system before recommending repairs.",
-    signs: ["Clunks over bumps", "Loose steering", "Bouncy ride", "Uneven tire wear"],
+    signs: [
+      "Clunks over bumps",
+      "Loose steering",
+      "Bouncy ride",
+      "Uneven tire wear",
+      "The nose dives hard under braking",
+      "Steering that feels loose or wanders",
+    ],
     includes: [
       "Shocks and struts",
       "Ball joints and tie rods",
       "Wheel bearings",
       "Steering diagnosis",
+      "Shock and strut replacement",
+      "Ball joint and tie rod service",
     ],
     diagnosis:
       "Suspension noises travel, so we never diagnose a clunk from the driver's seat. The vehicle goes up on the lift for a hands-on inspection of ball joints, tie rods, bushings, sway-bar links, mounts, and wheel bearings, checking each for the specific play or wear that produces your symptom. South Jersey's salt air is hard on this hardware, and catching a worn joint early is much cheaper than the tire wear and alignment problems it causes later.",
@@ -405,8 +471,17 @@ export const services: Service[] = [
       "Vibration on acceleration",
       "Fluid leak",
       "Clicking while turning",
+      "Delayed or harsh shifts",
+      "A vibration that changes with speed",
     ],
-    includes: ["Transmission service", "CV axles", "Differentials", "Driveline diagnosis"],
+    includes: [
+      "Transmission service",
+      "CV axles",
+      "Differentials",
+      "Driveline diagnosis",
+      "Transmission fluid and filter service",
+      "CV axle and driveshaft repair",
+    ],
     diagnosis:
       "Many 'transmission problems' turn out to be something else—a failing mount, a worn CV axle, low fluid from a leak, or an electronic control fault. Before anyone talks about a rebuild, we check fluid level and condition, scan the transmission control module, road-test to reproduce the symptom, and inspect the driveline. That order of operations regularly saves customers from repairs they did not need.",
     whyUs:
@@ -439,12 +514,21 @@ export const services: Service[] = [
     short: "Starting, charging, lighting, modules, and electrical repair.",
     intro:
       "Electrical faults require a measured approach. We test the battery, charging system, circuits, and modules to identify the real failure.",
-    signs: ["Slow crank", "Battery light", "Flickering lights", "Repeated dead battery"],
+    signs: [
+      "Slow crank",
+      "Battery light",
+      "Flickering lights",
+      "Repeated dead battery",
+      "Slow cranking on cold mornings",
+      "Lights that dim at idle",
+    ],
     includes: [
       "Battery testing",
       "Alternator and starter",
       "Parasitic draw testing",
       "Wiring and circuit repair",
+      "Charging system testing",
+      "Parasitic draw diagnosis",
     ],
     diagnosis:
       "A no-start or dead battery gets the full starting-and-charging test: battery condition under load, alternator output, starter draw, and connection voltage drops. A battery that keeps dying gets a parasitic-draw test to find which circuit is staying awake overnight. Electrical gremlins—flickering lights, intermittent accessories—are traced with wiring diagrams and circuit testing rather than replaced parts and hope.",
@@ -478,12 +562,21 @@ export const services: Service[] = [
     short: "Maintenance and engine service for diesel cars and light trucks.",
     intro:
       "Diesel systems demand the right testing and service practices. We handle common maintenance and drivability needs with care.",
-    signs: ["Hard starting", "Loss of power", "Excessive smoke", "Diesel warning light"],
+    signs: [
+      "Hard starting",
+      "Loss of power",
+      "Excessive smoke",
+      "Diesel warning light",
+      "Excessive smoke at startup",
+      "A loss of power under load",
+    ],
     includes: [
       "Filters and fluids",
       "Engine diagnostics",
       "Cooling and intake",
       "Light-duty diesel maintenance",
+      "Fuel filter and water separator service",
+      "Glow plug and injector diagnosis",
     ],
     diagnosis:
       "Diesel diagnosis follows the fuel: filtration, fuel quality, injection system data, glow-plug operation for hard cold starts, and intake and emissions systems for power loss and smoke. Modern light-duty diesels also carry emissions equipment—EGR, DPF, and DEF systems—whose warning lights have specific causes we read and test rather than guess at.",
@@ -523,12 +616,16 @@ export const services: Service[] = [
       "You are not sure whether a recall applies to your vehicle",
       "You are buying a used vehicle with unknown history",
       "A warning light or symptom you suspect is recall-related",
+      "You were told a repair is not covered",
+      "You are unsure whether past recall work was done",
     ],
     includes: [
       "Help running the official NHTSA recall lookup",
       "Plain-language explanation of what a recall notice covers",
       "Straight answers on what the dealer handles free of charge",
       "Diagnosis and repair of related, non-recall concerns",
+      "VIN lookup done with you at the counter",
+      "Referral to the correct dealership",
     ],
     diagnosis:
       "Your VIN—found on the driver's-side dashboard corner or door jamb—is all the official lookup needs. We will help you run it, explain the difference between a safety recall and a technical service bulletin, and if a recall carries a 'do not drive' or 'park outside' warning, we will tell you to take it seriously. Open safety-recall repairs are performed free at the manufacturer's franchised dealership, and we will say so plainly rather than sell you work the dealer owes you.",
@@ -574,12 +671,16 @@ export const services: Service[] = [
       "Rattling underneath",
       "Exhaust odor",
       "Emissions-related warning light",
+      "Louder than usual under acceleration",
+      "A rattle from under the vehicle",
     ],
     includes: [
       "Exhaust inspection",
       "Mufflers and pipes",
       "Oxygen sensors",
       "Emissions diagnostics",
+      "Catalytic converter diagnosis",
+      "Emissions failure diagnosis",
     ],
     diagnosis:
       "An exhaust complaint gets a lift inspection from the manifold back—leaks, rusted hangers and mounts, damaged pipes, and rattling heat shields—while an emissions warning light gets diagnostic testing of the sensors and engine controls upstream. That distinction matters: a catalytic-converter code is often caused by an oxygen sensor, an exhaust leak, or an engine misfire, and replacing the converter without fixing the cause just kills the new one.",
