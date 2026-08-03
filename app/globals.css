@@ -6160,10 +6160,10 @@ body.is-play-locked {
 .service-panel-signs li,
 .service-panel-includes li {
   position: relative;
-  min-height: 58px;
+  min-height: 46px;
   display: flex;
   align-items: center;
-  padding: 0.8rem 0.85rem 0.8rem 2.85rem;
+  padding: 0.5rem 0.8rem 0.5rem 2.7rem;
   border-bottom: 2px solid var(--ink);
   background: rgba(255, 255, 255, 0.52);
   font-weight: 800;
