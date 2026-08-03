@@ -68,8 +68,13 @@ export default function Home() {
 
               <div className="cover-hero-grid">
                 <div className="cover-copy-panel">
-                  <p className="cover-brand-line">Ocean Heights Auto &amp; Tire</p>
-                  <h1>Auto Repair &amp; Tire Shop</h1>
+                  <p className="cover-brand-line">Full-service garage</p>
+                  <h1>
+                    <span className="cover-business-name">
+                      Ocean Heights <em>Auto &amp; Tire</em>
+                    </span>
+                    <span className="cover-service-name">Auto Repair &amp; Tire Shop</span>
+                  </h1>
                   <p className="cover-location">Egg Harbor Township, NJ</p>
                   <p className="cover-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
                   <p className="cover-lede">
