@@ -6035,7 +6035,7 @@ body.is-play-locked {
    hierarchy while removing repeated bands of empty vertical space. */
 .service-workbench {
   position: relative;
-  padding: clamp(4rem, 6.5vw, 6rem) 0 clamp(4.5rem, 7vw, 6.5rem);
+  padding: clamp(2.5rem, 4vw, 3.75rem) 0 clamp(2.75rem, 4.5vw, 4rem);
   overflow: hidden;
   background: var(--cream);
 }
@@ -6053,7 +6053,10 @@ body.is-play-locked {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: clamp(1.15rem, 2.2vw, 1.8rem);
-  align-items: start;
+  /* Panels sharing a row now share a bottom edge. With `align-items: start`
+     each one stopped at its own content, so every row ended ragged and the
+     shorter panel left a hole beside its neighbour. */
+  align-items: stretch;
 }
 .service-panel {
   position: relative;
@@ -6064,11 +6067,13 @@ body.is-play-locked {
   box-shadow: 7px 7px 0 var(--ink);
 }
 .service-panel h2 {
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.9rem;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2rem, 3.5vw, 3.25rem);
-  line-height: 0.96;
-  letter-spacing: -0.035em;
+  font-size: clamp(1.6rem, 2.3vw, 2.3rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  /* Wrap evenly instead of leaving one orphaned word on the last line. */
+  text-wrap: balance;
 }
 .service-panel > p:not(.eyebrow) {
   margin: 0;
@@ -6083,10 +6088,6 @@ body.is-play-locked {
 }
 .service-panel-signs {
   grid-column: span 7;
-  padding-left: 0;
-  border: 0;
-  box-shadow: none;
-  background: transparent;
 }
 .service-panel-signs ul,
 .service-panel-includes ul {
@@ -6193,7 +6194,10 @@ body.is-play-locked {
   box-shadow: 3px 3px 0 var(--ink);
 }
 .service-faqs {
-  padding: clamp(4.5rem, 7vw, 6.5rem) 0;
+  /* `.review-themes` carries a 10rem bottom padding, which suits the reviews
+     page where that block ends the content. Here two more bands follow it, so
+     that space read as a hole rather than a finish. */
+  padding: clamp(2.5rem, 4vw, 3.5rem) 0;
   background: var(--paper);
 }
 .service-faqs .theme-grid {
@@ -6205,6 +6209,12 @@ body.is-play-locked {
 .service-faqs .theme-grid article:nth-child(even) {
   min-height: 0;
   margin-top: 0;
+  /* Equal heights across the row: a short answer used to leave its card
+     stubby next to two tall neighbours. */
+  height: 100%;
+}
+.service-faqs .theme-grid {
+  align-items: stretch;
 }
 .service-faqs .theme-grid h3 {
   margin: 0.65rem 0 0.55rem;
