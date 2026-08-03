@@ -179,7 +179,14 @@ export default function ContactPage() {
 
               <div className="contact-facts-grid">
                 <div className="contact-fact-card map-inset" data-stop="A">
-                  <p className="eyebrow dark">Shop hours</p>
+                  <div className="fact-card-head">
+                    <p className="eyebrow dark">Shop hours</p>
+                    {/* The live status leads, because "are they open right
+                        now" is the question this card exists to answer — it
+                        used to sit below the table, where the answer arrived
+                        after the schedule it summarises. */}
+                    <ShopHoursStatus />
+                  </div>
                   <dl className="hours-list">
                     <div>
                       <dt>{shop.hours.weekdayLabel}</dt>
@@ -190,9 +197,12 @@ export default function ContactPage() {
                       <dd>{shop.hours.weekendValue}</dd>
                     </div>
                   </dl>
-                  <ShopHoursStatus />
+                  {/* `shop.hours.closedNote` is deliberately not repeated
+                      here: it says "closed weekends and major holidays",
+                      which the table above has just stated in full. Only the
+                      part the table cannot show is left. */}
                   <p>
-                    {shop.hours.closedNote} The{" "}
+                    Holiday hours can vary. The{" "}
                     <Link href="/vehicle-drop-off">secure night drop</Link> runs around the clock.
                   </p>
                 </div>
