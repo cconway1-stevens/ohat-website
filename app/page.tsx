@@ -66,62 +66,69 @@ export default function Home() {
                 <span>Issue No. 1178</span>
               </p>
 
-              <h1>
-                Auto Repair &amp; Tire Shop
-                <em>in EHT, NJ</em>
-              </h1>
-              <p className="cover-tagline">Car care, done right. No detours.</p>
-              <p className="cover-lede">
-                Dealer-level diagnostics. Family-garage honesty. From carbureted classics to
-                brand-new EVs, every car in your driveway is welcome here — and every driver in EHT,
-                Atlantic County, and the shore towns around us.
-              </p>
+              <div className="cover-hero-grid">
+                <div className="cover-copy-panel">
+                  <p className="cover-brand-line">Ocean Heights Auto &amp; Tire</p>
+                  <h1>Auto Repair &amp; Tire Shop</h1>
+                  <p className="cover-location">Egg Harbor Township, NJ</p>
+                  <p className="cover-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
+                  <p className="cover-lede">
+                    From carbureted classics to brand-new EVs, every car in your driveway is
+                    welcome here.
+                  </p>
 
-              <div className="cover-actions">
-                <a className="button button-primary" href={phoneHref}>
-                  Call {phoneDisplay}
-                </a>
-                <DirectionsTrigger className="button button-ghost">
-                  Get directions <span aria-hidden="true">↗︎</span>
-                </DirectionsTrigger>
-              </div>
+                  <div className="cover-actions">
+                    <a className="button button-primary" href={phoneHref}>
+                      Call {phoneDisplay}
+                    </a>
+                    <DirectionsTrigger className="button button-ghost">
+                      Get directions <span aria-hidden="true">↗︎</span>
+                    </DirectionsTrigger>
+                  </div>
 
-              <ul className="cover-index" aria-label="Why drivers choose Ocean Heights">
-                <li>
-                  <span>No. 01</span>
-                  <strong>Dealer-level tools</strong>
-                  <small>We don&rsquo;t guess. We test.</small>
-                </li>
-                <li>
-                  <span>No. 02</span>
-                  <strong>Your whole driveway</strong>
-                  <small>Gas, diesel, hybrid, EV &amp; classics</small>
-                </li>
-                <li>
-                  <span>No. 03</span>
-                  <strong>Neighbor-level care</strong>
-                  <small>Family owned &amp; operated</small>
-                </li>
-              </ul>
-
-              <figure className="cover-plate">
-                <div className="cover-plate-image">
-                  <SiteImage
-                    src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
-                    alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
-                    fill
-                    priority
-                    sizes="(max-width: 1220px) 100vw, 1180px"
-                  />
+                  <ul className="cover-index" aria-label="Why drivers choose Ocean Heights">
+                    <li>
+                      <span>No. 01</span>
+                      <strong>Dealer-level tools</strong>
+                      <small>We don&rsquo;t guess. We test.</small>
+                    </li>
+                    <li>
+                      <span>No. 02</span>
+                      <strong>Your whole driveway</strong>
+                      <small>Gas, diesel, hybrid, EV &amp; classics</small>
+                    </li>
+                    <li>
+                      <span>No. 03</span>
+                      <strong>Neighbor-level care</strong>
+                      <small>Family owned &amp; operated</small>
+                    </li>
+                  </ul>
                 </div>
-                <span className="cover-stamp" aria-hidden="true">
-                  <strong>All makes</strong>
-                  <em>All eras</em>
-                </span>
-                <figcaption>
-                  <span>Fig. 1 — Classics, dailies &amp; EVs, one driveway</span>
-                </figcaption>
-              </figure>
+
+                <figure className="cover-photo-panel">
+                  <div className="cover-photo-image">
+                    <SiteImage
+                      src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
+                      alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
+                      fill
+                      priority
+                      sizes="(max-width: 860px) 100vw, 470px"
+                    />
+                  </div>
+                  {/* Temporarily hiding the logo overlay while the photo carries this panel on its own.
+                  <span className="cover-photo-logo" aria-hidden="true">
+                    <SiteImage
+                      src="/media/logo-transparent.avif"
+                      width={315}
+                      height={231}
+                      alt=""
+                      priority
+                    />
+                  </span>
+                  */}
+                  <figcaption>Fig. 1 — Classics, dailies &amp; EVs, one driveway</figcaption>
+                </figure>
+              </div>
             </article>
           </div>
         </section>
