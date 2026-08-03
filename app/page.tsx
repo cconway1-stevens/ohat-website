@@ -67,15 +67,41 @@ export default function Home() {
               </p>
 
               <div className="cover-hero-grid">
-                <div className="cover-copy-panel">
+                <div className="cover-copy-panel cover-copy-intro">
                   <p className="cover-brand-line">Full-service garage</p>
                   <h1>
                     <span className="cover-business-name">
                       Ocean Heights <em>Auto &amp; Tire</em>
                     </span>
-                    <span className="cover-service-name">Auto Repair &amp; Tire Shop</span>
                   </h1>
                   <p className="cover-location">Egg Harbor Township, NJ</p>
+                </div>
+
+                <figure className="cover-photo-panel">
+                  <div className="cover-photo-image">
+                    <SiteImage
+                      src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
+                      alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
+                      fill
+                      priority
+                      sizes="(max-width: 860px) 100vw, 470px"
+                    />
+                  </div>
+                  {/* Temporarily hiding the logo overlay while the photo carries this panel on its own.
+                  <span className="cover-photo-logo" aria-hidden="true">
+                    <SiteImage
+                      src="/media/logo-transparent.avif"
+                      width={315}
+                      height={231}
+                      alt=""
+                      priority
+                    />
+                  </span>
+                  */}
+                  <figcaption>Fig. 1 — Classics, dailies &amp; EVs, one driveway</figcaption>
+                </figure>
+
+                <div className="cover-copy-panel cover-copy-details">
                   <p className="cover-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
                   <p className="cover-lede">
                     From carbureted classics to brand-new EVs, every car in your driveway is
@@ -109,30 +135,6 @@ export default function Home() {
                     </li>
                   </ul>
                 </div>
-
-                <figure className="cover-photo-panel">
-                  <div className="cover-photo-image">
-                    <SiteImage
-                      src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
-                      alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
-                      fill
-                      priority
-                      sizes="(max-width: 860px) 100vw, 470px"
-                    />
-                  </div>
-                  {/* Temporarily hiding the logo overlay while the photo carries this panel on its own.
-                  <span className="cover-photo-logo" aria-hidden="true">
-                    <SiteImage
-                      src="/media/logo-transparent.avif"
-                      width={315}
-                      height={231}
-                      alt=""
-                      priority
-                    />
-                  </span>
-                  */}
-                  <figcaption>Fig. 1 — Classics, dailies &amp; EVs, one driveway</figcaption>
-                </figure>
               </div>
             </article>
           </div>

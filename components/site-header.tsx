@@ -122,8 +122,7 @@ export function SiteHeader() {
       </div>
       <div className="nav-band">
         <div className="shell nav-wrap">
-          {/* Temporarily hidden at the owner's request. Keep BrandMark exported for the footer. */}
-          {/* <BrandMark /> */}
+          <BrandMark />
           <nav className="desktop-nav" aria-label="Primary navigation">
             {primaryLinks.map((item) => (
               <Link href={item.href} key={item.href}>
