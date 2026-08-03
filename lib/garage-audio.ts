@@ -373,7 +373,14 @@ export const cozyAudio = {
 /* --- sustained beds ------------------------------------------------ */
 
 export type AmbienceLayer =
-  "rain" | "shopHum" | "road" | "water" | "fluorescent" | "static" | "traffic" | "casino";
+  | "rain"
+  | "shopHum"
+  | "road"
+  | "water"
+  | "fluorescent"
+  | "static"
+  | "traffic"
+  | "casino";
 
 type Bed = { gain: GainNode; stop: () => void };
 

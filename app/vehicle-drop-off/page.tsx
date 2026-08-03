@@ -81,6 +81,7 @@ export default function VehicleDropOffPage() {
                 fill
                 priority
                 sizes="(max-width: 800px) 100vw, 42vw"
+                unoptimized
               />
               <div className="dropoff-sign" aria-label="Secure vehicle drop-off">
                 <span>24</span>
@@ -114,6 +115,7 @@ export default function VehicleDropOffPage() {
               width={630}
               height={381}
               alt="Ocean Heights Auto and Tire side entrance with the secure key drop location marked"
+              unoptimized
             />
             <div>
               <p className="eyebrow dark">Find the key box</p>

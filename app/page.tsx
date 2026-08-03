@@ -112,6 +112,7 @@ export default function Home() {
                     fill
                     priority
                     sizes="(max-width: 1220px) 100vw, 1180px"
+                    unoptimized
                   />
                 </div>
                 <span className="cover-stamp" aria-hidden="true">
@@ -203,7 +204,7 @@ export default function Home() {
               <div className="catalog-make-track" aria-hidden="true">
                 {[...heroMakes, ...heroMakes].map((name, index) => (
                   <span className="catalog-make-logo" key={`${name}-${index}`}>
-                    <Image src={brandSrc(name)} width={40} height={40} alt="" />
+                    <Image src={brandSrc(name)} width={40} height={40} alt="" unoptimized />
                     <strong>{name}</strong>
                   </span>
                 ))}

@@ -17,7 +17,10 @@
     "qa:production": "node scripts/production-readiness.mjs",
     "validate:artifact": "bash scripts/validate-artifact.sh",
     "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"
+    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate",
+    "check": "bash scripts/pre-push.sh",
+    "check:fix": "bash scripts/pre-push.sh --fix",
+    "check:assets": "node scripts/check-assets.mjs"
   },
   "dependencies": {
     "@blackjacktrainer/blackjack-simulator": "^0.35.14",

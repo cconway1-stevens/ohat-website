@@ -85,7 +85,14 @@ export function MakeGrid() {
                 title={name}
                 style={{ "--tile-delay": `${(index % 14) * 28}ms` } as React.CSSProperties}
               >
-                <Image src={brandSrc(name)} width={36} height={36} alt="" aria-hidden="true" />
+                <Image
+                  src={brandSrc(name)}
+                  width={36}
+                  height={36}
+                  alt=""
+                  aria-hidden="true"
+                  unoptimized
+                />
                 <span>{name}</span>
               </li>
             ))}
