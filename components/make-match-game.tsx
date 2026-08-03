@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { SiteImage } from "./site-image";
 import { garageAudio } from "@/lib/garage-audio";
 import { PrizeBanner } from "./arcade/prize";
 import { brandSrc, makes, shuffle } from "@/lib/makes";
@@ -367,13 +367,12 @@ export function MakeMatchGame({
                       </>
                     ) : (
                       <>
-                        <Image
+                        <SiteImage
                           src={brandSrc(tile.name)}
                           width={44}
                           height={44}
                           alt=""
                           aria-hidden="true"
-                          unoptimized
                         />
                         <small>{tile.name}</small>
                       </>

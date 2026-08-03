@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteImage } from "@/components/site-image";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/site-header";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { pageMetadata } from "@/lib/seo";
@@ -75,13 +75,12 @@ export default function VehicleDropOffPage() {
               </div>
             </div>
             <div className="dropoff-photo">
-              <Image
+              <SiteImage
                 src="/media/drop-box.jpg"
                 alt="The secure key drop location beside the Ocean Heights service bays"
                 fill
                 priority
                 sizes="(max-width: 800px) 100vw, 42vw"
-                unoptimized
               />
               <div className="dropoff-sign" aria-label="Secure vehicle drop-off">
                 <span>24</span>
@@ -110,12 +109,11 @@ export default function VehicleDropOffPage() {
 
         <section className="dropoff-location">
           <div className="shell dropoff-location-grid">
-            <Image
+            <SiteImage
               src="/media/Building-drop-box.jpg"
               width={630}
               height={381}
               alt="Ocean Heights Auto and Tire side entrance with the secure key drop location marked"
-              unoptimized
             />
             <div>
               <p className="eyebrow dark">Find the key box</p>

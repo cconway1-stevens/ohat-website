@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { SiteImage } from "./site-image";
 import { brandSrc, makes, shuffle, WALL_SIZE } from "@/lib/makes";
 import { MakeMatchGame } from "./make-match-game";
 
@@ -85,14 +85,7 @@ export function MakeGrid() {
                 title={name}
                 style={{ "--tile-delay": `${(index % 14) * 28}ms` } as React.CSSProperties}
               >
-                <Image
-                  src={brandSrc(name)}
-                  width={36}
-                  height={36}
-                  alt=""
-                  aria-hidden="true"
-                  unoptimized
-                />
+                <SiteImage src={brandSrc(name)} width={36} height={36} alt="" aria-hidden="true" />
                 <span>{name}</span>
               </li>
             ))}

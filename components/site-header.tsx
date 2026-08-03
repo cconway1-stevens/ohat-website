@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { SiteImage } from "./site-image";
 import { useEffect, useRef, useState } from "react";
 import { addressDisplay, DirectionsTrigger } from "./directions-dialog";
 import { ShopAlmanac } from "./shop-almanac";
@@ -70,13 +70,12 @@ export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {
       onPointerLeave={clearLogoHold}
       onPointerUp={clearLogoHold}
     >
-      <Image
+      <SiteImage
         src="/media/logo-transparent.avif"
         width={315}
         height={231}
         alt="Ocean Heights Auto and Tire"
         priority
-        unoptimized
       />
     </Link>
   );

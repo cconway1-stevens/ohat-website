@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { SiteImage } from "@/components/site-image";
 import { DirectionsTrigger } from "@/components/directions-dialog";
 import { phoneDisplay, phoneHref } from "@/components/site-header";
 import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/business";
@@ -32,13 +32,12 @@ export default function LinksPage() {
       <div className="link-hub-checker" aria-hidden="true" />
       <section className="link-hub-card" aria-labelledby="link-hub-title">
         <Link className="link-hub-logo" href="/" aria-label="Back to Ocean Heights Auto and Tire">
-          <Image
+          <SiteImage
             src="/media/logo-transparent.png"
             width={315}
             height={231}
             alt="Ocean Heights Auto and Tire"
             priority
-            unoptimized
           />
         </Link>
         <p className="link-hub-kicker">The modern family garage</p>
