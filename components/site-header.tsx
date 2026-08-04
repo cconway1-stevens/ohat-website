@@ -182,14 +182,19 @@ export function SiteHeader() {
           <span className="retro-phone-mark" aria-hidden="true">
             ☎︎
           </span>
-          <span>
+          <span className="booking-dock-copy">
             <small>Mechanic on the line</small>
             <strong>{phoneDisplay}</strong>
           </span>
         </a>
         <Link className="booking-links" href="/links">
-          <small>Everything in one place</small>
-          <strong>Link tree</strong>
+          <span className="booking-dock-copy">
+            <small>Everything in one place</small>
+            <strong>Link tree</strong>
+          </span>
+          <span className="booking-dock-arrow" aria-hidden="true">
+            →
+          </span>
         </Link>
       </aside>
     </header>
