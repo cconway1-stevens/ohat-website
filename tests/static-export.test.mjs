@@ -151,6 +151,49 @@ test("mobile homepage images use compact modern formats", () => {
   );
 });
 
+test("only the latin font subset is preloaded", () => {
+  // The font loader preloads every unicode subset it emits, so an English
+  // site was spending ~46 KiB of high-priority bandwidth on Cyrillic and
+  // Vietnamese glyphs it never draws — bandwidth the hero image wanted. The
+  // build strips those preloads; this guards that it still does.
+  const pages = walk(outDir).filter((file) => file.endsWith(".html"));
+
+  let preloadingPages = 0;
+  for (const page of pages) {
+    const html = readFileSync(page, "utf8");
+    const preloaded = [...html.matchAll(/<link\b[^>]*\bas="font"[^>]*>/g)];
+    if (preloaded.length === 0) continue;
+    preloadingPages += 1;
+
+    assert.equal(
+      preloaded.length,
+      1,
+      `${page.slice(outDir.length)} preloads ${preloaded.length} font subsets, expected only latin`,
+    );
+    // The `@font-face` rules stay put — `unicode-range` keeps the other
+    // subsets available on demand, which is what makes dropping the
+    // unconditional preloads safe rather than lossy.
+    assert.ok(
+      html.split("@font-face").length - 1 > 1,
+      `${page.slice(outDir.length)} dropped the non-latin @font-face rules, not just their preloads`,
+    );
+  }
+
+  assert.ok(preloadingPages > 20, `expected the full page set, got ${preloadingPages}`);
+});
+
+test("the page warms the origins it fetches from", () => {
+  // Open-Meteo is called from a client component in the masthead, so without
+  // a hint the browser does not resolve the origin until hydration.
+  const html = readFileSync(join(outDir, "index.html"), "utf8");
+  const origins = [...html.matchAll(/<link\b[^>]*rel="preconnect"[^>]*>/g)];
+
+  assert.match(html, /rel="preconnect"[^>]*href="https:\/\/api\.open-meteo\.com"/);
+  // Past four, preconnects start competing with the requests they exist to
+  // accelerate.
+  assert.ok(origins.length <= 4, `${origins.length} preconnects is more than the guidance allows`);
+});
+
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = join(dir, entry.name);

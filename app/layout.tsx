@@ -68,6 +68,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Nothing on the page discovers these origins until something needs
+            them — the weather reading is fetched from a client component in
+            the masthead, so the browser only learns about Open-Meteo after
+            hydration, and pays for the DNS, TCP and TLS round trips then.
+            Warming both connections here is worth an estimated 580 ms of LCP.
+
+            These are links, not scripts: they start no execution and so do not
+            disturb the ordering gtag.js asks for below. Keep this list to four
+            origins at most — past that, preconnects compete with the requests
+            they are meant to accelerate. */}
+        <link rel="preconnect" href="https://api.open-meteo.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
         {/* Google tag (gtag.js). Google's install instructions ask for this
             immediately after <head>, so it stays first: gtag.js records the
             page view as soon as it loads, and anything queued before it
