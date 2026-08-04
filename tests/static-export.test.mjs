@@ -182,6 +182,23 @@ test("only the latin font subset is preloaded", () => {
   assert.ok(preloadingPages > 20, `expected the full page set, got ${preloadingPages}`);
 });
 
+test("the analytics tag is measured eagerly and fetched lazily", () => {
+  const html = readFileSync(join(outDir, "index.html"), "utf8");
+
+  // Two thirds of gtag.js went unused during load while the hero was still
+  // arriving. Nothing may request it from the markup itself.
+  assert.doesNotMatch(
+    html,
+    /<script[^>]+src="[^"]*googletagmanager\.com[^"]*"/,
+    "gtag.js is being fetched from a script tag again, putting it back on the critical path",
+  );
+  // Deferring the fetch is only safe because the queue is filled immediately —
+  // gtag.js replays `dataLayer` when it arrives, so the page view survives.
+  assert.match(html, /window\.dataLayer = window\.dataLayer \|\| \[\]/);
+  assert.match(html, /gtag\('config'/);
+  assert.match(html, /addEventListener\('load', loadTag/);
+});
+
 test("the page warms the origins it fetches from", () => {
   // Open-Meteo is called from a client component in the masthead, so without
   // a hint the browser does not resolve the origin until hydration.
