@@ -59,6 +59,35 @@ for (const file of walk(OUT_DIR).filter((f) => f.endsWith(".html"))) {
 
 const htmlFiles = walk(OUT_DIR).filter((file) => file.endsWith(".html"));
 
+// The font loader emits an `@font-face` per unicode subset — cyrillic-ext,
+// cyrillic, vietnamese, latin-ext, latin — and then preloads all five, even
+// though `subsets: ["latin"]` was what we asked for. The `@font-face` rules
+// themselves are harmless: `unicode-range` means a subset is only fetched if
+// the page actually contains one of its characters, and an English-language
+// garage in New Jersey never will. The preloads are the problem, because a
+// preload is unconditional and high priority — so ~46 KiB of Cyrillic and
+// Vietnamese glyphs race the hero image for bandwidth on a slow connection
+// and then go unused.
+//
+// Keep the preload for any subset covering basic latin (U+0000-00FF) and drop
+// the rest. If the markup ever stops looking like this the parse yields
+// nothing and every preload survives, which is the safe direction to fail in.
+function trimFontPreloads(html) {
+  const droppable = new Set();
+  for (const block of html.match(/@font-face\s*{[^}]*}/g) ?? []) {
+    const file = block.match(/[^/"')\s]+\.woff2/)?.[0];
+    const range = block.match(/unicode-range:\s*([^;}]*)/)?.[1];
+    if (!file || !range) continue;
+    if (!/U\+0000-00FF/i.test(range)) droppable.add(file);
+  }
+  if (droppable.size === 0) return html;
+
+  return html.replace(/<link\b[^>]*\bas="font"[^>]*>/g, (tag) => {
+    const file = tag.match(/href="[^"]*?([^/"]+\.woff2)"/)?.[1];
+    return file && droppable.has(file) ? "" : tag;
+  });
+}
+
 // `next/image` still emits the optimizer endpoint, which only exists in the
 // Worker. Point every one of those at the original asset instead.
 let rewritten = 0;
@@ -128,7 +157,9 @@ for (const file of htmlFiles) {
     return tag.replace(/<link\b/, `<link imagesrcset="${candidates}"`);
   });
 
-  if (withPreloads !== html) writeFileSync(file, withPreloads);
+  const withTrimmedFontPreloads = trimFontPreloads(withPreloads);
+
+  if (withTrimmedFontPreloads !== html) writeFileSync(file, withTrimmedFontPreloads);
 }
 
 // Route handlers are not part of a static export.
