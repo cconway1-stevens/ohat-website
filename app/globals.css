@@ -2120,17 +2120,29 @@ img {
   list-style: none;
   overflow: hidden;
   border: 4px solid var(--ink);
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 52px,
-      rgba(255, 255, 255, 0.75) 54px 82px,
-      transparent 84px 136px
-    ),
-    var(--red);
+  background: var(--red);
+  box-shadow: 8px 8px 0 var(--yellow);
+}
+/* The lane markings live on their own layer so they can be translated rather
+   than repainted. One extra period of the gradient hangs off the right edge to
+   fill the gap the slide opens up; `overflow: hidden` above clips it. */
+.ride-track::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: -136px;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 52px,
+    rgba(255, 255, 255, 0.75) 54px 82px,
+    transparent 84px 136px
+  );
   background-position: 0 50%;
   animation: ride-lanes 8s linear infinite;
-  box-shadow: 8px 8px 0 var(--yellow);
+  pointer-events: none;
 }
 .ride-track::before {
   content: "PICK YOUR RIDE";
@@ -7148,6 +7160,9 @@ body.is-play-locked {
   right: 0;
   bottom: 0;
   height: 77px;
+  /* Makes the track the query container the car's drive distance is measured
+     against — see the `car-drive` keyframes. */
+  container-type: inline-size;
   background: #292724;
   border-top: 5px solid var(--ink);
 }
@@ -7155,7 +7170,10 @@ body.is-play-locked {
   content: "";
   position: absolute;
   left: 0;
-  right: 0;
+  /* One gradient period of overhang, so translating the strip leftwards never
+     exposes a bare tail. `body` is `overflow-x: hidden`, so the surplus costs
+     no horizontal scroll. */
+  right: -92px;
   top: 33px;
   height: 7px;
   background: repeating-linear-gradient(90deg, var(--yellow) 0 55px, transparent 55px 92px);
@@ -7164,7 +7182,10 @@ body.is-play-locked {
 .classic-car {
   position: absolute;
   z-index: 2;
-  left: 8%;
+  /* The old `car-drive` start frame set this to 7% and the end frame to
+     `calc(100% - 230px)`. Now that the drive is a transform, the resting
+     position has to carry that 7% itself or the car finishes 1% wide. */
+  left: 7%;
   bottom: 38px;
   display: block;
   width: 180px;
@@ -7473,24 +7494,30 @@ body.is-play-locked {
     transform-origin: left;
   }
 }
+/* Both road surfaces used to scroll by animating `background-position`, which
+   repaints on the main thread. They now translate instead, which the
+   compositor owns. Each strip is extended by exactly one period of its own
+   repeating gradient and slid back by that period, so the loop still lands
+   seamlessly. */
 @keyframes road-lines {
   to {
-    background-position: 92px 0;
+    transform: translateX(-92px);
   }
 }
 @keyframes ride-lanes {
   to {
-    background-position: 136px 50%;
+    transform: translateX(-136px);
   }
 }
+/* Driving the car with `left` relaid out the footer on every frame. The
+   distance it covers is the track's width less the car's parking space, which
+   `cqw` states directly — `.car-track` is the query container. */
 @keyframes car-drive {
   from {
-    left: 7%;
-    transform: translateY(0);
+    transform: translateX(0) translateY(0);
   }
   to {
-    left: calc(100% - 230px);
-    transform: translateY(-2px);
+    transform: translateX(calc(93cqw - 230px)) translateY(-2px);
   }
 }
 @keyframes catalog-logo-roll {
@@ -10501,13 +10528,18 @@ body.is-play-locked {
   background: none;
   animation: none;
 }
+/* The placeholder used to inflate by animating `background-size`, which the
+   compositor cannot run — so it relayout-painted on the main thread, once per
+   image, on every page. Since this class rides on the <img> itself (see the
+   note in site-image.tsx about why there is no wrapper to animate instead),
+   opacity is the one breathing property available that stays composited. */
 @keyframes tyre-pump {
   0%,
   100% {
-    background-size: clamp(28px, 22%, 64px), auto;
+    opacity: 1;
   }
   55% {
-    background-size: clamp(31px, 24%, 70px), auto;
+    opacity: 0.72;
   }
 }
 @media (prefers-reduced-motion: reduce) {
