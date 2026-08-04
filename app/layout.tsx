@@ -79,11 +79,25 @@ export default function RootLayout({
             origins at most — past that, preconnects compete with the requests
             they are meant to accelerate. */}
         <link rel="preconnect" href="https://api.open-meteo.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        {/* Google tag (gtag.js). Google's install instructions ask for this
-            immediately after <head>, so it stays first: gtag.js records the
-            page view as soon as it loads, and anything queued before it
-            arrives is replayed from `dataLayer`.
+        {/* Google's tag is deliberately not preconnected: it is held back
+            until the page has finished loading (see below), by which point an
+            idle connection would have been closed anyway. Opening it early
+            would only take bandwidth from the hero image. */}
+        {/* Google tag (gtag.js), in two halves.
+
+            The measurement half runs here, immediately, exactly as Google's
+            install instructions ask. It costs nothing: it defines `dataLayer`,
+            records the consent defaults and queues the page view, all before
+            anything has had a chance to load.
+
+            The 162 KiB script that reads that queue does not run here. It used
+            to, and Lighthouse found two thirds of it unused during load, spent
+            while the hero image was still arriving on a throttled connection.
+            It now loads on the first of two signals: any sign of a real
+            visitor, or the window's load event once the page owes the network
+            nothing. Either way `dataLayer` is already populated and gtag.js
+            replays it on arrival, so the page view is still recorded — this
+            defers the reporting, not the measurement.
 
             The consent defaults below are deliberate, and they are what keeps
             this a measurement tool rather than an advertising one:
@@ -99,7 +113,6 @@ export default function RootLayout({
               covered controller, so this is us honouring the signal because
               it is the right default, not because we are compelled to.
             See docs/privacy-compliance.md for the full analysis. */}
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer = window.dataLayer || [];
@@ -115,7 +128,25 @@ gtag('config', '${gaMeasurementId}', {
   anonymize_ip: true,
   allow_google_signals: false,
   allow_ad_personalization_signals: false
-});`,
+});
+(function () {
+  var requested = false;
+  function loadTag() {
+    if (requested) return;
+    requested = true;
+    var tag = document.createElement('script');
+    tag.async = true;
+    tag.src = 'https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}';
+    document.head.appendChild(tag);
+  }
+  // Anyone who touches the page is a visitor worth counting now rather than
+  // at load, which on a slow connection can be seconds away.
+  ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (event) {
+    addEventListener(event, loadTag, { once: true, passive: true });
+  });
+  if (document.readyState === 'complete') loadTag();
+  else addEventListener('load', loadTag, { once: true });
+})();`,
           }}
         />
         {/* Host-relative so the icon resolves on whatever domain serves the
