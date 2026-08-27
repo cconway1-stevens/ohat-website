@@ -5,8 +5,7 @@ dist/
 coverage/
 
 # Generated data and image variants are rebuilt by project scripts.
-drizzle/meta/
-lib/image-manifest.json
+src/lib/image-manifest.json
 public/media/rs/
 
 # Vercel may normalize this project file in its prepared build workspace

@@ -90,24 +90,36 @@ These are maintained deliberately — please keep them green when contributing:
 - Tailwind CSS v4 base with a hand-rolled design system in `app/globals.css`
 - Cloudflare Images for `next/image` optimization (`worker/index.ts`; local
   dev falls back to serving originals when the bindings are absent)
-- Optional Cloudflare D1 + Drizzle scaffolding (`db/`, unused so far)
 
 ## Project structure
 
 ```
-app/            Routes, layout, global styles, sitemap/robots
-  page.tsx        Homepage (catalog cover)
-  globals.css     The entire design system
-  not-found.tsx   Branded 404
-components/     Site header/footer, directions dialog
-lib/services.ts Service catalog data (single source for pages + sitemap)
-public/         Brand SVGs, shop photos, favicon
-worker/         Cloudflare Worker entry (image optimization + app handler)
-scripts/        Install/build helpers for the Sites platform
-tests/          Rendered-HTML smoke tests
+src/            Production source code
+  app/            Routes (App Router), layout, global styles, sitemap/robots
+  components/     React components, grouped by concern
+    layout/         site-header, site-footer
+    analytics/      GA4 + Vercel analytics
+    ui/             Shared widgets (site-image, directions, copy, share, …)
+    shop/           Shop widgets (hours status, almanac, service icon)
+    arcade/         Game components (incl. the logo-match game)
+  lib/            Non-UI logic and data
+    shop/           Single source of truth for shop details (shop.mjs + re-exports)
+    arcade/         Game logic (word games, audio, presets)
+    services.ts     Service catalog data (pages + sitemap)
+    makes.ts        Car-make brand data
+    seo.ts          Metadata builder
+    analytics.ts    Measurement IDs / host detection
+  worker/         Cloudflare Worker entry (image optimization + app handler)
+  build/          Vite plugin that packages Sites metadata
+public/         Static assets (brand SVGs, shop photos, favicon)
+dev/            Development tooling (not shipped to production)
+  scripts/        Install/build/QA helpers
+  tests/          Node test suites (hours, arcade, rendered HTML, SEO, static export)
+  docs/           Audits, playbook, and production-readiness notes
+  reports/        Lighthouse snapshots
 ```
 
-`PROJECT-PLAYBOOK.md` documents the rebuild goals, brand story, content
+`dev/docs/project-playbook.md` documents the rebuild goals, brand story, content
 inventory, and owner follow-ups.
 
 ## Development
