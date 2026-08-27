@@ -57,101 +57,72 @@ export default function Home() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homeSchema) }}
         />
-        <section className="catalog-cover-hero" id="top">
-          <div className="cover-shell">
-            <article className="cover-sheet">
-              <p className="cover-topline" aria-label="Catalog edition">
-                <span>Egg Harbor Township, N.J.</span>
-                <span className="cover-topline-title">Service &amp; repair annual</span>
-                <span className="cover-issue">
-                  Issue No.{" "}
-                  <span className="odometer" aria-hidden="true">
-                    <b>1</b>
-                    <b>1</b>
-                    <b>7</b>
-                    <b>8</b>
-                  </span>
-                </span>
+        <section className="hero" id="top">
+          <div className="shell hero-grid">
+            <div className="hero-copy">
+              <p className="hero-badge">
+                <span>Family owned &amp; operated</span>
+                <span aria-hidden="true">·</span>
+                <span>Egg Harbor Township, NJ</span>
               </p>
-
-              <div className="cover-hero-grid">
-                <div className="cover-copy-panel cover-copy-intro">
-                  <p className="cover-brand-line">Full-service garage</p>
-                  <h1>
-                    <span className="cover-business-name">
-                      Ocean Heights <em>Auto &amp; Tire</em>
-                    </span>
-                  </h1>
-                  <p className="cover-location">Egg Harbor Township, NJ</p>
-                </div>
-
-                <figure className="cover-photo-panel">
-                  <div className="cover-photo-image">
-                    <SiteImage
-                      src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
-                      alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
-                      fill
-                      priority
-                      sizes="(max-width: 860px) 100vw, 470px"
-                    />
-                  </div>
-                  {/* Bay signal: the light over a service bay door. Green means
-                      the bay is open — it idles on green and only cycles through
-                      yellow/red every so often, like a real traffic signal. */}
-                  <span className="bay-signal" aria-hidden="true">
-                    <span className="bay-signal-housing">
-                      <span className="bay-signal-light bay-signal-red" />
-                      <span className="bay-signal-light bay-signal-yellow" />
-                      <span className="bay-signal-light bay-signal-green" />
-                    </span>
-                    <span className="bay-signal-tag">Bay 1</span>
-                  </span>
-                  <figcaption>Fig. 1 — Classics, dailies &amp; EVs, one driveway</figcaption>
-                </figure>
-
-                <div className="cover-copy-panel cover-copy-details">
-                  <p className="cover-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
-                  <p className="cover-lede">
-                    From carbureted classics to brand-new EVs, every car in your driveway is welcome
-                    here.
-                  </p>
-
-                  <div className="cover-actions">
-                    <a className="button button-primary" href={phoneHref}>
-                      Call {phoneDisplay}
-                    </a>
-                    <DirectionsTrigger className="button button-ghost">
-                      Get directions <span aria-hidden="true">↗︎</span>
-                    </DirectionsTrigger>
-                  </div>
-
-                  {/* Live open/closed sign right beside the call button, so
-                      "are they open?" is answered before it becomes a reason
-                      not to dial. */}
-                  <p className="cover-status">
-                    <ShopHoursStatus />
-                  </p>
-
-                  <ul className="cover-index" aria-label="Why drivers choose Ocean Heights">
-                    <li>
-                      <span>No. 01</span>
-                      <strong>Dealer-level tools</strong>
-                      <small>We don&rsquo;t guess. We test.</small>
-                    </li>
-                    <li>
-                      <span>No. 02</span>
-                      <strong>Your whole driveway</strong>
-                      <small>Gas, diesel, hybrid, EV &amp; classics</small>
-                    </li>
-                    <li>
-                      <span>No. 03</span>
-                      <strong>Neighbor-level care</strong>
-                      <small>Family owned &amp; operated</small>
-                    </li>
-                  </ul>
-                </div>
+              <h1>
+                Ocean Heights <em>Auto &amp; Tire</em>
+              </h1>
+              <p className="hero-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
+              <p className="hero-lede">
+                From carbureted classics to brand-new EVs, every car in your driveway is welcome
+                here.
+              </p>
+              <div className="hero-cta">
+                <a className="button button-primary" href={phoneHref}>
+                  Call {phoneDisplay}
+                </a>
+                <DirectionsTrigger className="button button-ghost">
+                  Get directions <span aria-hidden="true">↗︎</span>
+                </DirectionsTrigger>
               </div>
-            </article>
+              {/* Live open/closed sign right beside the call button, so
+                  "are they open?" is answered before it becomes a reason
+                  not to dial. */}
+              <p className="hero-status">
+                <ShopHoursStatus />
+              </p>
+              <ul className="hero-trust" aria-label="Shop credentials">
+                <li>
+                  <strong>ASE</strong> Certified techs
+                </li>
+                <li>
+                  <strong>40+</strong> years family run
+                </li>
+                <li>
+                  <strong>5.0★</strong> CARFAX rated
+                </li>
+              </ul>
+            </div>
+
+            <figure className="hero-photo">
+              <div className="hero-photo-frame">
+                <SiteImage
+                  src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
+                  alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
+                  fill
+                  priority
+                  sizes="(max-width: 860px) 100vw, 520px"
+                />
+              </div>
+              {/* Bay signal: the light over a service bay door. Green means
+                  the bay is open — it idles on green and only cycles through
+                  yellow/red every so often, like a real traffic signal. */}
+              <span className="bay-signal" aria-hidden="true">
+                <span className="bay-signal-housing">
+                  <span className="bay-signal-light bay-signal-red" />
+                  <span className="bay-signal-light bay-signal-yellow" />
+                  <span className="bay-signal-light bay-signal-green" />
+                </span>
+                <span className="bay-signal-tag">Bay 1</span>
+              </span>
+              <figcaption>Classics, dailies &amp; EVs — one driveway</figcaption>
+            </figure>
           </div>
         </section>
 
