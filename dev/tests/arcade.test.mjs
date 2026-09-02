@@ -316,3 +316,69 @@ test("Tow Chain: an unanswered service call expires", () => {
   assert.equal(state.bonus, null, "the caller should give up eventually");
   assert.ok(config.bonusLifeTicks > 0);
 });
+
+/* ------------------------- Parts Counter 3D orders ---------------------- */
+
+import {
+  CUSTOMERS_PER_DAY,
+  buyUpgrade,
+  canAfford,
+  coinsForOrder,
+  isDayComplete,
+  nextCounterOrder,
+  orderPart,
+  orderTotal,
+  partsStock,
+  stockEntry,
+  streakAdvance,
+  upgradeById,
+  upgrades,
+} from "../../src/lib/arcade/parts-orders.ts";
+
+test("Parts Counter 3D: every counter order is one part, 1–3 of it", () => {
+  const stockIds = new Set(partsStock.map((entry) => entry.id));
+  for (let round = 0; round < ROUNDS; round += 1) {
+    const order = nextCounterOrder();
+    assert.equal(order.items.length, 1, "a counter order is a single part");
+    const item = orderPart(order);
+    assert.ok(stockIds.has(item.id), `unknown part ${item.id}`);
+    assert.ok(item.quantity >= 1 && item.quantity <= 3, `bad quantity ${item.quantity}`);
+    assert.ok(order.slip >= 1000 && order.slip <= 9999);
+    assert.ok(order.customer.trim().length > 0);
+    assert.ok(orderTotal(order) > 0, "a ticket should always total something");
+  }
+});
+
+test("Parts Counter 3D: coins are the order total rounded to whole dollars", () => {
+  const order = { items: [{ id: "bulb", quantity: 2 }], customer: "Tester", slip: 1 };
+  assert.equal(coinsForOrder(order), Math.round(2 * stockEntry("bulb").price));
+});
+
+test("Parts Counter 3D: a perfect round grows the streak, a mistake breaks it", () => {
+  assert.equal(streakAdvance(0, 0), 1);
+  assert.equal(streakAdvance(4, 0), 5);
+  assert.equal(streakAdvance(4, 1), 0, "a wrong grab breaks the streak");
+});
+
+test("Parts Counter 3D: upgrades cost coins and cannot be bought twice", () => {
+  assert.ok(upgrades.length >= 6, "the prop shop should have a few props");
+  for (const upgrade of upgrades) {
+    assert.ok(upgrade.cost > 0, `${upgrade.id} should cost something`);
+    assert.ok(upgrade.label.trim().length > 0);
+  }
+  const rug = upgradeById("rug");
+  assert.equal(canAfford(rug.cost - 1, "rug", []), false, "short on coins");
+  assert.equal(canAfford(rug.cost, "rug", []), true);
+  assert.equal(canAfford(rug.cost, "rug", ["rug"]), false, "already owned");
+  const bought = buyUpgrade(100, [], "rug");
+  assert.deepEqual(bought, { coins: 100 - rug.cost, owned: ["rug"] });
+  assert.equal(buyUpgrade(0, [], "rug"), null, "cannot buy with no coins");
+  assert.equal(buyUpgrade(100, ["rug"], "rug"), null, "cannot double-buy");
+});
+
+test("Parts Counter 3D: a day ends after the customer quota", () => {
+  assert.equal(isDayComplete(0), false);
+  assert.equal(isDayComplete(CUSTOMERS_PER_DAY - 1), false);
+  assert.equal(isDayComplete(CUSTOMERS_PER_DAY), true);
+  assert.ok(CUSTOMERS_PER_DAY > 0);
+});

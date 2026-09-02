@@ -1,0 +1,746 @@
+/* Site masthead */
+.site-header {
+  position: absolute;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: #fff;
+}
+.garage-strip {
+  min-height: 30px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.38rem max(1.25rem, calc((100vw - 1180px) / 2));
+  background: var(--yellow);
+  color: var(--ink);
+  border-bottom: 3px solid var(--ink);
+  font-size: 0.64rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.garage-strip > span {
+  font-family: var(--font-serif);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+/* Masthead almanac: a dateline detail, deliberately the same weight as the
+   text it sits beside rather than a feature of its own. */
+.garage-almanac {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.42rem;
+  white-space: nowrap;
+}
+.garage-almanac-rule {
+  color: var(--red);
+}
+.garage-almanac-reading {
+  font-variant-numeric: tabular-nums;
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.garage-strip-phone {
+  justify-self: end;
+}
+.garage-strip a {
+  transition: color 0.18s ease;
+}
+.garage-strip a:hover {
+  color: var(--red);
+}
+.directions-menu-trigger {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+}
+.directions-menu-trigger span {
+  display: inline-block;
+  margin-left: 0.25rem;
+  color: var(--red);
+  transition: transform 0.18s ease;
+}
+.directions-menu-trigger:hover,
+.directions-menu-trigger:focus-visible {
+  color: var(--red);
+}
+.directions-dialog {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  width: min(620px, calc(100vw - 28px));
+  max-height: min(86dvh, 760px);
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+  color: var(--ink);
+  transform: translate(-50%, -50%);
+}
+.directions-dialog::backdrop {
+  background: rgba(20, 13, 10, 0.78);
+  backdrop-filter: blur(3px);
+}
+.directions-dialog-card {
+  position: relative;
+  max-height: inherit;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1.5rem, 4vw, 2.8rem);
+  border: 4px solid var(--ink);
+  background: linear-gradient(rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.32)), var(--paper);
+  box-shadow: 12px 12px 0 var(--yellow);
+}
+.directions-dialog-card::before {
+  content: "ROUTE DESK • ISSUE 1178";
+  display: block;
+  margin: calc(clamp(1.5rem, 4vw, 2.8rem) * -1) calc(clamp(1.5rem, 4vw, 2.8rem) * -1) 1.6rem;
+  padding: 0.55rem 1rem;
+  border-bottom: 4px solid var(--ink);
+  background: var(--red);
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.directions-dialog-close {
+  position: absolute;
+  z-index: 2;
+  top: 0.65rem;
+  right: 0.65rem;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--ink);
+  cursor: pointer;
+  font: 950 1.65rem/1 var(--font-serif);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.directions-dialog-close:hover,
+.directions-dialog-close:focus-visible {
+  background: #fffaf0;
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+.directions-dialog-kicker {
+  margin: 0 0 0.35rem;
+  color: var(--red);
+  font-size: 0.67rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.directions-dialog[open] {
+  animation: dialog-pop 0.28s ease-out;
+}
+.directions-dialog[open]::backdrop {
+  animation: backdrop-fade 0.28s ease-out;
+}
+.directions-dialog h2 {
+  margin: 0;
+  padding-bottom: 0.55rem;
+  border-bottom: 4px double var(--ink);
+  font-family: var(--font-serif);
+  font-size: clamp(1.9rem, 6vw, 3rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.directions-dialog address {
+  display: inline-grid;
+  gap: 0.15rem;
+  margin: 1.2rem 0 1.4rem;
+  padding: 0.7rem 0.9rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-style: normal;
+  transform: rotate(-0.6deg);
+}
+.directions-dialog address strong {
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.directions-dialog address span {
+  color: #4c3c2d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.directions-dialog-hours {
+  margin: 1.2rem 0 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.directions-dialog-hours a {
+  color: var(--red);
+}
+.directions-dialog-hours a:hover {
+  text-decoration: underline;
+}
+/* The shop status reads as a placard hung on the door rather than a line of
+   shouted text. It used to set both lines in bold uppercase at the same
+   weight, which made an ordinary "we're shut, back Monday" feel curt — and
+   the second line wrapped, stranding a lone "AM". Now the status is the
+   headline and the detail sits under it in sentence case, on its own plate. */
+.shop-hours-status-wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.65rem;
+}
+.shop-hours-status {
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0 0.5rem;
+  padding: 0.42rem 0.7rem 0.42rem 0.55rem;
+  /* A warm paper face with a hard ink edge and offset shadow, the way the
+     rest of the site's cards are built — so the sign reads as a small object
+     hung on the page rather than a status chip. */
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: 2px;
+  box-shadow: 3px 3px 0 var(--ink);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+  touch-action: manipulation;
+}
+/* The lamp. It used to take `background: currentColor`, and on the contact
+   card that resolved against an inherited ink rather than the state colour,
+   so an open shop showed a grey bulb beside green type. Each state now sets
+   this explicitly — no inheritance to get wrong. */
+.shop-status-dot {
+  width: 0.62rem;
+  height: 0.62rem;
+  flex: 0 0 auto;
+  align-self: center;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--muted);
+}
+.shop-status-copy {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+/* Line one is the state, set in the catalog serif so it carries the vintage
+   shop-sign feel; line two is the detail, sentence case and quieter. */
+.shop-status-copy > span:first-child {
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+}
+.shop-status-copy > span:not(:first-child) {
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  text-transform: none;
+  text-wrap: balance;
+}
+.shop-hours-status.is-open {
+  color: #146b3a;
+  background: linear-gradient(0deg, rgba(20, 107, 58, 0.09), rgba(20, 107, 58, 0.09)), var(--paper);
+}
+.shop-hours-status.is-open .shop-status-dot {
+  background: #1f9150;
+  /* A lit bulb glows a little into its surround. */
+  box-shadow: 0 0 0 3px rgba(31, 145, 80, 0.24);
+}
+.shop-hours-status.is-opening-soon .shop-status-dot,
+.shop-hours-status.is-closing-soon .shop-status-dot {
+  background: #e08c1a;
+  box-shadow: 0 0 0 3px rgba(224, 140, 26, 0.24);
+}
+.shop-hours-status.is-closed .shop-status-dot {
+  background: var(--red);
+}
+.shop-hours-status.is-opening-soon,
+.shop-hours-status.is-closing-soon {
+  color: #a65d00;
+  background: linear-gradient(0deg, rgba(224, 140, 26, 0.1), rgba(224, 140, 26, 0.1)), var(--paper);
+}
+.shop-hours-status:is(.is-opening-soon, .is-sign-preview) {
+  position: relative;
+  padding: 0.24rem 0.48rem 0.22rem;
+  border: 1.5px solid currentColor;
+  background: var(--paper);
+  box-shadow: 1px 2px 0 rgba(23, 20, 18, 0.16);
+  transform-origin: 50% -7px;
+  animation: door-sign-sway 3.6s ease-in-out infinite;
+}
+.shop-hours-status:is(.is-opening-soon, .is-sign-preview)::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 18px;
+  height: 9px;
+  background:
+    linear-gradient(32deg, transparent 45%, currentColor 47% 53%, transparent 55%) left / 50% 100%
+      no-repeat,
+    linear-gradient(-32deg, transparent 45%, currentColor 47% 53%, transparent 55%) right / 50% 100%
+      no-repeat;
+  transform: translateX(-50%);
+  opacity: 0.72;
+}
+.shop-hours-status:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.shop-hours-status.is-sign-preview {
+  animation: door-sign-flutter 0.9s ease-in-out infinite;
+}
+@keyframes door-sign-sway {
+  0%,
+  100% {
+    transform: rotate(-1.4deg);
+  }
+  50% {
+    transform: rotate(1.4deg);
+  }
+}
+@keyframes door-sign-flutter {
+  0%,
+  100% {
+    transform: rotate(-1deg);
+  }
+  18% {
+    transform: rotate(4deg);
+  }
+  38% {
+    transform: rotate(-3deg);
+  }
+  58% {
+    transform: rotate(2deg);
+  }
+  78% {
+    transform: rotate(-1.5deg);
+  }
+}
+.shop-hours-status.is-closed {
+  color: var(--red);
+  background: linear-gradient(0deg, rgba(168, 22, 28, 0.07), rgba(168, 22, 28, 0.07)), var(--paper);
+}
+.shop-hours-holiday {
+  flex-basis: 100%;
+  color: var(--red);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.directions-dialog-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.directions-dialog-options a,
+.directions-dialog-options button {
+  min-height: 86px;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  column-gap: 0.7rem;
+  padding: 0.75rem;
+  border: 3px solid var(--ink);
+  background: #fffaf0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+.directions-dialog-options a:hover,
+.directions-dialog-options a:focus-visible,
+.directions-dialog-options button:hover,
+.directions-dialog-options button:focus-visible {
+  background: var(--yellow);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.directions-dialog-options a > span,
+.directions-dialog-options button > span {
+  grid-row: 1 / 3;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font: 950 1rem/1 var(--font-serif);
+}
+.directions-dialog-options strong {
+  align-self: end;
+  font-size: 0.82rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.directions-dialog-options small {
+  align-self: start;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+/* The band paints edge to edge; `.nav-wrap` only lays out its contents. Both
+   live on separate elements because `.shell` caps its own width at 1180px,
+   so a background set on it stops short of the viewport edges. */
+.nav-band {
+  background: linear-gradient(90deg, rgba(23, 20, 18, 0.98), rgba(105, 12, 17, 0.96));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+}
+.nav-wrap {
+  min-height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 0.65rem;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+}
+.brand img {
+  width: 176px;
+  height: 92px;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.34));
+  transform: rotate(-1deg);
+}
+.desktop-nav {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.65rem, 1.5vw, 1.5rem);
+}
+.desktop-nav a {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.36rem;
+  padding: 0.75rem 0 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.desktop-nav small {
+  color: var(--yellow);
+  font-size: 0.56rem;
+}
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.25rem;
+  height: 3px;
+  background: var(--yellow);
+  transform: skewX(-25deg) scaleX(0);
+  transform-origin: right;
+  transition: transform 0.2s ease;
+}
+.desktop-nav a:hover::after,
+.desktop-nav a:focus-visible::after {
+  transform: skewX(-25deg) scaleX(1);
+  transform-origin: left;
+}
+/* Where you are: the current page keeps the underline and the number chip
+   lights up, so the masthead answers "where am I?" at a glance. */
+.desktop-nav a.is-current {
+  color: var(--yellow);
+}
+.desktop-nav a.is-current::after {
+  transform: skewX(-25deg) scaleX(1);
+}
+.mobile-menu {
+  display: none;
+}
+
+.button {
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border: 3px solid var(--ink);
+  border-radius: 3px;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.9rem 1.35rem;
+  font-weight: 950;
+  letter-spacing: 0.01em;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+.button:hover {
+  transform: translateY(-3px) rotate(-0.4deg);
+  box-shadow: 7px 8px 0 var(--ink);
+}
+.button-primary {
+  background: var(--yellow);
+  color: var(--ink);
+}
+.button-primary:hover {
+  background: var(--red);
+  color: #fff;
+}
+.button-ghost {
+  border-color: currentColor;
+  background: transparent;
+  color: inherit;
+  box-shadow: 5px 5px 0 currentColor;
+}
+.button-ghost:hover {
+  background: var(--paper);
+  border-color: var(--ink);
+  color: var(--ink);
+  box-shadow: 7px 8px 0 var(--yellow);
+}
+.button-small {
+  min-height: 52px;
+  background: var(--red);
+  border-color: var(--yellow);
+  color: #fff;
+  box-shadow: 5px 5px 0 var(--yellow);
+}
+.button-small > span:last-child {
+  display: grid;
+}
+.button-small small {
+  color: var(--yellow-tint);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.button-small strong {
+  font-size: clamp(0.86rem, 0.95vw, 1.02rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.retro-call-button {
+  flex: 0 1 236px;
+  justify-content: flex-start;
+  gap: 0.65rem;
+  max-width: 236px;
+  padding: 0.62rem 0.82rem;
+}
+.retro-call-button:hover {
+  background: var(--yellow);
+  border-color: var(--ink);
+  color: var(--ink);
+  box-shadow: 7px 8px 0 var(--red);
+}
+.retro-call-button:hover small {
+  color: var(--red);
+}
+.retro-phone-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1.08rem;
+  line-height: 1;
+  box-shadow: 3px 3px 0 currentColor;
+  transform: rotate(-8deg);
+}
+.retro-phone-mark::before,
+.retro-phone-mark::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 2px;
+  background: currentColor;
+  top: 2px;
+}
+.retro-phone-mark::before {
+  left: -6px;
+  transform: rotate(38deg);
+}
+.retro-phone-mark::after {
+  right: -6px;
+  transform: rotate(-38deg);
+}
+.retro-call-button:hover .retro-phone-mark {
+  background: var(--paper);
+  animation: phone-ring 0.45s ease-in-out 2;
+}
+
+/* The floating call box. Two panels — the garage line and the link tree —
+   held inside one ink-bordered slab so it reads as a single shop fixture
+   bolted to the corner of the page rather than two stray buttons. */
+.booking-dock {
+  position: fixed;
+  z-index: 80;
+  right: 18px;
+  top: auto;
+  bottom: 18px;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: -7px 7px 0 rgba(23, 20, 18, 0.82);
+  transform: none;
+}
+/* A strip of label tape across the head of the box: one flash of yellow to
+   catch the eye, and the seam that ties the two panels into one object. */
+.booking-dock::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto 0;
+  height: 6px;
+  background: var(--yellow);
+  border-bottom: 2px solid var(--ink);
+  pointer-events: none;
+}
+.is-arcade .booking-dock {
+  display: none;
+}
+/* At the very bottom of the page the dock would sit on top of the footer's
+   own phone number and the maker credit, so it bows out. */
+.at-footer .booking-dock {
+  opacity: 0;
+  /* `visibility` is discrete, so it needs a delay rather than a duration —
+     it flips once the fade has finished, which also takes the dock out of
+     the tab order instead of leaving an invisible focusable target. */
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0s linear 0.22s;
+}
+.booking-dock > a,
+.booking-dock > button {
+  position: relative;
+  min-width: 178px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  /* The extra block-start padding clears the label tape. */
+  padding: 0.85rem 0.9rem 0.72rem;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+  /* The global focus ring sits 4px outside its target, which would land
+     underneath the neighbouring panel. Pull it inside instead. */
+  outline-offset: -7px;
+}
+.booking-dock > button {
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+.booking-phone:hover {
+  background: var(--yellow-tint);
+}
+.booking-dock > :nth-child(2) {
+  background: var(--red);
+  color: #fff;
+  border-left: 3px solid var(--ink);
+}
+.booking-links:hover {
+  background: var(--red-dark);
+}
+.booking-dock-copy {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.booking-dock small {
+  color: var(--muted);
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.booking-links small {
+  color: var(--yellow);
+}
+.booking-dock strong {
+  font-size: 0.95rem;
+  line-height: 1.05;
+  /* The number is the point of the panel — keep the digits from shuffling
+     width between the resting and hovered states. */
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.booking-dock-arrow {
+  margin-left: auto;
+  padding-left: 0.35rem;
+  font-size: 1.05rem;
+  line-height: 1;
+  transition: transform 0.18s ease;
+}
+.booking-links:hover .booking-dock-arrow {
+  transform: translateX(3px);
+}
+.booking-phone:hover .retro-phone-mark {
+  animation: phone-ring 0.45s ease-in-out 2;
+}
+/* A quiet ring every twelve seconds. It is the only thing on the page asking
+   for attention, so it stays short and mostly idle. */
+@media (prefers-reduced-motion: no-preference) {
+  .booking-phone .retro-phone-mark {
+    animation: phone-idle-ring 12s ease-in-out infinite;
+  }
+}

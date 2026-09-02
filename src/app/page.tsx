@@ -173,7 +173,7 @@ export default function Home() {
               </div>
               <a className="garage-proof-ticket garage-proof-carfax" href={carfaxUrl}>
                 <span className="garage-carfax-seal" aria-hidden="true">
-                  <SiteImage src="/media/carfax-logo.svg" alt="" width={48} height={9} />
+                  <SiteImage src="/media/carfax-logo.svg" alt="" width={62} height={12} />
                   <b>★★★★★</b>
                 </span>
                 <span>
@@ -197,7 +197,7 @@ export default function Home() {
               <div className="catalog-make-track" aria-hidden="true">
                 {[...heroMakes, ...heroMakes].map((name, index) => (
                   <span className="catalog-make-logo" key={`${name}-${index}`}>
-                    <SiteImage src={brandSrc(name)} width={40} height={40} alt="" />
+                    <SiteImage src={brandSrc(name)} width={44} height={44} alt="" />
                     <strong>{name}</strong>
                   </span>
                 ))}

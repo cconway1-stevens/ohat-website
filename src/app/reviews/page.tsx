@@ -177,9 +177,9 @@ export default function ReviewsPage() {
                             fill="currentColor"
                           />
                         </svg>
-                        Verified · <a href={carfaxUrl}>{excerpt.context}</a>
-                        <span className="review-confirmed"> · {excerpt.verifiedOn}</span>
+                        <a href={carfaxUrl}>{excerpt.context}</a>
                       </span>
+                      <span className="review-confirmed">Confirmed {excerpt.verifiedOn}</span>
                     </cite>
                   </blockquote>
                 ))}

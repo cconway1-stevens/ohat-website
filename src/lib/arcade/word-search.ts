@@ -7,7 +7,7 @@ const CONFIG = arcadePresets.serviceSearch;
 export type Difficulty = keyof typeof CONFIG.difficulties;
 
 export type Point = { row: number; col: number };
-export type HiddenWord = { word: string; cells: string[] };
+type HiddenWord = { word: string; cells: string[] };
 export type SearchPuzzle = { grid: string[][]; words: HiddenWord[] };
 
 // Ordered easiest-first and sliced by the difficulty's `directions` count:

@@ -6,14 +6,14 @@ import { arcadePresets } from "./arcade.ts";
 const CONFIG = arcadePresets.crossword;
 export type Difficulty = keyof typeof CONFIG.difficulties;
 
-export type Direction = "across" | "down";
+type Direction = "across" | "down";
 type WorkingEntry = ClueWord & { row: number; col: number; direction: Direction };
-export type PuzzleEntry = WorkingEntry & {
+type PuzzleEntry = WorkingEntry & {
   id: string;
   number: number;
   cells: string[];
 };
-export type PuzzleCell = { letter: string; number?: number; entries: string[] };
+type PuzzleCell = { letter: string; number?: number; entries: string[] };
 export type CrosswordPuzzle = {
   rows: number;
   cols: number;

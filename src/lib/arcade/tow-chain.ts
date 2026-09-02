@@ -10,7 +10,7 @@ const CONFIG = arcadePresets.towChain;
 export type Point = { x: number; y: number };
 
 export type BonusKind = "ghost" | "slow" | "trim";
-export type Bonus = Point & { kind: BonusKind; ticksLeft: number };
+type Bonus = Point & { kind: BonusKind; ticksLeft: number };
 
 export type ChainState = {
   chain: Point[];
@@ -33,7 +33,7 @@ export type TickOutcome = {
   took: BonusKind | null;
 };
 
-export function freeCells(taken: Point[]): Point[] {
+function freeCells(taken: Point[]): Point[] {
   const used = new Set(taken.map((point) => `${point.x},${point.y}`));
   const free: Point[] = [];
   for (let x = 0; x < GRID; x += 1) {
@@ -46,7 +46,7 @@ export function freeCells(taken: Point[]): Point[] {
 
 // Picks from the cells the chain isn't sitting on. Guessing at random in a
 // `while (true)` slows to a crawl — and never returns — as the lot fills up.
-export function randomCell(exclude: Point[], pick = Math.random): Point {
+function randomCell(exclude: Point[], pick = Math.random): Point {
   const free = freeCells(exclude);
   return free[Math.floor(pick() * free.length)] ?? { x: 0, y: 0 };
 }

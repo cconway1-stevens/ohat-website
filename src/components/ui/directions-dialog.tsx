@@ -5,7 +5,7 @@ import { shop } from "@/lib/shop/shop";
 import { ShopHoursStatus } from "../shop/shop-hours-status";
 
 export const addressDisplay = shop.address.street;
-export const addressFull = shop.address.full;
+const addressFull = shop.address.full;
 
 // Every routing URL is built from the one address, so a move only needs the
 // config edited — no hand-encoded links to hunt down.

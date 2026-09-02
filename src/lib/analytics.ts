@@ -16,7 +16,7 @@ export const gaMeasurementId = "G-GXWDZMS0FL";
  */
 const productionHost = new URL(shop.siteUrl).hostname;
 
-export const vercelHosts = {
+const vercelHosts = {
   exact: [productionHost, `www.${productionHost}`],
   suffixes: [".vercel.app"],
 };

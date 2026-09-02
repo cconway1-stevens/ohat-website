@@ -1,0 +1,1869 @@
+/* Arcade prize + confetti */
+.prize-popup-backdrop {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background: rgba(23, 20, 18, 0.42);
+}
+.prize-banner {
+  position: relative;
+  overflow: hidden;
+  width: min(520px, 100%);
+  padding: clamp(1.2rem, 4vw, 2rem);
+  border: 4px solid var(--ink);
+  background:
+    repeating-linear-gradient(
+      125deg,
+      transparent 0 14px,
+      rgba(255, 255, 255, 0.16) 14px 17px,
+      transparent 17px 30px
+    ),
+    var(--yellow);
+  box-shadow: 10px 10px 0 var(--ink);
+  animation: prize-pop 0.4s ease-out both;
+}
+@keyframes prize-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.prize-confetti {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.prize-banner-body {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+}
+.prize-banner-kicker {
+  margin: 0;
+  color: var(--red-dark);
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+.prize-banner h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  line-height: 1.05;
+}
+.prize-terms {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--red-dark);
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+.prize-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.35rem;
+}
+.prize-actions .button {
+  min-height: 48px;
+}
+.prize-dismiss {
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 950;
+}
+.prize-dismiss:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0 var(--red);
+}
+
+/* Newspaper word games */
+.paper-game {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 1040px);
+  margin-inline: auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 4px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 9px 9px 0 var(--ink);
+}
+.paper-game-start {
+  justify-items: start;
+  max-width: 720px;
+}
+.paper-game-start h2,
+.paper-game-header h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.7rem, 5vw, 2.7rem);
+}
+.paper-game-start > p:not(.paper-game-edition) {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.paper-game-edition {
+  margin: 0 0 0.25rem;
+  color: var(--red);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.paper-game-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.8rem 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 5px double var(--ink);
+}
+.paper-game-difficulty {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(70px, auto));
+  margin-top: 0.8rem;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+  gap: 2px;
+}
+.paper-game-difficulty button {
+  min-height: 38px;
+  padding: 0.4rem 0.65rem;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.65rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.paper-game-difficulty button:hover,
+.paper-game-difficulty button.is-active {
+  background: var(--yellow);
+}
+.paper-game-difficulty button:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: -4px;
+}
+.paper-game-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 0.85rem;
+  border-top: 2px solid var(--ink);
+}
+.paper-game-actions button {
+  min-height: 46px;
+  padding: 0.65rem 0.9rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.paper-game-actions button:last-child {
+  background: var(--yellow);
+}
+
+.crossword-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.15fr) minmax(260px, 0.85fr);
+  gap: clamp(1.2rem, 4vw, 2.4rem);
+  align-items: start;
+}
+.crossword-grid-scroll {
+  min-width: 0;
+}
+.crossword-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--crossword-cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--crossword-rows), minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+  max-width: 620px;
+  aspect-ratio: var(--crossword-cols) / var(--crossword-rows);
+  padding: 3px;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+}
+.crossword-block {
+  min-width: 0;
+  min-height: 0;
+  background: var(--ink);
+}
+.crossword-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  background: #fffdf5;
+}
+.crossword-cell.is-active {
+  background: #fff0b8;
+}
+.crossword-cell.is-wrong {
+  background: #ffe0df;
+  color: var(--red);
+}
+.crossword-cell > span {
+  position: absolute;
+  z-index: 1;
+  top: 1px;
+  left: 2px;
+  font-size: clamp(0.36rem, 0.65vw, 0.55rem);
+  font-weight: 950;
+  line-height: 1;
+  pointer-events: none;
+}
+.crossword-cell input {
+  width: 100%;
+  height: 100%;
+  padding: 0.16em 0 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-serif);
+  font-size: clamp(0.8rem, 2.4vw, 1.55rem);
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: var(--red);
+}
+.crossword-cell:focus-within {
+  z-index: 2;
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+.crossword-clues {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+.crossword-clues section {
+  min-width: 0;
+}
+.crossword-clues h3,
+.service-search-list h3 {
+  margin: 0 0 0.55rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 3px solid var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  text-transform: capitalize;
+}
+.crossword-clues ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.crossword-clues li {
+  margin-bottom: 0.2rem;
+}
+.crossword-clues button {
+  width: 100%;
+  padding: 0.35rem 0.3rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.crossword-clues button.is-active {
+  background: var(--yellow-tint);
+}
+.crossword-clues button:hover {
+  color: var(--red);
+}
+
+.service-search-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 520px) minmax(170px, 1fr);
+  gap: clamp(1.2rem, 4vw, 2.5rem);
+  align-items: start;
+  justify-content: center;
+}
+.service-search-example {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.2rem;
+  padding: 0.75rem 0;
+  border-block: 1px solid var(--ink);
+}
+.service-search-example p {
+  flex: 1 1 250px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+.service-search-example-word {
+  display: grid;
+  grid-template-columns: repeat(4, 42px);
+  gap: 3px;
+  padding-top: 18px;
+}
+.service-search-example-word > span {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--ink);
+  background: #fffdf5;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.service-search-example-word > span:is(.is-start, .is-end) {
+  background: var(--yellow);
+  outline: 2px solid var(--red);
+  outline-offset: -4px;
+}
+.service-search-example-word small {
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  width: max-content;
+  color: var(--red);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-size: 0.5rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+.service-search-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--search-size), minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 3px;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+}
+.service-search-grid button {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: #fffdf5;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: clamp(0.7rem, 2.4vw, 1.35rem);
+  font-weight: 900;
+  cursor: pointer;
+  /* Drag-select sweeps across cells, so the board must not pan the page
+     mid-swipe. The board sits inside the page's normal scroll everywhere
+     else, so this only locks gestures that start on the grid itself. */
+  touch-action: none;
+}
+.service-search-grid button:hover {
+  background: var(--yellow-tint);
+}
+/* The elastic band while a drag is underway: lighter than a locked-in
+   selection, dashed so the two never read as the same state. */
+.service-search-grid button.is-trail {
+  background: var(--yellow-tint);
+  outline: 2px dashed var(--red);
+  outline-offset: -2px;
+}
+.service-search-grid button.is-selected {
+  background: var(--yellow);
+  outline: 3px solid var(--red);
+  outline-offset: -3px;
+}
+.service-search-grid button.is-found {
+  background: var(--blue);
+  color: #fff;
+}
+/* Revealed reads clearly differently from found — you can see at a glance
+   which ones you actually spotted yourself. */
+.service-search-grid button.is-revealed {
+  background: var(--red);
+  color: #fff;
+  opacity: 0.78;
+}
+.service-search-list li.is-revealed {
+  color: var(--red);
+  text-decoration: line-through 2px var(--red);
+}
+.service-search-list li.is-revealed small {
+  font-size: 0.55rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.paper-game-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.service-search-list ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.service-search-list li {
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+.service-search-list li.is-found {
+  color: var(--muted);
+  text-decoration: line-through 3px var(--red);
+}
+.service-search-list p {
+  margin: 1rem 0 0;
+  color: var(--red);
+  font-size: 0.7rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+/* Garage Guess: a compact five-letter shop word puzzle. */
+.garage-guess-game {
+  justify-items: center;
+}
+.garage-guess-game .paper-game-header,
+.garage-guess-game .match-game-status {
+  width: 100%;
+}
+.garage-guess-progress {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem 0.6rem;
+  width: 100%;
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.garage-guess-progress span {
+  padding: 0.28rem 0.5rem;
+  border: 2px solid var(--ink);
+  background: #fffdf5;
+}
+.garage-guess-clue {
+  width: 100%;
+  margin: 0;
+  min-height: 1.6rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.garage-guess-clue b {
+  color: var(--red);
+}
+.garage-guess-clue button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--red);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-decoration: underline 2px;
+  text-underline-offset: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.garage-guess-clue button:hover {
+  color: var(--ink);
+}
+.garage-guess-game .paper-game-actions {
+  width: 100%;
+}
+.garage-guess-grid {
+  display: grid;
+  gap: 0.38rem;
+  width: min(100%, 360px);
+}
+.garage-guess-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.38rem;
+}
+.garage-guess-row span {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 3px solid var(--ink);
+  background: #fffdf5;
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 6vw, 2rem);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.garage-guess-row .is-correct,
+.garage-guess-keys .is-correct {
+  background: var(--blue);
+  color: #fff;
+}
+.garage-guess-row .is-present,
+.garage-guess-keys .is-present {
+  background: var(--yellow);
+  color: var(--ink);
+}
+.garage-guess-row .is-absent,
+.garage-guess-keys .is-absent {
+  background: var(--ink);
+  color: #fff;
+}
+.garage-guess-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 0.7rem;
+  width: 100%;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+.garage-guess-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  white-space: nowrap;
+}
+.garage-guess-legend b {
+  display: grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 2px solid var(--ink);
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+.garage-guess-legend .is-correct {
+  background: var(--blue);
+  color: #fff;
+}
+.garage-guess-legend .is-present {
+  background: var(--yellow);
+  color: var(--ink);
+}
+.garage-guess-legend .is-absent {
+  background: var(--ink);
+  color: #fff;
+}
+.garage-guess-keys {
+  display: grid;
+  gap: 0.35rem;
+  width: min(100%, 440px);
+}
+.garage-blackjack-game {
+  width: min(100%, 680px);
+}
+.garage-blackjack-intro {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.garage-blackjack-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+.garage-blackjack-game.is-terms-pending .paper-game-header,
+.garage-blackjack-game.is-terms-pending .garage-blackjack-intro,
+.garage-blackjack-game.is-terms-pending .garage-blackjack-table,
+.garage-blackjack-game.is-terms-pending .match-game-status,
+.garage-blackjack-game.is-terms-pending .garage-blackjack-controls,
+.garage-blackjack-game.is-terms-pending .garage-blackjack-keys,
+.garage-blackjack-game.is-terms-pending .garage-blackjack-audio-credit {
+  filter: grayscale(1);
+  opacity: 0.38;
+  pointer-events: none;
+}
+.garage-blackjack-score {
+  display: flex;
+  min-height: 42px;
+  margin: 0;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.garage-blackjack-score div {
+  display: grid;
+  min-width: 43px;
+  place-items: center;
+  padding: 0.22rem 0.35rem;
+  border-left: 2px solid var(--ink);
+}
+.garage-blackjack-score div:first-child {
+  border-left: 0;
+}
+.garage-blackjack-score dt {
+  color: var(--muted);
+  font-size: 0.45rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.garage-blackjack-score dd {
+  margin: 0.05rem 0 0;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.garage-blackjack-score div:first-child dd {
+  color: #4d7c39;
+}
+.garage-blackjack-score div:nth-child(2) dd {
+  color: var(--red);
+}
+.garage-blackjack-lobby,
+.garage-blackjack-advanced {
+  min-height: 42px;
+  padding: 0.45rem 0.7rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.garage-blackjack-lobby[aria-pressed="true"] {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 3px 3px 0 var(--yellow);
+}
+.garage-blackjack-advanced[aria-pressed="true"] {
+  background: var(--blue);
+  color: #fff;
+}
+.garage-blackjack-lobby:disabled,
+.garage-blackjack-advanced:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.garage-blackjack-deal {
+  min-height: 42px;
+  padding: 0.45rem 0.7rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.garage-blackjack-deal:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.garage-blackjack-table {
+  display: grid;
+  gap: 1.1rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 5px solid var(--ink);
+  background: #2f6b48;
+  box-shadow:
+    inset 0 0 0 7px #17412c,
+    7px 7px 0 var(--ink);
+  color: #fff;
+}
+.garage-blackjack-table.is-empty {
+  min-height: 240px;
+  place-items: center;
+  align-content: center;
+  color: var(--yellow);
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 5vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  text-align: center;
+}
+.garage-blackjack-table.is-empty small {
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.garage-blackjack-hand {
+  display: grid;
+  gap: 0.55rem;
+}
+.garage-blackjack-hand > span {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.garage-blackjack-hand > span b {
+  padding: 0.22rem 0.42rem;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.61rem;
+  letter-spacing: 0.1em;
+}
+.garage-blackjack-hand.is-player > span b {
+  background: var(--blue);
+  color: #fff;
+}
+.garage-blackjack-hand > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  min-height: 94px;
+}
+.garage-blackjack-player-hands {
+  display: grid;
+  gap: 0.85rem;
+}
+.garage-blackjack-hand.is-player.is-active {
+  padding: 0.6rem;
+  border: 2px solid var(--yellow);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.18);
+}
+.garage-blackjack-table.is-player-win .garage-blackjack-hand.is-player,
+.garage-blackjack-table.is-house-win .garage-blackjack-hand.is-house,
+.garage-blackjack-table.is-push-win .garage-blackjack-hand {
+  animation: blackjack-hand-result 0.7s ease-in-out 2;
+}
+.garage-blackjack-table.is-player-win .garage-blackjack-hand.is-player > span b {
+  background: #b9e252;
+}
+.garage-blackjack-table.is-house-win .garage-blackjack-hand.is-house > span b {
+  background: var(--red);
+  color: #fff;
+}
+.garage-blackjack-table.is-push-win .garage-blackjack-hand > span b {
+  background: var(--paper);
+  color: var(--ink);
+}
+.garage-blackjack-card {
+  display: grid;
+  align-content: space-between;
+  width: 66px;
+  height: 90px;
+  padding: 0.5rem;
+  border: 3px solid var(--ink);
+  background: #fffdf5;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 950;
+}
+.garage-blackjack-card b {
+  align-self: end;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+.garage-blackjack-card.is-red {
+  color: var(--red);
+}
+.garage-blackjack-card.is-hidden {
+  place-items: center;
+  background: repeating-linear-gradient(45deg, var(--red) 0 6px, #8d1115 6px 12px);
+  color: var(--yellow);
+  font-family: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+}
+.garage-blackjack-marker {
+  justify-self: center;
+  padding: 0.55rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  color: var(--yellow);
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  line-height: 1.45;
+  text-align: center;
+}
+.garage-blackjack-marker strong {
+  display: block;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.garage-blackjack-table.is-player-win .garage-blackjack-marker {
+  background: #b9e252;
+  border-color: #b9e252;
+  color: var(--ink);
+  animation: blackjack-marker-result 0.7s ease-in-out 2;
+}
+.garage-blackjack-table.is-house-win .garage-blackjack-marker {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+  animation: blackjack-marker-result 0.7s ease-in-out 2;
+}
+.garage-blackjack-table.is-push-win .garage-blackjack-marker {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+  animation: blackjack-marker-result 0.7s ease-in-out 2;
+}
+.garage-blackjack-marker small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #fff;
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+}
+.garage-blackjack-table.is-player-win .garage-blackjack-marker small,
+.garage-blackjack-table.is-push-win .garage-blackjack-marker small {
+  color: var(--ink);
+}
+@keyframes blackjack-hand-result {
+  50% {
+    transform: translateX(8px) scale(1.015);
+    filter: brightness(1.18);
+  }
+}
+@keyframes blackjack-marker-result {
+  50% {
+    transform: scale(1.1);
+  }
+}
+.garage-blackjack-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+}
+.garage-blackjack-controls button {
+  min-width: 100px;
+  min-height: 48px;
+  padding: 0.55rem 0.9rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.garage-blackjack-controls button:nth-child(2) {
+  background: var(--blue);
+  color: #fff;
+}
+.garage-blackjack-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.garage-blackjack-details {
+  display: grid;
+  gap: 0.65rem;
+}
+.garage-blackjack-details-toggle {
+  justify-self: center;
+  padding: 0.42rem 0.65rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 2px 2px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.garage-blackjack-details-toggle[aria-expanded="false"] {
+  color: var(--muted);
+}
+.garage-blackjack-keys {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.45;
+  text-align: center;
+}
+.garage-blackjack-keys b {
+  color: var(--ink);
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.garage-blackjack-advanced-note {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border-left: 4px solid var(--blue);
+  background: #e4f2f5;
+  color: var(--ink);
+  font-size: 0.67rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.garage-blackjack-advanced-note b {
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.garage-blackjack-audio-credit {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.62rem;
+  line-height: 1.4;
+  text-align: center;
+}
+.garage-blackjack-audio-credit a {
+  color: var(--red);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.garage-blackjack-notice {
+  margin: 0;
+  padding: 0.65rem 0.8rem;
+  border-left: 4px solid var(--red);
+  background: var(--yellow-tint);
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.garage-blackjack-acknowledgement {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.8rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1.4;
+}
+.garage-blackjack-game.is-terms-pending .garage-blackjack-acknowledgement {
+  padding: 0.85rem 0.95rem;
+  border-width: 4px;
+  background: var(--yellow);
+  box-shadow: 5px 5px 0 var(--ink);
+  font-size: 0.82rem;
+  font-weight: 950;
+}
+.garage-blackjack-acknowledgement input {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  margin: 0.02rem 0 0;
+  accent-color: var(--red);
+}
+.garage-blackjack-game.is-terms-pending .garage-blackjack-acknowledgement input {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.garage-blackjack-legal {
+  margin-top: 0.65rem;
+}
+.garage-blackjack-legal summary {
+  width: max-content;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 2px 2px 0 var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.63rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  list-style: none;
+  text-transform: uppercase;
+}
+.garage-blackjack-legal summary::-webkit-details-marker {
+  display: none;
+}
+.garage-blackjack-legal summary::before {
+  content: "+";
+  display: inline-block;
+  margin-right: 0.45rem;
+  font-size: 0.9rem;
+  line-height: 0.5;
+}
+.garage-blackjack-legal[open] summary::before {
+  content: "-";
+}
+.garage-blackjack-legal p {
+  max-width: 650px;
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+.garage-blackjack-legal a {
+  color: var(--red);
+  font-weight: 950;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.garage-guess-keys > div {
+  display: flex;
+  justify-content: center;
+  gap: 0.26rem;
+}
+.garage-guess-keys button {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  flex: 1 1 0;
+  min-height: 42px;
+  padding: 0.35rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 2px 2px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: clamp(0.6rem, 2vw, 0.76rem);
+  font-weight: 950;
+  cursor: pointer;
+}
+.garage-guess-keys button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.garage-guess-keys button.is-wide {
+  flex: 0 1 120px;
+}
+
+/* Collapsed worked example — expanded it pushed the board off a phone screen. */
+.service-search-help {
+  border-block: 1px solid var(--ink);
+}
+.service-search-help summary {
+  padding: 0.6rem 0;
+  color: var(--red);
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.service-search-help summary:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+.service-search-help .service-search-example {
+  border-block: 0;
+  padding-top: 0;
+}
+
+/* "Freeze screen": stops the page moving under a thumb mid-swipe. */
+/* Sits in normal flow below the game. It used to be sticky at the bottom of
+   the viewport, which parked it straight on top of the Garage Guess keyboard. */
+.arcade-lock-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.8rem;
+  margin-top: 1.1rem;
+  padding: 0.6rem 0.75rem;
+  border: 3px solid var(--ink);
+  background: var(--cream, #f7efd9);
+}
+/* "Full screen": the game takes the whole screen and scrolls inside itself.
+   Pinning the page at the current offset alone was not enough: on the taller
+   boards you ended up frozen with half the grid off screen and no way to
+   reach it. The stage gets its own scroller instead, so the whole board is
+   always available while the page behind it cannot move. */
+/* Two rows, not an overlay. `column-reverse` puts the lock bar (the last
+   child) along the top as a real toolbar and gives the game the rest of the
+   screen with its own scroller. A floating pill looked fine at rest but slid
+   straight over the board as soon as you scrolled inside play mode — a
+   toolbar row cannot overlap the board at any scroll position. */
+/* The same layout serves both paths: native fullscreen (`.arcade-stage` is
+   the fullscreen element) and the fixed-overlay fallback (`body.is-play-locked`). */
+body.is-play-locked .arcade-stage,
+.arcade-stage:fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--cream, #f7efd9);
+}
+body.is-play-locked .arcade-play-surface,
+.arcade-stage:fullscreen .arcade-play-surface {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 0.75rem;
+  display: flex;
+  align-items: safe center;
+  justify-content: center;
+}
+body.is-play-locked .arcade-lock-bar,
+.arcade-stage:fullscreen .arcade-lock-bar {
+  flex: 0 0 auto;
+  margin: 0;
+  border-width: 0 0 3px;
+  background: var(--yellow);
+  /* Clear the iPhone home indicator so the exit button is always reachable. */
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.arcade-lock-bar small {
+  flex: 1 1 200px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+.arcade-lock-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 48px;
+  padding: 0.5rem 1rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.arcade-lock-bar.is-locked .arcade-lock-button {
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--red);
+}
+.arcade-lock-button:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+/* The lock itself: freeze the document, and stop a swipe chaining out to the
+   browser's own pull-to-refresh. */
+/* `top` is set inline to the negative scroll offset, so the view stays put
+   instead of snapping to the top of the page. */
+body.is-play-locked {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Swiping a game board must never scroll the page, even outside fullscreen.
+   The interactive surfaces claim the gesture; text and buttons keep theirs. */
+.arcade-play-surface canvas {
+  touch-action: none;
+}
+.service-search-grid {
+  touch-action: none;
+}
+
+/* Tread Stack: the falling blocks read as tire loads on a warehouse rack. */
+.tread-stack-game {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+.tread-stack-stage {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 120px;
+  gap: 1rem;
+  justify-content: center;
+  align-items: start;
+}
+.tread-stack-rack {
+  padding: 8px;
+  border: 4px solid var(--ink);
+  background: var(--red-dark);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+.tread-stack-board {
+  width: 100%;
+  aspect-ratio: 10 / 18;
+  border: 3px solid var(--yellow);
+  background: #24201e;
+}
+.tread-stack-board .tetris-kit-frame {
+  min-width: 0;
+  min-height: 0;
+  padding: 1px;
+}
+.tread-stack-board .tetris-kit-cell {
+  width: 100%;
+  height: 100%;
+}
+.tread-stack-board .tetris-kit-empty {
+  border: 1px solid rgba(247, 239, 217, 0.08);
+  background: transparent;
+}
+/* A tire, not a coloured dot: a lit rubber wall, a repeating tread block cut
+   around the circumference, a bright alloy rim and a coloured hub so the seven
+   piece shapes stay tellable apart at a glance. */
+.tread-stack-board .tetris-kit-filled,
+.tread-stack-board .tetris-kit-active,
+.tread-stack-board .tetris-kit-ghost {
+  position: relative;
+  border: 1px solid #050505;
+  border-radius: 50%;
+  background:
+    /* tread blocks, cut as a repeating pie around the rubber */
+    repeating-conic-gradient(from 0deg, #090909 0deg 9deg, #3b3632 9deg 18deg) padding-box,
+    radial-gradient(circle at 34% 28%, #4a4441 0 12%, transparent 60%),
+    #141210;
+  box-shadow:
+    inset 0 0 0 1px #000,
+    inset 2px 2px 5px rgba(255, 255, 255, 0.13),
+    inset -2px -3px 6px rgba(0, 0, 0, 0.75);
+}
+/* The rim and hub sit on top, so the tread only shows as the outer ring. */
+.tread-stack-board .tetris-kit-filled::after,
+.tread-stack-board .tetris-kit-active::after,
+.tread-stack-board .tetris-kit-ghost::after {
+  content: "";
+  position: absolute;
+  inset: 29%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 36% 30%,
+    #fbf8ef 0 20%,
+    #cfc9b8 45%,
+    #8d8676 78%,
+    #5f594e 100%
+  );
+  box-shadow:
+    0 0 0 2px #0b0b0b,
+    inset 0 0 0 3px var(--tire-hub, var(--yellow));
+}
+.tread-stack-board .tetris-kit-active {
+  filter: brightness(1.18) saturate(1.1);
+}
+.tread-stack-board .tetris-kit-ghost {
+  opacity: 0.22;
+  filter: grayscale(1);
+}
+/* Warehouse rack: steel uprights behind the falling stock. */
+.tread-stack-board {
+  background-image:
+    linear-gradient(90deg, rgba(246, 189, 56, 0.14) 0 3px, transparent 3px),
+    linear-gradient(0deg, rgba(246, 189, 56, 0.07) 0 2px, transparent 2px);
+  background-size:
+    10% 100%,
+    100% 5.5555%;
+}
+.tread-stack-board .tetris-kit-i {
+  --tire-hub: var(--blue);
+}
+.tread-stack-board .tetris-kit-o {
+  --tire-hub: var(--yellow);
+}
+.tread-stack-board .tetris-kit-t {
+  --tire-hub: var(--red);
+}
+.tread-stack-board .tetris-kit-s {
+  --tire-hub: #68a56f;
+}
+.tread-stack-board .tetris-kit-z {
+  --tire-hub: #e35f54;
+}
+.tread-stack-board .tetris-kit-j {
+  --tire-hub: #75a6cb;
+}
+.tread-stack-board .tetris-kit-l {
+  --tire-hub: #e49a42;
+}
+.tread-stack-dash {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  padding: 1rem 0.7rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 5px 5px 0 var(--ink);
+  text-align: center;
+}
+.tread-stack-dash span,
+.tread-stack-dash small {
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.tread-stack-dash strong {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 7px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--red);
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+}
+.tread-stack-controls {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(48px, 72px));
+  gap: 0.5rem;
+  justify-content: center;
+}
+.tread-stack-controls button {
+  min-height: 52px;
+  padding: 0;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tread-stack-controls button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.tread-stack-controls .is-drop {
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tread-stack-keys {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+/* Lot Defender: night lot, magnet sweeper. */
+.lot-defender {
+  display: grid;
+  gap: 1rem;
+}
+.lot-defender-lot {
+  justify-self: center;
+  width: min(100%, 460px);
+  height: auto;
+  image-rendering: pixelated;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: #2b2725;
+  touch-action: none;
+}
+.lot-defender-brief {
+  max-width: 46ch;
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  border-left: 4px solid var(--red);
+  background: var(--yellow-tint, #fdf1cf);
+  color: var(--ink);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.lot-defender-controls {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 0.55rem;
+  width: min(100%, 460px);
+  justify-self: center;
+}
+.lot-defender-controls button {
+  min-height: 56px;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+.lot-defender-controls .is-fire {
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.lot-defender-powers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lot-defender-powers li {
+  padding: 0.2rem 0.5rem;
+  border: 2px solid var(--ink);
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lot-defender-controls button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* Canvas games share a frame */
+.shore-run,
+.tow-chain {
+  display: grid;
+  gap: 1rem;
+}
+/* Inside the newspaper frame these keep their own spacing rhythm. */
+.paper-game.shore-run,
+.paper-game.tow-chain,
+.paper-game.match-game {
+  gap: 1rem;
+}
+.paper-game.match-game {
+  display: grid;
+}
+/* Canvases keep their logical resolution but scale to the screen, capped so
+   a desktop viewport doesn't blow the pixels up. */
+.tow-chain-lot {
+  justify-self: center;
+  width: min(100%, 340px);
+  height: auto;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: #2b2725;
+  touch-action: none;
+  cursor: pointer;
+}
+/* The runner is a wide, short strip — it takes the full column width and
+   scales by its own aspect ratio, so it fits any screen without cropping. */
+.shore-run-strip {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  justify-self: center;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: var(--cream);
+  touch-action: none;
+  cursor: pointer;
+  /* The strip shrinks to ~100px tall on a phone; chunky nearest-neighbour
+     scaling keeps the little car readable instead of smearing it. */
+  image-rendering: pixelated;
+}
+.shore-run-touch-controls {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  width: min(100%, 720px);
+  justify-self: center;
+}
+.shore-run-touch-controls button,
+.tow-controls button {
+  min-height: 52px;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+.shore-run-touch-controls,
+.shore-run-touch-controls button,
+.shore-run-touch-controls button * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.shore-run-touch-controls button:last-child {
+  background: var(--blue);
+  color: #fff;
+}
+.shore-run-touch-controls span {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-size: 1rem;
+}
+.shore-run-header-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+.shore-run-command {
+  min-height: 38px;
+  padding: 0.5rem 0.9rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.shore-run-command[aria-pressed="false"] {
+  background: var(--paper);
+  color: var(--muted);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.shore-run-road-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 30px;
+  padding: 0.25rem 0.42rem 0.25rem 0.5rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.shore-run-road-toggle[aria-pressed="true"] {
+  background: var(--yellow-tint);
+  color: var(--ink);
+}
+.shore-run-road-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.shore-run-tire-toggle {
+  display: inline-flex;
+  width: 28px;
+  height: 16px;
+  align-items: center;
+  padding: 2px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: #6f6a62;
+  transition: background 0.15s ease;
+}
+.shore-run-tire-toggle span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: #eee7d7;
+  box-shadow: inset 0 0 0 2px #6f6a62;
+  transition: transform 0.15s ease;
+}
+.shore-run-road-toggle[aria-pressed="true"] .shore-run-tire-toggle {
+  background: var(--red);
+}
+.shore-run-road-toggle[aria-pressed="true"] .shore-run-tire-toggle span {
+  transform: translateX(12px);
+}
+.tow-chain-bonus {
+  margin: 0;
+  padding: 0.22rem 0.55rem;
+  border: 2px solid var(--ink);
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.tow-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  grid-template-areas: ". up ." "left badge right" ". down .";
+  gap: 0.35rem;
+  justify-self: center;
+}
+.tow-controls button {
+  min-height: 48px;
+  padding: 0;
+  font-size: 1.2rem;
+}
+.tow-controls span {
+  grid-area: badge;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--ink);
+  background: var(--red);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 950;
+}
+.tow-up {
+  grid-area: up;
+}
+.tow-left {
+  grid-area: left;
+}
+.tow-right {
+  grid-area: right;
+}
+.tow-down {
+  grid-area: down;
+}
+.shore-run-keys {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.2rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.shore-run-keys b {
+  padding: 0.1rem 0.38rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.68rem;
+}
+
+@media (max-width: 700px) {
+  /* Phone-size game furniture: score boxes and controls compress so the
+     board keeps the screen, and hard shadows shrink with the tiles. */
+  .match-game-bar {
+    gap: 0.55rem 0.9rem;
+  }
+  .match-game-score > div {
+    min-width: 58px;
+    padding: 0.28rem 0.45rem;
+  }
+  .match-game-score dd {
+    font-size: 1rem;
+  }
+  .match-game-controls button {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.64rem;
+  }
+  /* Low enough not to fight the height-based cap above, but still a
+     comfortable thumb target. */
+  .match-tile {
+    min-height: 46px;
+  }
+  /* The arcade hero gives up some height on phones so the board starts
+     nearer the top of the screen. */
+  .game-hero {
+    padding: 120px 0 38px;
+  }
+  .game-hero h1 {
+    font-size: clamp(2.6rem, 14vw, 4rem);
+  }
+  .game-hero > .shell > p:last-child {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .is-arcade .game-board {
+    padding-block: 1.5rem 3rem;
+  }
+  .match-tile-back,
+  .match-tile-face {
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .match-tile-face img {
+    width: 26px;
+    height: 26px;
+  }
+  .match-tile-face small {
+    font-size: 0.44rem;
+  }
+  .paper-game {
+    padding: 0.85rem;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .crossword-layout,
+  .service-search-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* A 15-column advanced grid at phone width lands ~21px per square — under
+     every touch-target guideline. Hold a readable floor and let the board
+     pan sideways inside its own scroll shell instead. */
+  .crossword-grid-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.4rem;
+  }
+  .crossword-grid {
+    min-width: 450px;
+  }
+  .crossword-grid,
+  .service-search-grid {
+    justify-self: center;
+  }
+  .crossword-clues {
+    gap: 0.7rem;
+  }
+  .crossword-clues button {
+    font-size: 0.68rem;
+  }
+  .paper-game-actions button {
+    flex: 1 1 140px;
+  }
+  .tread-stack-stage {
+    grid-template-columns: minmax(0, 285px) 76px;
+    gap: 0.65rem;
+  }
+  .tread-stack-rack {
+    padding: 5px;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .tread-stack-dash {
+    padding: 0.7rem 0.35rem;
+  }
+  .tread-stack-dash strong {
+    width: 44px;
+    height: 44px;
+    border-width: 5px;
+    font-size: 1.15rem;
+  }
+  .tread-stack-controls {
+    grid-template-columns: repeat(5, minmax(44px, 1fr));
+    width: 100%;
+  }
+  .shore-run-touch-controls {
+    display: grid;
+  }
+  .shore-run-keys span:last-child {
+    display: none;
+  }
+  .tow-chain-lot {
+    width: min(100%, 312px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .arcade-cabinet {
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+}
+
+.award-section {
+  position: relative;
+  padding: clamp(6rem, 11vw, 10rem) 0;
+  background: var(--red);
+  color: #fff;
+}
+.award-grid {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+}
+.award-badge {
+  width: min(100%, 360px);
+  aspect-ratio: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border: 12px double var(--yellow);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 14px 14px 0 var(--ink);
+  transform: rotate(-4deg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.award-badge:hover {
+  transform: rotate(-2deg) scale(1.04);
+  box-shadow: 18px 18px 0 var(--ink);
+}
+.award-badge img {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: 0 auto 0.35rem;
+}
+.award-badge small {
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.15em;
+}
+.award-badge strong {
+  color: var(--red);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 0.9;
+}
+.award-badge b {
+  color: var(--red);
+  letter-spacing: 0.13em;
+}
+.award-grid > div:last-child > p:not(.eyebrow) {
+  max-width: 650px;
+  color: #f2dcdc;
+  line-height: 1.7;
+}
+
+.reviews-section {
+  padding-top: clamp(6rem, 11vw, 9rem);
+}

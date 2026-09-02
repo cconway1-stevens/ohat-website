@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+:root {
+  --red: #a8161c;
+  --red-dark: #6f0d12;
+  --yellow: #f6bd38;
+  --cream: #f7efd9;
+  --paper: #fffaf0;
+  --ink: #171412;
+  --muted: #655d54;
+  --blue: #1a7183;
+  --yellow-tint: #ffe9b0;
+  --blue-tint: #dff0f3;
+  --line: rgba(23, 20, 18, 0.18);
+  --shadow: 0 22px 60px rgba(54, 30, 18, 0.16);
+  --hard-shadow: 8px 8px 0 #171412;
+  /* Display serif: Fraunces (loaded in the root layout), Georgia as the
+     no-webfont fallback so the stack never collapses to a default serif. */
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+/* Keep the browser canvas dark at both ends of the document. Mobile Safari
+   can use the body's paint (rather than the root's) during bottom overscroll,
+   so both surfaces must match the footer. The main element owns the cream
+   content canvas instead. */
+html {
+  scroll-behavior: smooth;
+  background: var(--ink);
+}
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--ink);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+main {
+  background: var(--cream);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.26;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(111, 13, 18, 0.1) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 60%, rgba(23, 20, 18, 0.09) 0 1px, transparent 1.5px);
+  background-size:
+    17px 19px,
+    23px 29px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+a,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+img {
+  max-width: 100%;
+}
+:focus-visible {
+  outline: 4px solid #1f95aa;
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 200;
+  left: 1rem;
+  top: 1rem;
+  transform: translateY(-180%);
+  background: #fff;
+  color: #111;
+  padding: 0.8rem 1rem;
+  font-weight: 900;
+  border: 3px solid #111;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 2px solid var(--ink);
+}
+
+.shell {
+  width: min(1180px, calc(100% - 44px));
+  margin-inline: auto;
+}
+.section {
+  position: relative;
+  padding: clamp(5.5rem, 10vw, 9rem) 0;
+}
+.section h2,
+.technology-section h2,
+.makes-section h2,
+.award-section h2,
+.visit-section h2,
+.community-band h2,
+.inner-cta h2,
+.drive-cta h2 {
+  margin: 0;
+  max-width: 780px;
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 5vw, 5rem);
+  line-height: 0.93;
+  letter-spacing: -0.05em;
+}
+.eyebrow,
+.hero-kicker,
+.board-label,
+.ticket-status,
+.dropoff-route {
+  margin: 0 0 1rem;
+  color: var(--yellow-tint);
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.eyebrow.dark {
+  color: var(--red);
+}

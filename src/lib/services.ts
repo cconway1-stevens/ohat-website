@@ -1,6 +1,6 @@
-export type ServiceFaq = { question: string; answer: string };
+type ServiceFaq = { question: string; answer: string };
 
-export type ServiceResource = { label: string; href: string; note: string };
+type ServiceResource = { label: string; href: string; note: string };
 
 export type Service = {
   slug: string;

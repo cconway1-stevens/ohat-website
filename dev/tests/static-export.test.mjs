@@ -155,7 +155,9 @@ test("only the latin font subset is preloaded", () => {
   // The font loader preloads every unicode subset it emits, so an English
   // site was spending ~46 KiB of high-priority bandwidth on Cyrillic and
   // Vietnamese glyphs it never draws — bandwidth the hero image wanted. The
-  // build strips those preloads; this guards that it still does.
+  // build strips those preloads; this guards that it still does. The site
+  // uses two families (Geist + Fraunces), so the count is not the assertion —
+  // every preloaded file must be a latin subset, however many that is.
   const pages = walk(outDir).filter((file) => file.endsWith(".html"));
 
   let preloadingPages = 0;
@@ -165,11 +167,17 @@ test("only the latin font subset is preloaded", () => {
     if (preloaded.length === 0) continue;
     preloadingPages += 1;
 
-    assert.equal(
-      preloaded.length,
-      1,
-      `${page.slice(outDir.length)} preloads ${preloaded.length} font subsets, expected only latin`,
-    );
+    for (const [tag] of preloaded) {
+      const file = tag.match(/href="[^"]*?([^/"]+\.woff2)"/)?.[1];
+      assert.ok(file, `${page.slice(outDir.length)} has a font preload with no .woff2 href`);
+      const block = html.match(new RegExp(`@font-face\\s*{[^}]*${file}[^}]*}`))?.[0] ?? "";
+      const range = block.match(/unicode-range:\s*([^;}]*)/)?.[1] ?? "";
+      assert.match(
+        range,
+        /U\+0000-00FF/i,
+        `${page.slice(outDir.length)} preloads non-latin subset ${file}`,
+      );
+    }
     // The `@font-face` rules stay put — `unicode-range` keeps the other
     // subsets available on demand, which is what makes dropping the
     // unconditional preloads safe rather than lossy.

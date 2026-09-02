@@ -1,6 +1,9 @@
 # Ocean Heights Auto & Tire — Website
 
 [![CI](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml)
+[![Quality](https://github.com/cconway1-stevens/ohat-website/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/quality.yml)
+[![Performance](https://github.com/cconway1-stevens/ohat-website/actions/workflows/performance.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/performance.yml)
+[![CodeQL](https://github.com/cconway1-stevens/ohat-website/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/codeql.yml)
 [![GitHub Pages build](https://github.com/cconway1-stevens/ohat-website/actions/workflows/deploy-pages.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/deploy-pages.yml)
 [![Production website](https://img.shields.io/website?url=https%3A%2F%2Fohat-website.vercel.app%2F&up_message=online&down_message=offline&label=production)](https://ohat-website.vercel.app/)
 
@@ -24,15 +27,46 @@ The status badges are the fastest way to read health: **CI** proves the checked-
 
 ## Build and test workflow
 
-GitHub Actions is the visible source of truth for repository health:
+GitHub Actions is the visible source of truth for repository health. Four
+workflows run on every push to `main` and every pull request, cheapest and
+most decisive first:
 
-- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push to `main`, every pull request targeting `main`, and manual dispatch. It uses Node.js 24, installs from the lockfile, runs ESLint, and executes the full test command.
-- `npm test` first runs the Cloudflare/Sites production build, then rendered HTML, service SEO, and shop-hours tests. It also builds the Vercel/static export and validates every exported route and asset URL.
-- Prettier is a build gate. Both `npm run build` and `npm run build:static` stop if maintained files are not formatted.
-- [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) builds the static site on `main` and publishes it when GitHub Pages is configured at a domain root.
-- [`vercel.json`](vercel.json) tells Vercel to run the same `npm run build:static` path and serve `dist/client`.
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — the merge gate.
+  Runs formatting (Prettier), lint (ESLint), typecheck (`tsc --noEmit`), dead
+  code (`knip`), and the full test suite (`npm test`, which builds both the
+  Cloudflare and static/Vercel artifacts and runs route, SEO, and hours tests).
+- [`.github/workflows/quality.yml`](.github/workflows/quality.yml) — deeper
+  quality. Reports code bloat (advisory), audits dependencies for high/critical
+  vulnerabilities, then builds the static site and runs the page smoke test,
+  bundle-size budget, Lighthouse, and accessibility (axe-core) audits.
+- [`.github/workflows/performance.yml`](.github/workflows/performance.yml) —
+  resilience. Loads the site under a throttled slow-3G connection and checks
+  for memory leaks across repeated navigation.
+- [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml) — GitHub's
+  static security analysis, plus a weekly scheduled scan.
+- [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) —
+  builds the static site on `main` and publishes it when GitHub Pages is
+  configured at a domain root.
 
-To investigate a failure, open the failing badge, select the newest run, then open the failed step. A red **Lint** step points to source-quality errors; a red **Full test suite** step can identify a production build, route, SEO, hours, or static-export regression.
+Every check is also runnable locally via `npm run check:<name>`; `npm run
+check:all` runs the whole sequence in CI order. The individual checks are:
+
+| Command                      | What it verifies                                                   |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `npm run check`              | Format, lint, typecheck, tests, and a real-browser asset check     |
+| `npm run check:deadcode`     | No unused files, exports, or dependencies (`knip`)                 |
+| `npm run check:bloat`        | No source file exceeds its role-based line budget (advisory)       |
+| `npm run check:pages`        | Every page loads with a title, H1, no errors, and no dead links    |
+| `npm run check:bundle`       | Shipped JS+CSS stays under the byte budget                         |
+| `npm run check:lighthouse`   | Lighthouse performance/accessibility/best-practices/SEO thresholds |
+| `npm run check:a11y`         | Zero axe-core WCAG 2.1 AA violations                               |
+| `npm run check:slow-network` | Pages load within budget on a throttled slow-3G connection         |
+| `npm run check:memory`       | No DOM-node or heap growth across repeated navigation              |
+
+To investigate a failure, open the failing badge, select the newest run, then
+open the failed step. A red **Lint** step points to source-quality errors; a
+red **Full test suite** step can identify a production build, route, SEO,
+hours, or static-export regression.
 
 ## Design language
 
@@ -47,9 +81,10 @@ A vintage car-catalog system ("The Modern Family Garage"):
   drive-off footer.
 - Every animation respects `prefers-reduced-motion`.
 
-Design tokens live in `:root` in `app/globals.css` (including the
+Design tokens live in `:root` in `app/styles/base.css` (including the
 accessibility tints `--yellow-tint` / `--blue-tint` used on red and blue
-surfaces).
+surfaces). The stylesheet is split into per-section files under `app/styles/`
+and re-imported from `app/globals.css`.
 
 ## Site map
 
@@ -82,12 +117,19 @@ These are maintained deliberately — please keep them green when contributing:
 - **Performance:** responsive AVIF photo ladders, a roughly 25 KB phone-sized
   hero candidate, a 6.5 KB AVIF masthead logo, self-hosted fonts, and no
   external image dependencies on the homepage.
+- **Code health:** no dead files/exports/dependencies (`knip`), no source file
+  over its role-based line budget, and a shipped JS+CSS bundle under budget.
+- **Resilience:** pages load within budget on a throttled slow-3G connection
+  and show no DOM-node or heap growth across repeated navigation.
+- **Security:** `npm audit` fails on high/critical vulnerabilities and CodeQL
+  scans every push and pull request.
 
 ## Stack
 
 - [Next.js](https://nextjs.org) App Router running on
   [vinext](https://github.com/cloudflare/vinext) (Vite + Cloudflare Workers)
-- Tailwind CSS v4 base with a hand-rolled design system in `app/globals.css`
+- Tailwind CSS v4 base with a hand-rolled design system in `app/styles/`
+  (imported from `app/globals.css`)
 - Cloudflare Images for `next/image` optimization (`worker/index.ts`; local
   dev falls back to serving originals when the bindings are absent)
 

@@ -1,7 +1,7 @@
 // Profile links and contact details, all sourced from the single shop config
 // in lib/shop.mjs. Kept as a module because several pages import these names
 // directly; edit the values in lib/shop.mjs, never here.
-import { shop, sameAs } from "./shop.mjs";
+import { shop } from "./shop.mjs";
 
 export const carfaxUrl = shop.profiles.carfax;
 export const yelpUrl = shop.profiles.yelp;
@@ -9,7 +9,6 @@ export const facebookUrl = shop.profiles.facebook;
 export const googleUrl = shop.profiles.google;
 
 export const contactEmail = shop.email.service;
-export const receiptsEmail = shop.email.receipts;
 
 export const profileLinks = [
   { name: "Google", href: googleUrl, detail: "Reviews, hours, and directions" },
@@ -29,5 +28,3 @@ export const profileLinks = [
     detail: "Follow shop news and community updates",
   },
 ] as const;
-
-export { sameAs };

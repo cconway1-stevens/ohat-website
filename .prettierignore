@@ -15,3 +15,6 @@ vercel.json
 
 # Keep third-party and hand-optimized vector assets byte-for-byte stable.
 public/**/*.svg
+
+# Plain-text legal file; Prettier has no parser for it.
+LICENSE

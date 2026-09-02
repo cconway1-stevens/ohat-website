@@ -1,0 +1,1489 @@
+/* ------------------------------------------------------------------ *
+   Cozy garage: no score, no clock. A warm shell, and a radio you turn.
+ * ------------------------------------------------------------------ */
+
+.cozy-scene {
+  display: grid;
+  gap: 1rem;
+}
+.cozy-stage {
+  position: relative;
+  width: 100%;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: #17181c;
+  touch-action: manipulation;
+}
+.cozy-stage canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cozy-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+.cozy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.cozy-actions button {
+  min-height: 46px;
+  padding: 0.5rem 0.8rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.cozy-actions button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.cozy-actions button.is-on {
+  background: var(--yellow);
+}
+.cozy-actions button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Parts counter: the request slip and the shelf of boxes. */
+.counter-ticket {
+  padding: 0.8rem 0.9rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow-tint, #fdf1cf);
+}
+.counter-who {
+  margin: 0 0 0.25rem;
+  color: var(--red);
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.counter-ask {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(0.95rem, 2.4vw, 1.2rem);
+  line-height: 1.4;
+}
+.counter-reply {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.counter-shelf button {
+  flex: 1 1 130px;
+}
+
+/* Parts Counter 3D: the WebGL stage, its loading card, and the fallback. */
+.parts-3d-stage {
+  background: #1b1c20;
+}
+.parts-3d-stage canvas {
+  aspect-ratio: 16 / 9;
+  touch-action: none;
+}
+.parts-3d-loading {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+}
+.parts-3d-loading p {
+  margin: 0;
+  color: rgba(246, 242, 228, 0.75);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: parts-3d-wait 1.6s ease-in-out infinite;
+}
+.parts-3d-fallback {
+  position: absolute;
+  inset: auto 0 0;
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border-top: 3px solid var(--ink);
+  background: var(--yellow-tint, #fdf1cf);
+  color: var(--ink);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+.parts-3d-hud {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  pointer-events: none;
+}
+.parts-3d-hud span {
+  padding: 0.2rem 0.5rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 2px 2px 0 var(--ink);
+  color: var(--ink);
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.parts-3d-shop {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.8rem;
+  border: 3px solid var(--ink);
+  background: var(--yellow-tint, #fdf1cf);
+}
+.parts-3d-shop h3 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+}
+.parts-3d-shop-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+@keyframes parts-3d-wait {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .parts-3d-loading p {
+    animation: none;
+  }
+}
+
+/* ---- Vintage dash radio ------------------------------------------- */
+.car-radio {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.7rem;
+  border: 4px solid #1a1714;
+  border-radius: 4px;
+  background: linear-gradient(#c9c4ba 0 6%, #8f8a80 7% 12%, #5d5750 13% 88%, #38332e 89%);
+  box-shadow:
+    6px 6px 0 var(--ink),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+}
+.car-radio-face {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+.car-radio-brand {
+  display: grid;
+  justify-items: center;
+  padding-right: 0.3rem;
+}
+.car-radio-brand b {
+  color: #f0ead8;
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+}
+.car-radio-brand small {
+  color: rgba(240, 234, 216, 0.55);
+  font-size: 0.38rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+}
+.car-radio-stalk {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+}
+.car-radio-stalk small {
+  color: rgba(240, 234, 216, 0.6);
+  font-size: 0.44rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+/* Ribbed chrome knob on a stalk. */
+.car-knob {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border: 3px solid #15120f;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, #d8d2c6 0 6deg, #8a8479 6deg 12deg),
+    radial-gradient(circle at 36% 30%, #eee 0 30%, #7d776c 70%);
+  background-blend-mode: multiply;
+  box-shadow:
+    inset 0 -3px 7px rgba(0, 0, 0, 0.55),
+    2px 3px 0 #15120f;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.car-knob i {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 3px;
+  height: 15px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: #a8161c;
+  transform-origin: 50% 19px;
+  transform: rotate(var(--turn, 0deg));
+}
+.car-knob:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 3px;
+}
+
+.car-radio-middle {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+.car-dial {
+  position: relative;
+  height: 46px;
+  border: 3px solid #15120f;
+  border-radius: 2px;
+  background: #241f18;
+  overflow: hidden;
+  transition:
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.car-radio.is-on .car-dial {
+  background: linear-gradient(#7a5c14, #3a2c0c);
+  box-shadow: inset 0 0 20px rgba(246, 189, 56, 0.55);
+}
+.car-dial > span {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 8px;
+  background: rgba(247, 239, 217, 0.45);
+}
+.car-dial > span.is-major {
+  height: 13px;
+  background: rgba(247, 239, 217, 0.85);
+}
+.car-dial > span b {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(247, 239, 217, 0.8);
+  font-family: var(--font-serif);
+  font-size: 0.52rem;
+}
+.car-dial-mark {
+  position: absolute;
+  bottom: 5px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: #7a3a3a;
+}
+.car-radio.is-on .car-dial-mark {
+  background: #ff6b60;
+  box-shadow: 0 0 6px #ff6b60;
+}
+.car-needle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  margin-left: -1px;
+  background: #e0555a;
+  box-shadow: 0 0 9px rgba(224, 85, 90, 0.95);
+  transition: left 0.1s linear;
+}
+.car-readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.car-readout b {
+  color: var(--yellow);
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+}
+.car-band,
+.car-stereo {
+  padding: 0.05rem 0.3rem;
+  border: 1px solid rgba(240, 234, 216, 0.4);
+  color: rgba(240, 234, 216, 0.7);
+  font-size: 0.48rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+.car-stereo.is-lit {
+  border-color: #68d07a;
+  background: rgba(104, 208, 122, 0.2);
+  color: #b6f0c2;
+  box-shadow: 0 0 8px rgba(104, 208, 122, 0.6);
+}
+.car-readout em {
+  flex: 1 1 120px;
+  color: rgba(240, 234, 216, 0.8);
+  font-size: 0.6rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.car-tune-track {
+  width: 100%;
+  accent-color: #a8161c;
+  cursor: ew-resize;
+}
+
+/* Mechanical push buttons. */
+.car-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: stretch;
+}
+.car-push {
+  display: grid;
+  place-items: center;
+  gap: 0;
+  min-width: 50px;
+  min-height: 46px;
+  padding: 0.25rem 0.4rem;
+  border: 2px solid #15120f;
+  border-radius: 2px;
+  background: linear-gradient(#e6e0d4, #a49d90);
+  box-shadow: 0 4px 0 #15120f;
+  color: #15120f;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.car-push span {
+  font-size: 0.62rem;
+  font-weight: 950;
+}
+.car-push em {
+  font-size: 0.48rem;
+  font-style: normal;
+  opacity: 0.72;
+}
+/* Latched down, the way a real preset stays in. */
+.car-push.is-down {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #15120f;
+  background: linear-gradient(#f6bd38, #d59a1c);
+}
+.car-push.is-holding {
+  background: linear-gradient(#e0555a, #a8161c);
+  color: #fff;
+}
+.car-power {
+  background: linear-gradient(#8d8676, #55504a);
+  color: #f0ead8;
+}
+.car-power.is-down {
+  background: linear-gradient(#e0555a, #a8161c);
+  color: #fff;
+}
+.car-band-switch {
+  display: flex;
+  margin-left: auto;
+  border: 2px solid #15120f;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.car-band-switch button {
+  min-width: 40px;
+  min-height: 46px;
+  border: 0;
+  background: #6d675e;
+  color: rgba(240, 234, 216, 0.75);
+  font: inherit;
+  font-size: 0.6rem;
+  font-weight: 950;
+  cursor: pointer;
+}
+.car-band-switch button.is-on {
+  background: var(--yellow);
+  color: #15120f;
+}
+.car-hint {
+  margin: 0;
+  color: rgba(240, 234, 216, 0.72);
+  font-size: 0.6rem;
+  line-height: 1.4;
+}
+
+.car-sliders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.2rem;
+}
+.car-sliders label {
+  display: grid;
+  grid-template-columns: auto minmax(90px, 1fr) auto;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1 1 190px;
+}
+.car-sliders span,
+.car-noise-slider span {
+  color: rgba(240, 234, 216, 0.8);
+  font-size: 0.52rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.car-sliders small {
+  color: rgba(240, 234, 216, 0.6);
+  font-size: 0.5rem;
+}
+.car-sliders input,
+.car-noise-slider input {
+  accent-color: var(--yellow);
+}
+
+.car-noise {
+  border-top: 2px solid rgba(240, 234, 216, 0.2);
+  padding-top: 0.4rem;
+}
+.car-noise summary {
+  color: var(--yellow);
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.car-noise p {
+  margin: 0.4rem 0;
+  color: rgba(240, 234, 216, 0.65);
+  font-size: 0.58rem;
+  line-height: 1.45;
+}
+.car-noise > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.35rem 0.8rem;
+}
+.car-noise-slider {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem;
+}
+@media (max-width: 700px) {
+  .car-radio-face {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .car-radio-brand {
+    grid-column: 1 / -1;
+    justify-items: start;
+  }
+  .car-radio-middle {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+}
+
+/* Two sound sources: the quiet mixer, or the dash unit. */
+.radio-panel {
+  display: grid;
+  gap: 0.6rem;
+}
+.radio-mode {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(90px, auto));
+  gap: 2px;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+  justify-self: start;
+}
+.radio-mode button {
+  min-height: 40px;
+  padding: 0.4rem 0.8rem;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.radio-mode button.is-on {
+  background: var(--yellow);
+}
+.ambience-deck {
+  padding: 0.8rem;
+  border: 3px solid var(--ink);
+  background: var(--cream, #f7efd9);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.ambience-deck-note {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+.ambience-deck > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.45rem 1rem;
+}
+.ambience-slider {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.3rem 0.5rem;
+}
+.ambience-slider span {
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ambience-slider input {
+  accent-color: var(--red);
+}
+.ambience-slider small {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 0.54rem;
+}
+
+/* ---- POS and receipt ---------------------------------------------- */
+.pos {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  border: 3px solid var(--ink);
+  background: #1f2a24;
+  color: #cfe8d6;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.pos-head {
+  margin: 0;
+  color: #8fe0a0;
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.pos-lines,
+.pos-totals {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pos-lines li,
+.pos-totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.18rem 0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.78rem;
+}
+.pos-lines li.is-void {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.pos-totals {
+  border-top: 1px dashed rgba(207, 232, 214, 0.4);
+  padding-top: 0.3rem;
+}
+.pos-totals dt,
+.pos-totals dd {
+  margin: 0;
+}
+.pos-totals .is-off dd {
+  color: #f6bd38;
+}
+.pos-totals .is-total {
+  border-top: 1px solid rgba(207, 232, 214, 0.5);
+  margin-top: 0.2rem;
+  padding-top: 0.3rem;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #8fe0a0;
+}
+.pos-prompt {
+  margin: 0;
+  font-size: 0.74rem;
+}
+.pos-change {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  font-size: 0.9rem;
+}
+.pos-change b {
+  color: #f6bd38;
+}
+.pos .cozy-actions button {
+  background: #cfe8d6;
+}
+.pos .cozy-actions button.is-on {
+  background: #8fe0a0;
+}
+.cash-drawer {
+  display: grid;
+  gap: 0.65rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed rgba(207, 232, 214, 0.45);
+}
+.cash-drawer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+.cash-drawer-head p {
+  margin: 0;
+}
+.cash-drawer-head > div > p {
+  color: #8fe0a0;
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cash-drawer-head > div > span {
+  color: rgba(207, 232, 214, 0.7);
+  font-family: ui-monospace, monospace;
+  font-size: 0.62rem;
+}
+.cash-slots {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+.cash-slots button {
+  min-width: 0;
+  min-height: 54px;
+  display: grid;
+  place-items: center;
+  gap: 0.1rem;
+  padding: 0.35rem 0.2rem;
+  border: 2px solid #0e1712;
+  background: #dce9cd;
+  box-shadow: 2px 2px 0 #0e1712;
+  color: #172019;
+  cursor: pointer;
+  font: inherit;
+}
+.cash-slots button b {
+  font-family: ui-monospace, monospace;
+  font-size: 0.76rem;
+}
+.cash-slots button span {
+  font-size: 0.5rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.cash-slots button:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+.change-tray {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.1rem 1rem;
+  padding: 0.55rem 0.65rem;
+  border: 2px solid rgba(207, 232, 214, 0.5);
+  background: #17211b;
+  font-family: ui-monospace, monospace;
+}
+.change-tray > span {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+}
+.change-tray > b {
+  color: #f6bd38;
+}
+.change-tray > small {
+  grid-column: 1 / -1;
+  color: rgba(207, 232, 214, 0.68);
+}
+.change-tray.is-exact {
+  border-color: #8fe0a0;
+  box-shadow: inset 0 0 0 2px rgba(143, 224, 160, 0.15);
+}
+.change-tray.is-exact > b,
+.change-tray.is-exact > small {
+  color: #8fe0a0;
+}
+.change-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+}
+.change-breakdown span {
+  padding: 0.2rem 0.4rem;
+  border: 1px solid rgba(207, 232, 214, 0.4);
+  font-family: ui-monospace, monospace;
+  font-size: 0.58rem;
+}
+.cash-note {
+  margin: 0;
+  color: #f6bd38;
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+.cash-actions button:last-child {
+  background: #f6bd38;
+  color: #17140f;
+}
+@media (max-width: 600px) {
+  .cash-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.card-reader {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.7rem;
+  border: 3px solid #0d1510;
+  border-radius: 5px;
+  background: linear-gradient(#66716a, #313a35);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.14),
+    4px 4px 0 #0d1510;
+}
+.card-reader-screen {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0.6rem;
+  border: 2px solid #101611;
+  background: #17241b;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+  color: #9ae7a8;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.68rem;
+}
+.card-reader-screen span {
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.card-reader.is-approved .card-reader-screen {
+  background: #183b23;
+  color: #b8ffc5;
+  box-shadow: inset 0 0 12px rgba(87, 224, 111, 0.2);
+}
+.card-swipe-track {
+  position: relative;
+  height: 78px;
+  overflow: hidden;
+  border: 2px solid #111713;
+  border-radius: 3px;
+  background: linear-gradient(#222b26 0 8px, #0c100d 8px 16px, #48534c 16px);
+}
+.swipe-slot {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  bottom: 5px;
+  width: 4px;
+  background: #090c0a;
+  box-shadow: -2px 0 0 rgba(255, 255, 255, 0.13);
+}
+.payment-card {
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  left: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  width: 34%;
+  min-width: 112px;
+  max-width: 190px;
+  height: 50px;
+  padding: 0.35rem 0.5rem;
+  border: 2px solid #15120f;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #f6bd38, #dd991f);
+  box-shadow: 2px 3px 0 #10130f;
+  color: #15120f;
+  pointer-events: none;
+  transition: left 0.08s linear;
+  user-select: none;
+}
+.payment-card:active {
+  transition: none;
+}
+.payment-card i {
+  grid-row: 1 / -1;
+  width: 24px;
+  height: 18px;
+  margin-right: 0.45rem;
+  border: 1px solid #6c5321;
+  border-radius: 2px;
+  background: repeating-linear-gradient(90deg, #d7bd70 0 5px, #987531 5px 6px);
+}
+.payment-card b {
+  align-self: end;
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-align: left;
+}
+.payment-card span {
+  align-self: start;
+  font-family: ui-monospace, monospace;
+  font-size: 0.5rem;
+  text-align: left;
+}
+.card-swipe-input {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+.card-reader > p {
+  margin: 0;
+  color: #d8e6dc;
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+.card-reader.is-approved .payment-card {
+  background: linear-gradient(135deg, #a9e9b4, #61b974);
+  cursor: default;
+}
+@media (max-width: 600px) {
+  .payment-card {
+    width: 38%;
+  }
+  .card-reader-screen {
+    font-size: 0.6rem;
+  }
+}
+
+.receipt {
+  display: flex;
+  justify-content: center;
+}
+.receipt-body {
+  width: min(100%, 300px);
+  padding: 1rem 0.9rem 1.4rem;
+  background: #f9f6ec;
+  color: #2a2620;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  /* Torn bottom edge, like paper off a spool. */
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 7px),
+    96% 100%,
+    92% calc(100% - 7px),
+    88% 100%,
+    84% calc(100% - 7px),
+    80% 100%,
+    76% calc(100% - 7px),
+    72% 100%,
+    68% calc(100% - 7px),
+    64% 100%,
+    60% calc(100% - 7px),
+    56% 100%,
+    52% calc(100% - 7px),
+    48% 100%,
+    44% calc(100% - 7px),
+    40% 100%,
+    36% calc(100% - 7px),
+    32% 100%,
+    28% calc(100% - 7px),
+    24% 100%,
+    20% calc(100% - 7px),
+    16% 100%,
+    12% calc(100% - 7px),
+    8% 100%,
+    4% calc(100% - 7px),
+    0 100%
+  );
+  animation: receipt-feed 0.5s ease-out both;
+}
+@keyframes receipt-feed {
+  from {
+    transform: translateY(-14px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.receipt-body p {
+  margin: 0;
+  text-align: center;
+}
+.receipt-shop {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+.receipt-addr,
+.receipt-meta {
+  margin-top: 0.3rem !important;
+  font-size: 0.6rem;
+}
+.receipt-rule {
+  margin: 0.5rem 0 !important;
+  opacity: 0.6;
+  letter-spacing: 0.08em;
+}
+.receipt-body ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.receipt-body li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+.receipt-body li.is-void {
+  opacity: 0.6;
+}
+.receipt-body li.is-total {
+  margin-top: 0.2rem;
+  padding-top: 0.2rem;
+  border-top: 1px solid rgba(42, 38, 32, 0.5);
+  font-weight: 900;
+}
+.receipt-thanks {
+  margin-top: 0.4rem !important;
+  font-weight: 900;
+}
+.receipt-note {
+  margin-top: 0.7rem !important;
+  font-size: 0.52rem;
+  opacity: 0.6;
+}
+
+/* ---- Live radio: one set, five dashboards -------------------------- */
+.silver-radio {
+  --dash: #7d1620;
+  --plate: #ded7c2;
+  --bezel: #cfcabb;
+  --ink-on: #f6bd38;
+  --btn: #17140f;
+  --label: #3a3630;
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 4px solid #1a1714;
+  border-radius: 6px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--dash), #fff 8%),
+    var(--dash) 42%,
+    color-mix(in srgb, var(--dash), #000 20%)
+  );
+  box-shadow:
+    7px 8px 0 var(--ink),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.silver-radio::before,
+.silver-radio::after {
+  content: "";
+  position: absolute;
+  bottom: -11px;
+  width: 52px;
+  height: 9px;
+  border: 3px solid #15120f;
+  border-top: 0;
+  background: #24211d;
+}
+.silver-radio::before {
+  left: 7%;
+}
+.silver-radio::after {
+  right: 7%;
+}
+.silver-radio.is-sixties {
+  --dash: #4a3524;
+  --plate: #c9b08a;
+  --bezel: #d8d2c4;
+  --ink-on: #ffd77a;
+}
+.silver-radio.is-seventies {
+  --dash: #6b4a1e;
+  --plate: #cbaa63;
+  --bezel: #e0c98d;
+  --ink-on: #ffcf5c;
+}
+.silver-radio.is-eighties {
+  --dash: #22232a;
+  --plate: #33343c;
+  --bezel: #4a4c56;
+  --ink-on: #6ef0a0;
+  --label: #cfd4dd;
+}
+.silver-radio.is-nineties {
+  --dash: #1b1d22;
+  --plate: #2a2d34;
+  --bezel: #3c4049;
+  --ink-on: #79c8ff;
+  --label: #d3dae4;
+}
+.silver-radio.is-modern {
+  --dash: #20252a;
+  --plate: #adb4b9;
+  --bezel: #59636b;
+  --ink-on: #8fd9ff;
+  --label: #eef3f5;
+}
+
+.silver-decades {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border: 2px solid #15120f;
+  background: rgba(0, 0, 0, 0.24);
+}
+.silver-decades button {
+  display: grid;
+  min-height: 44px;
+  place-content: center;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid rgba(21, 18, 15, 0.8);
+  background: linear-gradient(#f4efe2, #b9b2a4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  color: #1a1714;
+  font: inherit;
+  cursor: pointer;
+}
+.silver-decades button b {
+  font-size: 0.64rem;
+}
+.silver-decades button small {
+  font-size: 0.46rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.silver-decades button.is-on {
+  transform: translateY(2px);
+  background: var(--ink-on);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.22);
+}
+
+/* The faceplate: fluted metal with a chrome bezel across the middle. */
+.silver-top {
+  display: grid;
+  grid-template-columns: minmax(230px, 1.3fr) minmax(150px, 0.7fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.9rem;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.42) 0 2px, rgba(0, 0, 0, 0.1) 2px 5px),
+    var(--plate);
+  border: 3px solid rgba(26, 23, 20, 0.85);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.24),
+    inset 0 -5px 12px rgba(0, 0, 0, 0.2);
+}
+.silver-grille {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: stretch;
+  min-height: 104px;
+  border: 3px solid var(--bezel);
+  border-radius: 3px;
+  background:
+    repeating-radial-gradient(circle at 4px 4px, #24211d 0 1.5px, transparent 1.7px 5px),
+    rgba(35, 31, 27, 0.2);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.4);
+}
+.silver-dial {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.silver-brand {
+  margin: 0;
+  color: var(--label);
+  font-family: var(--font-serif);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+.silver-brand small {
+  font-size: 0.46rem;
+  opacity: 0.7;
+}
+/* The lit dial window, chrome-framed like the original. */
+.silver-window {
+  min-height: 72px;
+  display: grid;
+  align-content: center;
+  padding: 0.55rem 0.7rem;
+  border: 4px solid var(--bezel);
+  border-radius: 3px;
+  background: #241f18;
+  box-shadow:
+    inset 0 0 14px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.silver-radio.is-on .silver-window {
+  background: linear-gradient(#6e5417, #33280d);
+  box-shadow: inset 0 0 18px rgba(246, 189, 56, 0.55);
+}
+.silver-station {
+  margin: 0;
+  color: var(--ink-on);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--ink-on), transparent 45%);
+}
+.silver-station-line {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: center;
+}
+.silver-station-line img,
+.silver-station-line > span {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(247, 239, 217, 0.45);
+  background: #eee8d8;
+  object-fit: contain;
+}
+.silver-station-line > span {
+  display: grid;
+  place-items: center;
+  color: #241f18;
+  font-family: var(--font-serif);
+  font-size: 0.54rem;
+  font-weight: 950;
+}
+.silver-meta {
+  margin: 0.1rem 0 0 !important;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: rgba(247, 239, 217, 0.7);
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.silver-meta em {
+  margin-left: auto;
+  padding: 0.05rem 0.3rem;
+  border: 1px solid rgba(247, 239, 217, 0.35);
+  font-style: normal;
+  font-weight: 900;
+  opacity: 0.45;
+}
+.silver-meta em.is-lit {
+  border-color: #ff6b60;
+  background: rgba(255, 107, 96, 0.2);
+  color: #ffb3ad;
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(255, 107, 96, 0.6);
+}
+.silver-status {
+  margin: 0;
+  color: var(--label);
+  font-size: 0.58rem;
+  line-height: 1.4;
+}
+.silver-signal {
+  display: flex;
+  align-items: end;
+  gap: 2px;
+  height: 13px;
+  margin-top: 0.2rem;
+}
+.silver-signal i {
+  width: 3px;
+  height: 4px;
+  background: rgba(247, 239, 217, 0.18);
+}
+.silver-signal i:nth-child(2) {
+  height: 6px;
+}
+.silver-signal i:nth-child(3) {
+  height: 8px;
+}
+.silver-signal i:nth-child(4) {
+  height: 10px;
+}
+.silver-signal i:nth-child(5) {
+  height: 12px;
+}
+.silver-signal i.is-lit {
+  background: #77e28d;
+  box-shadow: 0 0 4px rgba(119, 226, 141, 0.65);
+}
+
+.silver-tuner {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(11, auto);
+  align-items: end;
+  gap: 0.2rem;
+  height: 35px;
+  padding: 0.25rem 0.5rem 0.4rem;
+  border: 2px solid #16130f;
+  background: #28231b;
+  color: rgba(247, 239, 217, 0.8);
+  overflow: hidden;
+}
+.silver-tuner span {
+  font-family: var(--font-serif);
+  font-size: 0.48rem;
+  text-align: center;
+}
+.silver-tuner i {
+  width: 1px;
+  height: 10px;
+  justify-self: center;
+  background: rgba(247, 239, 217, 0.35);
+}
+.silver-tuner b {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  width: 2px;
+  background: #ff5656;
+  box-shadow: 0 0 6px #ff5656;
+  transition: left 0.28s ease;
+}
+
+/* Big round knobs with engraved rings, like VOLUME and SELECTOR. */
+.silver-knob-col {
+  grid-column: 3;
+  grid-row: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+}
+.silver-knob-col small {
+  color: var(--label);
+  font-size: 0.44rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.silver-knob {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border: 4px solid #15120f;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #f2ede0 0 26%, #b9b2a2 27% 33%, #6f6a5e 34%),
+    radial-gradient(circle at 38% 32%, #fff 0 22%, #9d9686 60%, #4c473f 100%);
+  box-shadow:
+    inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+    2px 3px 0 #15120f;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.silver-knob i {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 3px;
+  height: 16px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: #7d1620;
+  transform-origin: 50% 24px;
+  transform: rotate(var(--turn, 0deg));
+}
+.silver-knob:focus-visible {
+  outline: 3px solid var(--ink-on);
+  outline-offset: 3px;
+}
+
+/* The row of black push keys under the dial. */
+.silver-bands {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.3rem;
+  padding: 0 0.5rem;
+}
+.silver-bands button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0.3rem 0.4rem;
+  border: 2px solid #0d0b09;
+  border-radius: 2px;
+  background: linear-gradient(#3a3630, var(--btn));
+  box-shadow:
+    0 4px 0 #0d0b09,
+    inset 0 2px 0 rgba(255, 255, 255, 0.14);
+  color: #e8e2d2;
+  font: inherit;
+  font-size: 0.58rem;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.silver-bands button.is-down {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0d0b09;
+  background: linear-gradient(#1d1a16, #0d0b09);
+  color: var(--ink-on);
+}
+
+.silver-transport {
+  display: grid;
+  grid-template-columns: 64px minmax(110px, 160px) 64px auto;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+}
+.silver-transport button {
+  min-width: 58px;
+  min-height: 44px;
+  border: 2px solid #0d0b09;
+  border-radius: 2px;
+  background: linear-gradient(#e6e0d4, #a49d90);
+  color: #15120f;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 950;
+  box-shadow: 0 4px 0 #0d0b09;
+  cursor: pointer;
+}
+.silver-transport button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0d0b09;
+}
+.silver-transport button:disabled {
+  opacity: 0.4;
+}
+.silver-transport .is-play {
+  min-width: 96px;
+  background: linear-gradient(#f6bd38, #d59a1c);
+}
+.silver-count {
+  color: var(--label);
+  font-family: ui-monospace, monospace;
+  font-size: 0.64rem;
+}
+
+.silver-tone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(0, 0, 0, 0.22);
+}
+.silver-tone label {
+  display: grid;
+  grid-template-columns: 46px minmax(70px, 1fr) 28px;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1 1 170px;
+}
+.silver-tone span {
+  color: #f2ede0;
+  font-size: 0.5rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.silver-tone small {
+  color: rgba(242, 237, 224, 0.7);
+  font-family: ui-monospace, monospace;
+  font-size: 0.54rem;
+}
+.silver-tone input {
+  accent-color: var(--ink-on);
+}
+.silver-note {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.56rem;
+  line-height: 1.45;
+}
+@media (max-width: 700px) {
+  .silver-radio {
+    padding: 0.65rem;
+    box-shadow: 4px 5px 0 var(--ink);
+  }
+  .silver-decades {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .silver-top {
+    grid-template-columns: minmax(0, 1fr) 64px;
+    gap: 0.55rem;
+    padding: 0.65rem;
+  }
+  .silver-dial {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .silver-grille {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 66px;
+  }
+  .silver-knob-col {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .silver-bands {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 0;
+  }
+  .silver-transport {
+    grid-template-columns: 56px minmax(100px, 1fr) 56px;
+  }
+  .silver-count {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+  .silver-tone label {
+    flex-basis: 100%;
+  }
+}

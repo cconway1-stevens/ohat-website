@@ -274,7 +274,7 @@ export const garageAudio = {
     }),
 };
 
-export type GarageAudio = typeof garageAudio;
+type GarageAudio = typeof garageAudio;
 
 /* ------------------------------------------------------------------ *
  * Cozy scenes: one-shots you tap, and sustained beds that stay on.
@@ -368,7 +368,73 @@ export const cozyAudio = {
       voice(audio, "square", [[0, 1560]], 0.1, 0.03);
       window.setTimeout(() => safely((a) => voice(a, "square", [[0, 1180]], 0.14, 0.026)), 90);
     }),
+  /** A little villager greeting — Animal Crossing-style pitched gibberish. */
+  mumble: () =>
+    safely(() => {
+      const syllables = 3 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < syllables; i += 1) {
+        const hz = 280 + Math.random() * 520;
+        window.setTimeout(
+          () =>
+            safely((a) =>
+              voice(
+                a,
+                "square",
+                [
+                  [0, hz],
+                  [0.05, hz * 1.2],
+                ],
+                0.09,
+                0.02,
+              ),
+            ),
+          i * 85,
+        );
+      }
+    }),
+  /** A soft footstep on the shop floor. */
+  step: () => safely((audio) => noise(audio, 0.04, 900, 0.008)),
+  /** A thought bubble popping up over somebody's head. */
+  pop: () =>
+    safely((audio) =>
+      voice(
+        audio,
+        "sine",
+        [
+          [0, 620],
+          [0.06, 940],
+        ],
+        0.1,
+        0.03,
+      ),
+    ),
 };
+
+/**
+ * Speak a line aloud with the browser's own voice — the "human words" mode.
+ * Local speech synthesis, nothing leaves the device; silence is always an
+ * acceptable outcome.
+ */
+export function speakWords(text: string) {
+  try {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.05;
+    utterance.pitch = 1.1;
+    window.speechSynthesis.speak(utterance);
+  } catch {
+    // No voice available — silence is fine.
+  }
+}
+
+export function stopWords() {
+  try {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  } catch {
+    // Nothing to stop.
+  }
+}
 
 /* --- sustained beds ------------------------------------------------ */
 
@@ -632,8 +698,8 @@ export const BANDS: Record<Band, { min: number; max: number; step: number }> = {
 };
 
 // Kept for the older callers that only ever knew about FM.
-export const DIAL_MIN = BANDS.FM.min;
-export const DIAL_MAX = BANDS.FM.max;
+const DIAL_MIN = BANDS.FM.min;
+const DIAL_MAX = BANDS.FM.max;
 
 let radioVoices: OscillatorNode[] = [];
 let radioBus: GainNode | null = null;

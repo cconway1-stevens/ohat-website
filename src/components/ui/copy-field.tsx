@@ -2,11 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/**
- * A value with a one-tap copy button — handy for an email or address someone
- * wants to paste into their phone rather than retype.
- */
-export function CopyButton({ value, label }: { value: string; label: string }) {
+function useCopyToClipboard(value: string) {
   const [copied, setCopied] = useState(false);
   const resetTimer = useRef<number | null>(null);
 
@@ -31,10 +27,20 @@ export function CopyButton({ value, label }: { value: string; label: string }) {
     }, 2000);
   }
 
+  return { copied, copy };
+}
+
+/**
+ * A large tap target that copies an email address, styled to match the
+ * page's other primary contact actions rather than the small inline copy button.
+ */
+export function EmailCopyAction({ email, className }: { email: string; className?: string }) {
+  const { copied, copy } = useCopyToClipboard(email);
+
   return (
-    <button type="button" className="copy-button" onClick={copy}>
-      <span aria-hidden="true">{copied ? "✓" : "⧉"}</span>
-      <span>{copied ? "Copied" : `Copy ${label}`}</span>
+    <button type="button" className={className} onClick={copy}>
+      <span>{copied ? "Copied to clipboard" : "Email the shop"}</span>
+      <strong>{email}</strong>
     </button>
   );
 }

@@ -1,0 +1,1683 @@
+/* Homepage: the review quotes live inside the red award section, so the
+   heading-row link and spacing are tuned for the dark background. */
+.award-reviews {
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+}
+.award-reviews .section-heading-row h2 {
+  color: #fff;
+}
+.award-reviews .text-link {
+  color: var(--yellow-tint);
+}
+.review-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.9fr 0.95fr;
+  gap: 1.25rem;
+}
+.review-grid blockquote {
+  position: relative;
+  min-height: 270px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 2rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.review-grid blockquote::before {
+  content: "\201C";
+  position: absolute;
+  top: 0.25rem;
+  left: 1.1rem;
+  font-family: var(--font-serif);
+  font-size: 6rem;
+  line-height: 1;
+  color: var(--red);
+  opacity: 0.12;
+  pointer-events: none;
+}
+.review-grid blockquote:hover {
+  transform: translateY(-5px);
+  box-shadow: 10px 11px 0 var(--ink);
+}
+.review-grid blockquote:nth-child(2) {
+  margin-top: 2.5rem;
+  background: var(--yellow);
+}
+.review-grid blockquote:nth-child(3) {
+  margin-top: 5rem;
+}
+.review-grid .review-stars {
+  color: #f5a623;
+  letter-spacing: 0.2em;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.review-grid blockquote p {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.5;
+  margin: 1rem 0 1.5rem;
+  color: var(--ink);
+}
+.review-grid cite {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-style: normal;
+}
+.review-grid cite strong {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--ink);
+}
+.review-grid cite .review-verified {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--red);
+}
+.review-grid cite .review-verified svg {
+  flex-shrink: 0;
+  margin-top: 0.15em;
+}
+.review-grid cite .review-verified a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.review-grid cite .review-confirmed {
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.6;
+}
+.review-grid blockquote:nth-child(2) cite .review-verified {
+  color: var(--red-dark);
+}
+
+.visit-section {
+  position: relative;
+  padding: clamp(6rem, 11vw, 10rem) 0;
+  background: var(--blue);
+  color: #fff;
+  overflow: hidden;
+}
+.visit-section::before {
+  content: "";
+  position: absolute;
+  width: 55vw;
+  height: 55vw;
+  right: -20vw;
+  top: -27vw;
+  border: 55px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  animation: circle-drift 90s linear infinite;
+}
+.visit-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+}
+.visit-copy > p:not(.eyebrow) {
+  max-width: 590px;
+  line-height: 1.7;
+  color: #d9eef0;
+}
+.visit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.visit-card {
+  padding: 1.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: 12px 12px 0 var(--yellow);
+  transform: rotate(1deg);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.visit-card:hover {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: 15px 15px 0 var(--yellow);
+}
+.visit-card > div,
+.visit-card > button {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1.15rem;
+  border: 0;
+  border-bottom: 2px dashed var(--line);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.visit-card > div:last-child,
+.visit-card > button:last-child {
+  border: 0;
+}
+.visit-card > button {
+  width: 100%;
+  cursor: pointer;
+}
+.visit-card > button:hover {
+  background: rgba(246, 189, 56, 0.24);
+}
+.visit-card small {
+  color: var(--red);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.visit-card span {
+  color: var(--muted);
+}
+
+/* Inner-page covers */
+.inner-hero,
+.services-board,
+.repair-ticket,
+.dropoff-arrival {
+  position: relative;
+  min-height: 0;
+  padding: 196px 0 96px;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(circle at 80% 45%, rgba(246, 189, 56, 0.22), transparent 25%),
+    linear-gradient(110deg, #14110f 0 52%, #7f1015 100%);
+}
+.inner-hero::after,
+.services-board::after,
+.repair-ticket::after,
+.dropoff-arrival::after {
+  content: "";
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: -43px;
+  height: 92px;
+  background: var(--cream);
+  transform: rotate(-1.8deg);
+}
+.inner-hero::before,
+.services-board::before,
+.repair-ticket::before,
+.dropoff-arrival::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 65px,
+    #fff 67px 70px,
+    transparent 72px 100px
+  );
+}
+.inner-hero > .shell {
+  position: relative;
+  z-index: 2;
+}
+.inner-hero h1,
+.services-board h1,
+.repair-ticket h1,
+.dropoff-arrival h1 {
+  margin: 0;
+  max-width: 800px;
+  font-family: var(--font-serif);
+  font-size: clamp(2.9rem, 5.4vw, 5.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.inner-hero .eyebrow,
+.reviews-hero .eyebrow,
+.services-board .board-label,
+.repair-ticket .ticket-status,
+.dropoff-arrival .dropoff-route {
+  display: inline-block;
+  margin-bottom: 1.3rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 4px double rgba(255, 255, 255, 0.42);
+}
+.inner-hero > .shell,
+.services-board > .shell,
+.repair-ticket > .shell,
+.dropoff-arrival > .shell {
+  animation: sheet-in 0.6s ease-out both;
+}
+.inner-hero > .shell > p:not(.eyebrow) {
+  max-width: 650px;
+  color: #eaded0;
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+.inner-hero .button {
+  margin-top: 1rem;
+}
+.story-hero {
+  background:
+    linear-gradient(100deg, rgba(20, 17, 15, 0.95), rgba(87, 8, 12, 0.88)),
+    url("/media/1527173976927-building8-21-14.31.jpg") center/cover;
+}
+
+/* Reviews cover / Jersey Shore recommendation stickers */
+.reviews-hero {
+  min-height: 0;
+  padding-bottom: 120px;
+  background:
+    radial-gradient(circle at 82% 42%, rgba(246, 189, 56, 0.3), transparent 27%),
+    linear-gradient(110deg, #15110f 0 46%, #7a0e14 76%, #a8161c 100%);
+}
+.reviews-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+}
+.reviews-hero-copy {
+  min-width: 0;
+}
+.reviews-hero h1 {
+  max-width: 720px;
+}
+.reviews-hero .reviews-hero-copy > p:not(.eyebrow) {
+  max-width: 620px;
+  color: #eaded0;
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+.shore-sticker-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: center;
+  filter: drop-shadow(9px 10px 0 rgba(0, 0, 0, 0.55));
+}
+.shore-sticker {
+  --sticker-fill: var(--red);
+  position: relative;
+  min-height: 190px;
+  display: grid;
+  place-content: center;
+  gap: 0.45rem;
+  padding: 2rem 1.7rem;
+  isolation: isolate;
+  background: var(--ink);
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  clip-path: polygon(
+    50% 0%,
+    57% 16%,
+    70% 4%,
+    73% 22%,
+    90% 13%,
+    85% 32%,
+    100% 35%,
+    87% 46%,
+    100% 56%,
+    84% 63%,
+    95% 79%,
+    77% 77%,
+    79% 97%,
+    62% 85%,
+    52% 100%,
+    46% 84%,
+    29% 97%,
+    28% 78%,
+    8% 84%,
+    14% 64%,
+    0 56%,
+    15% 47%,
+    2% 34%,
+    20% 31%,
+    14% 13%,
+    33% 22%
+  );
+}
+.shore-sticker::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 6px;
+  background: var(--sticker-fill);
+  clip-path: inherit;
+}
+.shore-sticker::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 23%;
+  right: 20%;
+  width: 30px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.38);
+  transform: rotate(-24deg);
+}
+.shore-sticker span,
+.shore-sticker strong {
+  position: relative;
+  z-index: 1;
+}
+.shore-sticker span {
+  font-size: 0.61rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+}
+.shore-sticker strong {
+  max-width: 180px;
+  margin-inline: auto;
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+  line-height: 1.02;
+}
+.shore-sticker-red {
+  transform: rotate(-4deg);
+}
+.shore-sticker-yellow {
+  --sticker-fill: var(--yellow);
+  color: var(--ink);
+  transform: rotate(4deg);
+}
+.shore-sticker-blue {
+  --sticker-fill: var(--blue);
+  grid-column: 1 / -1;
+  width: min(270px, 72%);
+  min-height: 205px;
+  justify-self: center;
+  transform: rotate(-1deg);
+}
+
+.services-board {
+  background: var(--red);
+}
+.services-board-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.4fr 0.45fr;
+  align-items: end;
+  gap: 2rem;
+}
+.services-board h1 span {
+  display: block;
+  margin-top: 0.14em;
+  color: var(--yellow);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.47em;
+  font-style: italic;
+  letter-spacing: -0.015em;
+}
+.bay-counter {
+  position: relative;
+  aspect-ratio: 1;
+  width: min(100%, 215px);
+  display: grid;
+  place-content: center;
+  /* Georgia's figures overrun the em box even at `line-height: 1`, so the
+     clearance between the number and its label comes from this gap rather
+     than from leading alone. */
+  gap: 0.55rem;
+  justify-self: end;
+  padding: 1rem;
+  background: var(--yellow);
+  border: 4px solid var(--ink);
+  color: var(--ink);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.38);
+  text-align: center;
+  transform: rotate(4deg);
+}
+.bay-counter::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 2px dashed var(--ink);
+  opacity: 0.45;
+  pointer-events: none;
+}
+/* `line-height: .8` made the line box shorter than the numerals themselves,
+   so the digits spilled out of their own box and printed over the label
+   underneath. Serif figures at this size need roughly their full em; the tight
+   look comes from the grid `gap`, not from crushing the leading. */
+.bay-counter strong {
+  font-family: var(--font-serif);
+  font-size: 4.4rem;
+  line-height: 1;
+}
+.bay-counter span {
+  font-size: 0.7rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+.board-copy {
+  grid-column: 1 / 2;
+  max-width: 650px;
+  color: #f7dede;
+  font-size: 1.1rem;
+  line-height: 1.65;
+}
+
+.service-directory-frame {
+  position: relative;
+  padding: clamp(1rem, 2.4vw, 1.75rem);
+  background: color-mix(in srgb, var(--paper) 82%, var(--yellow) 18%);
+  border: 4px solid var(--ink);
+  box-shadow: 11px 11px 0 var(--red);
+}
+.service-directory-frame::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed color-mix(in srgb, var(--ink) 38%, transparent);
+  pointer-events: none;
+}
+.service-directory-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0.25rem 1rem;
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.service-directory {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+.service-directory article {
+  position: relative;
+  min-height: 245px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-areas:
+    "number tag"
+    "icon title"
+    "icon copy"
+    ". link";
+  column-gap: 1.25rem;
+  align-content: start;
+  padding: 1.6rem;
+  overflow: hidden;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.service-directory article:nth-child(5n + 2),
+.service-directory article:nth-child(5n + 4) {
+  background: var(--yellow);
+}
+.service-directory article:nth-child(6n) {
+  background: var(--blue);
+  color: #fff;
+}
+.service-directory article:hover {
+  transform: translateY(-6px) rotate(-1deg);
+  box-shadow: 12px 12px 0 var(--red);
+}
+.catalog-card-number {
+  grid-area: number;
+  align-self: center;
+  color: var(--red);
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.catalog-card-tag {
+  grid-area: tag;
+  justify-self: end;
+  padding: 0.32rem 0.55rem;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  transform: rotate(1deg);
+}
+.service-directory h2 {
+  grid-area: title;
+  align-self: end;
+  margin: 1.35rem 0 0.7rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.55rem, 2.3vw, 2.05rem);
+  line-height: 0.98;
+}
+.service-icon {
+  grid-area: icon;
+  align-self: start;
+  width: 46px;
+  height: 46px;
+  margin-top: 1.35rem;
+  color: var(--red);
+  opacity: 0.9;
+}
+/* On the blue card the red would go muddy; on yellow it stays legible. Both
+   inherit through currentColor rather than needing their own icon variant. */
+.service-directory article:nth-child(6n) .service-icon {
+  color: var(--yellow);
+  opacity: 1;
+}
+.service-directory article:hover .service-icon {
+  opacity: 1;
+}
+.service-directory p {
+  grid-area: copy;
+  margin: 0;
+  color: inherit;
+  opacity: 0.75;
+  line-height: 1.5;
+}
+.service-directory a {
+  grid-area: link;
+  margin-top: 1rem;
+  color: var(--red);
+  font-weight: 950;
+}
+.service-directory .service-card-reverse {
+  grid-template-columns: minmax(0, 1fr) 58px;
+  grid-template-areas:
+    "tag number"
+    "title icon"
+    "copy icon"
+    "link .";
+  text-align: right;
+}
+.service-card-reverse .catalog-card-tag {
+  justify-self: start;
+  transform: rotate(-1deg);
+}
+.service-card-reverse .service-icon {
+  justify-self: end;
+}
+.service-card-reverse a {
+  justify-self: end;
+}
+.service-directory article:nth-child(5n + 2) a,
+.service-directory article:nth-child(5n + 4) a,
+.service-directory article:nth-child(5n + 2) .catalog-card-number,
+.service-directory article:nth-child(5n + 4) .catalog-card-number {
+  color: var(--red-dark);
+}
+.service-directory article:nth-child(6n) a,
+.service-directory article:nth-child(6n) .catalog-card-number {
+  color: var(--yellow-tint);
+}
+.service-directory article:nth-child(6n) p {
+  opacity: 1;
+  color: var(--blue-tint);
+}
+
+/* Service work orders */
+.repair-ticket {
+  background: #171412;
+}
+.repair-ticket-1,
+.repair-ticket-3 {
+  background: var(--red);
+}
+.repair-ticket-0,
+.repair-ticket-2 {
+  background: var(--ink);
+}
+.repair-ticket-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 0.32fr 1.2fr 0.42fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+}
+.ticket-number {
+  display: grid;
+  justify-items: center;
+  padding: 1.25rem;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 #fff;
+  transform: rotate(-4deg);
+}
+.ticket-number span {
+  font-size: 0.75rem;
+  font-weight: 950;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.ticket-number strong {
+  font-family: var(--font-serif);
+  font-size: clamp(5rem, 10vw, 8rem);
+  line-height: 0.85;
+}
+/* Block, not inline-block: the status badge below is itself inline-block (it
+   carries a text-width underline), so an inline back link shared its line. */
+.back-link {
+  display: block;
+  width: fit-content;
+  margin-bottom: 1.5rem;
+  color: var(--yellow-tint);
+  font-weight: 900;
+}
+.service-breadcrumbs {
+  margin-bottom: 1.5rem;
+}
+.service-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.65rem;
+  margin: 0;
+  padding: 0;
+  color: #eaded0;
+  font-size: 0.72rem;
+  font-weight: 850;
+  list-style: none;
+}
+.service-breadcrumbs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.service-breadcrumbs li + li::before {
+  content: "/";
+  color: var(--yellow);
+}
+.service-breadcrumbs a {
+  color: var(--yellow-tint);
+  text-underline-offset: 4px;
+}
+.service-breadcrumbs a:hover {
+  color: #fff;
+}
+.service-breadcrumbs [aria-current="page"] {
+  color: #fff;
+}
+.ticket-copy > p:not(.ticket-status) {
+  max-width: 680px;
+  color: #eaded0;
+  line-height: 1.7;
+}
+.part-stamp {
+  aspect-ratio: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 18px solid var(--yellow);
+  border-radius: 50%;
+  animation: slow-spin 14s linear infinite;
+}
+.part-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 7px dashed #fff;
+  border-radius: 50%;
+}
+.part-stamp span {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+.part-stamp i {
+  position: absolute;
+  width: 18px;
+  height: 38px;
+  top: -28px;
+  background: var(--yellow);
+}
+.part-stamp i:nth-child(2) {
+  transform: rotate(60deg);
+  transform-origin: 9px calc(50% + 92px);
+}
+.part-stamp i:nth-child(3) {
+  transform: rotate(120deg);
+  transform-origin: 9px calc(50% + 92px);
+}
+.part-stamp i:nth-child(4) {
+  transform: rotate(180deg);
+  transform-origin: 9px calc(50% + 92px);
+}
+.part-stamp i:nth-child(5) {
+  transform: rotate(240deg);
+  transform-origin: 9px calc(50% + 92px);
+}
+.part-stamp i:nth-child(6) {
+  transform: rotate(300deg);
+  transform-origin: 9px calc(50% + 92px);
+}
+.service-detail {
+  background: var(--cream);
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: start;
+}
+.detail-grid > div:first-child {
+  padding: 1rem 0;
+}
+.detail-grid h2 {
+  margin: 0 0 2rem;
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  line-height: 0.95;
+}
+.detail-grid ul {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0;
+  list-style: none;
+}
+.detail-grid li {
+  position: relative;
+  padding: 1rem 1rem 1rem 3.2rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid var(--ink);
+  font-weight: 750;
+}
+.detail-grid li::before {
+  content: "✓";
+  position: absolute;
+  left: 0.9rem;
+  top: 0.65rem;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+.includes-card {
+  padding: clamp(2rem, 5vw, 4rem);
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  box-shadow: 12px 12px 0 var(--red);
+  transform: rotate(1deg);
+}
+.ticket-locale {
+  display: block;
+  margin-top: 0.35em;
+  font-size: 0.42em;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--yellow-tint);
+}
+.ticket-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+.detail-grid > div > p:not(.eyebrow),
+.includes-card > p:not(.eyebrow) {
+  margin: 0;
+  line-height: 1.75;
+}
+.service-cost-copy {
+  max-width: 760px;
+  margin: 0;
+  line-height: 1.75;
+}
+.service-resource-list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.service-resource-list li {
+  max-width: 760px;
+  padding: 1.4rem 1.6rem;
+  background: rgba(255, 255, 255, 0.5);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--blue);
+}
+.service-resource-list a {
+  color: var(--red);
+  font-weight: 950;
+  font-size: 1.1rem;
+}
+.service-resource-list p {
+  margin: 0.5rem 0 0;
+  line-height: 1.6;
+}
+.service-related-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.service-related-list a {
+  display: inline-block;
+  padding: 0.8rem 1.3rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  color: var(--red);
+  font-weight: 900;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.service-related-list a:hover {
+  transform: translateY(-3px);
+  box-shadow: 8px 8px 0 var(--red);
+}
+
+/* Service-page workbench
+   The service detail used to be split across as many as six full `.section`
+   blocks. Keeping the work-order styling in one 12-column board preserves the
+   hierarchy while removing repeated bands of empty vertical space. */
+.service-workbench {
+  position: relative;
+  padding: clamp(2.5rem, 4vw, 3.75rem) 0 clamp(2.75rem, 4.5vw, 4rem);
+  overflow: hidden;
+  background: var(--cream);
+}
+.service-workbench::before {
+  content: "SERVICE NOTES  /  INSPECT • EXPLAIN • APPROVE";
+  position: absolute;
+  top: 2.2rem;
+  right: max(22px, calc((100vw - 1180px) / 2));
+  color: rgba(23, 20, 18, 0.32);
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+}
+.service-workbench-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1.15rem, 2.2vw, 1.8rem);
+  /* Panels sharing a row now share a bottom edge. With `align-items: start`
+     each one stopped at its own content, so every row ended ragged and the
+     shorter panel left a hole beside its neighbour. */
+  align-items: stretch;
+}
+.service-panel {
+  position: relative;
+  grid-column: span 6;
+  padding: clamp(1.55rem, 3vw, 2.5rem);
+  background: rgba(255, 255, 255, 0.42);
+  border: 3px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+}
+.service-panel h2 {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 2.3vw, 2.3rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  /* Wrap evenly instead of leaving one orphaned word on the last line. */
+  text-wrap: balance;
+}
+.service-panel > p:not(.eyebrow) {
+  margin: 0;
+  line-height: 1.7;
+}
+.service-panel ul:not(.service-related-list) {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.service-panel-signs {
+  grid-column: span 7;
+}
+.service-panel-signs ul,
+.service-panel-includes ul {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.service-panel-signs li,
+.service-panel-includes li {
+  position: relative;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.8rem 0.5rem 2.7rem;
+  border-bottom: 2px solid var(--ink);
+  background: rgba(255, 255, 255, 0.52);
+  font-weight: 800;
+}
+.service-panel-signs li::before,
+.service-panel-includes li::before {
+  content: "✓";
+  position: absolute;
+  left: 0.65rem;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  font-size: 0.8rem;
+}
+.service-panel-includes {
+  grid-column: span 5;
+  margin-top: 1.35rem;
+  background: var(--paper);
+  box-shadow: 9px 9px 0 var(--red);
+  transform: rotate(0.45deg);
+}
+.service-panel-diagnosis {
+  grid-column: span 7;
+  background: var(--paper);
+  border-left: 9px solid var(--red);
+}
+.service-panel-why-us {
+  grid-column: span 5;
+  margin-top: -1rem;
+  background: var(--yellow);
+  box-shadow: 8px 8px 0 var(--blue);
+  transform: rotate(-0.35deg);
+}
+.service-panel-cost {
+  grid-column: span 7;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 8px 8px 0 var(--yellow);
+}
+.service-panel-cost-wide {
+  grid-column: span 7;
+}
+.service-panel-cost .eyebrow {
+  color: var(--yellow);
+}
+.service-panel-resources {
+  grid-column: span 5;
+  background: var(--blue-tint);
+}
+.service-panel-index {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  color: var(--red);
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.service-panel-why-us .service-panel-index {
+  color: var(--red-dark);
+}
+.service-panel-cost .service-panel-index {
+  color: var(--yellow);
+}
+.service-panel .service-resource-list li {
+  max-width: none;
+  padding: 0.95rem 1rem;
+  box-shadow: 4px 4px 0 var(--blue);
+}
+.service-panel-related {
+  grid-column: span 5;
+  align-self: stretch;
+  padding: 1.5rem;
+  border-style: dashed;
+  box-shadow: none;
+  background: rgba(255, 250, 240, 0.66);
+}
+.service-panel-related h2 {
+  margin-bottom: 1rem;
+  font-size: clamp(1.8rem, 2.7vw, 2.5rem);
+}
+.service-panel-related .service-related-list {
+  gap: 0.7rem;
+}
+.service-panel-related .service-related-list a {
+  padding: 0.65rem 0.9rem;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.service-faqs {
+  /* `.review-themes` carries a 10rem bottom padding, which suits the reviews
+     page where that block ends the content. Here two more bands follow it, so
+     that space read as a hole rather than a finish. */
+  padding: clamp(2.5rem, 4vw, 3.5rem) 0;
+  background: var(--paper);
+}
+.service-faqs .theme-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.35rem;
+  margin-top: 2.25rem;
+}
+.service-faqs .theme-grid article,
+.service-faqs .theme-grid article:nth-child(even) {
+  min-height: 0;
+  margin-top: 0;
+  /* Equal heights across the row: a short answer used to leave its card
+     stubby next to two tall neighbours. */
+  height: 100%;
+}
+.service-faqs .theme-grid {
+  align-items: stretch;
+}
+.service-faqs .theme-grid h3 {
+  margin: 0.65rem 0 0.55rem;
+}
+.service-faqs .theme-grid p {
+  margin: 0;
+}
+
+.inner-cta {
+  position: relative;
+  padding: 5rem 0;
+  overflow: hidden;
+  background: var(--red);
+  color: #fff;
+}
+.inner-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 48px,
+    #fff 50px 53px,
+    transparent 55px 80px
+  );
+}
+.inner-cta > .shell {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.inner-cta h2 {
+  font-size: clamp(2.3rem, 4vw, 4rem);
+}
+
+/* Drop-off route */
+.dropoff-arrival {
+  background:
+    linear-gradient(100deg, rgba(20, 17, 15, 0.97) 0 48%, rgba(24, 98, 112, 0.9)),
+    url("/media/Building-drop-box.jpg") center/cover;
+}
+.dropoff-hero-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: center;
+}
+.dropoff-arrival h1 span {
+  color: var(--yellow);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-style: italic;
+  letter-spacing: -0.015em;
+}
+.dropoff-hero-grid > div:first-child > p:not(.dropoff-route) {
+  max-width: 600px;
+  color: #e8dfd4;
+  line-height: 1.65;
+}
+.dropoff-photo {
+  position: relative;
+  min-height: 480px;
+  border: 8px solid var(--paper);
+  outline: 4px solid var(--ink);
+  box-shadow: 14px 14px 0 var(--yellow);
+  transform: rotate(2deg);
+}
+.dropoff-photo img {
+  object-fit: cover;
+}
+.dropoff-sign {
+  position: absolute;
+  right: -25px;
+  bottom: -25px;
+  width: 168px;
+  height: 168px;
+  display: grid;
+  place-content: center;
+  gap: 0.3rem;
+  background: var(--red);
+  border: 6px double var(--yellow);
+  border-radius: 50%;
+  text-align: center;
+  transform: rotate(-6deg);
+}
+/* Same fault as .bay-counter above: .7 leading on 3.8rem serif digits put
+   "24" straight through "HOUR". */
+/* Sized to fit. Giving the numerals honest leading (they used to sit on .7,
+   which printed "24" through "HOUR") made the stack taller than the old 145px
+   disc, so the disc grew and the figure came down a step — otherwise the last
+   line clips against the border. */
+.dropoff-sign span {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  line-height: 1.05;
+}
+.dropoff-sign strong,
+.dropoff-sign small {
+  color: var(--yellow-tint);
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+/* "SECURE KEY DROP" sat near the bottom of the disc, where the available
+   chord is far narrower than the disc's full width, so a single line ran out
+   past the border on both sides. Capped to the chord and allowed to wrap. */
+.dropoff-sign small {
+  max-width: 104px;
+  margin-inline: auto;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
+}
+.dropoff-steps {
+  padding-bottom: 11rem;
+}
+.dropoff-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+.dropoff-grid::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 48px;
+  height: 8px;
+  background: repeating-linear-gradient(90deg, var(--red) 0 28px, transparent 28px 42px);
+}
+.dropoff-grid article {
+  position: relative;
+  z-index: 2;
+  min-height: 280px;
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.dropoff-grid article:nth-child(even) {
+  margin-top: 1.5rem;
+  background: var(--yellow);
+}
+.dropoff-grid article:hover {
+  transform: translateY(-5px);
+  box-shadow: 10px 11px 0 var(--ink);
+}
+.dropoff-grid article > span {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  background: var(--red);
+  color: #fff;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 900;
+}
+.dropoff-grid h3 {
+  margin-top: 2rem;
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+}
+.dropoff-grid p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+.dropoff-grid article:nth-child(even) p {
+  color: #4c3c2d;
+}
+.dropoff-location {
+  position: relative;
+  padding: 8rem 0;
+  background: var(--paper);
+}
+.dropoff-location-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.85fr;
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+}
+.dropoff-location img {
+  border: 7px solid var(--cream);
+  outline: 4px solid var(--ink);
+  box-shadow: 13px 13px 0 var(--blue);
+  transform: rotate(-2deg);
+}
+.dropoff-location h2,
+.dropoff-checklist h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  line-height: 0.95;
+}
+.dropoff-location p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.dropoff-checklist {
+  padding: 7rem 0;
+  background: var(--ink);
+  color: #fff;
+}
+.checklist-grid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 4rem;
+}
+.checklist-grid ul {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.checklist-grid li {
+  padding: 1rem 1rem 1rem 3.25rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-left: 6px solid var(--yellow);
+}
+.checklist-grid li::before {
+  content: "→";
+  margin-left: -2rem;
+  margin-right: 1rem;
+  color: var(--yellow);
+  font-weight: 900;
+}
+.dropoff-note {
+  padding: 2rem 0;
+  background: var(--yellow);
+  border-block: 4px solid var(--ink);
+}
+.dropoff-note .shell {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+.dropoff-note strong {
+  color: var(--red);
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+.dropoff-note p {
+  margin: 0;
+}
+
+/* Story, gallery, contact, reviews, offers */
+.story-section {
+  background: var(--cream);
+}
+.story-grid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: clamp(3rem, 8vw, 8rem);
+}
+.story-grid h2,
+.shop-gallery h2,
+.review-themes h2,
+.offer-grid h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+.story-copy {
+  padding: 2rem;
+  background: var(--paper);
+  border-left: 8px solid var(--red);
+  box-shadow: 8px 8px 0 var(--yellow);
+}
+.story-copy p {
+  color: var(--muted);
+  font-size: 1.08rem;
+  line-height: 1.8;
+}
+.shop-gallery {
+  padding: 8rem 0;
+  background: var(--paper);
+  overflow: hidden;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+.gallery-grid figure {
+  margin: 0;
+  min-height: 320px;
+  overflow: hidden;
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--red);
+}
+.gallery-grid figure:nth-child(3) {
+  transform: translateY(2rem);
+}
+.gallery-grid figure:nth-child(4) {
+  transform: translateY(-1rem);
+}
+.gallery-grid .gallery-wide {
+  grid-column: 1 / -1;
+  min-height: 480px;
+}
+.gallery-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.gallery-grid figure:hover img {
+  transform: scale(1.04);
+}
+.community-band {
+  padding: 7rem 0;
+  background: var(--blue);
+  color: #fff;
+}
+.community-band .shell {
+  display: grid;
+  grid-template-columns: 0.35fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.community-band .shell > span {
+  font-family: var(--font-serif);
+  font-size: clamp(5rem, 13vw, 10rem);
+  font-weight: 900;
+  color: var(--yellow);
+  text-shadow: 8px 8px 0 var(--red);
+  transform: rotate(-5deg);
+}
+.community-band p:not(.eyebrow) {
+  max-width: 680px;
+  color: #dceff1;
+  line-height: 1.7;
+}
+
+/* Contact-page shop map */
+.shop-map {
+  margin: 0;
+  border: 4px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 10px 10px 0 var(--red);
+}
+.shop-map-frame {
+  position: relative;
+  /* `width` must be definite: with only `aspect-ratio` and `min-height`, the
+     box sized itself from the height instead — 300px tall x 2 = 600px wide,
+     which overflowed every phone. */
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  min-height: 230px;
+  border-bottom: 4px solid var(--ink);
+  background: #dfe4d8;
+}
+.shop-map-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* Warm the stock map tiles toward the catalog palette. */
+  filter: sepia(0.28) saturate(0.92) contrast(1.04);
+}
+.shop-map figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem clamp(1rem, 3vw, 1.6rem);
+  background: var(--yellow);
+  text-transform: uppercase;
+}
+.shop-map figcaption > span {
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+}
+.shop-map-cta {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--red-dark);
+  cursor: pointer;
+  font: inherit;
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.shop-map-cta:hover {
+  color: var(--ink);
+}
+
+.review-themes {
+  padding-bottom: 10rem;
+}
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  margin-top: 3rem;
+}
+.theme-grid article {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.theme-grid article:nth-child(even) {
+  margin-top: 1.25rem;
+  background: var(--yellow);
+}
+.theme-grid article:hover {
+  transform: translateY(-5px);
+  box-shadow: 9px 10px 0 var(--ink);
+}
+.theme-grid span {
+  color: var(--red);
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  font-weight: 900;
+}
+.theme-grid h3 {
+  margin: auto 0 0.5rem;
+  font-family: var(--font-serif);
+  font-size: 1.65rem;
+}
+.theme-grid p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+.theme-grid article:nth-child(even) p {
+  color: #4c3c2d;
+}
+.profile-section {
+  padding: 7rem 0;
+  background: var(--ink);
+  color: #fff;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.15rem;
+  max-width: 1040px;
+}
+.review-source-card {
+  --source-accent: var(--yellow);
+  position: relative;
+  min-height: 258px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.45rem;
+  border: 3px solid var(--paper);
+  background: var(--paper);
+  box-shadow: 7px 7px 0 var(--source-accent);
+  color: var(--ink);
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.review-source-card:nth-child(2) {
+  --source-accent: var(--red);
+}
+.review-source-card:nth-child(3) {
+  --source-accent: var(--blue);
+}
+.review-source-card:nth-child(4) {
+  --source-accent: #79a85d;
+}
+.review-source-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 11px;
+  background: var(--source-accent);
+  transition: width 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.review-source-card:hover::before,
+.review-source-card:focus-visible::before {
+  width: 100%;
+  opacity: 0.1;
+}
+.review-source-card:hover,
+.review-source-card:focus-visible {
+  transform: translateY(-6px) rotate(-0.6deg);
+  box-shadow: 12px 14px 0 var(--source-accent);
+}
+.review-source-card:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 5px;
+}
+.review-source-number {
+  align-self: flex-end;
+  color: #81786b;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.review-source-label {
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.review-source-card strong {
+  margin-top: 1.45rem;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+.review-source-card p {
+  max-width: 28ch;
+  margin: 0.7rem 0 1.5rem;
+  color: #514a40;
+  font-size: 0.91rem;
+  line-height: 1.48;
+}
+.review-source-card b {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding: 0.72rem 0.82rem;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.review-source-card b > span:not(.sr-only) {
+  color: var(--source-accent);
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.18s ease;
+}
+.review-source-card:hover b > span:not(.sr-only),
+.review-source-card:focus-visible b > span:not(.sr-only) {
+  transform: translate(3px, -3px);
+}
+
+.offer-section {
+  background: var(--cream);
+}
+.offer-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+}
+.offer-grid > div > p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.offer-grid figure {
+  margin: 0;
+  padding: 1rem;
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  box-shadow: 12px 12px 0 var(--red);
+  transform: rotate(1deg);
+}
+.offer-grid figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.offer-grid figcaption {
+  padding-top: 0.7rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}

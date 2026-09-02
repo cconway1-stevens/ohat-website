@@ -25,7 +25,6 @@ const REVEAL_SELECTOR = [
   ".review-grid blockquote",
   ".service-directory article",
   ".dropoff-grid article",
-  ".contact-grid article",
   ".gallery-grid figure",
   ".arcade-cabinet",
 ].join(", ");

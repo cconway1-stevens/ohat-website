@@ -1,0 +1,622 @@
+/* Long-form legal copy: /privacy. Narrower than the marketing sections
+   because unbroken prose gets hard to track past about 70 characters. */
+.legal-doc {
+  max-width: 68ch;
+}
+.legal-doc h2 {
+  margin: 2.75rem 0 0.85rem;
+  font-size: clamp(1.15rem, 2.1vw, 1.5rem);
+  line-height: 1.25;
+}
+.legal-doc > h2:first-child {
+  margin-top: 0;
+}
+.legal-doc p,
+.legal-doc li {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.legal-doc p {
+  margin: 0 0 1rem;
+}
+.legal-doc ul {
+  margin: 0 0 1.35rem;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.7rem;
+}
+.legal-doc strong {
+  color: var(--ink);
+}
+.legal-doc a {
+  color: inherit;
+  text-underline-offset: 0.18em;
+}
+
+/* Shown on /reviews when no quote has been verified against its source — see
+   the note on `reviewExcerpts`. Styled as a confident destination rather than
+   an empty state, because pointing at the real profiles is a stronger claim
+   than reprinting a quote on our own website. */
+.review-source-invite {
+  max-width: 46rem;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  box-shadow: 9px 9px 0 var(--yellow);
+}
+.review-source-invite h3 {
+  margin: 0.3rem 0 0.7rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.1;
+}
+.review-source-invite p {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.review-source-invite .button {
+  margin-top: 0.2rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Loading placeholder — see components/site-image.tsx.
+
+   Painted as the image's own `background`, not a wrapper element. An image's
+   background shows through only while it has no pixels, and is covered the
+   moment they arrive, which gives a placeholder that costs the surrounding
+   layout absolutely nothing. The wrapper this replaces became the flex/grid
+   item in place of the image and broke centred cards, a stacking context and
+   a blend mode across the site.
+
+   Two layers: the shop's diagonal hatch, and a tyre with air going into the
+   tread, pulsing as if being pumped.
+--------------------------------------------------------------------------- */
+.site-image {
+  background-color: var(--cream);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='%23a8161c' stroke-width='5'%3E%3Ccircle cx='24' cy='24' r='15' stroke='%23171412' stroke-opacity='.16'/%3E%3Ccircle cx='24' cy='24' r='5.5' stroke-width='3' stroke='%23171412' stroke-opacity='.22'/%3E%3Cpath d='M24 9a15 15 0 0 1 13 7.5' stroke-linecap='round'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(-45deg, rgba(23, 20, 18, 0.05) 0 10px, transparent 10px 20px);
+  background-repeat: no-repeat, repeat;
+  background-position:
+    center,
+    0 0;
+  background-size: clamp(28px, 22%, 64px), auto;
+  animation: tyre-pump 1.6s ease-in-out infinite;
+}
+/* Real pixels have arrived: drop the placeholder and stop the animation. Kept
+   keyed off the load event rather than a timer, so it always tells the truth
+   about what the image is doing. */
+.site-image.is-loaded {
+  background: none;
+  animation: none;
+}
+@keyframes tyre-pump {
+  0%,
+  100% {
+    background-size: clamp(28px, 22%, 64px), auto;
+  }
+  55% {
+    background-size: clamp(31px, 24%, 70px), auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-image {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   /contact — a roadside-guide contact page.
+
+   Mobile-first: one continuous column on the phone, a stacked two-band
+   composition on tablet, and a single structured left panel beside a
+   full-height map on desktop. The road-trip character comes from the route
+   shield, the tri-colour guide-spine band, dashed lane dividers and the
+   pre-trip checklist — never from rotations or heavy shadows.
+--------------------------------------------------------------------------- */
+
+.contact-route {
+  padding: 116px 0 1.25rem;
+  background: linear-gradient(rgba(168, 22, 28, 0.045) 1px, transparent 1px), var(--cream);
+  background-size: 100% 24px;
+}
+.contact-route-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+/* `display: contents` drops the wrapper's box so the three groups become
+   direct flex/grid items on phone and tablet; desktop restores it as the
+   single panel. */
+.contact-route-panel {
+  display: contents;
+}
+.contact-route-details,
+.contact-arrival {
+  min-width: 0;
+  padding: 1rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+}
+/* The tri-colour guide-spine band rides the top edge of the details group on
+   every viewport — on desktop that group is the head of the single panel. */
+.contact-route-details {
+  background:
+    linear-gradient(90deg, var(--red) 0 34%, var(--yellow) 34% 67%, var(--blue) 67%) top / 100% 6px
+      no-repeat,
+    var(--paper);
+  padding-top: calc(1rem + 6px);
+}
+.contact-map-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.contact-route-marker,
+.contact-section-label {
+  margin: 0 0 0.45rem;
+  color: var(--red);
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+.contact-route-marker::before {
+  content: "NJ 152";
+  display: inline-grid;
+  place-items: center;
+  min-width: 3.7rem;
+  min-height: 1.8rem;
+  margin-right: 0.65rem;
+  padding-inline: 0.35rem;
+  border: 2px solid currentColor;
+  border-radius: 50% 50% 42% 42%;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+}
+.contact-route-intro h1 {
+  margin: 0;
+  max-width: 12ch;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 11vw, 3.1rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.contact-route-intro > p:last-child {
+  max-width: 42rem;
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.contact-primary-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+.contact-action {
+  min-width: 0;
+  min-height: 60px;
+  display: grid;
+  align-content: center;
+  gap: 0.18rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease;
+}
+.contact-action span {
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.contact-action strong {
+  font-family: var(--font-serif);
+  font-size: clamp(0.86rem, 3.6vw, 1.02rem);
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+}
+.contact-action-call,
+.contact-action-directions {
+  grid-column: span 2;
+}
+.contact-action-email {
+  grid-column: span 4;
+}
+.contact-action-vcard {
+  grid-column: span 1;
+}
+.contact-action-vcard strong {
+  font-size: clamp(0.72rem, 3.2vw, 0.86rem);
+}
+.contact-action-call {
+  background: var(--yellow);
+}
+.contact-action-directions {
+  background: var(--blue);
+  color: #fff;
+}
+.contact-action-email {
+  background: var(--ink);
+  color: var(--yellow-tint);
+}
+.contact-action-vcard {
+  background: var(--red-dark);
+  color: #fff;
+}
+.contact-action:hover,
+.contact-action:focus-visible {
+  background: var(--red);
+  color: #fff;
+}
+/* The open/closed sign slots in as a fifth, wider tile — a dashed-frame slot
+   holds it centred, so the sign itself (its own paper-and-shadow card, see
+   shop-hours-status.tsx) keeps its native look rather than taking the button
+   chrome, while the cell still reads as a tile instead of empty margin. */
+.contact-primary-status {
+  grid-column: span 3;
+  min-width: 0;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+  background: var(--cream);
+  border: 2px dashed var(--ink);
+  border-radius: 2px;
+}
+.contact-primary-status .shop-hours-status-wrap {
+  justify-content: center;
+}
+.contact-primary-status .shop-hours-status {
+  padding: 0.5rem 1rem 0.5rem 0.8rem;
+  font-size: 0.78rem;
+}
+.contact-primary-status .shop-status-copy > span:first-child {
+  font-size: 1.02rem;
+}
+.contact-stop-card {
+  margin-top: 1rem;
+}
+.contact-hours-block {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+.contact-address-line {
+  margin-top: 0.7rem;
+}
+.contact-address-line address {
+  min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+  font-style: normal;
+}
+.contact-address-line address span:first-child {
+  color: var(--red);
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.contact-address-line address strong {
+  font-family: var(--font-serif);
+  font-size: 1.18rem;
+  line-height: 1.1;
+}
+.contact-address-line address span:last-child {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.contact-hours-list {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.7rem 0 0;
+}
+.contact-hours-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  font-size: 0.76rem;
+}
+.contact-hours-list dt {
+  font-weight: 900;
+}
+.contact-hours-list dd {
+  margin: 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.contact-hours-note {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+.contact-hours-note a {
+  color: var(--red);
+  font-weight: 900;
+  text-underline-offset: 0.18em;
+}
+.contact-arrival h2 {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+/* The pre-trip checklist: every item arrives already checked off. */
+.contact-checklist {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.42rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.contact-checklist li {
+  position: relative;
+  padding-left: 1.35rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+.contact-checklist li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  width: 0.95rem;
+  height: 0.95rem;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  color: var(--red);
+  font-size: 0.6rem;
+  font-weight: 950;
+  line-height: 1;
+}
+.contact-map-panel .shop-map {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-width: 2px;
+  box-shadow: none;
+}
+.contact-map-panel .shop-map-frame {
+  min-height: 300px;
+  aspect-ratio: 1 / 1;
+  border-bottom-width: 2px;
+}
+.contact-map-panel .shop-map figcaption {
+  flex-wrap: nowrap;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--yellow);
+}
+.contact-map-panel .shop-map figcaption > span {
+  min-width: 0;
+  display: grid;
+  gap: 0.08rem;
+}
+.contact-map-panel .shop-map figcaption small {
+  color: var(--red-dark);
+  font-size: 0.52rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+}
+.contact-map-panel .shop-map figcaption strong {
+  overflow-wrap: anywhere;
+  font-size: 0.72rem;
+}
+.contact-map-panel .shop-map-cta {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 0.25rem;
+  font-size: 0.72rem;
+  text-align: right;
+}
+.contact-map-region {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+/* Tablet — stacked two-band composition. */
+@media (min-width: 701px) and (max-width: 1024px) {
+  .contact-route {
+    padding-top: 168px;
+  }
+  .contact-route-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "details details"
+      "map map"
+      "arrival arrival";
+    gap: 1rem;
+  }
+  .contact-route-details {
+    grid-area: details;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-areas:
+      "intro stop"
+      "actions stop";
+    gap: 0.5rem 1.5rem;
+    align-items: start;
+  }
+  .contact-arrival {
+    grid-area: arrival;
+  }
+  .contact-map-panel {
+    grid-area: map;
+  }
+  .contact-route-intro {
+    grid-area: intro;
+  }
+  .contact-primary-actions {
+    grid-area: actions;
+  }
+  .contact-stop-card {
+    grid-area: stop;
+  }
+  .contact-route-intro h1 {
+    max-width: none;
+  }
+  .contact-primary-actions {
+    margin-top: 0.85rem;
+  }
+  .contact-stop-card {
+    margin-top: 0;
+  }
+  .contact-map-panel .shop-map-frame {
+    min-height: 360px;
+    aspect-ratio: 16 / 7;
+  }
+  .contact-arrival {
+    border-width: 2px;
+  }
+}
+
+/* Desktop — one structured left panel beside a full-height map. */
+@media (min-width: 1025px) {
+  .contact-route {
+    min-height: 100svh;
+    padding: 168px 0 clamp(1.4rem, 3vw, 2.5rem);
+    background-size: 100% 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  .contact-route-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 38fr) minmax(0, 62fr);
+    align-items: stretch;
+    gap: 1rem;
+    /* The two panels read as one framed object — a postcard, not two cards
+       side by side — so the border and shadow live here, on the pair,
+       rather than on each panel separately. */
+    padding: 0.85rem;
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--yellow);
+  }
+  .contact-route-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+  }
+  .contact-route-details {
+    padding: 0.9rem 1.15rem 0.85rem;
+    border: 0;
+  }
+  .contact-arrival {
+    padding: 0.8rem 1.15rem;
+    border: 0;
+    border-top: 2px dashed rgba(23, 20, 18, 0.22);
+  }
+  .contact-route-intro {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed rgba(23, 20, 18, 0.22);
+  }
+  .contact-route-intro h1 {
+    max-width: 10ch;
+    font-size: clamp(2.3rem, 2.8vw, 3rem);
+  }
+  .contact-route-intro > p:last-child {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+  .contact-primary-actions {
+    margin-top: 0.9rem;
+  }
+  .contact-action {
+    min-height: 48px;
+  }
+  .contact-action strong {
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  }
+  .contact-stop-card {
+    margin-top: 0.75rem;
+  }
+  .contact-hours-block {
+    padding-bottom: 0.55rem;
+  }
+  .contact-hours-list {
+    margin-top: 0.5rem;
+  }
+  .contact-arrival h2 {
+    margin-bottom: 0.4rem;
+  }
+  .contact-checklist {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem 0.9rem;
+  }
+  .contact-checklist li {
+    font-size: 0.72rem;
+  }
+  .contact-map-panel {
+    min-height: 0;
+  }
+  .contact-map-panel .shop-map {
+    flex: 1;
+  }
+  .contact-map-panel .shop-map-frame {
+    flex: 1;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+}
+
+/* The contact route swaps the dock's second action for directions, and hides
+   the dock entirely once the page-level actions are always on screen. */
+@media (min-width: 701px) {
+  .booking-dock-contact {
+    display: none;
+  }
+}
+/* Between 701–720px the dock is hidden but the global body padding still
+   reserves room for it — drop that dead space on the contact route. */
+@media (min-width: 701px) and (max-width: 720px) {
+  body:has(.booking-dock-contact) {
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 350px) {
+  .contact-route {
+    padding-top: 112px;
+  }
+  .contact-route-details,
+  .contact-arrival {
+    padding: 0.8rem;
+  }
+  .contact-route-details {
+    padding-top: calc(0.8rem + 6px);
+  }
+  .contact-route-marker::before {
+    min-width: 3.2rem;
+    margin-right: 0.4rem;
+  }
+  .contact-action span {
+    font-size: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+}

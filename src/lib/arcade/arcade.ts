@@ -233,6 +233,14 @@ export const arcadeGames: ArcadeGame[] = [
     category: "cozy",
   },
   {
+    slug: "parts-counter-3d",
+    name: "Parts Counter 3D",
+    tagline: "Orbit the counter, grab the part, ring it up.",
+    classic: "3D shop sim",
+    glyph: "▣",
+    category: "cozy",
+  },
+  {
     slug: "garage-radio",
     name: "Garage Radio",
     tagline: "Settle in, turn the dial, and watch the shop go by.",

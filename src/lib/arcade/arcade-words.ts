@@ -248,7 +248,7 @@ export const CLUE_BANK: ClueWord[] = CLUES.map(([answer, clue, level, words]) =>
 
 // A mode plays its own level plus the easier ones below it, so "Advanced"
 // still mixes in familiar words instead of being wall-to-wall jargon.
-export const LEVELS_FOR: Record<ClueLevel, ClueLevel[]> = {
+const LEVELS_FOR: Record<ClueLevel, ClueLevel[]> = {
   kids: ["kids"],
   easy: ["kids", "easy"],
   advanced: ["easy", "advanced"],

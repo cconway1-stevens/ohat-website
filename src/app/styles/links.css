@@ -1,0 +1,360 @@
+/* Shop link hub */
+.link-hub {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 3rem 1rem;
+  background:
+    linear-gradient(115deg, rgba(111, 13, 18, 0.96), rgba(168, 22, 28, 0.93)),
+    url("/media/shop-exterior.jpg") center/cover;
+  color: #fff;
+}
+.link-hub-checker {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 18px;
+  background: conic-gradient(var(--paper) 25%, var(--ink) 0 50%, var(--paper) 0 75%, var(--ink) 0) 0
+    0 / 18px 18px;
+}
+.link-hub-card {
+  width: min(100%, 620px);
+  padding: clamp(1.4rem, 5vw, 3.2rem);
+  border: 4px solid var(--ink);
+  background: var(--cream);
+  color: var(--ink);
+  box-shadow: 12px 12px 0 var(--yellow);
+  text-align: center;
+  animation: sheet-in 0.6s ease-out both;
+}
+.link-hub-logo {
+  display: inline-block;
+}
+.link-hub-logo img {
+  width: 160px;
+  height: 112px;
+  object-fit: contain;
+}
+.link-hub-kicker {
+  margin: 0.4rem 0 0.55rem;
+  color: var(--red);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.link-hub h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 6.5vw, 3.7rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.link-hub-intro {
+  max-width: 470px;
+  margin: 1rem auto 1.5rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+/* Grouped sections: a labelled band per intent, so the eye sorts the list
+   instead of scanning nine identical tiles. */
+.link-hub-group {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1.4rem;
+  text-align: left;
+}
+.link-hub-group-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--red);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+.link-hub-group-label::after {
+  content: "";
+  flex: 1;
+  height: 3px;
+  border-top: 3px double rgba(168, 22, 28, 0.34);
+}
+.link-hub-list {
+  display: grid;
+  gap: 0.7rem;
+}
+/* Only the list's own tiles get the link-hub treatment. DirectionsTrigger
+   renders the shared dialog beside its trigger button; broad descendant
+   selectors here used to restyle every route link, copy button, and close
+   control inside that dialog, making it look unlike the main-site popup. */
+.link-hub-list > a,
+.link-hub-list > button {
+  min-height: 70px;
+  display: grid;
+  grid-template-columns: 46px 1fr 22px;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 1rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  text-align: left;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.link-hub-list > a::after,
+.link-hub-list > button::after {
+  content: "→";
+  font-weight: 950;
+}
+.link-hub-list > a:hover,
+.link-hub-list > button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.link-hub-list > a > span:first-child,
+.link-hub-list > button > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+.link-hub-list > a > span:nth-child(2),
+.link-hub-list > button > span:nth-child(2) {
+  display: grid;
+  gap: 0.15rem;
+}
+.link-hub-list > a small,
+.link-hub-list > button small {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+.link-hub-list > .link-hub-primary {
+  background: var(--red);
+  color: #fff;
+}
+/* The icon disc stays yellow on this red tile, so it must not inherit the
+   tile's white text colour. */
+.link-hub-list > .link-hub-primary > span:first-child {
+  color: var(--ink);
+}
+.link-hub-list > .link-hub-primary small {
+  color: #ffe9bb;
+}
+/* The four review and social profiles, compacted into one row of chips. */
+.link-hub-socials {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.link-hub-socials a {
+  display: grid;
+  justify-items: center;
+  gap: 0.38rem;
+  padding: 0.7rem 0.25rem 0.6rem;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: inherit;
+  transition:
+    transform 0.22s cubic-bezier(0.2, 0.8, 0.3, 1.2),
+    box-shadow 0.22s ease;
+}
+/* Each card deals itself in on load, in sequence, like cards onto a counter.
+   Purely an entrance — it runs once and leaves no transform behind to
+   interfere with the hover lift. */
+@media (prefers-reduced-motion: no-preference) {
+  .review-source-card {
+    animation: source-deal 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.05) backwards;
+  }
+  .review-source-card:nth-child(1) {
+    animation-delay: 0.04s;
+  }
+  .review-source-card:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+  .review-source-card:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  .review-source-card:nth-child(4) {
+    animation-delay: 0.28s;
+  }
+}
+@keyframes source-deal {
+  from {
+    opacity: 0;
+    transform: translateY(16px) rotate(-1.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.link-hub-socials a:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.link-hub-socials span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 900;
+  transition: transform 0.18s ease;
+}
+.link-hub-socials a:hover span {
+  transform: rotate(-9deg) scale(1.08);
+}
+.link-hub-socials small {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* A staggered settle on arrival, and a nudge on the icon disc when a tile is
+   hovered. The global prefers-reduced-motion rule flattens both. */
+@keyframes link-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.link-hub-group {
+  animation: link-rise 0.5s ease-out both;
+}
+.link-hub-group:nth-of-type(1) {
+  animation-delay: 0.16s;
+}
+.link-hub-group:nth-of-type(2) {
+  animation-delay: 0.27s;
+}
+.link-hub-group:nth-of-type(3) {
+  animation-delay: 0.38s;
+}
+.link-hub-list > a > span:first-child,
+.link-hub-list > button > span:first-child {
+  transition: transform 0.18s ease;
+}
+.link-hub-list > a:not(.link-hub-primary):hover > span:first-child,
+.link-hub-list > button:hover > span:first-child {
+  transform: rotate(-9deg) scale(1.08);
+}
+/* The call tile rings instead of tilting, matching the header's call button. */
+.link-hub-list > .link-hub-primary:hover > span:first-child {
+  animation: phone-ring 0.45s ease-in-out 2;
+}
+
+/* Hours and the status placard used to sit side by side and get centred as a
+   single unit, so neither lined up with anything: the text ran left of centre
+   and the plate hung off to the right, on a page where every other element is
+   centred. Stacked and centred individually now, so both sit on the page's
+   own axis. */
+.link-hub-hours {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 1.5rem 0 0.9rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.link-hub-share {
+  margin: 0 0 0.9rem;
+}
+.link-hub-share a {
+  color: var(--red);
+  font-size: 0.8rem;
+  font-weight: 950;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* QR share page */
+.links-qr-body {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin: 1.4rem 0 1.2rem;
+}
+.links-qr {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+}
+.links-qr canvas {
+  border: 4px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 8px 8px 0 var(--yellow);
+  image-rendering: pixelated;
+}
+.links-qr figcaption {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  word-break: break-all;
+}
+.share-links-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+}
+.links-qr-print {
+  font-size: 0.78rem;
+}
+@media print {
+  /* The printout is the QR and the address, nothing else. */
+  .site-header,
+  .site-footer,
+  .drive-cta,
+  .link-hub-checker,
+  .share-links-buttons,
+  .links-qr-print,
+  .link-hub-home,
+  .booking-dock,
+  .mkr-mount {
+    display: none !important;
+  }
+  .link-hub {
+    background: #fff;
+    min-height: auto;
+  }
+  .link-hub-card {
+    border: none;
+    box-shadow: none;
+  }
+}
+.link-hub-home {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}

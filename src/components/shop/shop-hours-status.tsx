@@ -65,7 +65,7 @@ export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
 
   const shownStatus = previewState ?? status.status;
   const shownLabel = previewState ? getShopStatusLabel(previewState) : status.label;
-  const statusLines = shownLabel.split(". ").filter(Boolean);
+  const statusLines: string[] = shownLabel.split(". ").filter(Boolean);
 
   return (
     <span className={`shop-hours-status-wrap${onDark ? " on-dark" : ""}`}>

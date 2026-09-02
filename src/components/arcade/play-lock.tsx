@@ -3,60 +3,130 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * "Freeze screen" — a scroll lock for phone players.
+ * "Full screen" — a real fullscreen for the arcade, with a scroll-lock
+ * fallback for browsers that cannot fullscreen an element (iPhone Safari).
  *
- * Swiping the tow truck or dragging across the word-search grid also drags the
- * page, so the board slides out from under your thumb mid-move. Freezing pins
- * the board in place: the page stops scrolling, and the pill stays put at the
- * bottom of the board so there is always an obvious way back out.
- *
- * The lock is a body class plus a scroll-position restore, nothing heavier —
- * no libraries, no scroll listeners running while you play.
+ * Swiping a game board also drags the page, so the board slides out from under
+ * your thumb mid-move. Fullscreen pins the board in place: the page stops
+ * scrolling and the game takes the whole screen, with the exit pill always in
+ * reach. Where the Fullscreen API exists it is used on the `.arcade-stage`;
+ * elsewhere the stage becomes a fixed overlay via the `is-play-locked` body
+ * class (the same layout, no API needed).
  */
 export function PlayLock() {
-  const [locked, setLocked] = useState(false);
+  const [active, setActive] = useState(false);
+  const [native, setNative] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
   const restoreTo = useRef(0);
+  const pinnedRef = useRef(false);
+  const nativeRef = useRef(false);
 
-  const unlock = useCallback(() => setLocked(false), []);
+  const stage = () => barRef.current?.closest<HTMLElement>(".arcade-stage") ?? null;
 
-  useEffect(() => {
-    if (!locked) return;
-    const { body } = document;
+  const enterFallback = useCallback(() => {
     // Freezing with `overflow: hidden` alone drops the scroll position and the
     // page jumps. Pinning the body at a negative offset instead holds the view
     // exactly where it was, and putting it back is a plain scrollTo.
     const y = window.scrollY;
     restoreTo.current = y;
-    body.style.top = `-${y}px`;
-    body.classList.add("is-play-locked");
+    document.body.style.top = `-${y}px`;
+    document.body.classList.add("is-play-locked");
+    pinnedRef.current = true;
+    nativeRef.current = false;
+    setNative(false);
+    setActive(true);
+  }, []);
 
+  const exitFallback = useCallback(() => {
+    if (!pinnedRef.current) return;
+    pinnedRef.current = false;
+    document.body.classList.remove("is-play-locked");
+    document.body.style.top = "";
+    window.scrollTo({ top: restoreTo.current, behavior: "instant" });
+    setActive(false);
+  }, []);
+
+  const activate = useCallback(() => {
+    const el = stage();
+    if (el && typeof el.requestFullscreen === "function") {
+      el.requestFullscreen()
+        .then(() => {
+          nativeRef.current = true;
+          setNative(true);
+          setActive(true);
+        })
+        .catch(() => enterFallback());
+    } else {
+      enterFallback();
+    }
+  }, [enterFallback]);
+
+  const deactivate = useCallback(() => {
+    if (nativeRef.current) {
+      if (document.fullscreenElement) void document.exitFullscreen();
+      // fullscreenchange updates the state when the browser actually exits.
+    } else {
+      exitFallback();
+    }
+  }, [exitFallback]);
+
+  const toggle = useCallback(() => {
+    if (active) deactivate();
+    else activate();
+  }, [active, activate, deactivate]);
+
+  // Track native fullscreen enter/exit (including the browser's own Esc).
+  useEffect(() => {
+    const onChange = () => {
+      if (document.fullscreenElement) {
+        nativeRef.current = true;
+        setNative(true);
+        setActive(true);
+      } else if (nativeRef.current) {
+        nativeRef.current = false;
+        setNative(false);
+        setActive(false);
+      }
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  // While active: Esc exits; clean up the fallback pin on unmount.
+  useEffect(() => {
+    if (!active) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") unlock();
+      if (event.key !== "Escape") return;
+      if (nativeRef.current) {
+        if (document.fullscreenElement) void document.exitFullscreen();
+      } else {
+        exitFallback();
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      body.classList.remove("is-play-locked");
-      body.style.top = "";
-      window.scrollTo({ top: restoreTo.current, behavior: "instant" });
+      if (pinnedRef.current) {
+        pinnedRef.current = false;
+        document.body.classList.remove("is-play-locked");
+        document.body.style.top = "";
+        window.scrollTo({ top: restoreTo.current, behavior: "instant" });
+      }
     };
-  }, [locked, unlock]);
+  }, [active, exitFallback]);
 
   return (
-    <div className={`arcade-lock-bar${locked ? " is-locked" : ""}`}>
-      <button
-        type="button"
-        className="arcade-lock-button"
-        onClick={() => setLocked((on) => !on)}
-        aria-pressed={locked}
-      >
-        <span aria-hidden="true">{locked ? "🔓" : "🔒"}</span>
-        {locked ? "Unfreeze page" : "Freeze screen"}
+    <div ref={barRef} className={`arcade-lock-bar${active ? " is-locked" : ""}`}>
+      <button type="button" className="arcade-lock-button" onClick={toggle} aria-pressed={active}>
+        <span aria-hidden="true">{active ? "⤢" : "⤡"}</span>
+        {active ? "Exit full screen" : "Full screen"}
       </button>
       <small>
-        {locked
-          ? "Page scrolling is off so the board stays put. Esc also unfreezes."
-          : "Stops the page scrolling while you swipe or tap the board."}
+        {active
+          ? native
+            ? "The game takes over the screen. Esc also exits."
+            : "Page scrolling is off so the board stays put. Esc also exits."
+          : "Takes over the screen and stops the page scrolling while you play."}
       </small>
     </div>
   );

@@ -197,7 +197,10 @@ export function SiteHeader() {
           </details>
         </div>
       </div>
-      <aside className="booking-dock" aria-label="Quick shop actions">
+      <aside
+        className={`booking-dock${pathname === "/contact" ? " booking-dock-contact" : ""}`}
+        aria-label="Quick shop actions"
+      >
         <a
           className="booking-phone"
           href={phoneHref}
@@ -211,15 +214,27 @@ export function SiteHeader() {
             <strong>{phoneDisplay}</strong>
           </span>
         </a>
-        <Link className="booking-links" href="/links">
-          <span className="booking-dock-copy">
-            <small>Everything in one place</small>
-            <strong>Link tree</strong>
-          </span>
-          <span className="booking-dock-arrow" aria-hidden="true">
-            →
-          </span>
-        </Link>
+        {pathname === "/contact" ? (
+          <DirectionsTrigger className="booking-links booking-directions" label="Get directions">
+            <span className="booking-dock-copy">
+              <small>Route to the garage</small>
+              <strong>Directions</strong>
+            </span>
+            <span className="booking-dock-arrow" aria-hidden="true">
+              &#8594;
+            </span>
+          </DirectionsTrigger>
+        ) : (
+          <Link className="booking-links" href="/links">
+            <span className="booking-dock-copy">
+              <small>Everything in one place</small>
+              <strong>Link tree</strong>
+            </span>
+            <span className="booking-dock-arrow" aria-hidden="true">
+              →
+            </span>
+          </Link>
+        )}
       </aside>
     </header>
   );
