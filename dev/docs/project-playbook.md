@@ -274,5 +274,32 @@ page clearly invites visitors to call and book.
       vehicle-capability section.
 - [x] Create and install a transparent Ocean Heights logo without the white
       background.
-- [ ] Re-run responsive, accessibility, route, and production checks.
+- [x] Re-run responsive, accessibility, route, and production checks.
 - [ ] Publish and verify the completed refinement.
+
+### Homepage scaling and hero todo
+
+- [x] Make the business name the hero's primary headline.
+- [x] Identify the business immediately as an auto repair and tire shop.
+- [x] Replace the old driveway tagline with trust-focused service copy.
+- [x] Add a prominent call-to-shop action with the correct phone number.
+- [x] Keep live shop hours and the address beside the primary actions.
+- [x] Use the high-resolution `OHAT-Main Building.png` shop photograph.
+- [x] Generate responsive AVIF candidates for the hero photograph.
+- [x] Preserve the photograph's panoramic proportions on tablet and mobile.
+- [x] Move the standalone OHAT logo plate to the image panel's bottom-right.
+- [x] Keep the 40+ years badge in the image panel's top-right.
+- [x] Prevent the absolute masthead from covering the hero.
+- [x] Make the hero wider and give the photograph the dominant column.
+- [x] Replace rigid hero column minimums with fluid scaling.
+- [x] Add readable CTA and trust-strip layouts for narrow phones.
+- [x] Add an ultra-wide scaling system for zoomed-out and large displays.
+- [x] Scale the header, navigation, hero typography, buttons, badges, and borders together.
+- [x] Rebalance the full-width address and credential panels.
+- [x] Scale credential logos and copy with their cards.
+- [x] Expand the services introduction instead of leaving a small centered island.
+- [x] Scale service cards, typography, spacing, and shadows on ultra-wide screens.
+- [x] Run the complete project gate after the scaling work.
+- [ ] Capture and review fresh desktop, ultra-wide, tablet, and mobile screenshots.
+- [ ] Replace or archive the untracked 87 MB master photograph before committing or publishing.
+- [ ] Publish the approved refinement and verify the live deployment.

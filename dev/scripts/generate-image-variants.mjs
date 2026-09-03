@@ -42,7 +42,9 @@ for (const name of sources) {
   } catch {
     continue;
   }
-  const stem = name.replace(/\.[^.]+$/, "");
+  // URL-safe output names keep srcset candidates valid when an original file
+  // (such as a photographer export) contains spaces.
+  const stem = name.replace(/\.[^.]+$/, "").replace(/\s+/g, "-");
   const available = [];
   for (const w of WIDTHS) {
     if (w >= width) continue;

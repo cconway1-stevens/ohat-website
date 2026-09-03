@@ -4,8 +4,8 @@
   // No top-level "model"/"small_model" default is set here on purpose: OpenCode's
   // built-in `build`/`plan`/`compaction`/`summary`/`title` agents are left 100%
   // stock — this config never touches them. Every model this project cares about
-  // is set explicitly, per agent, below ("fast" and the three specialists) so
-  // none of it can leak onto an agent by accident via inheritance.
+  // is set explicitly, per agent, below (`dev`/`turbo` and the eight specialists)
+  // so none of it can leak onto an agent by accident via inheritance.
   "instructions": [".opencode/ORCHESTRATION.md"],
 
   // ---------------------------------------------------------------------------
@@ -168,8 +168,10 @@
     // DEV ORCHESTRATOR — a separate primary agent, distinct from OpenCode's
     // built-in `build`/`plan` (which are left untouched/stock below). Start
     // opencode with `--agent dev`, or Tab-cycle to it once inside the TUI.
-    // Handles routine work itself and delegates to the specialists below when
-    // justified (see ORCHESTRATION.md "Model escalation rules").
+    // Handles only short, mechanical, well-scoped work itself and triages
+    // everything else to a specialist by complexity/issue-type *before*
+    // attempting it — see ORCHESTRATION.md "Model escalation rules" and
+    // "Testing policy" (triage-then-delegate, don't spam checks).
     //
     // Low-friction on purpose: unlike the global baseline, bash and
     // external_directory default to "allow" here instead of "ask", so this
@@ -178,18 +180,26 @@
     // short list of irreversible/destructive commands (rm -rf, force-push,
     // hard reset) — see ORCHESTRATION.md "Security rules" for why those stay.
     "dev": {
-      "description": "Low-friction default orchestrator. Handles navigation, simple edits, straightforward bugs, boilerplate, small refactors, and targeted tests itself; delegates to strong-reasoner/glm-specialist/kimi-reviewer when escalation is justified. Tracks multi-step work with the built-in todo tool (oldest-pending item first) and uses the built-in question tool instead of guessing on ambiguity or todo conflicts — see ORCHESTRATION.md \"Todo tracking policy\" and \"Ask, don't guess\".",
+      "description": "Low-friction default orchestrator. Handles only short, mechanical, well-scoped work itself — navigation, simple edits, straightforward single-file bugs, boilerplate, small refactors, targeted tests. Triages everything else by complexity and issue type and routes it to the right specialist *before* attempting it, rather than trying first and escalating after a bad result. Has no vision — routes any visual/CSS/layout judgment to ui-reviewer rather than guessing. Tracks multi-step work with the built-in todo tool (oldest-pending item first) and uses the built-in question tool instead of guessing on ambiguity or todo conflicts — see ORCHESTRATION.md \"Model escalation rules\", \"Todo tracking policy\", and \"Ask, don't guess\".",
       "mode": "primary",
-      "model": "togetherai/deepseek-ai/DeepSeek-V4-Flash-0731",
+      "model": "togetherai/zai-org/GLM-5.3-Flash",
       "permission": {
-        // Only these three specialists (plus the built-in read-only helpers) are
-        // reachable via the task tool — everything else is denied so `dev`
-        // can't silently spawn an unexpected/unrestricted subagent.
+        // The specialists below (plus the built-in read-only helpers) are the
+        // only things reachable via the task tool — everything else is denied
+        // so `dev` can't silently spawn an unexpected/unrestricted subagent.
+        // `closer` and `kimi-closer` can edit files directly; every other
+        // specialist is a read-only advisor that returns text for `dev` to
+        // apply. See ORCHESTRATION.md "Model capability matrix".
         "task": {
           "*": "deny",
           "strong-reasoner": "allow",
           "glm-specialist": "allow",
+          "minimax-specialist": "allow",
+          "third-reviewer": "allow",
           "kimi-reviewer": "allow",
+          "ui-reviewer": "allow",
+          "closer": "allow",
+          "kimi-closer": "allow",
           "explore": "allow",
           "general": "allow"
         },
@@ -264,7 +274,12 @@
           "*": "deny",
           "strong-reasoner": "allow",
           "glm-specialist": "allow",
+          "minimax-specialist": "allow",
+          "third-reviewer": "allow",
           "kimi-reviewer": "allow",
+          "ui-reviewer": "allow",
+          "closer": "allow",
+          "kimi-closer": "allow",
           "explore": "allow",
           "general": "allow"
         },
@@ -319,17 +334,17 @@
 
     // STRONG REASONER — difficult bugs, architecture, concurrency, subtle state,
     // security-sensitive reasoning, complex multi-file refactors, or a retry after
-    // `fast`'s first attempt failed.
+    // `dev`'s first attempt failed. Read-only advisor: proposes, doesn't touch files.
     //
     // Pinned to the dated "-0813" checkpoint because that's the one that actually
     // shows up on the Together serverless pricing catalog ($1.32/$3.96 per Mtok);
     // the undated "DeepSeek-V4-Pro" alias isn't a separately listed/billed model
     // there, so it isn't safe to assume it points at the same thing long-term.
     "strong-reasoner": {
-      "description": "Escalation target for hard reasoning: architecture, concurrency, subtle bugs, security-sensitive logic, multi-file refactors. Read-only advisor — returns a recommendation/patch strategy for fast to apply.",
+      "description": "Escalation target for hard reasoning: architecture, concurrency, subtle bugs, security-sensitive logic, multi-file refactors. Read-only advisor — returns a recommendation/patch strategy for dev to apply.",
       "mode": "subagent",
       "model": "togetherai/deepseek-ai/DeepSeek-V4-Pro-0813",
-      "prompt": "You are the STRONG REASONER, escalated to by the fast orchestrator (`fast`) for a specific hard problem — architecture, concurrency, a subtle bug, security-sensitive logic, or a complex multi-file refactor. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION) — if it's missing context you need, ask for exactly what's missing rather than re-deriving the whole repo. You cannot edit files or run bash (permission-enforced) — return a concise recommendation or patch strategy in text; `fast` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "prompt": "You are the STRONG REASONER, escalated to by the orchestrator (`dev`) for a specific hard problem — architecture, concurrency, a subtle bug, security-sensitive logic, or a complex multi-file refactor. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION) — if it's missing context you need, ask for exactly what's missing rather than re-deriving the whole repo. If you think the proposed approach is wrong, say so plainly and propose the alternative — you are not here to rubber-stamp. You cannot edit files or run bash (permission-enforced) — return a concise recommendation or patch strategy in text; `dev` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
       "permission": {
         "bash": { "*": "deny" },
         "edit": { "*": "deny" },
@@ -384,16 +399,139 @@
     },
 
     // GLM SPECIALIST — alternative implementation angle / second approach when
-    // another model's perspective would help.
-    //
-    // ALTERNATES: "togetherai/zai-org/GLM-5.2" (previous major version) or
-    // "togetherai/zai-org/GLM-5.3-Flash" (faster/cheaper variant) are also
-    // available if you'd rather use one of those.
+    // another model's perspective would help. Read-only advisor.
     "glm-specialist": {
-      "description": "Alternative-approach specialist. Gives a second implementation angle or perspective distinct from the fast orchestrator's first instinct. Read-only advisor.",
+      "description": "Alternative-approach specialist. Gives a second implementation angle or perspective distinct from dev's first instinct. Read-only advisor.",
       "mode": "subagent",
       "model": "togetherai/zai-org/GLM-5.3",
-      "prompt": "You are the GLM SPECIALIST, brought in for a second implementation angle or perspective distinct from the orchestrator's first instinct — not to rubber-stamp it. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION). You cannot edit files or run bash (permission-enforced) — return a concise recommendation in text; `fast` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "prompt": "You are the GLM SPECIALIST, brought in for a second implementation angle or perspective distinct from the orchestrator's first instinct — not to rubber-stamp it. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION). If you think the proposed approach is wrong, say so plainly and propose the alternative. You cannot edit files or run bash (permission-enforced) — return a concise recommendation in text; `dev` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "edit": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    },
+
+    // MINIMAX SPECIALIST — second alternative-implementation angle, a distinct
+    // voice from glm-specialist. Also natively multimodal (vision), so it can
+    // double as a second opinion on UI/visual work when a second look is worth
+    // the extra call. Read-only advisor.
+    "minimax-specialist": {
+      "description": "Alternative-approach specialist, a second implementation angle distinct from glm-specialist's. Vision-capable as a bonus — can double as a second opinion on UI/visual work when it's worth the extra call. Read-only advisor.",
+      "mode": "subagent",
+      "model": "togetherai/MiniMaxAI/MiniMax-M3",
+      "prompt": "You are the MINIMAX SPECIALIST, brought in for a second implementation angle or perspective distinct from the orchestrator's first instinct and from glm-specialist's — not to rubber-stamp either. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION); if it includes screenshot paths, look at them — you have native vision. If you think the proposed approach is wrong, say so plainly and propose the alternative. You cannot edit files or run bash (permission-enforced) — return a concise recommendation in text; `dev` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "edit": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    },
+
+    // THIRD REVIEWER — a third independent reasoning pass, reserved for
+    // genuinely high-risk changes only (architecture, security, data
+    // migrations). Joins strong-reasoner and glm-specialist before
+    // kimi-reviewer's final pass — see ORCHESTRATION.md "Multi-model review".
+    // Not a routine escalation target: its value is being a different model
+    // lineage from the other two, not agreeing with them. Same price tier as
+    // glm-specialist and no vision, so don't reach for it casually.
+    "third-reviewer": {
+      "description": "Third independent reasoning pass for high-risk changes only (architecture, security, data migrations) — joins strong-reasoner and glm-specialist before kimi-reviewer's final pass. Not a routine escalation target; its value is being a different model lineage from the other two, not agreeing with them. Read-only advisor.",
+      "mode": "subagent",
+      "model": "togetherai/zai-org/GLM-5.2",
+      "prompt": "You are the THIRD REVIEWER, brought in only for genuinely high-risk changes as an independent reasoning pass alongside strong-reasoner and glm-specialist — your value is being a different model lineage, not agreeing with either of them. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION). Say plainly where you disagree with the approach, not just where you concur. You cannot edit files or run bash (permission-enforced) — return your analysis in text; `dev` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
       "permission": {
         "bash": { "*": "deny" },
         "edit": { "*": "deny" },
@@ -448,12 +586,14 @@
     },
 
     // KIMI REVIEWER — independent review / long-context reasoning across many
-    // files. Second opinion on risky changes, finds omissions.
+    // files. Second opinion on risky changes, finds omissions. Also natively
+    // multimodal, so a delegation packet may include screenshots. Read-only
+    // advisor — never edits (for actual fixes, see `kimi-closer` below).
     "kimi-reviewer": {
       "description": "Independent reviewer with long-context reasoning. Reviews a proposed change/architecture for omissions, correctness, and risk. Read-only advisor — never edits.",
       "mode": "subagent",
       "model": "togetherai/moonshotai/Kimi-K3",
-      "prompt": "You are the KIMI REVIEWER, an independent second opinion on a proposed change or architecture — not the one who wrote it. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION). Read across the files needed to judge correctness and find omissions; use your long context deliberately, not to inhale the whole repo. You cannot edit files or run bash (permission-enforced) — return findings in text; `fast` applies fixes. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "prompt": "You are the KIMI REVIEWER, an independent second opinion on a proposed change or architecture — not the one who wrote it. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION). Read across the files needed to judge correctness and find omissions; use your long context deliberately, not to inhale the whole repo. If you think the approach is wrong, say so plainly and propose the alternative. You cannot edit files or run bash (permission-enforced) — return findings in text; `dev` applies fixes. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
       "permission": {
         "bash": { "*": "deny" },
         "edit": { "*": "deny" },
@@ -461,6 +601,243 @@
         "external_directory": { "*": "deny" },
         "webfetch": "deny",
         "websearch": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    },
+
+    // UI REVIEWER — vision-capable design critic. The one built specifically
+    // to look at rendered UI, not just code — see ORCHESTRATION.md "UI review
+    // workflow". Cheapest vision model in the roster, so run it liberally
+    // after any visual change instead of guessing whether it's warranted.
+    // Read-only advisor.
+    "ui-reviewer": {
+      "description": "Vision-capable UI/design critic. Given screenshot paths plus the touched CSS/markup, judges the actual rendered result — flags concrete visual defects (misalignment, overflow, contrast, spacing, responsiveness) and proposes exact fixes. Cheap enough to run after every visual change. Read-only advisor.",
+      "mode": "subagent",
+      "model": "togetherai/zai-org/GLM-5.3-Flash",
+      "prompt": "You are the UI REVIEWER, brought in to judge a rendered UI, not just its code. Expect a delegation packet naming the screenshot file paths to look at, plus the touched CSS/markup files and what changed. Look at the images first — judge the actual visual result (alignment, spacing, overflow, contrast, responsiveness across the given viewports) before reading code. Report concrete, specific defects and exact fixes (selector + property + value), not vague impressions. If the design intent itself seems off, say so. You cannot edit files or run bash (permission-enforced) — return your findings in text; `dev` applies them. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "edit": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    },
+
+    // CLOSER — escalation fixer, not a reviewer. This is the one subagent
+    // (besides kimi-closer) allowed to edit files directly: for big/stuck
+    // problems and large multi-file work that needs a lot of context in one
+    // pass, once dev/turbo have already tried and it wasn't enough. Bash stays
+    // denied — it fixes by editing, not by running commands. dev still runs
+    // the appropriate verification level on whatever it changes. Mid-cost
+    // (~1/10 of kimi-closer), so use it more freely than kimi-closer.
+    "closer": {
+      "description": "Escalation fixer, not a reviewer — for big/stuck problems and large multi-file work that needs a lot of context in one pass. Use when dev/turbo have already tried and fell short, or a task plainly exceeds routine scope. Can edit files directly (bash still denied); dev still runs verification on the result.",
+      "mode": "subagent",
+      "model": "togetherai/MiniMaxAI/MiniMax-M3",
+      "prompt": "You are CLOSER, escalated to for a problem that's big, stuck, or spans enough files/context that dev/turbo's attempt(s) fell short — not for routine work. Expect a delegation packet with TASK/RELEVANT FILES/OBSERVATIONS (including what was already tried and how it fell short)/CONSTRAINTS/CURRENT DIFF/QUESTION. Use your long context to actually read what you need across the affected files before editing, rather than patching blind. You may edit files directly — sensitive paths (.env/.pem/.key/credentials/secrets/etc.) stay hard-denied regardless of what's asked. You cannot run bash — if a command genuinely needs to run, say so and hand it back to dev rather than working around it. After editing, summarize what you changed and why, and flag anything you're unsure about so dev can verify it. If you think the task itself is misdiagnosed, say so before editing.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "edit": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    },
+
+    // KIMI CLOSER — last-resort fixer. Same shape as `closer` but the
+    // highest-cost model in the roster (~10x closer's price), so this is
+    // "be picky" territory: only after closer has already tried and failed,
+    // or for an issue big/urgent enough to justify it. `dev` must ask you
+    // before firing this one — see ORCHESTRATION.md "Cost-aware delegation".
+    "kimi-closer": {
+      "description": "Last-resort fixer. Same job as closer but the highest-cost model in the roster (~10x closer's price) — only invoke after closer has already tried and failed, or the issue is big/urgent enough to justify it. dev must ask the user before firing this one; never call it automatically.",
+      "mode": "subagent",
+      "model": "togetherai/moonshotai/Kimi-K3",
+      "prompt": "You are KIMI CLOSER, the last-resort fixer — brought in only after closer has already tried and failed, or for an issue big/urgent enough to justify the highest-cost call in this project's roster. Expect a delegation packet with TASK/RELEVANT FILES/OBSERVATIONS (including what closer already tried and how it fell short)/CONSTRAINTS/CURRENT DIFF/QUESTION. Use your long context and native vision (screenshots may be included) to actually resolve the root cause, not patch a symptom. You may edit files directly — sensitive paths (.env/.pem/.key/credentials/secrets/etc.) stay hard-denied regardless of what's asked. You cannot run bash — if a command genuinely needs to run, say so and hand it back to dev. After editing, summarize what you changed and why, and flag anything you're unsure about so dev can verify it. If you think the task itself is misdiagnosed, say so before editing.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "edit": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
         "read": {
           "*": "allow",
           "*.env": "deny",

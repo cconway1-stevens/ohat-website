@@ -8,34 +8,30 @@ export function MainHero() {
     <section className="home-hero" id="top" aria-label="Ocean Heights Auto and Tire">
       <div className="home-hero-shell">
         <div className="home-hero-copy">
-          <div className="home-hero-brand">
-            <SiteImage
-              className="home-hero-logo"
-              src="/media/logo-transparent.avif"
-              width={176}
-              height={129}
-              alt="Ocean Heights Auto and Tire"
-              loading="eager"
-            />
-            <p>
-              <span>Family owned &amp; operated</span>
-              Egg Harbor Township, New Jersey
-            </p>
-          </div>
-
-          <p className="home-hero-kicker">Complete auto repair &amp; tire service</p>
+          <p className="home-hero-kicker">Auto repair &amp; tire shop · Egg Harbor Township</p>
           <h1>
-            Your whole driveway.
-            <span>One trusted shop.</span>
+            <span>Ocean Heights</span>
+            Auto &amp; Tire
           </h1>
+          <p className="home-hero-promise">Honest advice. Clear options. Repairs done right.</p>
           <p className="home-hero-lede">
-            Dealer-level diagnostics and straight answers for daily drivers, work trucks, classics,
-            hybrids, and EVs.
+            ASE-certified technicians for maintenance, tires, advanced diagnostics, and repairs on
+            everyday cars, work trucks, classics, hybrids, and EVs.
           </p>
 
           <div className="home-hero-actions">
-            <a className="button button-primary" href={phoneHref}>
-              Call {phoneDisplay}
+            <a
+              className="button button-primary home-hero-call"
+              href={phoneHref}
+              aria-label={`Call Ocean Heights Auto and Tire at ${phoneDisplay}`}
+            >
+              <span className="retro-phone-mark" aria-hidden="true">
+                ☎︎
+              </span>
+              <span className="home-hero-call-copy">
+                <small>Call the shop</small>
+                <strong>{phoneDisplay}</strong>
+              </span>
             </a>
             <DirectionsTrigger className="button home-hero-directions">
               Get directions <span aria-hidden="true">↗︎</span>
@@ -44,9 +40,12 @@ export function MainHero() {
 
           <div className="home-hero-meta">
             <ShopHoursStatus />
-            <p>
-              <strong>1178 Ocean Heights Ave.</strong>
-              Egg Harbor Township, NJ
+            <p className="home-hero-address">
+              <span className="home-hero-pin" aria-hidden="true" />
+              <span className="home-hero-address-copy">
+                <span>1178 Ocean Heights Ave.</span>
+                <span>Egg Harbor Township, NJ</span>
+              </span>
             </p>
           </div>
         </div>
@@ -54,15 +53,26 @@ export function MainHero() {
         <figure className="home-hero-photo">
           <div className="home-hero-photo-image">
             <SiteImage
-              src="/media/rs/cecf1b30-365d-430d-b925-1fd22429c9e1-1200.avif"
+              src="/media/rs/OHAT-Main-Building-1920.avif"
               alt="Ocean Heights Auto and Tire with a red car, yellow classic, and white work truck outside the service bays"
               fill
               priority
               sizes="(max-width: 860px) 100vw, 58vw"
             />
+            <span className="home-hero-logo-plate">
+              <SiteImage
+                className="home-hero-logo"
+                src="/media/logo-transparent.avif"
+                width={176}
+                height={129}
+                alt=""
+                loading="eager"
+              />
+            </span>
           </div>
+          <span className="home-hero-checker" aria-hidden="true" />
           <figcaption>
-            <span>All makes. All eras.</span>
+            <span>Your local family garage</span>
             <strong>Gas · Diesel · Hybrid · Electric · Classic</strong>
           </figcaption>
           <span className="home-hero-photo-tag" aria-hidden="true">
@@ -73,8 +83,8 @@ export function MainHero() {
       </div>
 
       <div className="home-hero-proof" aria-label="Shop credentials">
-        <span>ASE Certified Technicians</span>
-        <span>Family Run &amp; Local</span>
+        <span>ASE-Certified Technicians</span>
+        <span>Family-Owned &amp; Local</span>
         <span>CARFAX Top-Rated Service Center</span>
       </div>
     </section>

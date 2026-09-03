@@ -5,7 +5,6 @@ import { VercelAnalytics } from "@/components/analytics/vercel-analytics";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { gaMeasurementId } from "@/lib/analytics";
 import { shop } from "@/lib/shop/shop";
-import "tetris-kit/layout.css";
 import "./globals.css";
 
 const geistSans = Geist({
