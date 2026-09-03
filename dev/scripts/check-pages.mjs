@@ -98,6 +98,22 @@ async function checkRoute(page, route) {
     page.off("console", onConsole);
     page.off("pageerror", onPageError);
     page.off("response", onResponse);
+    // The meta-refresh is still in flight (or about to be) on this page even
+    // though we've stopped waiting on it. Left alone, that in-flight
+    // navigation lands on whatever route the next iteration checks — and
+    // when a redirect's own target is the very next route in the list (as
+    // /tire-rotation's is /services/tires), it collides with that route's
+    // own `goto`, reproducing the same hang one route later. Drain it with
+    // bounded waits (never the unbounded "networkidle" that started this)
+    // so the next route starts from a settled page. Forcing it off with a
+    // hard navigation to about:blank was tried and rejected: Chromium's
+    // favicon fetch for the page being left can outlive the navigation and
+    // then gets blocked by Private Network Access from the "null" origin,
+    // adding a spurious console error to whichever route is checking next.
+    await page
+      .waitForURL((url) => url.href !== `${base}${route}`, { timeout: 3000 })
+      .catch(() => {});
+    await page.waitForLoadState("networkidle", { timeout: 3000 }).catch(() => {});
     return;
   }
 
