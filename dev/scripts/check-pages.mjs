@@ -121,15 +121,19 @@ async function checkRoute(page, route) {
     fail("Route returned non-200", { route, status: response?.status() ?? null });
   }
 
-  // Scroll so lazy images actually load before we check them.
+  // `loading="lazy"` only starts a fetch once the browser judges an image
+  // close enough to the viewport, and that judgment is re-evaluated as
+  // scroll position changes — scrolling through the page and back to the
+  // top, as this used to, could leave an image that had only just come into
+  // range deprioritized again before its fetch ever started, reporting it
+  // broken when it had simply never been asked to load. Forcing every image
+  // eager and waiting for each to decode checks what this route actually
+  // ships, not how quickly a real visitor's scroll would have seen it.
   await page.evaluate(async () => {
-    for (let y = 0; y < document.body.scrollHeight; y += 700) {
-      window.scrollTo(0, y);
-      await new Promise((r) => setTimeout(r, 60));
-    }
-    window.scrollTo(0, 0);
+    const images = Array.from(document.images);
+    for (const img of images) img.loading = "eager";
+    await Promise.all(images.map((img) => (img.complete ? null : img.decode().catch(() => {}))));
   });
-  await page.waitForTimeout(500);
   const state = await page.evaluate(() => ({
     title: document.title,
     h1: document.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() ?? null,
@@ -149,6 +153,33 @@ async function checkRoute(page, route) {
   page.off("console", onConsole);
   page.off("pageerror", onPageError);
   page.off("response", onResponse);
+}
+
+// Every page fires live third-party requests — Google's gtag.js and, on
+// pages with the weather reading, Open-Meteo's forecast API — that this
+// smoke test has no business depending on. Left alone, an ordinary network
+// hiccup out to the real internet from the CI runner either hangs
+// "networkidle" for the full 30s on whatever page happens to load next, or
+// surfaces as an unattributable "Failed to load resource" console error:
+// two failure shapes that each showed up on a different, unrelated route in
+// consecutive CI runs. Stubbing every non-base request with an empty,
+// always-successful response makes the whole run hermetic: it verifies this
+// export renders correctly, not whether Google's or Open-Meteo's servers
+// answered a request from this runner today. Both call sites already treat
+// a failed or absent reading as a normal, silent case, so an empty stub
+// changes nothing they render.
+async function stubThirdPartyRequests(page) {
+  await page.route(
+    (url) => !url.href.startsWith(base),
+    (route) => {
+      const isScript = route.request().resourceType() === "script";
+      route.fulfill({
+        status: 200,
+        contentType: isScript ? "application/javascript" : "application/json",
+        body: isScript ? "" : "{}",
+      });
+    },
+  );
 }
 
 async function checkLinks(page, route) {
@@ -177,6 +208,7 @@ async function checkLinks(page, route) {
 const ROUTES_PER_BROWSER = 8;
 for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
   const routePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await stubThirdPartyRequests(routePage);
   // A brand-new page's very first "networkidle" navigation can hang
   // indefinitely in this CI environment, redirect or not — it hit the
   // /oil-changes redirect stub when that happened to lead off a batch, and
@@ -212,6 +244,7 @@ for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
 
 // The primary conversion: the call button must point at the shop's number.
 const homePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await stubThirdPartyRequests(homePage);
 await homePage.goto(`${base}/`, { waitUntil: "networkidle" });
 const callHref = await homePage.evaluate(() => {
   const el = document.querySelector('a[href^="tel:"]');
