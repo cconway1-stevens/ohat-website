@@ -479,6 +479,7 @@
 }
 .arcade-lobby-heading .eyebrow {
   margin: 0 0 0.45rem;
+  color: var(--red-dark);
 }
 .arcade-lobby-heading h2 {
   margin: 0;

@@ -89,22 +89,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Nothing on the page discovers these origins until something needs
-            them — the weather reading is fetched from a client component in
-            the masthead, so the browser only learns about Open-Meteo after
-            hydration, and pays for the DNS, TCP and TLS round trips then.
-            Warming both connections here is worth an estimated 580 ms of LCP.
-
-            These are links, not scripts: they start no execution and so do not
-            disturb the ordering gtag.js asks for below. Keep this list to four
-            origins at most — past that, preconnects compete with the requests
-            they are meant to accelerate. */}
-        <link rel="preconnect" href="https://api.open-meteo.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        {/* Google tag (gtag.js). Google's install instructions ask for this
-            immediately after <head>, so it stays first: gtag.js records the
-            page view as soon as it loads, and anything queued before it
-            arrives is replayed from `dataLayer`.
+        {/* Queue the initial page view immediately, but fetch the 165 KB Google
+            tag only after the page is settled or the visitor first interacts.
+            The queue is replayed when gtag.js arrives, preserving attribution
+            without making analytics compete with the hero image and fonts.
 
             The consent defaults below are deliberate, and they are what keeps
             this a measurement tool rather than an advertising one:
@@ -120,7 +108,6 @@ export default function RootLayout({
               covered controller, so this is us honouring the signal because
               it is the right default, not because we are compelled to.
             See dev/docs/privacy-compliance.md for the full analysis. */}
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer = window.dataLayer || [];
@@ -136,7 +123,29 @@ gtag('config', '${gaMeasurementId}', {
   anonymize_ip: true,
   allow_google_signals: false,
   allow_ad_personalization_signals: false
-});`,
+});
+(function () {
+  var timer;
+  var loaded = false;
+  function loadTag() {
+    if (loaded) return;
+    loaded = true;
+    if (timer) window.clearTimeout(timer);
+    window.removeEventListener('pointerdown', loadTag);
+    window.removeEventListener('keydown', loadTag);
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}';
+    document.head.appendChild(script);
+  }
+  function schedule() {
+    timer = window.setTimeout(loadTag, 10000);
+  }
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule, { once: true });
+  window.addEventListener('pointerdown', loadTag, { once: true, passive: true });
+  window.addEventListener('keydown', loadTag, { once: true });
+})();`,
           }}
         />
         {/* Host-relative so the icon resolves on whatever domain serves the

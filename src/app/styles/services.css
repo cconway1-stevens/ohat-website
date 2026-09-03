@@ -300,7 +300,6 @@
     ),
     var(--red);
   background-position: 0 50%;
-  animation: ride-lanes 8s linear infinite;
   box-shadow: 8px 8px 0 var(--yellow);
 }
 .ride-track::before {
@@ -450,6 +449,58 @@
   list-style: none;
   background: var(--ink);
   border: 3px solid var(--ink);
+}
+
+/* The compact controls belong to the homepage logo wall. The full matching
+   game stylesheet is loaded with the game only after a visitor opens it. */
+.make-game-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--red);
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.make-game-toggle:hover {
+  color: var(--red-dark);
+}
+.make-grid-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.2rem;
+  margin-bottom: 0.55rem;
+}
+.make-order {
+  display: inline-flex;
+  gap: 1rem;
+}
+.make-order .make-game-toggle[aria-pressed="true"] {
+  color: var(--ink);
+  text-decoration-color: var(--yellow);
+}
+@keyframes tile-deal {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.make-grid li {
+  animation: tile-deal 0.34s ease-out both;
+  animation-delay: var(--tile-delay, 0ms);
 }
 .make-grid li {
   min-height: 118px;

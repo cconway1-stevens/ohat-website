@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdgentStudio } from "@/components/adgent/adgent-studio";
+import "@/app/styles/adgent.css";
 
 export const metadata: Metadata = {
   title: "Adgent",
