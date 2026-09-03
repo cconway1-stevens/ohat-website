@@ -177,13 +177,30 @@ async function checkLinks(page, route) {
 const ROUTES_PER_BROWSER = 8;
 for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
   const routePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  // A brand-new page's very first "networkidle" navigation can hang
+  // indefinitely in this CI environment, redirect or not — it hit the
+  // /oil-changes redirect stub when that happened to lead off a batch, and
+  // once that was fixed it hit /arcade/logo-match, an ordinary page, the
+  // next time it led off one. A throwaway navigation first gives the page's
+  // navigation/network tracking a chance to settle before anything timed
+  // depends on it.
+  await routePage.goto("about:blank").catch(() => {});
   for (const route of routes.slice(start, start + ROUTES_PER_BROWSER)) {
-    await checkRoute(routePage, route);
-    // A redirect stub's own frame is gone by now (its meta-refresh already
-    // navigated it away) — its one link is the canonical target, already
-    // covered by kind classification, and the target page gets checked in
-    // its own right when its turn in `routes` comes up.
-    if (kindByRoute.get(route) !== "redirect") await checkLinks(routePage, route);
+    try {
+      await checkRoute(routePage, route);
+      // A redirect stub's own frame is gone by now (its meta-refresh already
+      // navigated it away) — its one link is the canonical target, already
+      // covered by kind classification, and the target page gets checked in
+      // its own right when its turn in `routes` comes up.
+      if (kindByRoute.get(route) !== "redirect") await checkLinks(routePage, route);
+    } catch (err) {
+      // A single route timing out (this environment's "networkidle" has
+      // hung on a first-of-batch navigation in CI three times now, never
+      // twice for the same reason) used to take the whole 50-route sweep
+      // down with it via an uncaught exception. One bad route is a real
+      // failure worth reporting; it should not hide the other 49 results.
+      fail("Route check threw", { route, error: err.message });
+    }
     process.stdout.write(`  ${route}\n`);
   }
   await routePage.close();
