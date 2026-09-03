@@ -9,7 +9,7 @@
  * Each emitted HTML file is classified by its own markup:
  *   - "error"     — the 404 page (filename 404.html)
  *   - "redirect"  — a legacy meta-refresh stub (http-equiv="refresh")
- *   - "noindex"   — a real page that intentionally blocks indexing (arcade, adgent)
+ *   - "noindex"   — a real page that intentionally blocks indexing (arcade, agent)
  *   - "indexable" — a normal content page
  */
 

@@ -82,28 +82,11 @@
     center,
     0 0;
   background-size: clamp(28px, 22%, 64px), auto;
-  animation: tyre-pump 1.6s ease-in-out infinite;
 }
-/* Real pixels have arrived: drop the placeholder and stop the animation. Kept
-   keyed off the load event rather than a timer, so it always tells the truth
-   about what the image is doing. */
+/* Real pixels have arrived: drop the placeholder. Kept keyed off the load
+   event rather than a timer, so it always tells the truth about the image. */
 .site-image.is-loaded {
   background: none;
-  animation: none;
-}
-@keyframes tyre-pump {
-  0%,
-  100% {
-    background-size: clamp(28px, 22%, 64px), auto;
-  }
-  55% {
-    background-size: clamp(31px, 24%, 70px), auto;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .site-image {
-    animation: none;
-  }
 }
 
 /* ---------------------------------------------------------------------------

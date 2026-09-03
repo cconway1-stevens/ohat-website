@@ -195,7 +195,8 @@ const isNoindexRoute = (route) =>
   route === "/arcade" ||
   route.startsWith("/arcade/") ||
   route === "/links/qr" ||
-  route === "/adgent";
+  route === "/agent" ||
+  route.startsWith("/agent/");
 
 const routes = htmlFiles
   .map(
