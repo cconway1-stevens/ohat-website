@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Part Objects 3D — faceless auto-part objects for the /adgent studio's
+ * Part Objects 3D — faceless auto-part objects for the /agent studio's
  * "3D Objects" theme. The 3D counterpart of PART_ICONS in pixel-crew.ts:
  * no eyes, no mouth, no mascot — just the part itself as a low-poly icon.
  *
@@ -12,7 +12,7 @@
  * fake blob shadow.
  *
  * This module imports Three.js, so it must stay behind the studio's
- * dynamic import — never import it from adgent-studio.tsx directly.
+ * dynamic import — never import it from agent-studio.tsx directly.
  */
 import * as THREE from "three";
 
@@ -158,8 +158,8 @@ function buildRotor(): THREE.Group {
 
 /**
  * Builders keyed by the studio's object ids (`objects3d` set in
- * adgent-studio.tsx). Ids carry the `3d` suffix so they can never collide
- * with a pixel-crew character id in the persisted `adgent-looks` state.
+ * agent-studio.tsx). Ids carry the `3d` suffix so they can never collide
+ * with a pixel-crew character id in the persisted `agent-looks` state.
  */
 export const PART_OBJECT_BUILDERS: Record<string, () => THREE.Group> = {
   tire3d: buildTire,

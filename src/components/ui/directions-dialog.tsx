@@ -20,11 +20,7 @@ type DirectionsTriggerProps = {
   label?: string;
 };
 
-export function DirectionsTrigger({
-  children,
-  className,
-  label = "Choose a directions app",
-}: DirectionsTriggerProps) {
+export function DirectionsTrigger({ children, className, label }: DirectionsTriggerProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const [copyLabel, setCopyLabel] = useState("Copy address");

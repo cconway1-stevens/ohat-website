@@ -32,7 +32,13 @@ const primaryLinks = [
   { number: "06", label: "Contact us", href: "/contact", note: "Call, email, map & hours" },
 ];
 
-export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {
+export function BrandMark({
+  homeHref = "/",
+  priority = false,
+}: {
+  homeHref?: string;
+  priority?: boolean;
+}) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heldLogo = useRef(false);
 
@@ -73,10 +79,10 @@ export function BrandMark({ homeHref = "/" }: { homeHref?: string }) {
     >
       <SiteImage
         src="/media/logo-transparent.avif"
-        width={315}
-        height={231}
+        width={176}
+        height={129}
         alt="Ocean Heights Auto and Tire"
-        priority
+        priority={priority}
       />
     </Link>
   );
@@ -128,7 +134,7 @@ export function SiteHeader() {
       </div>
       <div className="nav-band">
         <div className="shell nav-wrap">
-          <BrandMark />
+          <BrandMark priority />
           <nav className="desktop-nav" aria-label="Primary navigation">
             {primaryLinks.map((item) => (
               <Link
@@ -156,7 +162,7 @@ export function SiteHeader() {
             open={mobileMenuOpen}
             ref={mobileMenuRef}
           >
-            <summary aria-label="Open navigation">
+            <summary>
               <span className="menu-icon" aria-hidden="true">
                 <span />
                 <span />
@@ -201,11 +207,7 @@ export function SiteHeader() {
         className={`booking-dock${pathname === "/contact" ? " booking-dock-contact" : ""}`}
         aria-label="Quick shop actions"
       >
-        <a
-          className="booking-phone"
-          href={phoneHref}
-          aria-label={`Call Ocean Heights Auto and Tire at ${phoneDisplay}`}
-        >
+        <a className="booking-phone" href={phoneHref}>
           <span className="retro-phone-mark" aria-hidden="true">
             ☎︎
           </span>
@@ -215,7 +217,7 @@ export function SiteHeader() {
           </span>
         </a>
         {pathname === "/contact" ? (
-          <DirectionsTrigger className="booking-links booking-directions" label="Get directions">
+          <DirectionsTrigger className="booking-links booking-directions">
             <span className="booking-dock-copy">
               <small>Route to the garage</small>
               <strong>Directions</strong>
