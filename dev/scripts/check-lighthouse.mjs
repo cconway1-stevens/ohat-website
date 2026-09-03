@@ -52,7 +52,8 @@ const FAST = process.argv.includes("--fast") || process.env.LH_FAST === "1";
 const THRESHOLDS = {
   // Mobile Lighthouse currently bottoms out at 62 on the indexable pages in
   // both local and GitHub-hosted runs. Keep the original evidence-backed gate
-  // at 60; 80 remains the optimization goal, not a truthful pass/fail floor.
+  // at 60; 75+ needs an LCP pass (preload the hero, defer non-critical JS,
+  // shrink the render-blocking CSS) before the bar can move.
   performance: Number(process.env.LH_PERF ?? 60),
   accessibility: Number(process.env.LH_A11Y ?? 100),
   "best-practices": Number(process.env.LH_BP ?? 100),
@@ -127,7 +128,9 @@ const CONCURRENCY = Math.max(
 
 if (CONCURRENCY > 1 && !process.env.LH_WORKER) {
   const shards = Array.from({ length: CONCURRENCY }, () => []);
-  routes.forEach((route, i) => shards[i % CONCURRENCY].push(route));
+  routes.forEach((route, i) => {
+    shards[i % CONCURRENCY].push(route);
+  });
   const nonEmptyShards = shards.filter((shard) => shard.length > 0);
 
   console.log(
