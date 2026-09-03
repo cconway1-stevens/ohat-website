@@ -132,6 +132,12 @@ Audited by reading the source, not by assumption:
 
   Cookieless, so it changes nothing in the consent analysis above.
 
+- **Vercel Speed Insights** — page load performance timings, cookieless, no
+  personal data. Loaded through `@vercel/speed-insights`, gated the same way
+  as `@vercel/analytics` (see `components/vercel-speed-insights.tsx`): a
+  client effect, enabled only on a Vercel host, satisfying the same
+  `/_vercel/` readiness check.
+
 - **Local storage** — arcade high scores, game settings, and a 30-minute
   weather cache. Never transmitted; lives on the visitor's device.
 - **Third-party requests that necessarily expose the visitor's IP:** Google

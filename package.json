@@ -26,6 +26,7 @@
   "dependencies": {
     "@blackjacktrainer/blackjack-simulator": "^0.35.14",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "drizzle-orm": "0.45.2",
     "next": "16.2.6",
     "qrcode": "^1.5.4",
