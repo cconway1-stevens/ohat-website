@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { type JSX, useEffect, useRef, useState } from "react";
 import {
   answerQuestion,
@@ -30,13 +31,13 @@ import { readStorage, useLocalStorage, writeStorage } from "./use-local-storage"
 const Object3DCanvas = dynamic(() => import("./object-3d-canvas"), { ssr: false });
 
 /**
- * Adgent Studio — a noindex dev playground for the pixel crew and Tread's
+ * Agent Studio — a noindex dev playground for the pixel crew and Tread's
  * chat brain, styled like a retro game menu: framed panels, a character
- * dossier with stat bars, and feature call-out badges. A left control panel
- * switches between nine modes.
+ * dossier with stat bars, and feature call-out badges. A left nav links to
+ * each of the nine modes as its own route.
  */
 
-type Mode =
+export type Mode =
   | "character"
   | "motion"
   | "testdrive"
@@ -230,7 +231,7 @@ const CHARACTER_SETS: {
  * The 3D Objects theme — faceless low-poly parts rendered in real Three.js
  * (part-objects-3d.ts behind the lazy Object3DCanvas). Metadata lives here so
  * the studio never imports Three.js eagerly; the canvas resolves the mesh
- * builder by id. View-only: 3D objects can't be your chat adgent (the
+ * builder by id. View-only: 3D objects can't be your chat agent (the
  * sidebar, Motion mode and Test Drive all draw pixel sprites), so the set
  * stays out of CHARACTER_SETS and findCharacter.
  */
@@ -349,25 +350,25 @@ function Frame({
   children: React.ReactNode;
 }) {
   return (
-    <section className={`adgent-frame ${dark ? "is-dark" : ""} ${className}`}>
-      {title ? <header className="adgent-frame-head">{title}</header> : null}
-      <div className="adgent-frame-body">{children}</div>
+    <section className={`agent-frame ${dark ? "is-dark" : ""} ${className}`}>
+      {title ? <header className="agent-frame-head">{title}</header> : null}
+      <div className="agent-frame-body">{children}</div>
     </section>
   );
 }
 
 function Badge({ children }: { children: React.ReactNode }) {
-  return <span className="adgent-badge">{children}</span>;
+  return <span className="agent-badge">{children}</span>;
 }
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="adgent-stat">
-      <span className="adgent-stat-label">{label}</span>
-      <span className="adgent-stat-bar">
+    <div className="agent-stat">
+      <span className="agent-stat-label">{label}</span>
+      <span className="agent-stat-bar">
         <i style={{ width: `${value * 10}%` }} />
       </span>
-      <span className="adgent-stat-val">{value}</span>
+      <span className="agent-stat-val">{value}</span>
     </div>
   );
 }
@@ -439,7 +440,7 @@ function ChipLink({ chip }: { chip: ChatChip }) {
   return (
     <a
       href={chip.href}
-      className="adgent-chip"
+      className="agent-chip"
       {...(chip.kind === "download" ? { download: true } : {})}
       {...(chip.kind === "directions" ? { target: "_blank", rel: "noreferrer" } : {})}
     >
@@ -449,7 +450,7 @@ function ChipLink({ chip }: { chip: ChatChip }) {
 }
 
 function Terminal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`adgent-terminal ${className}`}>{children}</div>;
+  return <div className={`agent-terminal ${className}`}>{children}</div>;
 }
 
 /* --- Mode: Looks ---------------------------------------------------------- */
@@ -457,7 +458,7 @@ function Terminal({ children, className = "" }: { children: React.ReactNode; cla
 /** The set picker row shared by the pixel and 3D branches of Character mode. */
 function SetPicker({ activeId, onPick }: { activeId: string; onPick: (setId: string) => void }) {
   return (
-    <div className="adgent-seg">
+    <div className="agent-seg">
       {[...CHARACTER_SETS, OBJECTS_3D_SET].map((s) => (
         <button
           key={s.id}
@@ -513,10 +514,10 @@ function PixelLooks({
   }
 
   return (
-    <div className="adgent-mode">
-      <div className="adgent-looks-top">
-        <Frame dark title={`STAGE · ${index}/${set.characters.length}`} className="adgent-stage">
-          <div className="adgent-stage-screen">
+    <div className="agent-mode">
+      <div className="agent-looks-top">
+        <Frame dark title={`STAGE · ${index}/${set.characters.length}`} className="agent-stage">
+          <div className="agent-stage-screen">
             <PixelCanvas
               character={character}
               emote="idle"
@@ -525,12 +526,12 @@ function PixelLooks({
               tint={looks.tint}
               look={focusedLook}
               size={stageSize}
-              className="adgent-pixel"
+              className="agent-pixel"
             />
-            <div className="adgent-stage-pedestal" />
+            <div className="agent-stage-pedestal" />
           </div>
-          <div className="adgent-stage-name">{character.name}</div>
-          <div className="adgent-stage-zoom">
+          <div className="agent-stage-name">{character.name}</div>
+          <div className="agent-stage-zoom">
             <span>ZOOM</span>
             {[1, 2, 3].map((z) => (
               <button
@@ -545,15 +546,15 @@ function PixelLooks({
           </div>
         </Frame>
 
-        <Frame title="DOSSIER" className="adgent-dossier">
-          <h3 className="adgent-dossier-name">{character.name}</h3>
-          <p className="adgent-dossier-blurb">{character.blurb}</p>
-          <div className="adgent-stats">
+        <Frame title="DOSSIER" className="agent-dossier">
+          <h3 className="agent-dossier-name">{character.name}</h3>
+          <p className="agent-dossier-blurb">{character.blurb}</p>
+          <div className="agent-stats">
             {stats.map((s) => (
               <Stat key={s.label} label={s.label} value={s.value} />
             ))}
           </div>
-          <div className="adgent-badges">
+          <div className="agent-badges">
             {FEATURES.map((f) => (
               <Badge key={f}>{f}</Badge>
             ))}
@@ -561,14 +562,14 @@ function PixelLooks({
         </Frame>
       </div>
 
-      <Frame title="CREW SELECT" className="adgent-crewbar">
+      <Frame title="CREW SELECT" className="agent-crewbar">
         <SetPicker activeId={set.id} onPick={pickSet} />
-        <div className="adgent-crew-grid">
+        <div className="agent-crew-grid">
           {set.characters.map((c) => (
             <button
               key={c.id}
               type="button"
-              className={`adgent-crew-card ${c.id === looks.characterId ? "is-active" : ""}`}
+              className={`agent-crew-card ${c.id === looks.characterId ? "is-active" : ""}`}
               onClick={() => setLooks({ ...looks, characterId: c.id })}
             >
               <PixelCanvas
@@ -578,7 +579,7 @@ function PixelLooks({
                 reducedMotion={settings.reducedMotion}
                 tint={c.id === looks.characterId ? looks.tint : 0}
                 look={c.id === looks.characterId ? focusedLook : undefined}
-                className="adgent-pixel adgent-pixel-sm"
+                className="agent-pixel agent-pixel-sm"
               />
               <span>{c.name}</span>
             </button>
@@ -586,11 +587,11 @@ function PixelLooks({
         </div>
       </Frame>
 
-      <Frame title="CUSTOMIZE" className="adgent-customize">
-        <div className="adgent-controls">
+      <Frame title="CUSTOMIZE" className="agent-customize">
+        <div className="agent-controls">
           {set.supportsLook && (
             <>
-              <label className="adgent-field">
+              <label className="agent-field">
                 <span>Eye size</span>
                 <select
                   value={looks.eyeSize}
@@ -603,7 +604,7 @@ function PixelLooks({
                   <option value="big">Big</option>
                 </select>
               </label>
-              <label className="adgent-field">
+              <label className="agent-field">
                 <span>Mouth</span>
                 <select
                   value={looks.mouth}
@@ -616,7 +617,7 @@ function PixelLooks({
               </label>
             </>
           )}
-          <label className="adgent-field adgent-field-grow">
+          <label className="agent-field agent-field-grow">
             <span>Tint ({looks.tint}&deg;)</span>
             <input
               type="range"
@@ -638,7 +639,7 @@ function PixelLooks({
  * Character mode's 3D branch — the faceless part objects on a real Three.js
  * turntable. Same stage/dossier/crew-select layout as the pixel sets, minus
  * the look controls (there are no faces to tune) and the zoom (WebGL scales
- * itself). View-only: 3D objects never become the chat adgent.
+ * itself). View-only: 3D objects never become the chat agent.
  */
 function Objects3DLooks({
   looks,
@@ -658,30 +659,30 @@ function Objects3DLooks({
   }
 
   return (
-    <div className="adgent-mode">
-      <div className="adgent-looks-top">
-        <Frame dark title={`STAGE · ${index}/${OBJECTS_3D.length}`} className="adgent-stage">
-          <div className="adgent-stage-screen">
+    <div className="agent-mode">
+      <div className="agent-looks-top">
+        <Frame dark title={`STAGE · ${index}/${OBJECTS_3D.length}`} className="agent-stage">
+          <div className="agent-stage-screen">
             <Object3DCanvas
               objectId={object.id}
               reducedMotion={settings.reducedMotion}
               speed={settings.speed}
-              className="adgent-object3d adgent-object3d-lg"
+              className="agent-object3d agent-object3d-lg"
             />
-            <div className="adgent-stage-pedestal" />
+            <div className="agent-stage-pedestal" />
           </div>
-          <div className="adgent-stage-name">{object.name}</div>
+          <div className="agent-stage-name">{object.name}</div>
         </Frame>
 
-        <Frame title="DOSSIER" className="adgent-dossier">
-          <h3 className="adgent-dossier-name">{object.name}</h3>
-          <p className="adgent-dossier-blurb">{object.blurb}</p>
-          <div className="adgent-stats">
+        <Frame title="DOSSIER" className="agent-dossier">
+          <h3 className="agent-dossier-name">{object.name}</h3>
+          <p className="agent-dossier-blurb">{object.blurb}</p>
+          <div className="agent-stats">
             {stats.map((s) => (
               <Stat key={s.label} label={s.label} value={s.value} />
             ))}
           </div>
-          <div className="adgent-badges">
+          <div className="agent-badges">
             {FEATURES.map((f) => (
               <Badge key={f}>{f}</Badge>
             ))}
@@ -689,28 +690,28 @@ function Objects3DLooks({
         </Frame>
       </div>
 
-      <Frame title="CREW SELECT" className="adgent-crewbar">
+      <Frame title="CREW SELECT" className="agent-crewbar">
         <SetPicker activeId={OBJECTS_3D_SET.id} onPick={pickSet} />
-        <div className="adgent-crew-grid">
+        <div className="agent-crew-grid">
           {OBJECTS_3D.map((o) => (
             <button
               key={o.id}
               type="button"
-              className={`adgent-crew-card ${o.id === object.id ? "is-active" : ""}`}
+              className={`agent-crew-card ${o.id === object.id ? "is-active" : ""}`}
               onClick={() => setLooks({ ...looks, characterId: o.id })}
             >
               <Object3DCanvas
                 objectId={o.id}
                 reducedMotion={settings.reducedMotion}
                 animated={false}
-                className="adgent-object3d adgent-object3d-sm"
+                className="agent-object3d agent-object3d-sm"
               />
               <span>{o.name}</span>
             </button>
           ))}
         </div>
-        <p className="adgent-hint">
-          Real Three.js meshes, lazy-loaded with this set. View-only for now — your chat adgent is
+        <p className="agent-hint">
+          Real Three.js meshes, lazy-loaded with this set. View-only for now — your chat agent is
           still a pixel sprite, so 3D objects never appear in the sidebar picker.
         </p>
       </Frame>
@@ -758,24 +759,24 @@ function BehaviorMode({
   }
 
   return (
-    <div className="adgent-mode">
-      <div className="adgent-looks-top">
-        <Frame dark title="STAGE" className="adgent-stage">
-          <div className="adgent-stage-screen">
+    <div className="agent-mode">
+      <div className="agent-looks-top">
+        <Frame dark title="STAGE" className="agent-stage">
+          <div className="agent-stage-screen">
             <PixelCanvas
               character={character}
               emote={emote}
               speed={settings.speed}
               reducedMotion={settings.reducedMotion}
               tint={0}
-              className="adgent-pixel adgent-pixel-lg"
+              className="agent-pixel agent-pixel-lg"
             />
-            <div className="adgent-stage-pedestal" />
+            <div className="agent-stage-pedestal" />
           </div>
-          <div className="adgent-stage-name">
+          <div className="agent-stage-name">
             {character.name} · {emote.toUpperCase()}
           </div>
-          <div className="adgent-mini-picker">
+          <div className="agent-mini-picker">
             {CHARACTER_SETS.flatMap((s) => s.characters).map((c) => (
               <button
                 key={c.id}
@@ -792,12 +793,12 @@ function BehaviorMode({
                   reducedMotion={settings.reducedMotion}
                   tint={0}
                   size={36}
-                  className="adgent-pixel"
+                  className="agent-pixel"
                 />
               </button>
             ))}
           </div>
-          <div className="adgent-emote-row">
+          <div className="agent-emote-row">
             {EMOTES.map((e) => (
               <button
                 key={e.id}
@@ -808,14 +809,14 @@ function BehaviorMode({
                 {e.label}
               </button>
             ))}
-            <button type="button" className="adgent-play" onClick={playAll}>
+            <button type="button" className="agent-play" onClick={playAll}>
               Play all
             </button>
           </div>
         </Frame>
 
-        <Frame title="MOVE LIST" className="adgent-dossier">
-          <dl className="adgent-behavior-list">
+        <Frame title="MOVE LIST" className="agent-dossier">
+          <dl className="agent-behavior-list">
             <div>
               <dt>Idle</dt>
               <dd>Gentle bob and sway, with a periodic blink.</dd>
@@ -852,11 +853,11 @@ function BrainsMode() {
   // Brain tweaks used to live only in component state — a tester would lose
   // their threshold dial and synonym dictionary on every page refresh.
   const [threshold, setThreshold] = useLocalStorage<number>(
-    "adgent-brain-tweaks:threshold",
+    "agent-brain-tweaks:threshold",
     STUDIO_CONFIG.threshold,
   );
   const [extraSynonyms, setExtraSynonyms] = useLocalStorage<Record<string, string>>(
-    "adgent-brain-tweaks:synonyms",
+    "agent-brain-tweaks:synonyms",
     {},
   );
   const [alias, setAlias] = useState("");
@@ -892,27 +893,28 @@ function BrainsMode() {
   );
 
   return (
-    <div className="adgent-mode">
-      <div className="adgent-brains-grid">
-        <div className="adgent-brains-main">
-          <Frame title="TEST QUERY" className="adgent-fill">
+    <div className="agent-mode">
+      <div className="agent-brains-grid">
+        <div className="agent-brains-main">
+          <Frame title="TEST QUERY" className="agent-fill">
             <form
-              className="adgent-lab"
+              className="agent-lab"
               onSubmit={(e) => {
                 e.preventDefault();
                 run(input);
               }}
             >
-              <div className="adgent-lab-input">
+              <div className="agent-lab-input">
                 <input
                   type="text"
+                  spellCheck={false}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask the brain a question…"
                 />
                 <button type="submit">Ask</button>
               </div>
-              <div className="adgent-prompts">
+              <div className="agent-prompts">
                 {quickPrompts.map((p) => (
                   <button
                     key={p}
@@ -929,11 +931,11 @@ function BrainsMode() {
             </form>
 
             {result ? (
-              <div className="adgent-result">
-                <div className="adgent-answer">
+              <div className="agent-result">
+                <div className="agent-answer">
                   <p>{result.answer.text}</p>
                   {result.answer.chips.length > 0 && (
-                    <div className="adgent-chips">
+                    <div className="agent-chips">
                       {result.answer.chips.map((chip) => (
                         <ChipLink key={chip.href + chip.label} chip={chip} />
                       ))}
@@ -942,7 +944,7 @@ function BrainsMode() {
                 </div>
                 <Terminal>
                   {result.matched ? (
-                    <dl className="adgent-debug">
+                    <dl className="agent-debug">
                       <div>
                         <dt>kind</dt>
                         <dd>{result.matched.kind}</dd>
@@ -961,15 +963,15 @@ function BrainsMode() {
                       </div>
                     </dl>
                   ) : (
-                    <p className="adgent-fallback">no match (fallback)</p>
+                    <p className="agent-fallback">no match (fallback)</p>
                   )}
-                  <p className="adgent-tokens">
+                  <p className="agent-tokens">
                     tokens: {result.tokens.length > 0 ? result.tokens.join(", ") : "(none)"}
                   </p>
                 </Terminal>
               </div>
             ) : (
-              <p className="adgent-empty">
+              <p className="agent-empty">
                 Ask a question or tap a prompt — the answer and why the brain chose it appear here.
                 Every run is logged to Results.
               </p>
@@ -977,7 +979,7 @@ function BrainsMode() {
           </Frame>
 
           <Frame title="SIMULATE TWEAKS">
-            <label className="adgent-field">
+            <label className="agent-field">
               <span>Threshold ({threshold})</span>
               <input
                 type="range"
@@ -987,15 +989,17 @@ function BrainsMode() {
                 onChange={(e) => setThreshold(Number(e.target.value))}
               />
             </label>
-            <div className="adgent-synonym-add">
+            <div className="agent-synonym-add">
               <input
                 type="text"
+                spellCheck={false}
                 placeholder="alias (rim)"
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}
               />
               <input
                 type="text"
+                spellCheck={false}
                 placeholder="canonical (tire)"
                 value={canonical}
                 onChange={(e) => setCanonical(e.target.value)}
@@ -1005,7 +1009,7 @@ function BrainsMode() {
               </button>
             </div>
             {Object.keys(extraSynonyms).length > 0 && (
-              <ul className="adgent-synonym-list">
+              <ul className="agent-synonym-list">
                 {Object.entries(extraSynonyms).map(([a, c]) => (
                   <li key={a}>
                     {a} → {c}
@@ -1025,32 +1029,33 @@ function BrainsMode() {
                 ))}
               </ul>
             )}
-            <p className="adgent-hint">
+            <p className="agent-hint">
               Tweaks live in memory only — re-run the query to see routing change. Nothing edits the
               source.
             </p>
           </Frame>
         </div>
 
-        <Frame title={`KNOWLEDGE BASE · ${filteredFaqs.length}`} className="adgent-fill adgent-kb">
+        <Frame title={`KNOWLEDGE BASE · ${filteredFaqs.length}`} className="agent-fill agent-kb">
           <input
             type="text"
-            className="adgent-filter"
+            spellCheck={false}
+            className="agent-filter"
             placeholder="Filter FAQs…"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />
-          <div className="adgent-faq-list">
+          <div className="agent-faq-list">
             {filteredFaqs.map((f) => (
-              <details key={f.slug + f.question} className="adgent-faq">
+              <details key={f.slug + f.question} className="agent-faq">
                 <summary>
-                  <span className="adgent-faq-name">{f.name}</span>
+                  <span className="agent-faq-name">{f.name}</span>
                   {f.question}
                 </summary>
                 <p>{f.answer}</p>
                 <button
                   type="button"
-                  className="adgent-faq-test"
+                  className="agent-faq-test"
                   onClick={() => {
                     setInput(f.question);
                     run(f.question);
@@ -1087,9 +1092,9 @@ function SourcesMode() {
   }
 
   return (
-    <div className="adgent-mode">
+    <div className="agent-mode">
       <Frame dark title="DEPENDENCY TREE">
-        <pre className="adgent-tree">{`answers.ts
+        <pre className="agent-tree">{`answers.ts
   ├── services.ts (${services.length} services × ${FAQ_COUNT} FAQs)
   ├── shop.mjs (hours, phone, address, email)
   ├── shop-hours.mjs (live open/closed status)
@@ -1098,17 +1103,18 @@ function SourcesMode() {
   └── THRESHOLD (${STUDIO_CONFIG.threshold})`}</pre>
       </Frame>
 
-      <Frame title="BACKEND COMPARISON" className="adgent-fill">
+      <Frame title="BACKEND COMPARISON" className="agent-fill">
         <form
-          className="adgent-lab"
+          className="agent-lab"
           onSubmit={(e) => {
             e.preventDefault();
             compare(input);
           }}
         >
-          <div className="adgent-lab-input">
+          <div className="agent-lab-input">
             <input
               type="text"
+              spellCheck={false}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Compare backends on a question…"
@@ -1118,8 +1124,8 @@ function SourcesMode() {
         </form>
 
         {comparison && (
-          <div className="adgent-compare">
-            <div className="adgent-compare-col">
+          <div className="agent-compare">
+            <div className="agent-compare-col">
               <h4>Custom TF-IDF</h4>
               <p>{comparison.tfidf.answer.text}</p>
               <Terminal>
@@ -1128,7 +1134,7 @@ function SourcesMode() {
                   : "fallback"}
               </Terminal>
             </div>
-            <div className="adgent-compare-col">
+            <div className="agent-compare-col">
               <h4>Fuse.js fuzzy</h4>
               {comparison.fuse ? (
                 <>
@@ -1138,10 +1144,10 @@ function SourcesMode() {
                   </Terminal>
                 </>
               ) : (
-                <p className="adgent-fallback">no match</p>
+                <p className="agent-fallback">no match</p>
               )}
             </div>
-            <div className="adgent-compare-col">
+            <div className="agent-compare-col">
               <h4>Keyword overlap</h4>
               {comparison.keyword ? (
                 <>
@@ -1151,7 +1157,7 @@ function SourcesMode() {
                   </Terminal>
                 </>
               ) : (
-                <p className="adgent-fallback">no match</p>
+                <p className="agent-fallback">no match</p>
               )}
             </div>
           </div>
@@ -1220,7 +1226,7 @@ function runKeyword(text: string) {
 /* --- Mode: History -------------------------------------------------------- */
 
 function HistoryMode() {
-  const [entries, setEntries] = useLocalStorage<HistoryEntry[]>("adgent-history", EMPTY_LIST);
+  const [entries, setEntries] = useLocalStorage<HistoryEntry[]>("agent-history", EMPTY_LIST);
   const [filter, setFilter] = useState<"all" | "matched" | "fallback">("all");
   const [characterFilter, setCharacterFilter] = useState<string>("all");
 
@@ -1233,7 +1239,7 @@ function HistoryMode() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "adgent-test-history.json";
+    a.download = "agent-test-history.json";
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -1249,10 +1255,10 @@ function HistoryMode() {
   const characterIds = Array.from(new Set(entries.map((e) => e.characterId))).sort();
 
   return (
-    <div className="adgent-mode">
-      <Frame title={`TEST LOG · ${visible.length}`} className="adgent-fill">
-        <div className="adgent-history-toolbar">
-          <div className="adgent-seg">
+    <div className="agent-mode">
+      <Frame title={`TEST LOG · ${visible.length}`} className="agent-fill">
+        <div className="agent-history-toolbar">
+          <div className="agent-seg">
             {(["all", "matched", "fallback"] as const).map((f) => (
               <button
                 key={f}
@@ -1264,7 +1270,7 @@ function HistoryMode() {
               </button>
             ))}
           </div>
-          <div className="adgent-history-actions">
+          <div className="agent-history-actions">
             <select
               aria-label="Filter by character"
               value={characterFilter}
@@ -1287,26 +1293,26 @@ function HistoryMode() {
         </div>
 
         {visible.length === 0 ? (
-          <p className="adgent-empty">
+          <p className="agent-empty">
             No test history yet — run a query in Brain or Test Drive mode. Looking for likes, hates,
             and notes? Those live in Feedback.
           </p>
         ) : (
-          <div className="adgent-history-list">
+          <div className="agent-history-list">
             {visible.map((e) => (
-              <details key={e.id} className="adgent-history-row">
+              <details key={e.id} className="agent-history-row">
                 <summary>
-                  <span className="adgent-history-time">
+                  <span className="agent-history-time">
                     {new Date(e.timestamp).toLocaleString()}
                   </span>
-                  <span className="adgent-history-q">{e.question}</span>
-                  <span className="adgent-history-match">{e.matched ?? "fallback"}</span>
-                  <span className="adgent-history-score">
+                  <span className="agent-history-q">{e.question}</span>
+                  <span className="agent-history-match">{e.matched ?? "fallback"}</span>
+                  <span className="agent-history-score">
                     {e.score !== null ? e.score.toFixed(2) : "—"}
                   </span>
                 </summary>
                 <p>{e.answer}</p>
-                {e.characterId && <p className="adgent-history-char">character: {e.characterId}</p>}
+                {e.characterId && <p className="agent-history-char">character: {e.characterId}</p>}
               </details>
             ))}
           </div>
@@ -1332,19 +1338,19 @@ function SettingsMode({
     if (typeof window !== "undefined") {
       for (let i = window.localStorage.length - 1; i >= 0; i -= 1) {
         const key = window.localStorage.key(i);
-        if (key && key.startsWith("adgent-")) window.localStorage.removeItem(key);
+        if (key && key.startsWith("agent-")) window.localStorage.removeItem(key);
       }
-      writeStorage("adgent-looks", DEFAULT_LOOKS);
-      writeStorage("adgent-history", []);
-      writeStorage("adgent-notes", []);
+      writeStorage("agent-looks", DEFAULT_LOOKS);
+      writeStorage("agent-history", []);
+      writeStorage("agent-notes", []);
     }
   }
 
   return (
-    <div className="adgent-mode">
-      <Frame title="OPTIONS" className="adgent-settings-frame">
-        <div className="adgent-controls adgent-controls-stack">
-          <label className="adgent-field">
+    <div className="agent-mode">
+      <Frame title="OPTIONS" className="agent-settings-frame">
+        <div className="agent-controls agent-controls-stack">
+          <label className="agent-field">
             <span>CRT scanlines</span>
             <select
               value={settings.scanlines}
@@ -1357,7 +1363,7 @@ function SettingsMode({
               <option value="full">Full</option>
             </select>
           </label>
-          <label className="adgent-field">
+          <label className="agent-field">
             <span>Terminal font size</span>
             <select
               value={settings.fontSize}
@@ -1373,7 +1379,7 @@ function SettingsMode({
               <option value={20}>20px</option>
             </select>
           </label>
-          <label className="adgent-field">
+          <label className="agent-field">
             <span>Animation speed</span>
             <select
               value={settings.speed}
@@ -1386,7 +1392,7 @@ function SettingsMode({
               <option value={2}>2×</option>
             </select>
           </label>
-          <label className="adgent-toggle">
+          <label className="agent-toggle">
             <input
               type="checkbox"
               checked={settings.reducedMotion}
@@ -1395,7 +1401,7 @@ function SettingsMode({
             <span>Reduced motion</span>
           </label>
         </div>
-        <button type="button" className="adgent-reset" onClick={reset}>
+        <button type="button" className="agent-reset" onClick={reset}>
           Reset all settings
         </button>
       </Frame>
@@ -1432,7 +1438,7 @@ const CODE_SOURCES: { id: string; label: string; get: () => string }[] = [
   {
     id: "pixel",
     label: "pixel-crew.ts",
-    get: () => `// src/components/adgent/pixel-crew.ts — canvas-2D characters
+    get: () => `// src/components/agent/pixel-crew.ts — canvas-2D characters
 // Crew: ${PIXEL_CREW.map((c) => c.name).join(", ")}.
 // Icons: ${PART_ICONS.map((c) => c.name).join(", ")} — faceless part icons.
 // Retro: ${RETRO_CREW.map((c) => c.name).join(", ")} — cloud-bots with terminal faces.
@@ -1451,9 +1457,9 @@ function CodeMode() {
   const [sourceId, setSourceId] = useState("answers");
   const source = CODE_SOURCES.find((s) => s.id === sourceId) ?? CODE_SOURCES[0];
   return (
-    <div className="adgent-mode">
-      <Frame dark title={source.label.toUpperCase()} className="adgent-fill">
-        <div className="adgent-code-tabs">
+    <div className="agent-mode">
+      <Frame dark title={source.label.toUpperCase()} className="agent-fill">
+        <div className="agent-code-tabs">
           {CODE_SOURCES.map((s) => (
             <button
               key={s.id}
@@ -1465,7 +1471,7 @@ function CodeMode() {
             </button>
           ))}
         </div>
-        <pre className="adgent-code">{source.get()}</pre>
+        <pre className="agent-code">{source.get()}</pre>
       </Frame>
     </div>
   );
@@ -1479,7 +1485,7 @@ function appendHistory(
   options?: { characterId?: string },
 ) {
   if (typeof window === "undefined") return;
-  const list = readStorage<HistoryEntry[]>("adgent-history", []);
+  const list = readStorage<HistoryEntry[]>("agent-history", []);
   list.unshift({
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     question,
@@ -1489,18 +1495,18 @@ function appendHistory(
     characterId: options?.characterId,
     timestamp: Date.now(),
   });
-  writeStorage("adgent-history", list.slice(0, 200));
+  writeStorage("agent-history", list.slice(0, 200));
 }
 
 function appendNote(note: Omit<Note, "id" | "timestamp">) {
   if (typeof window === "undefined") return;
-  const list = readStorage<Note[]>("adgent-notes", []);
+  const list = readStorage<Note[]>("agent-notes", []);
   list.unshift({
     ...note,
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     timestamp: Date.now(),
   });
-  writeStorage("adgent-notes", list.slice(0, 300));
+  writeStorage("agent-notes", list.slice(0, 300));
 }
 
 /* --- Mode: Demo (live agent test drive) ------------------------------------ */
@@ -1538,7 +1544,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
     if (log) log.scrollTop = log.scrollHeight;
   }, [messages, thinking]);
 
-  // Re-introduce when the adgent changes — the chat always uses the picked
+  // Re-introduce when the agent changes — the chat always uses the picked
   // name. Adjusted during render (not in an effect) so the log never shows a
   // stale greeting from the previous character.
   const [greetedId, setGreetedId] = useState(character.id);
@@ -1596,10 +1602,10 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
   }
 
   return (
-    <div className="adgent-mode">
-      <div className="adgent-demo">
-        <Frame dark title="LIVE CHAT · CONTACT PAGE PREVIEW" className="adgent-demo-frame">
-          <div className="adgent-demo-head">
+    <div className="agent-mode">
+      <div className="agent-demo">
+        <Frame dark title="LIVE CHAT · CONTACT PAGE PREVIEW" className="agent-demo-frame">
+          <div className="agent-demo-head">
             <PixelCanvas
               character={character}
               emote={emote}
@@ -1607,28 +1613,28 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
               reducedMotion={settings.reducedMotion}
               tint={0}
               size={72}
-              className="adgent-pixel"
+              className="agent-pixel"
             />
-            <div className="adgent-demo-title">
+            <div className="agent-demo-title">
               <strong>{character.name}</strong>
               <span>Local answers · no data leaves your device</span>
             </div>
           </div>
 
-          <div className="adgent-demo-log" ref={logRef}>
+          <div className="agent-demo-log" ref={logRef}>
             {messages.map((m) => (
-              <div key={m.id} className={`adgent-msg adgent-msg-${m.role}`}>
-                <div className="adgent-bubble">
+              <div key={m.id} className={`agent-msg agent-msg-${m.role}`}>
+                <div className="agent-bubble">
                   <p>{m.text}</p>
                   {m.chips && m.chips.length > 0 && (
-                    <div className="adgent-chips">
+                    <div className="agent-chips">
                       {m.chips.map((chip) => (
                         <ChipLink key={chip.href + chip.label} chip={chip} />
                       ))}
                     </div>
                   )}
                   {m.role === "tread" && m.question && (
-                    <div className="adgent-rate">
+                    <div className="agent-rate">
                       <button
                         type="button"
                         className={m.rated === "like" ? "is-active" : ""}
@@ -1651,17 +1657,17 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
               </div>
             ))}
             {thinking && (
-              <div className="adgent-msg adgent-msg-tread">
-                <div className="adgent-bubble adgent-thinking">
-                  <span className="adgent-dot" />
-                  <span className="adgent-dot" />
-                  <span className="adgent-dot" />
+              <div className="agent-msg agent-msg-tread">
+                <div className="agent-bubble agent-thinking">
+                  <span className="agent-dot" />
+                  <span className="agent-dot" />
+                  <span className="agent-dot" />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="adgent-prompts">
+          <div className="agent-prompts">
             {quickPrompts.map((p) => (
               <button key={p} type="button" onClick={() => send(p)}>
                 {p}
@@ -1670,7 +1676,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
           </div>
 
           <form
-            className="adgent-lab-input"
+            className="agent-lab-input"
             onSubmit={(e) => {
               e.preventDefault();
               send(input);
@@ -1678,6 +1684,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
           >
             <input
               type="text"
+              spellCheck={false}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question…"
@@ -1687,8 +1694,8 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
           </form>
         </Frame>
 
-        <Frame title="HOW TO EVALUATE" className="adgent-demo-side">
-          <ol className="adgent-eval-list">
+        <Frame title="HOW TO EVALUATE" className="agent-demo-side">
+          <ol className="agent-eval-list">
             <li>Pick a crew member in Character.</li>
             <li>Chat here exactly like a customer would.</li>
             <li>
@@ -1696,7 +1703,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
             </li>
             <li>Everything is logged to Feedback — export it and hand it over.</li>
           </ol>
-          <div className="adgent-badges">
+          <div className="agent-badges">
             {FEATURES.map((f) => (
               <Badge key={f}>{f}</Badge>
             ))}
@@ -1710,7 +1717,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
 /* --- Mode: Notes (research feedback) --------------------------------------- */
 
 function NotesMode() {
-  const [notes, setNotes] = useLocalStorage<Note[]>("adgent-notes", EMPTY_LIST);
+  const [notes, setNotes] = useLocalStorage<Note[]>("agent-notes", EMPTY_LIST);
   const [filter, setFilter] = useState<"all" | "like" | "hate" | "note">("all");
 
   function remove(id: string) {
@@ -1723,7 +1730,7 @@ function NotesMode() {
 
   function exportMarkdown() {
     const lines = [
-      "# Adgent feedback",
+      "# Agent feedback",
       "",
       ...notes.map((n) => {
         const icon = n.rating === "like" ? "👍" : n.rating === "hate" ? "👎" : "📝";
@@ -1734,7 +1741,7 @@ function NotesMode() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "adgent-feedback.md";
+    a.download = "agent-feedback.md";
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -1747,10 +1754,10 @@ function NotesMode() {
   };
 
   return (
-    <div className="adgent-mode">
-      <Frame title={`FEEDBACK LOG · ${visible.length}`} className="adgent-fill">
-        <div className="adgent-history-toolbar">
-          <div className="adgent-seg">
+    <div className="agent-mode">
+      <Frame title={`FEEDBACK LOG · ${visible.length}`} className="agent-fill">
+        <div className="agent-history-toolbar">
+          <div className="agent-seg">
             {(["all", "like", "hate", "note"] as const).map((f) => (
               <button
                 key={f}
@@ -1762,7 +1769,7 @@ function NotesMode() {
               </button>
             ))}
           </div>
-          <div className="adgent-history-actions">
+          <div className="agent-history-actions">
             <button type="button" onClick={exportMarkdown}>
               Export MD
             </button>
@@ -1773,25 +1780,25 @@ function NotesMode() {
         </div>
 
         {visible.length === 0 ? (
-          <p className="adgent-empty">
+          <p className="agent-empty">
             No feedback yet — rate answers in Test Drive, or add a note with the ✎ button.
           </p>
         ) : (
-          <div className="adgent-notes-list">
+          <div className="agent-notes-list">
             {visible.map((n) => (
-              <article key={n.id} className={`adgent-note adgent-note-${n.rating}`}>
+              <article key={n.id} className={`agent-note agent-note-${n.rating}`}>
                 <header>
-                  <span className="adgent-note-icon">
+                  <span className="agent-note-icon">
                     {n.rating === "like" ? "▲" : n.rating === "hate" ? "▼" : "✎"}
                   </span>
-                  <span className="adgent-note-meta">
+                  <span className="agent-note-meta">
                     {n.mode} · {n.characterId} · {new Date(n.timestamp).toLocaleString()}
                   </span>
                   <button type="button" aria-label="Delete note" onClick={() => remove(n.id)}>
                     ×
                   </button>
                 </header>
-                {n.target && <p className="adgent-note-target">◎ {n.target}</p>}
+                {n.target && <p className="agent-note-target">◎ {n.target}</p>}
                 <p>{n.text}</p>
               </article>
             ))}
@@ -1879,7 +1886,7 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
     <>
       <button
         type="button"
-        className="adgent-notepad-fab"
+        className="agent-notepad-fab"
         aria-label="Add a research note"
         onClick={() => setOpen((o) => !o)}
       >
@@ -1888,10 +1895,10 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
 
       {picking && (
         <>
-          <div className="adgent-pick-banner">Click any element to target it · Esc to cancel</div>
+          <div className="agent-pick-banner">Click any element to target it · Esc to cancel</div>
           {hoverRect && (
             <div
-              className="adgent-pick-highlight"
+              className="agent-pick-highlight"
               style={{
                 top: hoverRect.top,
                 left: hoverRect.left,
@@ -1904,14 +1911,14 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
       )}
 
       {open && (
-        <div className="adgent-notepad">
-          <div className="adgent-notepad-head">
+        <div className="agent-notepad">
+          <div className="agent-notepad-head">
             <strong>Note</strong>
             <span>
               {mode} · {characterId}
             </span>
           </div>
-          <div className="adgent-seg">
+          <div className="agent-seg">
             {(["like", "hate", "note"] as const).map((r) => (
               <button
                 key={r}
@@ -1925,25 +1932,26 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
           </div>
 
           {target ? (
-            <div className="adgent-notepad-target">
+            <div className="agent-notepad-target">
               <span>◎ {target}</span>
               <button type="button" aria-label="Clear target" onClick={() => setTarget(null)}>
                 ×
               </button>
             </div>
           ) : (
-            <button type="button" className="adgent-notepad-pick" onClick={startPicking}>
+            <button type="button" className="agent-notepad-pick" onClick={startPicking}>
               ◎ Target an element
             </button>
           )}
 
           <textarea
             value={text}
+            spellCheck={false}
             onChange={(e) => setText(e.target.value)}
             placeholder="What do you like or hate here?"
             rows={3}
           />
-          <button type="button" className="adgent-notepad-save" onClick={submit}>
+          <button type="button" className="agent-notepad-save" onClick={submit}>
             {saved ? "Saved ✓" : "Save note"}
           </button>
         </div>
@@ -1954,12 +1962,11 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
 
 /* --- Shell ---------------------------------------------------------------- */
 
-export function AdgentStudio(): JSX.Element {
-  const [mode, setMode] = useState<Mode>("character");
+export function AgentStudio({ mode }: { mode: Mode }): JSX.Element {
   // Persisted state flows through useSyncExternalStore (see use-local-storage.ts):
   // SSR-safe, no hydration mismatch, and stays in sync across components.
-  const [settings, setSettings] = useLocalStorage("adgent-settings", DEFAULT_SETTINGS);
-  const [looks, setLooks] = useLocalStorage("adgent-looks", DEFAULT_LOOKS);
+  const [settings, setSettings] = useLocalStorage("agent-settings", DEFAULT_SETTINGS);
+  const [looks, setLooks] = useLocalStorage("agent-looks", DEFAULT_LOOKS);
 
   // Subscribe to OS-level prefers-reduced-motion and mirror it into the
   // studio's manual toggle. The production widget does this in a lazy init;
@@ -1981,8 +1988,8 @@ export function AdgentStudio(): JSX.Element {
     settings.scanlines === "off"
       ? ""
       : settings.scanlines === "subtle"
-        ? "adgent-scan-subtle"
-        : "adgent-scan-full";
+        ? "agent-scan-subtle"
+        : "agent-scan-full";
 
   const active = MODES.find((m) => m.id === mode) ?? MODES[0];
   const agent = findCharacter(looks.characterId);
@@ -1994,26 +2001,25 @@ export function AdgentStudio(): JSX.Element {
 
   return (
     <div
-      className={`adgent-studio ${scanlineClass}`}
-      style={{ "--adgent-font-size": `${settings.fontSize}px` } as React.CSSProperties}
+      className={`agent-studio ${scanlineClass}`}
+      style={{ "--agent-font-size": `${settings.fontSize}px` } as React.CSSProperties}
     >
-      <aside className="adgent-sidebar">
-        <h1 className="adgent-logo">ADGENT STUDIO</h1>
-        <nav className="adgent-nav">
+      <aside className="agent-sidebar">
+        <h1 className="agent-logo">AGENT STUDIO</h1>
+        <nav className="agent-nav">
           {MODES.map((m) => (
-            <button
+            <Link
               key={m.id}
-              type="button"
+              href={m.id === "character" ? "/agent" : `/agent/${m.id}`}
               className={m.id === mode ? "is-active" : ""}
-              onClick={() => setMode(m.id)}
             >
               {m.id === mode ? "▸" : " "} {m.label}
-            </button>
+            </Link>
           ))}
         </nav>
 
-        <div className="adgent-side-agent">
-          <span className="adgent-side-agent-label">YOUR ADGENT</span>
+        <div className="agent-side-agent">
+          <span className="agent-side-agent-label">YOUR AGENT</span>
           <PixelCanvas
             character={agent}
             emote="idle"
@@ -2021,13 +2027,13 @@ export function AdgentStudio(): JSX.Element {
             reducedMotion={settings.reducedMotion}
             tint={0}
             size={56}
-            className="adgent-pixel adgent-pixel-sm"
+            className="agent-pixel agent-pixel-sm"
           />
-          <span className="adgent-side-agent-name">{agent.name}</span>
+          <span className="agent-side-agent-name">{agent.name}</span>
           <select
             value={agent.id}
             onChange={(e) => pickAgent(e.target.value)}
-            aria-label="Pick your adgent — used on every page"
+            aria-label="Pick your agent — used on every page"
           >
             {CHARACTER_SETS.map((s) => (
               <optgroup key={s.id} label={s.label}>
@@ -2041,19 +2047,19 @@ export function AdgentStudio(): JSX.Element {
           </select>
         </div>
 
-        <div className="adgent-sidebar-foot">
+        <div className="agent-sidebar-foot">
           <p>noindex · dev only</p>
           <p>{shop.phone.display}</p>
         </div>
       </aside>
 
-      <main className="adgent-main">
-        <header className="adgent-main-head">
+      <main className="agent-main">
+        <header className="agent-main-head">
           <div>
             <h2>{active.label}</h2>
-            <p className="adgent-main-sub">{active.sub}</p>
+            <p className="agent-main-sub">{active.sub}</p>
           </div>
-          <div className="adgent-feature-strip">
+          <div className="agent-feature-strip">
             {FEATURES.map((f) => (
               <Badge key={f}>{f}</Badge>
             ))}

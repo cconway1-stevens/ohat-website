@@ -10,7 +10,7 @@
  * It audits EVERY public page, discovered automatically from the static export
  * (see dev/scripts/lib/routes.mjs). Pages are tiered by their own markup:
  *   - indexable pages: performance, accessibility, best-practices, SEO
- *   - noindex pages (arcade, adgent): performance, accessibility, best-practices
+ *   - noindex pages (arcade, agent): performance, accessibility, best-practices
  *     (SEO is intentionally not asserted — the page is noindex on purpose)
  *   - redirect stubs and the 404 page are not audited
  *
@@ -44,7 +44,7 @@ const THRESHOLDS = {
   "best-practices": Number(process.env.LH_BP ?? 100),
   seo: Number(process.env.LH_SEO ?? 100),
 };
-// The noindex tier (arcade, adgent) ships heavy client JS by design, so its
+// The noindex tier (arcade, agent) ships heavy client JS by design, so its
 // performance floor is set separately from the indexable 80 goal. The default
 // is a placeholder until the Stage-7 baseline run observes real medians and
 // pins an evidence-based floor (dev/docs/test-program.md §9).

@@ -57,7 +57,7 @@ export default defineConfig(async () => {
 
   return {
     // three.js (used only by lazy `dynamic(..., { ssr: false })` scenes on
-    // /adgent, /arcade/parts-counter-3d, and the contact page) is inherently
+    // /agent, /arcade/parts-counter-3d, and the contact page) is inherently
     // over the default 500kb warning limit but already isolated to its own
     // route-scoped chunk, so raise the threshold instead of chasing a
     // false-positive warning.

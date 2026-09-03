@@ -795,7 +795,7 @@ function trimForBubble(text: string): string {
   return lastSentence > FAQ_BUBBLE / 2 ? cut.slice(0, lastSentence + 1) : cut.trimEnd() + "…";
 }
 
-/** Why a question matched — surfaced by the /adgent studio's brain lab. */
+/** Why a question matched — surfaced by the /agent studio's brain lab. */
 type DebugMatch = {
   kind: "intent" | "faq" | "service";
   id: string;
@@ -985,7 +985,7 @@ function suggestionLabels(below: { entry: Entry; score: number }[]): string[] {
 /** Local, no-network fuzzy FAQ matcher — Damerau-Levenshtein over the FAQ
  *  questions. Runs at module load and on every resolve() call; cost is
  *  bounded by the index size (currently ~42 FAQs), so the whole pass stays
- *  under a millisecond. Promoted from the /adgent studio's "Engine" tab to
+ *  under a millisecond. Promoted from the /agent studio's "Engine" tab to
  *  a real fallback path here. */
 type FuzzyHit = { slug: string; service: string; answer: string; distance: number };
 function fuzzyFaqLookup(input: string): FuzzyHit | null {
@@ -1049,7 +1049,7 @@ export function answerQuestion(
   return resolve(input, now, config).answer;
 }
 
-/** Studio-only: the answer plus why it matched, for the /adgent brain lab. */
+/** Studio-only: the answer plus why it matched, for the /agent brain lab. */
 export function debugAnswer(
   input: string,
   now: Date = new Date(),
@@ -1103,7 +1103,7 @@ export const quickPrompts = [
   "Do you take cards?",
 ];
 
-/** Read-only config snapshot for the /adgent studio's knowledge-base viewer. */
+/** Read-only config snapshot for the /agent studio's knowledge-base viewer. */
 export const STUDIO_CONFIG = {
   threshold: THRESHOLD,
   stopwords: [...STOPWORDS].sort(),
