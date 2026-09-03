@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArcadeFrame } from "@/components/arcade/arcade-frame";
 import { TreadStack } from "@/components/arcade/tread-stack";
+import "tetris-kit/layout.css";
 
 export const metadata: Metadata = {
   title: "Tread Stack - Garage Arcade",

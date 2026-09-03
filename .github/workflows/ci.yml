@@ -111,10 +111,10 @@ jobs:
           path: dist/client
       - run: npm run check:pages
       - run: npm run check:bundle
-      - name: Lighthouse (indexable pages, single run per page)
+      - name: Lighthouse (indexable pages, median of 3 runs per page)
         run: npm run check:lighthouse
         env:
-          LH_RUNS: 1
+          LH_RUNS: 3
       - run: npm run check:a11y
 
   dependency-security:
@@ -128,7 +128,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - name: Audit runtime and development dependencies
-        run: npm audit --audit-level=high
+        # The npm audit endpoint intermittently answers 503 (registry-side
+        # outage); retry a couple of times before declaring a real failure.
+        run: |
+          for attempt in 1 2 3; do
+            if npm audit --audit-level=high; then
+              exit 0
+            fi
+            echo "npm audit failed (attempt $attempt/3) — retrying after backoff"
+            sleep 15
+          done
+          exit 1
       - name: Review dependency changes
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { MakeGrid } from "@/components/arcade/make-grid";
+import { MainHero } from "@/components/hero/main-hero";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
 import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
 import { DirectionsTrigger } from "@/components/ui/directions-dialog";
-import { OvalBadge } from "@/components/ui/oval-badge";
 import { SiteImage } from "@/components/ui/site-image";
 import { brandSrc, heroMakes } from "@/lib/makes";
 import { services } from "@/lib/services";
@@ -57,148 +57,7 @@ export default function Home() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homeSchema) }}
         />
-        <section className="hero" id="top">
-          <div className="shell hero-grid">
-            {/* The hero copy is a service record card lying on the asphalt:
-                folio header, the shop's oval badge as the stamp of record,
-                then the plain-English declaration of what the shop does so a
-                first-time visitor never has to guess. */}
-            <div className="hero-copy">
-              <p className="record-head">
-                <span>Service record · No. 001</span>
-                <span>Family owned &amp; operated · Egg Harbor Township, NJ</span>
-              </p>
-              <OvalBadge className="hero-oval-badge" />
-              {/* Round rubber stamp, half off the card's edge like it was
-                  inked on at the counter. Factual claims only — the same
-                  40+ years the credentials band tickets. */}
-              <svg className="hero-years-stamp" viewBox="0 0 120 120" aria-hidden="true">
-                <defs>
-                  <path
-                    id="hero-stamp-ring"
-                    d="M 60 60 m -44 0 a 44 44 0 1 1 88 0 a 44 44 0 1 1 -88 0"
-                    fill="none"
-                  />
-                </defs>
-                <circle cx={60} cy={60} r={56} fill="none" stroke="var(--red)" strokeWidth={3} />
-                <circle cx={60} cy={60} r={33} fill="none" stroke="var(--red)" strokeWidth={2} />
-                <text
-                  fontFamily="var(--font-geist-sans), Arial, sans-serif"
-                  fontSize={12.5}
-                  fontWeight={950}
-                  letterSpacing={1.5}
-                  fill="var(--red)"
-                >
-                  <textPath href="#hero-stamp-ring" startOffset="75%" textAnchor="middle">
-                    FAMILY OWNED &amp; OPERATED ·
-                  </textPath>
-                </text>
-                <text
-                  x={60}
-                  y={62}
-                  textAnchor="middle"
-                  fontFamily="var(--font-serif)"
-                  fontSize={30}
-                  fontWeight={900}
-                  fill="var(--red)"
-                >
-                  40+
-                </text>
-                <text
-                  x={60}
-                  y={78}
-                  textAnchor="middle"
-                  fontFamily="var(--font-geist-sans), Arial, sans-serif"
-                  fontSize={10}
-                  fontWeight={950}
-                  letterSpacing={1.5}
-                  fill="var(--red)"
-                >
-                  YEARS
-                </text>
-              </svg>
-              {/* Cover-title type, straight off a parts catalog: a red serif
-                  kicker, the giant slanted grotesque with hard 3D depth, then
-                  the black band echoing the badge's own. Reading order is
-                  still one sentence: Complete Auto Repair & Tire Service. */}
-              <h1>
-                <span className="hero-h1-kicker">Complete</span>
-                <span className="hero-h1-big">Auto Repair</span>
-                <span className="hero-h1-band">
-                  <em>&amp;</em> Tire Service
-                </span>
-              </h1>
-              <dl className="hero-ledger">
-                <div>
-                  <dt>Services</dt>
-                  <dd>Diagnostics · brakes · tires · oil &amp; maintenance</dd>
-                </div>
-                <div>
-                  <dt>Vehicles</dt>
-                  <dd>Carbureted classics to brand-new EVs — every make welcome</dd>
-                </div>
-              </dl>
-              <p className="hero-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
-              <div className="hero-cta">
-                <a className="button button-primary" href={phoneHref}>
-                  Call {phoneDisplay}
-                </a>
-                <DirectionsTrigger className="button button-ghost">
-                  Get directions <span aria-hidden="true">↗︎</span>
-                </DirectionsTrigger>
-              </div>
-              {/* Live open/closed sign right beside the call button, so
-                  "are they open?" is answered before it becomes a reason
-                  not to dial. */}
-              <p className="hero-status">
-                <span className="hero-status-label">Status</span>
-                <ShopHoursStatus />
-              </p>
-            </div>
-
-            <figure className="hero-photo">
-              <div className="hero-photo-frame">
-                <SiteImage
-                  // The pre-built AVIF, not the 2.7 MB source PNG: `priority`
-                  // makes next/image preload whatever `src` is verbatim (it
-                  // does not know about the responsive rewrite build-static.mjs
-                  // applies to the rendered <img> below), so pointing it at
-                  // the original had the browser fetching the full-size PNG
-                  // *and* the correctly-sized AVIF on every load. See
-                  // build-static.mjs's `resolveManifestEntry` — it maps this
-                  // path back to the same manifest entry so the rendered tag
-                  // still gets the full responsive ladder.
-                  src="/media/rs/cecf1b30-365d-430d-b925-1fd22429c9e1-1200.avif"
-                  alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
-                  fill
-                  priority
-                  sizes="(max-width: 860px) 100vw, 520px"
-                />
-              </div>
-              {/* Bay signal: the light over a service bay door. Green means
-                  the bay is open — it idles on green and only cycles through
-                  yellow/red every so often, like a real traffic signal. */}
-              <span className="bay-signal" aria-hidden="true">
-                <span className="bay-signal-housing">
-                  <span className="bay-signal-light bay-signal-red" />
-                  <span className="bay-signal-light bay-signal-yellow" />
-                  <span className="bay-signal-light bay-signal-green" />
-                </span>
-                <span className="bay-signal-tag">Bay 1</span>
-              </span>
-              {/* Tilted catalog sticker, like the "Matching Numbers" box on
-                  an old cover. Decorative — the ledger's Vehicles row already
-                  carries this for assistive tech. */}
-              <span className="hero-photo-sticker" aria-hidden="true">
-                <strong>All makes · all eras</strong>
-                <small>Gas · diesel · hybrid · EV · classics</small>
-              </span>
-              <figcaption>
-                <span>Plate No. 1</span> Classics, dailies &amp; EVs — one driveway
-              </figcaption>
-            </figure>
-          </div>
-        </section>
+        <MainHero />
 
         <section className="garage-credentials" aria-labelledby="garage-credentials-title">
           <div className="garage-locator">

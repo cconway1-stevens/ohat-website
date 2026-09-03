@@ -1,420 +1,799 @@
-/* Home hero: the bay door. Dark asphalt, one big promise, one big button.
-   Vintage-catalog print texture: a faint halftone of paper dots over the
-   asphalt, so the section reads like an inked page rather than flat pixels. */
-.hero {
+/* Homepage hero: one clear, full-scale brand statement. The layout keeps the
+   call, live hours, logo, and real shop image together in the first viewport. */
+.home-hero {
   position: relative;
-  padding: 172px 0 clamp(3.5rem, 7vw, 6rem);
-  color: #fff;
   overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto;
+  /* The site masthead is intentionally absolute. Reserve its full height so
+     the navigation never covers the first line or the hero frame. */
+  padding-top: calc(142px + clamp(0.75rem, 1.5vw, 1.25rem));
+  border-bottom: 4px solid var(--ink);
   background:
-    radial-gradient(circle, rgba(255, 247, 231, 0.05) 1px, transparent 1.7px) 0 0 / 15px 15px,
-    radial-gradient(circle at 88% 8%, rgba(168, 22, 28, 0.5), transparent 44%),
-    repeating-linear-gradient(
-      115deg,
-      transparent 0 88px,
-      rgba(255, 255, 255, 0.04) 88px 91px,
-      transparent 91px 150px
-    ),
-    linear-gradient(165deg, #26211e 0%, #171412 55%, #100d0b 100%);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(135deg, var(--red-dark), var(--red) 58%, #7c1015);
+  color: var(--paper);
 }
-/* The hero sits on asphalt: a road strip with a dashed center line closes
-   the section and rolls the eye toward the credentials band. */
-.hero::after {
+
+.home-hero::before {
   content: "";
   position: absolute;
-  z-index: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 26px;
-  border-top: 3px solid rgba(23, 20, 18, 0.65);
-  background:
-    repeating-linear-gradient(90deg, var(--yellow) 0 30px, transparent 30px 64px) 0 center / 100%
-    4px no-repeat,
-    linear-gradient(180deg, #3a332f, #26211e);
+  inset: 0;
+  background: radial-gradient(circle at 78% 22%, rgba(246, 189, 56, 0.3), transparent 32%);
   pointer-events: none;
 }
-.hero-grid {
+
+.home-hero-shell {
   position: relative;
   z-index: 1;
+  width: min(1920px, calc(100% - clamp(16px, 1.7vw, 32px)));
+  min-height: clamp(400px, 46svh, 470px);
+  margin-inline: auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: center;
-}
-/* Service record card: the copy column is a paper job card lying on the
-   asphalt — ruled ledger lines, a red margin rule, and a hard offset shadow
-   so it reads as print, not UI. */
-.hero-copy {
-  min-width: 0;
-  position: relative;
-  padding: clamp(1.3rem, 2.4vw, 2rem) clamp(1.1rem, 2.2vw, 1.9rem);
-  padding-left: clamp(2.5rem, 3vw, 3rem);
-  border: 3px solid var(--ink);
-  background:
-    linear-gradient(90deg, transparent 0 26px, rgba(168, 22, 28, 0.3) 26px 28px, transparent 28px),
-    repeating-linear-gradient(0deg, transparent 0 30px, rgba(23, 20, 18, 0.07) 30px 31px),
-    var(--paper);
-  color: var(--ink);
-  /* Cover frame: a paper keyline and a red ring around the card, like the
-     bordered cover of a parts catalog, then the hard offset shadow. */
-  box-shadow:
-    0 0 0 4px var(--paper),
-    0 0 0 7px var(--red),
-    12px 12px 0 rgba(12, 8, 7, 0.5);
-  transform: rotate(-0.4deg);
-}
-/* Folio header: the form's own caption strip — record number on the left,
-   ownership line on the right, ruled off from the body of the card. */
-.record-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.3rem 0.9rem;
-  margin: 0;
-  padding-bottom: 0.55rem;
-  border-bottom: 2px solid var(--ink);
-  font-size: 0.72rem;
-  font-weight: 950;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-.record-head span:first-child {
-  color: var(--red);
-}
-.record-head span:last-child {
-  color: var(--muted);
-}
-/* The oval badge is the stamp of record: centered, tilted like it was
-   pressed onto the card, with a hard ink shadow instead of a soft glow. */
-.hero-oval-badge {
-  display: block;
-  width: clamp(230px, 24vw, 320px);
-  height: auto;
-  margin: 1.05rem auto 0.2rem;
-  transform: rotate(-2deg);
-  filter: drop-shadow(4px 4px 0 rgba(23, 20, 18, 0.3));
-}
-@media (prefers-reduced-motion: no-preference) {
-  .hero-oval-badge {
-    animation: badge-stamp-in 0.5s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-  }
-  .hero-years-stamp {
-    animation: years-stamp-in 0.45s 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-  }
-}
-@keyframes badge-stamp-in {
-  from {
-    opacity: 0;
-    transform: rotate(-2deg) scale(1.3);
-  }
-}
-@keyframes years-stamp-in {
-  from {
-    opacity: 0;
-    transform: rotate(10deg) scale(1.5);
-  }
-}
-/* Round years stamp: red ink, half off the card's top edge, blended into
-   the paper like a real rubber stamp. */
-.hero-years-stamp {
-  position: absolute;
-  z-index: 2;
-  top: -24px;
-  right: 14px;
-  width: clamp(84px, 8vw, 104px);
-  height: auto;
-  transform: rotate(10deg);
-  mix-blend-mode: multiply;
-}
-/* Cover-title type: red serif kicker, giant slanted grotesque with hard 3D
-   depth, black band — the parts-catalog cover formula. */
-.hero h1 {
-  margin: 0.65rem 0 0;
-  text-transform: uppercase;
-}
-.hero-h1-kicker {
-  display: block;
-  color: var(--red);
-  font-family: var(--font-serif);
-  font-size: clamp(1.05rem, 1.8vw, 1.5rem);
-  font-weight: 900;
-  letter-spacing: 0.18em;
-}
-.hero-h1-big {
-  display: block;
-  margin-top: 0.08em;
-  color: var(--blue);
-  font-family: var(--font-geist-sans), Arial, sans-serif;
-  font-size: clamp(2.5rem, 5vw, 4.4rem);
-  font-weight: 950;
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  transform: skewX(-5deg);
-  text-shadow: 4px 4px 0 var(--ink);
-}
-.hero-h1-band {
-  display: inline-block;
-  margin-top: 0.5em;
-  padding: 0.28em 0.55em 0.24em;
-  background: var(--ink);
-  color: #fff;
-  font-family: var(--font-geist-sans), Arial, sans-serif;
-  font-size: clamp(1.05rem, 1.9vw, 1.6rem);
-  font-weight: 950;
-  letter-spacing: 0.02em;
-  transform: rotate(-1deg);
-  box-shadow: 4px 4px 0 var(--yellow);
-}
-.hero-h1-band em {
-  color: var(--yellow);
-  font-style: normal;
-}
-/* Ledger rows: label in red small caps, entry in ink, dashed rule between
-   rows like a filled-in service form. */
-.hero-ledger {
-  margin: 1rem 0 0;
-  border-top: 2px solid var(--ink);
-}
-.hero-ledger > div {
-  display: grid;
-  grid-template-columns: 86px 1fr;
-  align-items: baseline;
-  gap: 0.7rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px dashed rgba(23, 20, 18, 0.4);
-}
-.hero-ledger dt {
-  color: var(--red);
-  font-size: 0.72rem;
-  font-weight: 950;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-/* Blue square bullets, straight off the catalog cover's feature list. */
-.hero-ledger dt::before {
-  content: "";
-  display: inline-block;
-  width: 0.55em;
-  height: 0.55em;
-  margin-right: 0.45em;
-  background: var(--blue);
-}
-.hero-ledger dd {
-  margin: 0;
-  font-size: 0.98rem;
-  font-weight: 600;
-  line-height: 1.4;
-}
-.hero-tagline {
-  margin: 1rem 0 0;
-  color: var(--red-dark);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: clamp(1.1rem, 1.7vw, 1.35rem);
-  letter-spacing: -0.01em;
-}
-.hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-/* Status is filed on the card like the final stamp: a small red label and
-   the shared placard, tilted to match the badge. The placard's own design
-   stays untouched — one sign, every placement. */
-.hero-status {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem;
-  margin: 1.3rem 0 0;
-}
-.hero-status-label {
-  color: var(--red);
-  font-size: 0.72rem;
-  font-weight: 950;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-.hero-status .shop-hours-status {
-  transform: rotate(-0.8deg);
-}
-.hero-photo {
-  position: relative;
-  min-width: 0;
-  min-height: clamp(420px, 42vw, 540px);
-  margin: 0;
-  overflow: hidden;
+  grid-template-columns: minmax(clamp(380px, 30vw, 540px), 0.62fr) minmax(0, 1.48fr);
+  align-items: stretch;
   border: 4px solid var(--ink);
-  background: #a9c6d8;
-  box-shadow: 12px 12px 0 var(--yellow);
-  transform: rotate(1.2deg);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 12px 12px 0 rgba(23, 20, 18, 0.72);
 }
-/* Catalog photo mount: a dashed inner frame sits on the print like a photo
-   corner-mounted into an old catalogue page. It layers above the image but
-   below the bay signal and caption. */
-.hero-photo::before {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  inset: 10px;
-  border: 2px dashed rgba(255, 247, 231, 0.4);
-  pointer-events: none;
-}
-.hero-photo-frame {
+
+.home-hero-copy {
   position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: inherit;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(1.25rem, 1.8vw, 2.15rem);
+  border-right: 4px solid var(--ink);
+  background:
+    linear-gradient(150deg, transparent 0 76%, rgba(246, 189, 56, 0.3) 76% 77%, transparent 77%),
+    var(--paper);
+}
+
+.home-hero-kicker {
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 3px double var(--ink);
+  color: var(--red);
+  font-size: clamp(0.68rem, 0.8vw, 0.8rem);
+  font-weight: 950;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* A catalog-card nameplate: same yellow-paper-and-ink sticker language as
+   the buttons and badges, holding both lines like a plaque instead of the
+   words floating loose on the page background. */
+.home-hero h1 {
+  display: inline-block;
+  max-width: 10.5ch;
+  margin: 0;
+  padding: 0.15em 0.35em;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  transform: rotate(-1deg);
+  font-family: var(--font-serif);
+  font-size: clamp(2.75rem, 3.9vw, 4.65rem);
+  font-weight: 900;
+  /* -0.065em was tight enough to visibly collide letterforms at this weight
+     and size (bold "ig"/"ht" pairs nearly touching) — pulled back to a
+     normal-reading tightness. */
+  letter-spacing: -0.01em;
+  line-height: 0.86;
+  text-wrap: balance;
+}
+
+.home-hero h1 span {
+  display: block;
+  color: var(--red);
+}
+
+.home-hero-promise {
+  max-width: 38ch;
+  margin: 0.65rem 0 0;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: clamp(1.02rem, 1.28vw, 1.3rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.home-hero-lede {
+  max-width: 55ch;
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: clamp(0.9rem, 0.98vw, 1rem);
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.home-hero-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.home-hero-actions .button {
+  min-width: 0;
+  min-height: 52px;
+  padding: 0.75rem 0.9rem;
+  font-size: clamp(0.76rem, 0.9vw, 0.92rem);
+}
+
+.home-hero-call .retro-phone-mark {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.home-hero-call:hover .retro-phone-mark,
+.home-hero-call:focus-visible .retro-phone-mark {
+  background: var(--paper);
+  color: var(--ink);
+}
+.home-hero-call .retro-phone-mark::before,
+.home-hero-call .retro-phone-mark::after {
+  background: var(--ink);
+}
+
+.home-hero-call-copy {
+  display: grid;
+  gap: 0.08rem;
+  text-align: left;
+}
+
+.home-hero-call-copy small {
+  color: var(--red-dark);
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.home-hero-call-copy strong {
+  font-size: clamp(0.84rem, 1vw, 1rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+/* A quiet ring every twelve seconds so the call button keeps nudging for
+   attention without shouting. Mirrors the booking dock's idle ring. */
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-call .retro-phone-mark {
+    animation: phone-idle-ring 12s ease-in-out infinite;
+  }
+}
+
+.home-hero-directions {
+  background: var(--red);
+  color: #fff;
+}
+
+.home-hero-directions:hover {
+  background: var(--ink);
+}
+
+/* One unified sign instead of two mismatched boxes: the open/closed status
+   and the address now share a single sticker panel, full width and flush
+   with the CTA buttons above it, with one divider between the two halves. */
+.home-hero-meta {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  margin-top: 0.75rem;
+  border: 2.5px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
   overflow: hidden;
 }
-.hero-photo-frame img {
-  object-fit: cover;
-  object-position: 28% center;
-  /* Aged print: a faint sepia wash so the photo reads like a catalogue plate
-     rather than a fresh digital shot. */
-  filter: sepia(0.16) saturate(0.9) contrast(1.03);
+
+/* Fixed width, content centered within it — not left-packed — so the panel's
+   overall width stays stable whether this says "Open", "Closing soon", or
+   the "Checking hours" placeholder the server shows before the client knows
+   the real status. A fixed box with left-packed text inside it is what
+   looked like a broken empty block for the short "Open" case; centering the
+   content inside that same fixed box reads as designed instead. */
+.home-hero-meta .shop-hours-status {
+  min-width: 148px;
+  justify-content: center;
+  grid-template-columns: auto auto;
+  border: 0;
+  border-right: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: none;
 }
-.hero-photo-frame::after {
+
+.home-hero-address {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 0 0.5rem;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0.5rem 0.85rem;
+  color: var(--ink);
+}
+
+.home-hero-pin {
+  position: relative;
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  align-self: center;
+  border: 2px solid var(--ink);
+  border-radius: 50% 50% 50% 0;
+  background: var(--red);
+  transform: rotate(-45deg);
+}
+
+.home-hero-pin::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--paper);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.home-hero-address-copy {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.home-hero-address-copy > span:first-child {
+  font-family: var(--font-serif);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+.home-hero-address-copy > span:not(:first-child) {
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+/* Between the mobile stacked layout (≤1120px, full-width copy column) and
+   the ≥1600px layout (a wider copy column again), the copy panel sits at
+   its narrowest — clamp(380px, 30vw, 540px) the whole way through this
+   range. The status pill's fixed min-width plus the address's normal type
+   size don't leave room for "1178 Ocean Heights Ave." on one line there, so
+   it wrapped into an ugly three-line stack. Tightened for this range only —
+   mobile and the wide desktop layout are untouched. */
+@media (min-width: 1121px) and (max-width: 1599px) {
+  .home-hero-meta .shop-hours-status {
+    min-width: 118px;
+    padding-inline: 0.5rem;
+  }
+
+  .home-hero-address {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .home-hero-address-copy > span:first-child {
+    font-size: 0.68rem;
+  }
+
+  .home-hero-address-copy > span:not(:first-child) {
+    font-size: 0.6rem;
+  }
+}
+
+.home-hero-photo {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  margin: 0;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.home-hero-photo-image {
+  position: relative;
+  min-height: 330px;
+  overflow: hidden;
+}
+
+.home-hero-photo-image::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    180deg,
-    rgba(255, 247, 231, 0.12),
-    transparent 42%,
-    rgba(23, 20, 18, 0.2)
+    90deg,
+    rgba(23, 20, 18, 0.12),
+    transparent 24% 76%,
+    rgba(23, 20, 18, 0.08)
   );
-  mix-blend-mode: multiply;
   pointer-events: none;
 }
-/* Bay signal: the traffic light over a service bay door. It rests on green
-   (bay open) and runs a full green → yellow → red cycle every 14s. Base
-   styles are the resting state, so with animations disabled the signal
-   simply stays green. It hangs top-right: top-left is where the photo's own
-   real traffic light stands, and stacking a prop on the real thing read as
-   a double signal. */
-.bay-signal {
+
+.home-hero-photo-image img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.home-hero-logo-plate {
   position: absolute;
-  z-index: 3;
-  top: 0.85rem;
-  right: 0.85rem;
+  z-index: 2;
+  top: auto;
+  right: 1rem;
+  bottom: 1rem;
+  left: auto;
+  width: clamp(106px, 9vw, 136px);
   display: grid;
-  justify-items: center;
-  gap: 0.32rem;
+  place-items: center;
+  padding: 0.35rem 0.55rem;
+  border: 3px solid var(--ink);
+  background: rgba(255, 250, 240, 0.94);
+  box-shadow: 5px 5px 0 var(--yellow);
 }
-.bay-signal-housing {
-  display: grid;
-  gap: 5px;
-  padding: 6px 5px;
-  border: 2px solid var(--ink);
-  border-radius: 9px;
-  background: linear-gradient(180deg, #453e3a, #211d1b);
-  box-shadow: 3px 3px 0 rgba(12, 8, 7, 0.45);
+
+.home-hero-logo {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(2px 3px 0 rgba(23, 20, 18, 0.18));
 }
-.bay-signal-light {
-  width: 15px;
-  height: 15px;
-  border: 2px solid rgba(12, 8, 7, 0.6);
-  border-radius: 50%;
-  background: #151210;
+
+/* A checkered-flag seam between the shop photo and its caption — the same
+   conic-gradient checkerboard used for .garage-credentials-checker further
+   down the page, so the racing motif reads as one deliberate brand touch
+   rather than a one-off sticker. A slow drift keeps it feeling alive. */
+.home-hero-checker {
+  display: block;
+  height: 16px;
+  border-block: 3px solid var(--ink);
+  background:
+    conic-gradient(var(--paper) 25%, var(--ink) 0 50%, var(--paper) 0 75%, var(--ink) 0) 0 0 / 8px
+    8px;
 }
-.bay-signal-red {
-  background: radial-gradient(circle at 35% 30%, #ff9a8a, #c22e22 70%);
-  box-shadow: 0 0 8px 2px rgba(224, 58, 47, 0.55);
-  animation: bay-red-cycle 14s linear infinite;
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-checker {
+    animation: home-hero-checker-drift 6s linear infinite;
+  }
 }
-.bay-signal-yellow {
-  background: radial-gradient(circle at 35% 30%, #ffe08a, #d99e06 70%);
-  box-shadow: 0 0 8px 2px rgba(242, 183, 5, 0.55);
-  animation: bay-yellow-cycle 14s linear infinite;
+
+@keyframes home-hero-checker-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 16px 0;
+  }
 }
-.bay-signal-green {
-  background: radial-gradient(circle at 35% 30%, #7df0a4, #23a74f 70%);
-  box-shadow: 0 0 8px 2px rgba(47, 191, 95, 0.55);
-  animation: bay-green-cycle 14s linear infinite;
-}
-.bay-signal-tag {
-  padding: 0.2rem 0.42rem 0.16rem;
-  border: 2px solid var(--ink);
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 0.58rem;
-  font-weight: 950;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  box-shadow: 2px 2px 0 rgba(12, 8, 7, 0.45);
-}
-/* Tilted catalog sticker on the photo, like the feature box on an old
-   cover — yellow paper, ink border, hard shadow, hand-placed tilt. */
-.hero-photo-sticker {
-  position: absolute;
-  z-index: 3;
-  left: -12px;
-  bottom: 58px;
-  display: grid;
-  gap: 0.15rem;
-  padding: 0.55rem 0.8rem;
-  border: 2.5px solid var(--ink);
+
+.home-hero-photo figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 56px;
+  padding: 0.7rem 1rem;
   background: var(--yellow);
   color: var(--ink);
-  box-shadow: 5px 5px 0 rgba(12, 8, 7, 0.45);
-  transform: rotate(-3deg);
   text-transform: uppercase;
 }
-.hero-photo-sticker strong {
-  font-size: 0.78rem;
-  font-weight: 950;
-  letter-spacing: 0.06em;
+
+.home-hero-photo figcaption span {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 900;
 }
-.hero-photo-sticker small {
-  font-size: 0.62rem;
-  font-weight: 850;
-  letter-spacing: 0.1em;
+
+.home-hero-photo figcaption strong {
+  font-size: clamp(0.58rem, 0.72vw, 0.7rem);
+  letter-spacing: 0.09em;
+  text-align: right;
 }
-/* Catalog plate caption: a slim paper strip with a red folio number, not a
-   banner — the photo stays the loudest thing in the frame. */
-.hero-photo figcaption {
+
+.home-hero-photo-tag {
   position: absolute;
-  z-index: 3;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.6rem 0.9rem;
-  border-top: 3px solid var(--ink);
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-.hero-photo figcaption span {
-  color: var(--red);
-  font-size: 0.68rem;
+  top: 1rem;
+  right: 1rem;
+  width: 112px;
+  min-height: 112px;
+  display: grid;
+  place-content: center;
+  gap: 0.12rem;
+  padding: 0.75rem;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  box-shadow: 5px 5px 0 var(--yellow);
+  font-size: 0.58rem;
   font-weight: 950;
-  letter-spacing: 0.14em;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(4deg);
+}
+
+.home-hero-photo-tag b {
+  color: var(--yellow);
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  line-height: 0.85;
+}
+
+.home-hero-proof {
+  position: relative;
+  z-index: 2;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  width: min(1920px, calc(100% - clamp(16px, 1.7vw, 32px)));
+  margin: 0 auto;
+  color: var(--paper);
+  font-size: clamp(0.6rem, 0.78vw, 0.75rem);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-align: center;
   text-transform: uppercase;
 }
+
+.home-hero-proof span {
+  position: relative;
+  padding: 0.72rem 1rem 0.72rem 2rem;
+}
+
+.home-hero-proof span::before {
+  content: "✓";
+  position: absolute;
+  left: 0.85rem;
+  color: var(--yellow);
+  font-size: 0.9rem;
+}
+
+.home-hero-proof span + span {
+  border-left: 1px solid rgba(255, 250, 240, 0.32);
+}
+
+@media (max-width: 1120px) {
+  .home-hero-shell {
+    min-height: 0;
+    /* Copy leads on narrow screens so the headline and Call/Directions CTAs
+       land right under the nav; the photo becomes supporting proof at the
+       end of the panel instead of a scroll toll before the pitch. */
+    grid-template-areas:
+      "copy"
+      "photo";
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-copy {
+    grid-area: copy;
+    border-right: 0;
+  }
+
+  .home-hero-photo {
+    grid-area: photo;
+    border-top: 4px solid var(--ink);
+  }
+
+  .home-hero-photo-image {
+    min-height: 0;
+    aspect-ratio: 1200 / 470;
+  }
+}
+
+@media (max-width: 860px) {
+  .home-hero {
+    min-height: 0;
+    /* Measured masthead: 145px at 721-860. Sitting flush kills the stray red
+       band the old reservation left between the nav and the photo. */
+    padding-top: 145px;
+  }
+
+  .home-hero-shell {
+    width: calc(100% - clamp(16px, 3vw, 24px));
+    box-shadow: 8px 8px 0 rgba(23, 20, 18, 0.72);
+  }
+
+  .home-hero-copy {
+    /* The desktop split-panel diagonal crosses the CTA row once this panel
+       is full-width — it read as a glitch on phones. */
+    background: var(--paper);
+    padding: clamp(1.1rem, 5vw, 1.85rem) clamp(1.35rem, 6vw, 2.25rem);
+  }
+
+  /* The photo moved to the end of the stack above, so its caption bar is now
+     the panel's closing line. Space-between crushed "Your local family
+     garage" against the fuel-type list at phone widths; stacking keeps both
+     legible instead of each wrapping to two cramped lines. */
+  .home-hero-photo figcaption {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    min-height: 0;
+    padding: 0.65rem 1rem;
+  }
+
+  .home-hero-photo figcaption strong {
+    text-align: left;
+  }
+
+  /* "Ocean Heights" fits one line on phones, so the lockup is two lines
+     instead of the old three. */
+  .home-hero h1 {
+    max-width: 16ch;
+    font-size: clamp(2.35rem, 11vw, 4.2rem);
+  }
+
+  /* Postcard crop: a 1200/470 letterbox miniaturizes the storefront on
+     phones; 16/10 with the centered crop fills the frame with the building. */
+  .home-hero-photo-image {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* The masthead already carries the logo — this plate duplicated it a
+     fraction of a screen later and collided with the 40+ badge on phones. */
+  .home-hero-logo-plate {
+    display: none;
+  }
+
+  .home-hero-proof {
+    width: calc(100% - clamp(16px, 3vw, 24px));
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-proof span {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 40px;
+    padding: 0.5rem 1rem 0.5rem 1.1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-align: left;
+  }
+
+  .home-hero-proof span::before {
+    position: static;
+    font-size: 0.9rem;
+  }
+
+  .home-hero-proof span + span {
+    border-top: 1px solid rgba(255, 250, 240, 0.28);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-hero-kicker {
+    margin-bottom: 0.55rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.11em;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(2.35rem, 11vw, 3.2rem);
+  }
+
+  .home-hero-promise {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .home-hero-lede {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  /* Full-width stacked CTAs; the side-by-side pair crushed the phone number.
+     The freed room brings the retro phone mark back. */
+  .home-hero-actions {
+    grid-template-columns: 1fr;
+    margin-top: 0.85rem;
+  }
+
+  /* Stacked into one column, each button now sizes to its own row instead of
+     sharing the desktop grid row's stretch — the Call button's icon+two-line
+     copy naturally runs taller than "Get directions" single line. A
+     min-height only sets a floor, so font-metric differences between
+     browsers/devices can still push one button above it while the other
+     sits exactly on it — a fixed height with headroom to spare is immune to
+     that instead of just usually matching. */
+  .home-hero-actions .button {
+    height: 4.25rem;
+    padding: 0.75rem 1rem;
+    font-size: clamp(0.72rem, 3.4vw, 0.85rem);
+  }
+
+  .home-hero-meta {
+    justify-content: flex-start;
+    margin-top: 0.7rem;
+  }
+
+  .home-hero-photo-tag {
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 84px;
+    min-height: 84px;
+    padding: 0.5rem;
+    font-size: 0.45rem;
+    box-shadow: 4px 4px 0 var(--yellow);
+  }
+
+  .home-hero-photo-tag b {
+    font-size: 1.65rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-hero {
+    /* Measured masthead on phones: 104px. Flush seat for the photo card. */
+    padding-top: 104px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .home-hero {
+    padding-top: calc(clamp(158px, 8.3vw, 284px) + clamp(0.75rem, 1vw, 2rem));
+  }
+
+  .home-hero-shell {
+    width: 96vw;
+    min-height: clamp(470px, 24vw, 1400px);
+    grid-template-columns: minmax(520px, 0.66fr) minmax(0, 1.44fr);
+    border-width: clamp(4px, 0.18vw, 7px);
+    box-shadow: clamp(12px, 0.7vw, 28px) clamp(12px, 0.7vw, 28px) 0 rgba(23, 20, 18, 0.72);
+  }
+
+  .home-hero-copy {
+    padding: clamp(2.15rem, 2.2vw, 6rem);
+    border-right-width: clamp(4px, 0.18vw, 7px);
+  }
+
+  .home-hero-kicker {
+    margin-bottom: clamp(0.75rem, 0.7vw, 1.6rem);
+    padding-bottom: clamp(0.55rem, 0.5vw, 1.1rem);
+    font-size: clamp(0.8rem, 0.62vw, 1.3rem);
+  }
+
+  .home-hero h1 {
+    /* The base 10.5ch cap was tuned for the smaller sizes below this
+       breakpoint; at this much larger font-size it wrapped "Auto & Tire"
+       into two lines inside its new banner box, which reads as broken
+       rather than balanced. */
+    max-width: 14ch;
+    font-size: clamp(4.65rem, 4vw, 10rem);
+  }
+
+  .home-hero-promise {
+    margin-top: clamp(0.65rem, 0.7vw, 1.5rem);
+    font-size: clamp(1.3rem, 1.15vw, 2.6rem);
+  }
+
+  .home-hero-lede {
+    margin-top: clamp(0.55rem, 0.65vw, 1.4rem);
+    font-size: clamp(1rem, 0.78vw, 1.65rem);
+  }
+
+  .home-hero-actions {
+    gap: clamp(0.75rem, 0.7vw, 1.5rem);
+    margin-top: clamp(0.85rem, 0.9vw, 2rem);
+  }
+
+  .home-hero-actions .button {
+    min-height: clamp(52px, 3vw, 104px);
+    font-size: clamp(0.92rem, 0.72vw, 1.5rem);
+  }
+
+  .home-hero-call-copy small {
+    font-size: clamp(0.56rem, 0.48vw, 1rem);
+  }
+
+  .home-hero-call-copy strong {
+    font-size: clamp(1rem, 0.8vw, 1.7rem);
+  }
+
+  .home-hero-meta {
+    margin-top: clamp(0.75rem, 0.75vw, 1.6rem);
+  }
+
+  .home-hero-address {
+    padding: clamp(0.42rem, 0.4vw, 0.85rem) clamp(0.7rem, 0.6vw, 1.4rem)
+      clamp(0.42rem, 0.4vw, 0.85rem) clamp(0.55rem, 0.5vw, 1.1rem);
+  }
+
+  .home-hero-pin {
+    width: clamp(11px, 0.8vw, 20px);
+    height: clamp(11px, 0.8vw, 20px);
+  }
+
+  .home-hero-address-copy > span:first-child {
+    font-size: clamp(0.8rem, 0.62vw, 1.3rem);
+  }
+
+  .home-hero-address-copy > span:not(:first-child) {
+    font-size: clamp(0.64rem, 0.5vw, 1.05rem);
+  }
+
+  .home-hero-photo-image {
+    min-height: 0;
+  }
+
+  .home-hero-logo-plate {
+    top: auto;
+    right: clamp(1rem, 1vw, 2.5rem);
+    bottom: clamp(1rem, 1vw, 2.5rem);
+    left: auto;
+    width: clamp(136px, 7vw, 280px);
+  }
+
+  .home-hero-photo-tag {
+    top: clamp(1rem, 1vw, 2.5rem);
+    right: clamp(1rem, 1vw, 2.5rem);
+    width: clamp(112px, 6vw, 240px);
+    min-height: clamp(112px, 6vw, 240px);
+    font-size: clamp(0.58rem, 0.48vw, 1rem);
+  }
+
+  .home-hero-photo-tag b {
+    font-size: clamp(2.2rem, 2vw, 4.5rem);
+  }
+
+  .home-hero-photo figcaption {
+    min-height: clamp(56px, 3vw, 110px);
+    padding-inline: clamp(1rem, 1.2vw, 2.8rem);
+  }
+
+  .home-hero-photo figcaption span {
+    font-size: clamp(1.35rem, 1.15vw, 2.6rem);
+  }
+
+  .home-hero-photo figcaption strong {
+    font-size: clamp(0.7rem, 0.58vw, 1.2rem);
+  }
+
+  .home-hero-proof {
+    width: 96vw;
+    min-height: clamp(48px, 3vw, 96px);
+    font-size: clamp(0.75rem, 0.58vw, 1.2rem);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-shell {
+    animation: hero-arrive 0.55s ease-out both;
+  }
+
+  @keyframes hero-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2rem;
-}
-.footer-checker {
-  height: 22px;
-  background:
-    linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%),
-    linear-gradient(45deg, #111 25%, #fff7e7 25%, #fff7e7 75%, #111 75%);
-  background-position:
-    0 0,
-    11px 11px;
-  background-size: 22px 22px;
 }
 
 .garage-credentials {
@@ -733,4 +1112,135 @@
   letter-spacing: 0.02em;
   text-overflow: ellipsis;
   text-transform: uppercase;
+}
+
+@media (min-width: 1600px) {
+  .garage-locator {
+    min-height: clamp(72px, 4vw, 140px);
+  }
+
+  .garage-locator-address {
+    flex: 1;
+    justify-content: center;
+    gap: clamp(2rem, 2vw, 5rem);
+  }
+
+  .garage-locator-address > span,
+  .garage-locator-address strong,
+  .garage-locator-address em {
+    font-size: clamp(1rem, 0.68vw, 1.45rem);
+  }
+
+  .garage-locator-trigger {
+    min-width: clamp(238px, 14vw, 520px);
+    font-size: clamp(1rem, 0.72vw, 1.55rem);
+  }
+
+  .garage-credentials-grid {
+    grid-template-columns: minmax(520px, 0.72fr) minmax(0, 1.38fr);
+  }
+
+  .garage-service-promise {
+    padding: clamp(4rem, 4vw, 10rem);
+  }
+
+  .garage-issue-line {
+    font-size: clamp(0.7rem, 0.56vw, 1.2rem);
+  }
+
+  .garage-service-promise h2 {
+    max-width: 12ch;
+    font-size: clamp(4.6rem, 4vw, 9rem);
+  }
+
+  .garage-service-promise > p:not(.garage-issue-line) {
+    max-width: 36em;
+    font-size: clamp(1rem, 0.78vw, 1.65rem);
+  }
+
+  .garage-service-promise li {
+    padding: clamp(0.5rem, 0.48vw, 1rem) clamp(0.68rem, 0.65vw, 1.4rem);
+    font-size: clamp(0.68rem, 0.5vw, 1.05rem);
+  }
+
+  .garage-proof-tickets {
+    padding: clamp(3rem, 3vw, 7rem);
+    gap: clamp(1.25rem, 1.5vw, 3.5rem);
+  }
+
+  .garage-proof-ticket {
+    min-height: clamp(260px, 17vw, 660px);
+    padding: clamp(1.25rem, 1.5vw, 3.5rem);
+  }
+
+  .garage-proof-ticket img {
+    width: clamp(164px, 9vw, 340px);
+    height: clamp(130px, 7vw, 280px);
+  }
+
+  .garage-carfax-seal {
+    width: clamp(132px, 7vw, 280px);
+    height: clamp(132px, 7vw, 280px);
+  }
+
+  .garage-carfax-seal img {
+    width: clamp(96px, 5vw, 200px);
+  }
+
+  .garage-carfax-seal small {
+    font-size: clamp(0.6rem, 0.45vw, 0.95rem) !important;
+  }
+
+  .garage-carfax-seal b {
+    font-size: clamp(0.92rem, 0.7vw, 1.5rem);
+  }
+
+  .garage-proof-ticket strong {
+    font-size: clamp(1.4rem, 1.15vw, 2.5rem);
+  }
+
+  .garage-proof-ticket small {
+    font-size: clamp(0.68rem, 0.52vw, 1.1rem);
+  }
+
+  .garage-ticket-number {
+    font-size: clamp(4.8rem, 4vw, 9rem);
+  }
+
+  .garage-makes-deck {
+    grid-template-columns: clamp(190px, 10vw, 380px) minmax(0, 1fr);
+  }
+
+  .garage-makes-label {
+    padding-inline: clamp(1.35rem, 1.3vw, 3rem);
+  }
+
+  .garage-makes-label strong {
+    font-size: clamp(1.05rem, 0.82vw, 1.7rem);
+  }
+
+  .garage-makes-label span {
+    font-size: clamp(0.68rem, 0.54vw, 1.1rem);
+  }
+
+  .catalog-make-track {
+    padding-block: clamp(0.7rem, 0.7vw, 1.5rem);
+  }
+
+  .catalog-make-logo {
+    width: clamp(124px, 7vw, 270px);
+    flex-basis: clamp(124px, 7vw, 270px);
+    grid-template-columns: clamp(46px, 2.6vw, 100px) 1fr;
+    gap: clamp(0.6rem, 0.6vw, 1.3rem);
+    padding-inline: clamp(0.8rem, 0.8vw, 1.8rem);
+  }
+
+  .catalog-make-logo img {
+    width: clamp(44px, 2.5vw, 96px);
+    height: clamp(44px, 2.5vw, 96px);
+  }
+
+  .catalog-make-logo strong {
+    font-size: clamp(0.66rem, 0.52vw, 1.05rem);
+  }
 }

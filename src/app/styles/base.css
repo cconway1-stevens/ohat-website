@@ -12,7 +12,6 @@
   --yellow-tint: #ffe9b0;
   --blue-tint: #dff0f3;
   --line: rgba(23, 20, 18, 0.18);
-  --shadow: 0 22px 60px rgba(54, 30, 18, 0.16);
   --hard-shadow: 8px 8px 0 #171412;
   /* Display serif: Fraunces (loaded in the root layout), Georgia as the
      no-webfont fallback so the stack never collapses to a default serif. */
@@ -109,6 +108,24 @@ img {
   position: relative;
   padding: clamp(5.5rem, 10vw, 9rem) 0;
 }
+
+/* At very wide CSS viewports (including a browser zoomed far out), fixed
+   pixel caps make the entire interface look like a miniature. Let the main
+   page rail and its type scale with the viewport while ordinary desktop and
+   mobile layouts keep their existing proportions. */
+@media (min-width: 1600px) {
+  html {
+    font-size: clamp(16px, 0.42vw, 24px);
+  }
+
+  .shell {
+    width: 92vw;
+  }
+
+  .section {
+    padding-block: clamp(9rem, 7vw, 16rem);
+  }
+}
 .section h2,
 .technology-section h2,
 .makes-section h2,
@@ -123,6 +140,20 @@ img {
   font-size: clamp(2.3rem, 5vw, 5rem);
   line-height: 0.93;
   letter-spacing: -0.05em;
+}
+
+@media (min-width: 1600px) {
+  .section h2,
+  .technology-section h2,
+  .makes-section h2,
+  .award-section h2,
+  .visit-section h2,
+  .community-band h2,
+  .inner-cta h2,
+  .drive-cta h2 {
+    max-width: 14ch;
+    font-size: clamp(5rem, 3.2vw, 9rem);
+  }
 }
 .eyebrow,
 .hero-kicker,

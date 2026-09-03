@@ -169,7 +169,7 @@ test("mobile homepage images use compact modern formats", () => {
   assert.match(html, /\/media\/ase-certified\.webp/);
   assert.match(
     html,
-    /\/media\/rs\/cecf1b30-365d-430d-b925-1fd22429c9e1-768\.avif 768w/,
+    /\/media\/rs\/OHAT-Main-Building-768\.avif 768w/,
     "homepage hero should offer a phone-sized AVIF candidate",
   );
 });
