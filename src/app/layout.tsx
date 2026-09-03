@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist, Press_Start_2P, VT323 } from "next/font/google";
 import { CallTracking } from "@/components/analytics/analytics";
 import { VercelAnalytics } from "@/components/analytics/vercel-analytics";
+import { VercelSpeedInsights } from "@/components/analytics/vercel-speed-insights";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { gaMeasurementId } from "@/lib/analytics";
 import { shop } from "@/lib/shop/shop";
@@ -156,6 +157,7 @@ gtag('config', '${gaMeasurementId}', {
             Vercel host — the script lives on Vercel's edge and this same
             export is also served from GitHub Pages. See the component. */}
         <VercelAnalytics />
+        <VercelSpeedInsights />
       </body>
     </html>
   );

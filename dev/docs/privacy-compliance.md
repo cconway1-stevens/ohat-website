@@ -118,6 +118,9 @@ Audited by reading the source, not by assumption:
   phone-number link. Sets cookies. Configured as in the table above.
 - **Vercel Web Analytics** — page-view counts, cookieless, no personal data.
   Loaded through Vercel's own `@vercel/analytics` package.
+- **Vercel Speed Insights** — performance metrics (load time, Core Web Vitals),
+  cookieless, no personal data. Loaded through Vercel's own
+  `@vercel/speed-insights` package, gated to Vercel hosts like Web Analytics.
 
   Worth recording, because this tag has moved three times. It began as a plain
   `<script src="/_vercel/insights/script.js">` in the layout. That path is
