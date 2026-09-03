@@ -24,16 +24,29 @@
  *   LH_PERF, LH_A11Y, LH_BP, LH_SEO  (0-100)
  *   LH_RUNS or --runs=N (default 3), LH_ROUTES (comma-separated debug subset)
  *   LH_REPORT_DIR (optional dir for per-page JSON snapshots; gitignored)
+ *
+ * For local iteration, `--fast` (or LH_FAST=1) runs every page with a single
+ * run (LH_RUNS=1) fanned out across several worker processes instead of one
+ * sequential loop — still every page, just in parallel. Concurrency can also
+ * be set directly with LH_CONCURRENCY or --concurrency=N (default 1, i.e. the
+ * original sequential behavior). Each worker launches its own Chromium, so
+ * performance numbers get noisier under CPU contention than a serial run —
+ * fine for a quick pass/fail read while iterating, but the authoritative
+ * numbers (and what CI enforces) come from a serial run.
  */
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { cpus } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createStaticServer, discoverRoutes } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const PORT = Number(process.env.LH_PORT ?? 8932);
+const DEBUG_PORT = Number(process.env.LH_DEBUG_PORT ?? 9222);
+const FAST = process.argv.includes("--fast") || process.env.LH_FAST === "1";
 
 const THRESHOLDS = {
   // Mobile Lighthouse currently bottoms out at 62 on the indexable pages in
@@ -53,7 +66,7 @@ const NOINDEX_PERF = Number(process.env.LH_PERF_NOINDEX ?? 40);
 const RUNS = Number(
   process.argv.find((argument) => argument.startsWith("--runs="))?.slice(7) ??
     process.env.LH_RUNS ??
-    3,
+    (FAST ? 1 : 3),
 );
 const REPORT_DIR = process.env.LH_REPORT_DIR;
 
@@ -86,6 +99,60 @@ if (!existsSync(CLIENT)) {
   if (build.status !== 0) process.exit(1);
 }
 
+const pages = discoverRoutes(CLIENT).filter((p) => p.kind !== "error" && p.kind !== "redirect");
+const routes = process.env.LH_ROUTES?.split(",").filter(Boolean) ?? pages.map((p) => p.route);
+
+// Orchestrator/worker split for --fast / LH_CONCURRENCY: the parent shards
+// `routes` across N child processes (each its own Chromium + ports) and exits
+// with their combined status. LH_WORKER marks a child so it runs the normal
+// sequential path below on its slice instead of forking again.
+const explicitConcurrency =
+  process.argv.find((argument) => argument.startsWith("--concurrency="))?.slice(14) ??
+  process.env.LH_CONCURRENCY;
+const CONCURRENCY = Math.max(
+  1,
+  Math.min(Number(explicitConcurrency ?? (FAST ? cpus().length : 1)), routes.length || 1, 6),
+);
+
+if (CONCURRENCY > 1 && !process.env.LH_WORKER) {
+  const shards = Array.from({ length: CONCURRENCY }, () => []);
+  routes.forEach((route, i) => shards[i % CONCURRENCY].push(route));
+  const nonEmptyShards = shards.filter((shard) => shard.length > 0);
+
+  console.log(
+    `Lighthouse: splitting ${routes.length} route(s) across ${nonEmptyShards.length} parallel worker(s) ` +
+      `(${RUNS} run${RUNS > 1 ? "s" : ""} each)...`,
+  );
+
+  const runWorker = (shard, index) =>
+    new Promise((resolve) => {
+      const child = spawn(process.execPath, [SCRIPT_PATH], {
+        env: {
+          ...process.env,
+          LH_WORKER: "1",
+          LH_ROUTES: shard.join(","),
+          LH_RUNS: String(RUNS),
+          LH_PORT: String(PORT + index),
+          LH_DEBUG_PORT: String(DEBUG_PORT + index),
+        },
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+      const tag = `[w${index + 1}]`;
+      const relay = (stream, log) =>
+        stream.on("data", (chunk) => {
+          for (const line of chunk.toString().split("\n")) {
+            if (line.trim()) log(`${tag} ${line}`);
+          }
+        });
+      relay(child.stdout, console.log);
+      relay(child.stderr, console.error);
+      child.on("exit", (code) => resolve(code ?? 1));
+    });
+
+  const codes = await Promise.all(nonEmptyShards.map(runWorker));
+  process.exit(codes.some((code) => code !== 0) ? 1 : 0);
+}
+
 const server = createStaticServer(CLIENT);
 await new Promise((resolve) => server.listen(PORT, resolve));
 
@@ -95,7 +162,6 @@ const { chromium } = await import("playwright");
 // Launch Chromium ourselves (Playwright knows where it is on every platform)
 // and point Lighthouse at its debugging port. This avoids chrome-launcher's
 // platform-specific Chrome discovery, which fails on the Playwright build.
-const DEBUG_PORT = Number(process.env.LH_DEBUG_PORT ?? 9222);
 // Several arcade pages initialize canvas, audio, and WebGL; one Chromium for
 // the whole 40+ page sweep grows until the OS kills it (the same reason
 // check-pages recycles). Relaunch every PAGES_PER_BROWSER pages.
@@ -128,9 +194,6 @@ async function runAudit(url, categories) {
   });
   return JSON.parse(result.report);
 }
-
-const pages = discoverRoutes(CLIENT).filter((p) => p.kind !== "error" && p.kind !== "redirect");
-const routes = process.env.LH_ROUTES?.split(",").filter(Boolean) ?? pages.map((p) => p.route);
 
 let failed = false;
 let audited = 0;

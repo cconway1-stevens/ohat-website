@@ -26,6 +26,7 @@
     "check:bloat": "node dev/scripts/check-bloat.mjs",
     "check:bundle": "node dev/scripts/check-bundle.mjs",
     "check:lighthouse": "node dev/scripts/check-lighthouse.mjs",
+    "check:lighthouse:fast": "node dev/scripts/check-lighthouse.mjs --fast",
     "check:a11y": "node dev/scripts/check-a11y.mjs",
     "check:deadcode": "knip",
     "check:architecture": "depcruise src dev --config .dependency-cruiser.cjs",
