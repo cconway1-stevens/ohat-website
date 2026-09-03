@@ -87,26 +87,40 @@ export function ShopAlmanac() {
     if (!initial || initial.reading) return;
     const controller = new AbortController();
     let cancelled = false;
+    let delayTimer: ReturnType<typeof setTimeout> | undefined;
 
-    fetch(FORECAST_URL, { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (cancelled) return;
-        const temperature = data?.current?.temperature_2m;
-        const code = data?.current?.weather_code;
-        if (typeof temperature === "number" && typeof code === "number") {
-          const result = `${Math.round(temperature)}° ${describe(code)}`;
-          writeCache(result);
-          setFetched(result);
-        }
-      })
-      .catch(() => {
-        // The weather is an embellishment, never a dependency — the dateline
-        // stands complete without it.
-      });
+    function fetchForecast() {
+      fetch(FORECAST_URL, { signal: controller.signal })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (cancelled) return;
+          const temperature = data?.current?.temperature_2m;
+          const code = data?.current?.weather_code;
+          if (typeof temperature === "number" && typeof code === "number") {
+            const result = `${Math.round(temperature)}° ${describe(code)}`;
+            writeCache(result);
+            setFetched(result);
+          }
+        })
+        .catch(() => {
+          // The weather is an embellishment, never a dependency — the dateline
+          // stands complete without it.
+        });
+    }
+
+    function scheduleForecast() {
+      // Keep this decorative request out of the hero's critical window. The
+      // masthead remains complete with its location and date in the meantime.
+      delayTimer = setTimeout(fetchForecast, 3000);
+    }
+
+    if (document.readyState === "complete") scheduleForecast();
+    else window.addEventListener("load", scheduleForecast, { once: true });
 
     return () => {
       cancelled = true;
+      window.removeEventListener("load", scheduleForecast);
+      if (delayTimer) clearTimeout(delayTimer);
       controller.abort();
     };
   }, [initial]);

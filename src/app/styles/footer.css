@@ -45,7 +45,6 @@
   top: 33px;
   height: 7px;
   background: repeating-linear-gradient(90deg, var(--yellow) 0 55px, transparent 55px 92px);
-  animation: road-lines 1.1s linear infinite;
 }
 .classic-car {
   position: absolute;
@@ -328,52 +327,43 @@
 @keyframes bay-green-cycle {
   0%,
   55% {
-    background: radial-gradient(circle at 35% 30%, #7df0a4, #23a74f 70%);
-    box-shadow: 0 0 8px 2px rgba(47, 191, 95, 0.55);
+    opacity: 1;
   }
   57%,
   93% {
-    background: #151210;
-    box-shadow: none;
+    opacity: 0.16;
   }
   95%,
   100% {
-    background: radial-gradient(circle at 35% 30%, #7df0a4, #23a74f 70%);
-    box-shadow: 0 0 8px 2px rgba(47, 191, 95, 0.55);
+    opacity: 1;
   }
 }
 @keyframes bay-yellow-cycle {
   0%,
   55% {
-    background: #151210;
-    box-shadow: none;
+    opacity: 0.16;
   }
   57%,
   63% {
-    background: radial-gradient(circle at 35% 30%, #ffe08a, #d99e06 70%);
-    box-shadow: 0 0 8px 2px rgba(242, 183, 5, 0.55);
+    opacity: 1;
   }
   65%,
   100% {
-    background: #151210;
-    box-shadow: none;
+    opacity: 0.16;
   }
 }
 @keyframes bay-red-cycle {
   0%,
   63% {
-    background: #151210;
-    box-shadow: none;
+    opacity: 0.16;
   }
   65%,
   93% {
-    background: radial-gradient(circle at 35% 30%, #ff9a8a, #c22e22 70%);
-    box-shadow: 0 0 8px 2px rgba(224, 58, 47, 0.55);
+    opacity: 1;
   }
   95%,
   100% {
-    background: #151210;
-    box-shadow: none;
+    opacity: 0.16;
   }
 }
 @keyframes wheel-roll {
@@ -413,24 +403,12 @@
     transform-origin: left;
   }
 }
-@keyframes road-lines {
-  to {
-    background-position: 92px 0;
-  }
-}
-@keyframes ride-lanes {
-  to {
-    background-position: 136px 50%;
-  }
-}
 @keyframes car-drive {
   from {
-    left: 7%;
     transform: translateY(0);
   }
   to {
-    left: calc(100% - 230px);
-    transform: translateY(-2px);
+    transform: translateX(calc(93vw - 230px)) translateY(-2px);
   }
 }
 @keyframes catalog-logo-roll {
@@ -582,23 +560,6 @@
     opacity: 0.3;
   }
 }
-/* A slow halo ripple on call buttons: one pulse per cycle with a long rest,
-   so the eye is drawn to the phone number without the page feeling jittery.
-   The hard ink shadow is preserved as the first layer at every step. */
-@keyframes call-pulse {
-  0%,
-  62%,
-  100% {
-    box-shadow:
-      5px 5px 0 var(--ink),
-      0 0 0 0 rgba(246, 189, 56, 0.55);
-  }
-  78% {
-    box-shadow:
-      5px 5px 0 var(--ink),
-      0 0 0 13px rgba(246, 189, 56, 0);
-  }
-}
 @keyframes backdrop-fade {
   from {
     opacity: 0;
@@ -735,15 +696,6 @@
   }
   .arcade-coin-badge {
     animation: coin-blink 1.5s steps(2, jump-none) infinite;
-  }
-  /* Conversion: every primary call button breathes a soft halo once a cycle. */
-  a[href^="tel:"].button-primary {
-    animation: call-pulse 3.6s ease-out infinite;
-  }
-  /* Animations outrank the hover shadow, so drop the pulse on hover to let
-     the pressed-lift state read clearly. */
-  a[href^="tel:"].button-primary:hover {
-    animation: none;
   }
 }
 

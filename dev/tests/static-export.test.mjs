@@ -213,13 +213,16 @@ test("only the latin font subset is preloaded", () => {
   assert.ok(preloadingPages > 20, `expected the full page set, got ${preloadingPages}`);
 });
 
-test("the page warms the origins it fetches from", () => {
-  // Open-Meteo is called from a client component in the masthead, so without
-  // a hint the browser does not resolve the origin until hydration.
+test("deferred third parties do not compete with critical requests", () => {
   const html = readFileSync(join(outDir, "index.html"), "utf8");
   const origins = [...html.matchAll(/<link\b[^>]*rel="preconnect"[^>]*>/g)];
 
-  assert.match(html, /rel="preconnect"[^>]*href="https:\/\/api\.open-meteo\.com"/);
+  assert.doesNotMatch(
+    html,
+    /rel="preconnect"[^>]*href="https:\/\/(?:api\.open-meteo\.com|www\.googletagmanager\.com)"/,
+  );
+  assert.match(html, /document\.createElement\('script'\)/);
+  assert.doesNotMatch(html, /<script[^>]+src="https:\/\/www\.googletagmanager\.com/);
   // Past four, preconnects start competing with the requests they exist to
   // accelerate.
   assert.ok(origins.length <= 4, `${origins.length} preconnects is more than the guidance allows`);

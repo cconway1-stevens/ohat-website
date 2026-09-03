@@ -115,7 +115,7 @@ and re-imported from `app/globals.css`.
 | `/links/qr`                                                                                        | QR-code landing for the link tree (noindex)                                             |
 | `/privacy`                                                                                         | Privacy notice (noindex)                                                                |
 | `/arcade` (+ 15 games)                                                                             | The Garage Arcade — easter-egg games, all noindex                                       |
-| `/adgent`                                                                                          | Dev playground for the pixel-crew mascot and chat brain (noindex)                       |
+| `/agent`                                                                                          | Dev playground for the pixel-crew mascot and chat brain (noindex)                       |
 | `/contact-card.vcf`                                                                                | Downloadable vCard                                                                      |
 | Legacy: `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments` | Permanent redirects to the new structure                                                |
 
