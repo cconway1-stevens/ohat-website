@@ -36,8 +36,8 @@ export default function LinksPage() {
             // Pre-built AVIF, not the source PNG — matches the header's
             // BrandMark, which already does this correctly.
             src="/media/logo-transparent.avif"
-            width={315}
-            height={231}
+            width={176}
+            height={129}
             alt="Ocean Heights Auto and Tire"
             priority
           />

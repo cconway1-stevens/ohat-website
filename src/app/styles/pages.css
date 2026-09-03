@@ -1007,6 +1007,9 @@
   box-shadow: 8px 8px 0 var(--blue);
   transform: rotate(-0.35deg);
 }
+.service-panel-why-us .eyebrow.dark {
+  color: var(--red-dark);
+}
 .service-panel-cost {
   grid-column: span 7;
   background: var(--ink);
@@ -1680,4 +1683,67 @@
   padding-top: 0.7rem;
   color: var(--muted);
   font-size: 0.75rem;
+}
+
+.award-section {
+  position: relative;
+  padding: clamp(6rem, 11vw, 10rem) 0;
+  background: var(--red);
+  color: #fff;
+}
+.award-grid {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+}
+.award-badge {
+  width: min(100%, 360px);
+  aspect-ratio: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border: 12px double var(--yellow);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 14px 14px 0 var(--ink);
+  transform: rotate(-4deg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.award-badge:hover {
+  transform: rotate(-2deg) scale(1.04);
+  box-shadow: 18px 18px 0 var(--ink);
+}
+.award-badge img {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: 0 auto 0.35rem;
+}
+.award-badge small {
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.15em;
+}
+.award-badge strong {
+  color: var(--red);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 0.9;
+}
+.award-badge b {
+  color: var(--red);
+  letter-spacing: 0.13em;
+}
+.award-grid > div:last-child > p:not(.eyebrow) {
+  max-width: 650px;
+  color: #f2dcdc;
+  line-height: 1.7;
+}
+
+.reviews-section {
+  padding-top: clamp(6rem, 11vw, 9rem);
 }

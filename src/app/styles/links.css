@@ -25,7 +25,17 @@
   color: var(--ink);
   box-shadow: 12px 12px 0 var(--yellow);
   text-align: center;
-  animation: sheet-in 0.6s ease-out both;
+  /* Keep the whole card eligible as an LCP candidate. An opacity entrance on
+     the only content container makes Lighthouse's trace engine report NO_LCP. */
+  animation: link-sheet-in 0.6s ease-out both;
+}
+@keyframes link-sheet-in {
+  from {
+    transform: translateY(22px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 .link-hub-logo {
   display: inline-block;

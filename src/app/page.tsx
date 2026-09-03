@@ -136,10 +136,7 @@ export default function Home() {
 
         <section className="garage-credentials" aria-labelledby="garage-credentials-title">
           <div className="garage-locator">
-            <DirectionsTrigger
-              className="garage-locator-address"
-              label={`Choose a directions app for ${shop.address.street}`}
-            >
+            <DirectionsTrigger className="garage-locator-address">
               <span>Find us down the Shore</span>
               <strong>{shop.address.street}</strong>
               <em>{shop.address.region}</em>
