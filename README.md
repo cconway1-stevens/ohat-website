@@ -52,7 +52,11 @@ push to `main` and every pull request, cheapest and most decisive first:
   GitHub Pages when Pages is configured at a domain root.
 
 Every check is also runnable locally via `npm run check:<name>`; `npm run
-check:all` runs the whole sequence in CI order. The individual checks are:
+check:all` runs the whole sequence in CI order. `npm run report` runs that same
+full sequence but pushes through failures, records each step's run time, and
+writes the combined results to the gitignored `dev/reports/report.md` (`--fix`
+lets Biome write formatting fixes; `--no-build` skips the two builds and the
+browser asset check). The individual checks are:
 
 | Command                      | What it verifies                                                                                          |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -66,6 +70,7 @@ check:all` runs the whole sequence in CI order. The individual checks are:
 | `npm run check:a11y`         | Zero axe-core WCAG 2.1 AA violations on **every page**                                                    |
 | `npm run check:slow-network` | Every page loads within budget on a throttled slow-3G connection                                          |
 | `npm run check:memory`       | No DOM-node or heap growth across repeated navigation                                                     |
+| `npm run report`             | Full CI-order gate that runs **every step even after a failure** and writes a per-step report to `dev/reports/report.md` |
 
 The canonical testing document is `dev/docs/test-program.md`: the master test
 matrix, the page-discovery rules, and which checks gate PRs vs run scheduled.

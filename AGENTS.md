@@ -6,6 +6,7 @@ Next.js App Router site for Ocean Heights Auto & Tire, built on **vinext** (Vite
 
 - `npm run check` — the real pre-push gate (junk scan → Biome format → Biome lint → Next.js lint → typecheck → dead code → architecture → tests → real-browser asset check), ordered cheapest-first. Run this before pushing, not just `lint`/`test`.
 - `npm run check:fix` — same, but lets Biome write formatting fixes.
+- `npm run report` — same full gate but pushes through failures and writes per-step timings to the gitignored `dev/reports/report.md` (`--fix`, `--no-build` flags supported).
 - `npm test` — builds BOTH the Cloudflare and static artifacts, then runs route/SEO/hours/static-export tests. Slow; run it last.
 - `npm run typecheck` — required locally and in CI; TypeScript errors block merging.
 - `npm run check:deadcode` — `knip`; unused files/exports/deps fail CI.

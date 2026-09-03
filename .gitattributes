@@ -1,0 +1,23 @@
+# Normalize line endings: LF in the working tree on every platform.
+#
+# The committed blobs are LF and Biome (which enforces formatting) expects LF.
+# Without this, Windows checkouts smudge files to CRLF and `npm run
+# format:check` fails with dozens of phantom whitespace diffs.
+* text=auto eol=lf
+
+# Never normalize binaries.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp3 binary
+*.wav binary
+*.wasm binary
+*.zip binary
