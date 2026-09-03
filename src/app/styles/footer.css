@@ -489,6 +489,13 @@
   [data-reveal]:not(.is-revealed) {
     opacity: 0;
   }
+  /* Printing never fires the scroll observer, so print would otherwise
+     output blank sections wherever the page was never scrolled. */
+  @media print {
+    [data-reveal]:not(.is-revealed) {
+      opacity: 1;
+    }
+  }
   .garage-proof-ticket.is-revealed {
     animation: ticket-in 0.5s ease-out backwards;
   }
