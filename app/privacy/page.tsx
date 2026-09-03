@@ -92,6 +92,11 @@ export default function PrivacyPage() {
                 this site served from Vercel. It sets no cookies, collects nothing personal, and
                 does not follow you between sites.
               </li>
+              <li>
+                <strong>Vercel Speed Insights</strong> — page load performance (how fast pages
+                render), on the copy of this site served from Vercel. It sets no cookies and
+                collects nothing personal.
+              </li>
             </ul>
             <p>
               We have deliberately turned off the advertising side of Google Analytics. Google

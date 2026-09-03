@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { CallTracking } from "@/components/analytics";
 import { VercelAnalytics } from "@/components/vercel-analytics";
+import { VercelSpeedInsights } from "@/components/vercel-speed-insights";
 import { gaMeasurementId } from "@/lib/analytics";
 import { shop } from "@/lib/shop";
 import "tetris-kit/layout.css";
@@ -132,6 +133,7 @@ gtag('config', '${gaMeasurementId}', {
             Vercel host — the script lives on Vercel's edge and this same
             export is also served from GitHub Pages. See the component. */}
         <VercelAnalytics />
+        <VercelSpeedInsights />
       </body>
     </html>
   );
