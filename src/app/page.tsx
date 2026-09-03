@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
 import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
 import { DirectionsTrigger } from "@/components/ui/directions-dialog";
+import { OvalBadge } from "@/components/ui/oval-badge";
 import { SiteImage } from "@/components/ui/site-image";
 import { brandSrc, heroMakes } from "@/lib/makes";
 import { services } from "@/lib/services";
@@ -58,20 +59,86 @@ export default function Home() {
         />
         <section className="hero" id="top">
           <div className="shell hero-grid">
+            {/* The hero copy is a service record card lying on the asphalt:
+                folio header, the shop's oval badge as the stamp of record,
+                then the plain-English declaration of what the shop does so a
+                first-time visitor never has to guess. */}
             <div className="hero-copy">
-              <p className="hero-badge">
-                <span>Family owned &amp; operated</span>
-                <span aria-hidden="true">·</span>
-                <span>Egg Harbor Township, NJ</span>
+              <p className="record-head">
+                <span>Service record · No. 001</span>
+                <span>Family owned &amp; operated · Egg Harbor Township, NJ</span>
               </p>
+              <OvalBadge className="hero-oval-badge" />
+              {/* Round rubber stamp, half off the card's edge like it was
+                  inked on at the counter. Factual claims only — the same
+                  40+ years the credentials band tickets. */}
+              <svg className="hero-years-stamp" viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                  <path
+                    id="hero-stamp-ring"
+                    d="M 60 60 m -44 0 a 44 44 0 1 1 88 0 a 44 44 0 1 1 -88 0"
+                    fill="none"
+                  />
+                </defs>
+                <circle cx={60} cy={60} r={56} fill="none" stroke="var(--red)" strokeWidth={3} />
+                <circle cx={60} cy={60} r={33} fill="none" stroke="var(--red)" strokeWidth={2} />
+                <text
+                  fontFamily="var(--font-geist-sans), Arial, sans-serif"
+                  fontSize={12.5}
+                  fontWeight={950}
+                  letterSpacing={1.5}
+                  fill="var(--red)"
+                >
+                  <textPath href="#hero-stamp-ring" startOffset="75%" textAnchor="middle">
+                    FAMILY OWNED &amp; OPERATED ·
+                  </textPath>
+                </text>
+                <text
+                  x={60}
+                  y={62}
+                  textAnchor="middle"
+                  fontFamily="var(--font-serif)"
+                  fontSize={30}
+                  fontWeight={900}
+                  fill="var(--red)"
+                >
+                  40+
+                </text>
+                <text
+                  x={60}
+                  y={78}
+                  textAnchor="middle"
+                  fontFamily="var(--font-geist-sans), Arial, sans-serif"
+                  fontSize={10}
+                  fontWeight={950}
+                  letterSpacing={1.5}
+                  fill="var(--red)"
+                >
+                  YEARS
+                </text>
+              </svg>
+              {/* Cover-title type, straight off a parts catalog: a red serif
+                  kicker, the giant slanted grotesque with hard 3D depth, then
+                  the black band echoing the badge's own. Reading order is
+                  still one sentence: Complete Auto Repair & Tire Service. */}
               <h1>
-                Ocean Heights <em>Auto &amp; Tire</em>
+                <span className="hero-h1-kicker">Complete</span>
+                <span className="hero-h1-big">Auto Repair</span>
+                <span className="hero-h1-band">
+                  <em>&amp;</em> Tire Service
+                </span>
               </h1>
+              <dl className="hero-ledger">
+                <div>
+                  <dt>Services</dt>
+                  <dd>Diagnostics · brakes · tires · oil &amp; maintenance</dd>
+                </div>
+                <div>
+                  <dt>Vehicles</dt>
+                  <dd>Carbureted classics to brand-new EVs — every make welcome</dd>
+                </div>
+              </dl>
               <p className="hero-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
-              <p className="hero-lede">
-                From carbureted classics to brand-new EVs, every car in your driveway is welcome
-                here.
-              </p>
               <div className="hero-cta">
                 <a className="button button-primary" href={phoneHref}>
                   Call {phoneDisplay}
@@ -84,19 +151,9 @@ export default function Home() {
                   "are they open?" is answered before it becomes a reason
                   not to dial. */}
               <p className="hero-status">
+                <span className="hero-status-label">Status</span>
                 <ShopHoursStatus />
               </p>
-              <ul className="hero-trust" aria-label="Shop credentials">
-                <li>
-                  <strong>ASE</strong> Certified techs
-                </li>
-                <li>
-                  <strong>40+</strong> years family run
-                </li>
-                <li>
-                  <strong>5.0★</strong> CARFAX rated
-                </li>
-              </ul>
             </div>
 
             <figure className="hero-photo">
@@ -129,7 +186,16 @@ export default function Home() {
                 </span>
                 <span className="bay-signal-tag">Bay 1</span>
               </span>
-              <figcaption>Classics, dailies &amp; EVs — one driveway</figcaption>
+              {/* Tilted catalog sticker, like the "Matching Numbers" box on
+                  an old cover. Decorative — the ledger's Vehicles row already
+                  carries this for assistive tech. */}
+              <span className="hero-photo-sticker" aria-hidden="true">
+                <strong>All makes · all eras</strong>
+                <small>Gas · diesel · hybrid · EV · classics</small>
+              </span>
+              <figcaption>
+                <span>Plate No. 1</span> Classics, dailies &amp; EVs — one driveway
+              </figcaption>
             </figure>
           </div>
         </section>
@@ -148,7 +214,7 @@ export default function Home() {
 
           <div className="garage-credentials-grid">
             <div className="garage-service-promise">
-              <p className="garage-issue-line">Service counter · all makes desk</p>
+              <p className="garage-issue-line">Service log · credentials page</p>
               <h2 id="garage-credentials-title">Every car in the driveway. One family garage.</h2>
               <p>
                 New commuter, old favorite, work truck, or weekend classic—we have the tools and
