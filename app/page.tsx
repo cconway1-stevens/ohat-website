@@ -104,8 +104,8 @@ export default function Home() {
                 <div className="cover-copy-panel cover-copy-details">
                   <p className="cover-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
                   <p className="cover-lede">
-                    From carbureted classics to brand-new EVs, every car in your driveway is
-                    welcome here.
+                    From carbureted classics to brand-new EVs, every car in your driveway is welcome
+                    here.
                   </p>
 
                   <div className="cover-actions">

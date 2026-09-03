@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+# Runs the same checks CI runs (format, lint, tests, build) before a push
+# leaves this machine, so a failure like an unformatted file shows up in
+# seconds locally instead of red in the PR's "Full quality suite" check.
+#
+# Wired in automatically by `npm install` via the "prepare" script, which
+# sets core.hooksPath to this directory. Skip once with
+# `git push --no-verify` if you deliberately need to push without it.
+set -uo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+npm run check
