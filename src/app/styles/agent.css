@@ -1,0 +1,1358 @@
+/* Agent Studio — retro game-menu shell: framed panels, a character dossier
+   with stat bars, feature call-out badges, and a CRT stage. */
+
+.agent-studio {
+  --agent-scanline: 0.04;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  background: var(--cream);
+}
+.agent-studio.agent-scan-subtle {
+  --agent-scanline: 0.015;
+}
+.agent-studio.agent-scan-full {
+  --agent-scanline: 0.05;
+}
+
+/* --- sidebar (dark CRT) -------------------------------------------------- */
+
+.agent-sidebar {
+  background: #0d0c0a;
+  color: #5dd56e;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  font-family: var(--font-vt323), ui-monospace, monospace;
+  font-size: var(--agent-font-size, 18px);
+}
+.agent-sidebar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, var(--agent-scanline)) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.agent-logo {
+  font-family: var(--font-pixel), monospace;
+  font-size: 14px;
+  color: #f6a30b;
+  margin: 0;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(246, 163, 11, 0.4);
+}
+
+.agent-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 0.5rem;
+}
+.agent-nav button {
+  background: transparent;
+  border: none;
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--agent-font-size, 18px);
+  text-align: left;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.1s;
+}
+.agent-nav button:hover {
+  background: rgba(93, 213, 110, 0.1);
+}
+.agent-nav button.is-active {
+  color: #f6a30b;
+  background: rgba(246, 163, 11, 0.12);
+}
+
+.agent-side-agent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(93, 213, 110, 0.2);
+}
+.agent-side-agent-label {
+  font-family: var(--font-pixel), monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: rgba(93, 213, 110, 0.6);
+}
+.agent-side-agent-name {
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #f6a30b;
+}
+.agent-side-agent select {
+  background: #16130f;
+  color: #5dd56e;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  border-radius: 3px;
+  font-family: var(--font-vt323), monospace;
+  font-size: 16px;
+  padding: 0.15rem 0.3rem;
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.agent-sidebar-foot {
+  margin-top: auto;
+  color: rgba(93, 213, 110, 0.5);
+  font-size: 0.85em;
+}
+.agent-sidebar-foot p {
+  margin: 0.2rem 0;
+}
+
+/* --- main content -------------------------------------------------------- */
+
+.agent-main {
+  padding: 1.5rem 2rem 2.5rem;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.agent-main-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.agent-main-head h2 {
+  font-family: var(--font-pixel), monospace;
+  font-size: 18px;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+.agent-feature-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.agent-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+}
+
+/* --- game panel (frame) --------------------------------------------------- */
+
+.agent-frame {
+  position: relative;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.agent-frame.is-dark {
+  background: #0d0c0a;
+  color: #5dd56e;
+}
+.agent-frame.is-dark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, var(--agent-scanline)) 0 1px,
+    transparent 1px 4px
+  );
+}
+.agent-frame-head {
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 0.75rem;
+  background: var(--ink);
+  color: var(--yellow);
+  border-bottom: 3px solid var(--ink);
+}
+.agent-frame.is-dark .agent-frame-head {
+  background: #16130f;
+  color: #f6a30b;
+  border-bottom-color: rgba(93, 213, 110, 0.25);
+}
+.agent-frame-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+.agent-fill {
+  flex: 1;
+}
+
+/* --- feature badges ------------------------------------------------------- */
+
+.agent-badge {
+  font-family: var(--font-pixel), monospace;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.5rem;
+  background: #0d0c0a;
+  color: #5dd56e;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 var(--ink);
+  white-space: nowrap;
+}
+
+/* --- stat bars ------------------------------------------------------------ */
+
+.agent-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.agent-stat {
+  display: grid;
+  grid-template-columns: 64px 1fr 24px;
+  align-items: center;
+  gap: 0.5rem;
+}
+.agent-stat-label {
+  font-family: var(--font-pixel), monospace;
+  font-size: 8px;
+  color: var(--muted);
+}
+.agent-stat-bar {
+  height: 10px;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.agent-stat-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--yellow));
+}
+.agent-stat-val {
+  font-family: var(--font-vt323), monospace;
+  font-size: 16px;
+  color: var(--ink);
+  text-align: right;
+}
+
+/* --- pixel canvas --------------------------------------------------------- */
+
+.agent-pixel {
+  image-rendering: pixelated;
+  /* biome-ignore lint/suspicious/noDuplicateProperties: pixelated is the fallback, crisp-edges the standard — both intentional. */
+  image-rendering: crisp-edges;
+  background: #0d0c0a;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+}
+.agent-pixel-lg {
+  width: 256px;
+  height: 256px;
+}
+.agent-pixel-sm {
+  width: 64px;
+  height: 64px;
+  border-width: 2px;
+  border-radius: 4px;
+}
+
+/* 3D object canvases — same dark framed look as the pixel stage. */
+.agent-object3d {
+  background: #0d0c0a;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.agent-object3d-lg {
+  width: 256px;
+  height: 256px;
+}
+.agent-object3d-sm {
+  width: 64px;
+  height: 64px;
+  border-width: 2px;
+  border-radius: 4px;
+}
+
+/* --- looks mode: stage + dossier ------------------------------------------ */
+
+.agent-looks-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .agent-looks-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+.agent-stage .agent-frame-body {
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.agent-stage-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 1rem 0 0;
+}
+.agent-stage-pedestal {
+  width: 60%;
+  height: 8px;
+  margin-top: -4px;
+  background: linear-gradient(180deg, #2a2a2a, #0d0c0a);
+  border: 2px solid rgba(93, 213, 110, 0.3);
+  border-radius: 50%;
+}
+.agent-stage-name {
+  font-family: var(--font-pixel), monospace;
+  font-size: 16px;
+  color: #f6a30b;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+  text-shadow: 0 0 8px rgba(246, 163, 11, 0.4);
+}
+.agent-stage-zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-vt323), monospace;
+  color: rgba(93, 213, 110, 0.7);
+  font-size: 14px;
+}
+.agent-stage-zoom button {
+  background: transparent;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: 14px;
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.agent-stage-zoom button.is-active {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+
+.agent-dossier-name {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin: 0;
+  color: var(--ink);
+}
+.agent-dossier-blurb {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+.agent-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+/* --- crew select + customize ---------------------------------------------- */
+
+.agent-crew-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 700px) {
+  .agent-crew-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.agent-crew-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: transform 0.1s;
+}
+.agent-crew-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.agent-crew-card.is-active {
+  border-color: var(--red);
+  box-shadow: 3px 3px 0 var(--red);
+  background: var(--yellow-tint);
+}
+
+.agent-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-end;
+}
+.agent-controls-stack {
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 420px;
+  gap: 1rem;
+}
+.agent-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.agent-field-grow {
+  flex: 1;
+  min-width: 180px;
+}
+.agent-field select,
+.agent-field input[type="range"] {
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.3rem 0.4rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  background: var(--cream);
+}
+
+/* --- behavior mode --------------------------------------------------------- */
+
+.agent-mini-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+.agent-mini-picker button {
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  padding: 2px;
+  cursor: pointer;
+  line-height: 0;
+}
+.agent-mini-picker button.is-active {
+  border-color: var(--yellow);
+}
+.agent-mini-picker .agent-pixel {
+  border-width: 2px;
+  border-radius: 4px;
+}
+
+.agent-emote-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.agent-emote-row button {
+  padding: 0.4rem 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--yellow);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.1s;
+}
+.agent-emote-row button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.agent-emote-row button.is-active {
+  background: var(--red);
+  color: var(--cream);
+}
+.agent-play {
+  background: var(--blue) !important;
+  color: white !important;
+}
+
+.agent-behavior-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.agent-behavior-list > div {
+  padding: 0.6rem 0.75rem;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+.agent-behavior-list dt {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.agent-behavior-list dd {
+  margin: 0.2rem 0 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* --- dark terminal readout ------------------------------------------------- */
+
+.agent-terminal {
+  background: #0d0c0a;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.75rem;
+  position: relative;
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--agent-font-size, 18px);
+  overflow: hidden;
+}
+.agent-terminal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, var(--agent-scanline)) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+/* --- brains mode ----------------------------------------------------------- */
+
+.agent-brains-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  flex: 1;
+  min-height: 0;
+}
+@media (max-width: 1000px) {
+  .agent-brains-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.agent-brains-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.agent-filter {
+  width: 100%;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+.agent-faq-list {
+  flex: 1;
+  min-height: 0;
+  max-height: 62vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.25rem;
+}
+.agent-faq {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.agent-faq summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.agent-faq-test {
+  margin: 0.25rem 0 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  background: var(--yellow);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.agent-faq-test:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.agent-faq-name {
+  display: block;
+  color: var(--red);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.agent-faq p {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0.4rem 0 0 0;
+}
+
+.agent-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.agent-lab-input {
+  display: flex;
+  gap: 0.5rem;
+}
+.agent-lab-input input {
+  flex: 1;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+.agent-lab-input button,
+.agent-prompts button {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.2rem 0.75rem;
+  cursor: pointer;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.agent-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.agent-prompts button {
+  background: var(--blue);
+  color: white;
+}
+
+.agent-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.agent-answer {
+  padding: 0.75rem;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+.agent-answer p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+.agent-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.agent-chip {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--red);
+  border-radius: 3px;
+  color: var(--red);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.agent-chip:hover {
+  background: var(--red);
+  color: var(--cream);
+}
+
+.agent-debug {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.5rem;
+}
+.agent-debug dt {
+  color: rgba(93, 213, 110, 0.5);
+}
+.agent-debug dd {
+  margin: 0;
+  color: #c8e6c8;
+}
+.agent-tokens {
+  margin: 0.5rem 0 0 0;
+  color: rgba(93, 213, 110, 0.7);
+  font-size: 0.85em;
+}
+.agent-fallback {
+  color: #f6a30b;
+  font-style: italic;
+}
+
+.agent-synonym-add {
+  display: flex;
+  gap: 0.4rem;
+}
+.agent-synonym-add input {
+  flex: 1;
+  min-width: 0;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.8rem;
+}
+.agent-synonym-add button {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+.agent-synonym-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+}
+.agent-synonym-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0;
+}
+.agent-synonym-list button {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-weight: 700;
+}
+.agent-hint {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* --- sources mode ----------------------------------------------------------- */
+
+.agent-tree {
+  margin: 0;
+  white-space: pre;
+  line-height: 1.5;
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--agent-font-size, 18px);
+}
+
+.agent-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+@media (max-width: 700px) {
+  .agent-compare {
+    grid-template-columns: 1fr;
+  }
+}
+.agent-compare-col {
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.agent-compare-col h4 {
+  font-family: var(--font-pixel), monospace;
+  font-size: 9px;
+  color: var(--ink);
+  margin: 0;
+}
+.agent-compare-col p {
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* --- history mode ------------------------------------------------------------ */
+
+.agent-history-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.agent-seg {
+  display: flex;
+  gap: 2px;
+}
+.agent-seg button {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+}
+.agent-seg button.is-active {
+  background: var(--yellow);
+}
+.agent-history-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.agent-history-actions button {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+}
+.agent-history-actions button:hover {
+  background: var(--yellow);
+}
+
+.agent-empty {
+  color: var(--muted);
+  font-style: italic;
+}
+.agent-history-list {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.agent-history-row {
+  border-bottom: 1px solid var(--line);
+}
+.agent-history-row:last-child {
+  border-bottom: none;
+}
+.agent-history-row summary {
+  display: grid;
+  grid-template-columns: 150px 1fr 160px 60px;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  align-items: center;
+}
+.agent-history-row p {
+  margin: 0;
+  padding: 0 0.75rem 0.75rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.agent-history-time {
+  color: var(--muted);
+  font-family: var(--font-vt323), monospace;
+}
+.agent-history-q {
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agent-history-match {
+  color: var(--red);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agent-history-score {
+  color: var(--muted);
+  font-family: var(--font-vt323), monospace;
+}
+
+/* --- settings mode ------------------------------------------------------------ */
+
+.agent-settings-frame {
+  max-width: 480px;
+}
+.agent-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.agent-toggle input {
+  width: 18px;
+  height: 18px;
+}
+.agent-reset {
+  background: var(--red);
+  color: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 var(--ink);
+  align-self: flex-start;
+}
+
+/* --- code mode ------------------------------------------------------------------ */
+
+.agent-code-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.agent-code-tabs button {
+  background: transparent;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: 14px;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.agent-code-tabs button.is-active {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+.agent-code {
+  margin: 0;
+  white-space: pre-wrap;
+  color: #c8e6c8;
+  line-height: 1.5;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--agent-font-size, 18px);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+/* --- demo mode (test drive) ------------------------------------------------- */
+
+.agent-demo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .agent-demo {
+    grid-template-columns: 1fr;
+  }
+}
+.agent-demo-frame .agent-frame-body {
+  gap: 0.75rem;
+  min-height: 0;
+}
+.agent-demo-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.agent-demo-title {
+  display: flex;
+  flex-direction: column;
+}
+.agent-demo-title strong {
+  font-family: var(--font-pixel), monospace;
+  font-size: 12px;
+  color: #f6a30b;
+}
+.agent-demo-title span {
+  color: rgba(93, 213, 110, 0.6);
+  font-size: 0.85em;
+}
+.agent-demo-log {
+  flex: 1;
+  min-height: 220px;
+  max-height: 46vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(93, 213, 110, 0.15);
+  border-radius: 6px;
+}
+.agent-msg {
+  display: flex;
+}
+.agent-msg-user {
+  justify-content: flex-end;
+}
+.agent-bubble {
+  position: relative;
+  max-width: 85%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.agent-msg-tread .agent-bubble {
+  background: rgba(93, 213, 110, 0.12);
+  border: 1px solid rgba(93, 213, 110, 0.3);
+  color: #c8e6c8;
+}
+.agent-msg-user .agent-bubble {
+  background: var(--yellow);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+.agent-bubble p {
+  margin: 0;
+}
+.agent-bubble .agent-chips {
+  margin-top: 0.5rem;
+}
+.agent-rate {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+.agent-rate button {
+  background: transparent;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  color: #5dd56e;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1;
+}
+.agent-rate button:hover {
+  background: rgba(93, 213, 110, 0.15);
+}
+.agent-rate button.is-active {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+.agent-thinking {
+  display: flex;
+  gap: 4px;
+}
+.agent-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5dd56e;
+  animation: agent-blink 1s infinite;
+}
+.agent-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.agent-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes agent-blink {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.agent-eval-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+.agent-demo-side .agent-badges {
+  margin-top: auto;
+}
+
+/* --- notes mode (feedback) -------------------------------------------------- */
+
+.agent-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.agent-note {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  background: var(--cream);
+}
+.agent-note-like {
+  border-left: 6px solid var(--blue);
+}
+.agent-note-hate {
+  border-left: 6px solid var(--red);
+}
+.agent-note-note {
+  border-left: 6px solid var(--yellow);
+}
+.agent-note header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.agent-note-icon {
+  font-weight: 700;
+}
+.agent-note-like .agent-note-icon {
+  color: var(--blue);
+}
+.agent-note-hate .agent-note-icon {
+  color: var(--red);
+}
+.agent-note-meta {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-vt323), monospace;
+  flex: 1;
+}
+.agent-note header button {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-weight: 700;
+}
+.agent-note p {
+  margin: 0;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+.agent-note-target {
+  color: var(--blue);
+  font-family: var(--font-vt323), monospace;
+  font-size: 0.8rem;
+  margin: 0 0 0.3rem 0;
+}
+
+/* --- floating notepad -------------------------------------------------------- */
+
+.agent-notepad-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 50;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.agent-notepad-fab:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.agent-notepad {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 5.5rem;
+  z-index: 50;
+  width: 300px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.agent-notepad-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.agent-notepad-head strong {
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+}
+.agent-notepad-head span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-vt323), monospace;
+}
+.agent-notepad textarea {
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.4rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+.agent-notepad-save {
+  background: var(--blue);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.4rem;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.agent-notepad-pick {
+  background: var(--cream);
+  border: 2px dashed var(--ink);
+  border-radius: 6px;
+  padding: 0.4rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+.agent-notepad-pick:hover {
+  background: var(--yellow-tint);
+}
+.agent-notepad-target {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--blue-tint);
+  border: 2px solid var(--blue);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  font-family: var(--font-vt323), monospace;
+}
+.agent-notepad-target span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agent-notepad-target button {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* --- element picker overlay ------------------------------------------------- */
+
+.agent-pick-banner {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: var(--ink);
+  color: var(--yellow);
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  box-shadow: var(--hard-shadow);
+  pointer-events: none;
+}
+.agent-pick-highlight {
+  position: fixed;
+  z-index: 99;
+  border: 3px solid var(--yellow);
+  background: rgba(246, 189, 56, 0.15);
+  border-radius: 4px;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+/* --- responsive ------------------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .agent-studio {
+    grid-template-columns: 1fr;
+  }
+  .agent-sidebar {
+    position: relative;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .agent-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .agent-sidebar-foot {
+    margin-top: 0;
+  }
+  .agent-main {
+    padding: 1rem;
+  }
+}
+
+/* --- reduced motion ----------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-crew-card,
+  .agent-emote-row button,
+  .agent-faq-test {
+    transition: none;
+  }
+}

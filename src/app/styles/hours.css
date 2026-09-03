@@ -1,0 +1,14 @@
+/* Shop-hours card head: label left, live status right, on one line. Keeps the
+   answer to "are they open now" at the top of the card instead of below the
+   schedule it summarises. */
+.fact-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.fact-card-head .eyebrow {
+  margin: 0;
+}

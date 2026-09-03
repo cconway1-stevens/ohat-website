@@ -1,0 +1,15 @@
+diff --git a/node_modules/vinext/dist/index.js b/node_modules/vinext/dist/index.js
+index c96fe28..d471304 100644
+--- a/node_modules/vinext/dist/index.js
++++ b/node_modules/vinext/dist/index.js
+@@ -2464,8 +2464,8 @@ export const loadServerActionClient = ${hasServerActions ? `() => import(${JSON.
+ 						let _compileMs;
+ 						let _renderMs;
+ 						function _parseTiming(raw) {
+-							const [handlerStart, inHandlerCompileMs, renderMs] = String(raw).split(",").map((v) => Number(v));
+-							if (!Number.isNaN(handlerStart) && !Number.isNaN(inHandlerCompileMs) && inHandlerCompileMs !== -1) _compileMs = Math.max(0, Math.round(handlerStart - _reqStart)) + inHandlerCompileMs;
++							const [, inHandlerCompileMs, renderMs] = String(raw).split(",").map((v) => Number(v));
++							if (!Number.isNaN(inHandlerCompileMs) && inHandlerCompileMs !== -1) _compileMs = inHandlerCompileMs;
+ 							if (!Number.isNaN(renderMs) && renderMs !== -1) _renderMs = renderMs;
+ 						}
+ 						const _origSetHeader = res.setHeader.bind(res);

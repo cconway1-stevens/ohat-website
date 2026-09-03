@@ -1,9 +1,22 @@
+import { readFileSync } from "node:fs";
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
-import { sites } from "./build/sites-vite-plugin";
+import { sites } from "./src/build/sites-vite-plugin.ts";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID = "00000000-0000-4000-8000-000000000000";
+
+// Optional: this file only exists on machines wired up for the hosted
+// preview's local D1/R2 bindings. The site builds and runs without it.
+const hostingConfig: { d1?: string; r2?: string } = (() => {
+  try {
+    return JSON.parse(readFileSync(new URL("./.openai/hosting.json", import.meta.url), "utf8")) as {
+      d1?: string;
+      r2?: string;
+    };
+  } catch {
+    return {};
+  }
+})();
 
 const { d1, r2 } = hostingConfig;
 
@@ -11,7 +24,7 @@ const { d1, r2 } = hostingConfig;
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
 const localBindingConfig = {
-  main: "./worker/index.ts",
+  main: "./src/worker/index.ts",
   compatibility_flags: ["nodejs_compat"],
   d1_databases: d1
     ? [
@@ -43,6 +56,14 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    // three.js (used only by lazy `dynamic(..., { ssr: false })` scenes on
+    // /agent, /arcade/parts-counter-3d, and the contact page) is inherently
+    // over the default 500kb warning limit but already isolated to its own
+    // route-scoped chunk, so raise the threshold instead of chasing a
+    // false-positive warning.
+    build: {
+      chunkSizeWarningLimit: 600,
+    },
     server: {
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],

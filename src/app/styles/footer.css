@@ -1,0 +1,1672 @@
+/* Driving CTA and footer */
+.drive-cta {
+  position: relative;
+  overflow: hidden;
+  background: var(--yellow);
+  border-top: 4px solid var(--ink);
+}
+.drive-sky {
+  position: relative;
+  min-height: 410px;
+  padding: 4.5rem 0 8.5rem;
+}
+.drive-copy {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.drive-copy p {
+  margin: 0 0 0.5rem;
+  color: var(--red-dark);
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.drive-cta h2 {
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+}
+.car-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 77px;
+  background: #292724;
+  border-top: 5px solid var(--ink);
+}
+.car-track::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 33px;
+  height: 7px;
+  background: repeating-linear-gradient(90deg, var(--yellow) 0 55px, transparent 55px 92px);
+  animation: road-lines 1.1s linear infinite;
+}
+.classic-car {
+  position: absolute;
+  z-index: 2;
+  left: 8%;
+  bottom: 38px;
+  display: block;
+  width: 180px;
+  height: 78px;
+  animation: car-drive 9s ease-in-out infinite alternate;
+}
+/* The car is a link (the arcade easter egg): give it a focus ring and a
+   little bounce when caught, but no cursor giveaway beyond the pointer. */
+.classic-car:hover,
+.classic-car:focus-visible {
+  animation-play-state: paused;
+}
+.classic-car:hover .classic-car-shell {
+  transform: translateY(-4px);
+}
+.classic-car-shell {
+  position: static;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.18s ease;
+}
+.car-body {
+  position: absolute;
+  left: 5px;
+  right: 0;
+  bottom: 6px;
+  height: 40px;
+  background: var(--red);
+  border: 4px solid var(--ink);
+  border-radius: 33px 50px 8px 7px;
+}
+.car-roof {
+  position: absolute;
+  left: 47px;
+  bottom: 41px;
+  width: 85px;
+  height: 34px;
+  background: var(--red);
+  border: 4px solid var(--ink);
+  border-bottom: 0;
+  border-radius: 50px 50px 0 0;
+  transform: skewX(-10deg);
+}
+.car-wheel {
+  position: absolute;
+  z-index: 3;
+  bottom: -5px;
+  width: 36px;
+  height: 36px;
+  border: 8px solid var(--ink);
+  border-radius: 50%;
+  background: #aaa;
+  animation: slow-spin 0.55s linear infinite;
+}
+.car-wheel span {
+  position: absolute;
+  inset: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+.car-wheel-back {
+  left: 28px;
+}
+.car-wheel-front {
+  right: 22px;
+}
+.headlight {
+  position: absolute;
+  right: 3px;
+  top: 9px;
+  width: 12px;
+  height: 9px;
+  background: var(--yellow);
+}
+.bumper {
+  position: absolute;
+  right: -9px;
+  bottom: 3px;
+  width: 25px;
+  height: 6px;
+  background: #bbb;
+  border: 2px solid var(--ink);
+}
+
+.site-footer {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--ink);
+  color: #fff;
+}
+/* The columns used to run 1.3/1/.9/.7, which gave the most width to the
+   brand blurb and the least to Connect — the one column with six links in it.
+   Evened out, and the block tightened: 4.5rem of padding over a footer whose
+   tallest column is six short links left a visible band of empty ink. */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.9fr 0.95fr 0.9fr;
+  gap: 2.25rem 2.5rem;
+  padding: 3.25rem 0 2.5rem;
+  align-items: start;
+}
+.footer-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+/* Section headings get a rule under them, the way a catalog's back page
+   separates its columns. */
+.footer-grid > div > strong {
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.16);
+}
+.footer-tagline {
+  color: var(--yellow) !important;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+.footer-phone {
+  color: #fff;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.footer-closed-note {
+  font-size: 0.78rem !important;
+}
+/* Profile links as a wrapped row of chips rather than four more lines in a
+   stack — they are a different kind of link from the site's own pages, and
+   they read better grouped. */
+.footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+.footer-socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  border-radius: 2px;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+.footer-socials a:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--yellow);
+}
+.footer-socials i {
+  font-style: normal;
+  font-size: 0.7em;
+  opacity: 0.7;
+}
+.footer-makes {
+  text-align: center;
+}
+.footer-grid .brand img {
+  width: 132px;
+  height: 82px;
+}
+.footer-grid p {
+  max-width: 320px;
+  color: #bdb5ab;
+  line-height: 1.65;
+}
+.footer-grid > div > strong {
+  color: var(--yellow);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.footer-grid a {
+  line-height: 1.6;
+}
+.footer-grid button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.6;
+  text-align: left;
+}
+.footer-grid a:hover,
+.footer-grid button:hover {
+  color: var(--yellow);
+}
+.footer-grid span {
+  color: #aaa298;
+  font-size: 0.85rem;
+}
+.footer-grid > div:nth-child(3) > a {
+  color: #fff;
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  font-variant-numeric: tabular-nums;
+}
+.footer-grid > div:nth-child(3) > span {
+  color: #bdb5ab;
+}
+/* The dark-surface plate. Previously this was reached through
+   `.footer-grid > div:nth-child(3)`, which meant reordering a footer column
+   silently restyled the sign. It is a prop on the component now, so the badge
+   looks the same everywhere and the footer only changes what it sits on. */
+.shop-hours-status-wrap.on-dark {
+  width: 100%;
+}
+.on-dark .shop-hours-status {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.07);
+  border-color: color-mix(in srgb, currentColor 55%, transparent);
+  border-left-width: 4px;
+  box-shadow: none;
+}
+.on-dark .shop-status-copy > span:not(:first-child) {
+  color: #cdc4ba;
+}
+/* The state colours are chosen for a paper face; on the footer's ink they go
+   muddy and the word stops being readable. Same hues, lifted to carry on a
+   dark ground, with the tinted faces dropped since the footer supplies its
+   own surface. */
+.on-dark .shop-hours-status.is-open {
+  color: #5cc98a;
+  background: rgba(92, 201, 138, 0.12);
+}
+.on-dark .shop-hours-status.is-opening-soon,
+.on-dark .shop-hours-status.is-closing-soon {
+  color: #f0ad4e;
+  background: rgba(240, 173, 78, 0.12);
+}
+.on-dark .shop-hours-status.is-closed {
+  color: #f08d84;
+  background: rgba(240, 141, 132, 0.12);
+}
+/* The bottom padding is deliberate clearance for the fixed call dock, which
+   parks bottom-right; it is not dead space. Trimmed from 6rem to 4rem, which
+   still clears the dock at its tallest. */
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding: 1.35rem 0 4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: #958d84;
+  font-size: 0.74rem;
+}
+.footer-bottom a {
+  color: inherit;
+}
+.footer-bottom a:hover {
+  color: var(--yellow);
+}
+
+@keyframes piston {
+  0%,
+  100% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+/* Bay signal cycle: green 0–55%, yellow 57–63%, red 65–93%, back to green.
+   The 100% state matches each light's base style, so the flattened
+   single-iteration run under prefers-reduced-motion lands on green. */
+@keyframes bay-green-cycle {
+  0%,
+  55% {
+    background: radial-gradient(circle at 35% 30%, #7df0a4, #23a74f 70%);
+    box-shadow: 0 0 8px 2px rgba(47, 191, 95, 0.55);
+  }
+  57%,
+  93% {
+    background: #151210;
+    box-shadow: none;
+  }
+  95%,
+  100% {
+    background: radial-gradient(circle at 35% 30%, #7df0a4, #23a74f 70%);
+    box-shadow: 0 0 8px 2px rgba(47, 191, 95, 0.55);
+  }
+}
+@keyframes bay-yellow-cycle {
+  0%,
+  55% {
+    background: #151210;
+    box-shadow: none;
+  }
+  57%,
+  63% {
+    background: radial-gradient(circle at 35% 30%, #ffe08a, #d99e06 70%);
+    box-shadow: 0 0 8px 2px rgba(242, 183, 5, 0.55);
+  }
+  65%,
+  100% {
+    background: #151210;
+    box-shadow: none;
+  }
+}
+@keyframes bay-red-cycle {
+  0%,
+  63% {
+    background: #151210;
+    box-shadow: none;
+  }
+  65%,
+  93% {
+    background: radial-gradient(circle at 35% 30%, #ff9a8a, #c22e22 70%);
+    box-shadow: 0 0 8px 2px rgba(224, 58, 47, 0.55);
+  }
+  95%,
+  100% {
+    background: #151210;
+    box-shadow: none;
+  }
+}
+@keyframes wheel-roll {
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-8px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+@keyframes badge-bob {
+  0%,
+  100% {
+    transform: rotate(9deg) translateY(0);
+  }
+  50% {
+    transform: rotate(5deg) translateY(-10px);
+  }
+}
+@keyframes slow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes scan-in {
+  from {
+    opacity: 0.4;
+    transform: scaleX(0.76);
+    transform-origin: left;
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+@keyframes road-lines {
+  to {
+    background-position: 92px 0;
+  }
+}
+@keyframes ride-lanes {
+  to {
+    background-position: 136px 50%;
+  }
+}
+@keyframes car-drive {
+  from {
+    left: 7%;
+    transform: translateY(0);
+  }
+  to {
+    left: calc(100% - 230px);
+    transform: translateY(-2px);
+  }
+}
+@keyframes catalog-logo-roll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes phone-ring {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  25% {
+    transform: rotate(-18deg) scale(1.04);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.04);
+  }
+}
+/* Same wiggle as phone-ring, but with the long resting stretch built into the
+   timeline so the dock only chirps once a cycle. */
+@keyframes phone-idle-ring {
+  0%,
+  86%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  89% {
+    transform: rotate(-18deg) scale(1.05);
+  }
+  92% {
+    transform: rotate(3deg) scale(1.05);
+  }
+  95% {
+    transform: rotate(-15deg) scale(1.03);
+  }
+}
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: rotate(16deg) scale(1.7);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(5deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(7deg) scale(1);
+  }
+}
+@keyframes dialog-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px)) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@keyframes ticket-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes badge-pop-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-18deg) scale(0.72);
+  }
+  65% {
+    opacity: 1;
+    transform: rotate(-2deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-4deg) scale(1);
+  }
+}
+@keyframes quote-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes service-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes oval-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes circle-drift {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Marquee bulbs chase along the cabinet tops: two frames, half a pitch
+   apart, so the lit dots trade places with the gaps. */
+@keyframes marquee-chase {
+  to {
+    background-position:
+      6.5px 0,
+      0 0;
+  }
+}
+/* The FREE PLAY badge's hard blink — steps, not a fade, like a real sign. */
+@keyframes coin-blink {
+  50% {
+    opacity: 0.3;
+  }
+}
+/* A slow halo ripple on call buttons: one pulse per cycle with a long rest,
+   so the eye is drawn to the phone number without the page feeling jittery.
+   The hard ink shadow is preserved as the first layer at every step. */
+@keyframes call-pulse {
+  0%,
+  62%,
+  100% {
+    box-shadow:
+      5px 5px 0 var(--ink),
+      0 0 0 0 rgba(246, 189, 56, 0.55);
+  }
+  78% {
+    box-shadow:
+      5px 5px 0 var(--ink),
+      0 0 0 13px rgba(246, 189, 56, 0);
+  }
+}
+@keyframes backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scroll-triggered entrance motion: each animation runs only once the
+   ScrollReveal observer marks the element .is-revealed, so below-the-fold
+   sections play as the visitor scrolls to them. The hidden state keys off
+   [data-reveal], which is only ever set from JS: no JS, nothing hidden. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal]:not(.is-revealed) {
+    opacity: 0;
+  }
+  .garage-proof-ticket.is-revealed {
+    animation: ticket-in 0.5s ease-out backwards;
+  }
+  .garage-proof-ticket:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .garage-proof-ticket:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+  .garage-proof-ticket:nth-child(3) {
+    animation-delay: 0.31s;
+  }
+  .service-preview article.is-revealed {
+    animation: service-card-in 0.5s ease-out backwards;
+  }
+  .service-preview article:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .service-preview article:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .service-preview article:nth-child(3) {
+    animation-delay: 0.35s;
+  }
+  .ride-track li.is-revealed {
+    animation: oval-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+  .ride-track li:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .ride-track li:nth-child(2) {
+    animation-delay: 0.13s;
+  }
+  .ride-track li:nth-child(3) {
+    animation-delay: 0.21s;
+  }
+  .ride-track li:nth-child(4) {
+    animation-delay: 0.29s;
+  }
+  .ride-track li:nth-child(5) {
+    animation-delay: 0.37s;
+  }
+  .award-badge.is-revealed {
+    animation: badge-pop-in 0.7s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+  .review-grid blockquote.is-revealed {
+    animation: quote-rise 0.55s ease-out backwards;
+  }
+  .review-grid blockquote:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .review-grid blockquote:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .review-grid blockquote:nth-child(3) {
+    animation-delay: 0.35s;
+  }
+  /* Inner pages: same language, grouped delays so long grids don't feel slow. */
+  .service-directory article.is-revealed {
+    animation: service-card-in 0.45s ease-out backwards;
+  }
+  .service-directory article:nth-child(3n + 1) {
+    animation-delay: 0.04s;
+  }
+  .service-directory article:nth-child(3n + 2) {
+    animation-delay: 0.14s;
+  }
+  .service-directory article:nth-child(3n) {
+    animation-delay: 0.24s;
+  }
+  .dropoff-grid article.is-revealed {
+    animation: service-card-in 0.45s ease-out backwards;
+  }
+  .dropoff-grid article:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .dropoff-grid article:nth-child(2) {
+    animation-delay: 0.17s;
+  }
+  .dropoff-grid article:nth-child(3) {
+    animation-delay: 0.29s;
+  }
+  .dropoff-grid article:nth-child(4) {
+    animation-delay: 0.41s;
+  }
+  .gallery-grid figure.is-revealed {
+    animation: quote-rise 0.55s ease-out backwards;
+  }
+  .gallery-grid figure:nth-child(1) {
+    animation-delay: 0.04s;
+  }
+  .gallery-grid figure:nth-child(2) {
+    animation-delay: 0.14s;
+  }
+  .gallery-grid figure:nth-child(3) {
+    animation-delay: 0.24s;
+  }
+  .gallery-grid figure:nth-child(4) {
+    animation-delay: 0.34s;
+  }
+  /* Arcade lobby: cabinets deal in as they scroll up, marquees chase, and
+     the FREE PLAY badge blinks like the sign over the change machine. */
+  .arcade-cabinet.is-revealed {
+    animation: service-card-in 0.45s ease-out backwards;
+  }
+  .arcade-cabinet:nth-child(3n + 1) {
+    animation-delay: 0.04s;
+  }
+  .arcade-cabinet:nth-child(3n + 2) {
+    animation-delay: 0.14s;
+  }
+  .arcade-cabinet:nth-child(3n) {
+    animation-delay: 0.24s;
+  }
+  .arcade-cabinet::before {
+    animation: marquee-chase 0.9s steps(2) infinite;
+  }
+  .arcade-coin-badge {
+    animation: coin-blink 1.5s steps(2, jump-none) infinite;
+  }
+  /* Conversion: every primary call button breathes a soft halo once a cycle. */
+  a[href^="tel:"].button-primary {
+    animation: call-pulse 3.6s ease-out infinite;
+  }
+  /* Animations outrank the hover shadow, so drop the pulse on hover to let
+     the pressed-lift state read clearly. */
+  a[href^="tel:"].button-primary:hover {
+    animation: none;
+  }
+}
+
+/* The full six-link masthead plus call card needs more room than the rest of
+   the desktop layout. Switch just the navigation to its compact menu before
+   labels start wrapping into the tall, uneven row visible around 1024px. */
+@media (max-width: 1200px) {
+  .desktop-nav {
+    display: none;
+  }
+  .nav-wrap > .button-small {
+    margin-left: auto;
+  }
+  .mobile-menu {
+    display: block;
+    position: relative;
+  }
+  .mobile-menu summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    cursor: pointer;
+    list-style: none;
+    padding: 0.8rem 1rem;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    color: var(--ink);
+    font-weight: 950;
+    text-transform: uppercase;
+  }
+  .mobile-menu summary::-webkit-details-marker {
+    display: none;
+  }
+  /* Hamburger bars that fold into an X while the menu is open. */
+  .menu-icon {
+    display: grid;
+    gap: 3.5px;
+  }
+  .menu-icon span {
+    width: 17px;
+    height: 2.5px;
+    background: currentColor;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+  .mobile-menu[open] .menu-icon span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .mobile-menu[open] .menu-icon span:nth-child(2) {
+    opacity: 0;
+  }
+  .mobile-menu[open] .menu-icon span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+  .mobile-menu nav {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.6rem);
+    width: min(370px, calc(100vw - 28px));
+    display: grid;
+    padding: 0.75rem;
+    background: var(--paper);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--yellow);
+  }
+  .mobile-menu nav > a {
+    display: grid;
+    gap: 0.18rem;
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid var(--line);
+    font-weight: 850;
+  }
+  .mobile-menu nav > a:nth-child(3n + 1) {
+    border-left: 5px solid var(--red);
+  }
+  .mobile-menu nav > a:nth-child(3n + 2) {
+    border-left: 5px solid var(--yellow);
+  }
+  .mobile-menu nav > a:nth-child(3n) {
+    border-left: 5px solid var(--blue);
+  }
+  .mobile-menu nav > a:hover,
+  .mobile-menu nav > a:focus-visible {
+    background: #f1e4c7;
+  }
+  /* Current page in the dropdown: same answer, smaller room. */
+  .mobile-menu nav > a.is-current {
+    background: var(--yellow-tint);
+  }
+  .mobile-menu nav > a.is-current em {
+    color: var(--ink);
+  }
+  .mobile-menu nav a:not(.mobile-menu-call) > span:first-child {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    text-transform: uppercase;
+  }
+  .mobile-menu nav a small {
+    color: var(--red);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+  }
+  .mobile-menu nav a em {
+    color: var(--muted);
+    font-size: 0.69rem;
+    font-style: normal;
+    font-weight: 650;
+  }
+  .mobile-menu .mobile-menu-call {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.55rem;
+    background: var(--red);
+    color: #fff;
+    border: 2px solid var(--ink);
+    border-left-width: 2px;
+  }
+  .mobile-menu .mobile-menu-call > span:last-child {
+    display: grid;
+    gap: 0.08rem;
+  }
+  .mobile-menu .mobile-menu-call small {
+    color: var(--yellow);
+  }
+}
+
+/* The header call card is still present in this range, so repeating it inside
+   the dropdown only makes the menu collide with the fixed quick-action dock. */
+@media (min-width: 721px) and (max-width: 1200px) {
+  .mobile-menu .mobile-menu-call {
+    display: none;
+  }
+}
+
+@media (max-width: 1000px) {
+  .technology-grid,
+  .award-grid,
+  .visit-grid,
+  .dropoff-hero-grid,
+  .dropoff-location-grid,
+  .story-grid,
+  .offer-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-photo {
+    min-height: clamp(320px, 62vw, 480px);
+  }
+  .hero-photo-frame img {
+    object-position: 22% center;
+  }
+  .hero-cta {
+    display: grid;
+    gap: 0.72rem;
+  }
+  .hero-cta .button {
+    width: 100%;
+    min-height: 50px;
+  }
+  .service-preview {
+    grid-template-columns: 1fr 1fr;
+  }
+  .service-preview article:nth-child(3) {
+    margin-top: 0;
+    grid-column: 1 / -1;
+  }
+  /* 21 makes: 7 columns divides evenly, 4 would strand one logo on a row of
+     its own and expose the dark grid backing. */
+  .make-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+  .ride-track {
+    grid-template-columns: repeat(5, minmax(145px, 1fr));
+    overflow-x: auto;
+  }
+  .award-badge {
+    max-width: 300px;
+  }
+  .repair-ticket-grid {
+    grid-template-columns: 0.35fr 1fr;
+  }
+  .part-stamp {
+    display: none;
+  }
+  .service-panel-signs,
+  .service-panel-includes {
+    grid-column: span 6;
+  }
+  .service-panel-diagnosis,
+  .service-panel-cost,
+  .service-panel-cost-wide {
+    grid-column: span 7;
+  }
+  .service-panel-why-us,
+  .service-panel-resources,
+  .service-panel-related {
+    grid-column: span 5;
+  }
+  .dropoff-grid,
+  .theme-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .profile-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .profile-grid > a:last-child {
+    grid-column: 1 / -1;
+    transform: none;
+  }
+  .gallery-grid .gallery-wide {
+    min-height: 380px;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .reviews-hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .shore-sticker-board {
+    width: min(100%, 650px);
+  }
+  .garage-locator-address > span {
+    display: none;
+  }
+  .garage-credentials-grid {
+    grid-template-columns: 1fr;
+  }
+  .garage-service-promise {
+    border-right: 0;
+    border-bottom: 4px solid var(--ink);
+  }
+  .garage-proof-ticket {
+    min-height: 150px;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1000px) {
+  .booking-dock {
+    display: none;
+  }
+  .hero-photo {
+    min-height: 0;
+    aspect-ratio: 2.15 / 1;
+    margin-top: clamp(1.5rem, 3vw, 2rem);
+  }
+  .hero-cta {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hero-cta .button {
+    padding-block: 0.75rem;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
+  }
+  .shell {
+    width: min(100% - 28px, 1180px);
+  }
+  .garage-strip {
+    grid-template-columns: 1fr 1fr;
+    padding-inline: 14px;
+  }
+  .garage-strip > span {
+    display: none;
+  }
+  .garage-strip-phone {
+    justify-self: end;
+  }
+  .directions-menu-trigger {
+    max-width: 48vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .directions-dialog-options {
+    grid-template-columns: 1fr;
+  }
+  .nav-wrap {
+    min-height: 72px;
+    padding-block: 0.45rem;
+  }
+  .brand img {
+    width: 104px;
+    height: 58px;
+  }
+  .nav-wrap > .button-small {
+    display: none;
+  }
+  .booking-dock {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    display: flex;
+    min-height: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    border: 0;
+    border-top: 4px solid var(--ink);
+    box-shadow: 0 -6px 0 var(--yellow);
+    transform: none;
+  }
+  /* The yellow already runs the full width as the bar's own shadow, so the
+     label tape would only eat height off a 64px target. */
+  .booking-dock::after {
+    display: none;
+  }
+  .booking-dock > a,
+  .booking-dock > button {
+    min-width: 0;
+    min-height: 60px;
+    flex: 1;
+    justify-content: center;
+    padding: 0.5rem 0.4rem;
+    text-align: center;
+  }
+  .booking-dock > :nth-child(2) {
+    border-left: 3px solid var(--ink);
+  }
+  .booking-dock small {
+    display: none;
+  }
+  .booking-dock strong {
+    font-size: clamp(0.68rem, 3.2vw, 0.82rem);
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+  }
+  .booking-phone > span:first-child {
+    width: 34px;
+    height: 34px;
+  }
+  .booking-dock-copy {
+    flex: 0 1 auto;
+    justify-items: center;
+  }
+  /* Touch has no hover to reveal the nudge, and the arrow crowds the label at
+     this width. */
+  .booking-dock-arrow {
+    display: none;
+  }
+  .hero {
+    padding: 116px 0 3rem;
+  }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 11vw, 3.7rem);
+    line-height: 0.9;
+  }
+  .hero-tagline {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+  .hero-lede {
+    margin-top: 0.7rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .hero-cta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 1.3rem;
+  }
+  .hero-cta .button {
+    padding: 0.72rem 0.62rem;
+    font-size: clamp(0.72rem, 3.2vw, 0.86rem);
+    line-height: 1.15;
+  }
+  .hero-trust {
+    gap: 0.45rem;
+    margin-top: 1.3rem;
+  }
+  .hero-trust li {
+    font-size: 0.58rem;
+  }
+  .bay-signal {
+    top: 0.6rem;
+    left: 0.6rem;
+  }
+  .bay-signal-light {
+    width: 12px;
+    height: 12px;
+  }
+  .bay-signal-tag {
+    font-size: 0.44rem;
+  }
+  .hero-photo {
+    min-height: 0;
+    aspect-ratio: 16 / 10;
+    border-width: 3px;
+    box-shadow: 6px 6px 0 var(--yellow);
+    transform: none;
+  }
+  .hero-photo figcaption {
+    min-height: 0;
+    display: block;
+    padding: 0.65rem 14px;
+    border-top-width: 3px;
+    font-size: 0.56rem;
+  }
+  .mobile-menu {
+    margin-left: auto;
+  }
+  .garage-locator {
+    min-height: 0;
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .garage-locator-address {
+    display: none;
+  }
+  .garage-locator-address strong {
+    font-size: 0.68rem;
+  }
+  .garage-locator-address em {
+    padding: 0;
+    border: 0;
+    font-size: 0.72rem;
+  }
+  .garage-locator-trigger {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    border-top: 0;
+    border-left: 0;
+    font-size: 0.75rem;
+  }
+  .garage-service-promise {
+    padding: 2.2rem 14px;
+  }
+  .garage-service-promise h2 {
+    font-size: clamp(2.3rem, 12vw, 3.5rem);
+  }
+  .garage-service-promise > p:not(.garage-issue-line) {
+    font-size: 0.88rem;
+  }
+  .garage-service-promise ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .garage-service-promise li {
+    padding: 0.48rem 0.25rem;
+    text-align: center;
+  }
+  .garage-proof-tickets {
+    gap: 0.45rem;
+    padding: 1rem 14px 1.35rem;
+  }
+  .garage-proof-ticket {
+    min-height: 108px;
+    gap: 0.4rem;
+    padding: 0.7rem 0.3rem;
+    border-width: 2px;
+    box-shadow: 3px 3px 0 var(--ink);
+    transform: none;
+  }
+  .garage-proof-ticket::before {
+    inset: 4px;
+  }
+  .garage-proof-ticket img {
+    width: 60px;
+    height: 48px;
+  }
+  .garage-carfax-seal {
+    width: 62px;
+    height: 62px;
+    border-width: 3px;
+  }
+  .garage-carfax-seal img {
+    width: 44px;
+  }
+  .garage-carfax-seal small {
+    font-size: 0.36rem !important;
+  }
+  .garage-carfax-seal b {
+    font-size: 0.5rem;
+  }
+  .garage-proof-ticket strong {
+    font-size: 0.63rem;
+  }
+  .garage-proof-ticket small {
+    font-size: 0.38rem;
+  }
+  /* At this size the ink outline covers more of the glyph than the yellow
+     fill, dropping contrast against the red ticket below AA. */
+  .garage-ticket-number {
+    font-size: 2rem;
+    -webkit-text-stroke: 0;
+  }
+  .garage-makes-deck {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+  .garage-makes-label {
+    padding: 0.65rem 0.6rem;
+    border-right-width: 3px;
+  }
+  .garage-makes-label strong {
+    font-size: 0.7rem;
+  }
+  .garage-makes-label span {
+    font-size: 0.44rem;
+  }
+  .catalog-make-track {
+    padding-block: 0.55rem;
+    animation-duration: 18s;
+  }
+  .catalog-make-logo {
+    width: 100px;
+    flex-basis: 100px;
+    grid-template-columns: 36px 1fr;
+    gap: 0.4rem;
+    padding-inline: 0.55rem;
+  }
+  .catalog-make-logo img {
+    width: 36px;
+    height: 36px;
+  }
+  .catalog-make-logo strong {
+    font-size: 0.48rem;
+  }
+  .section {
+    padding: 5.5rem 0;
+  }
+  /* These three sections carry no .section class, so without their own rules
+     the fluid clamp collapses to ~43px of padding on a 390px phone. */
+  .technology-section,
+  .visit-section {
+    padding: 5.5rem 0;
+  }
+  .services-intro::before {
+    display: none;
+  }
+  .service-preview,
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+  .service-preview article,
+  .service-preview article:nth-child(2),
+  .service-preview article:nth-child(3),
+  .review-grid blockquote,
+  .review-grid blockquote:nth-child(2),
+  .review-grid blockquote:nth-child(3) {
+    min-height: 250px;
+    margin-top: 0;
+    grid-column: auto;
+  }
+  .tech-list {
+    grid-template-columns: 1fr;
+  }
+  .scan-panel {
+    min-height: 370px;
+    padding: 1.3rem;
+    box-shadow: 8px 8px 0 var(--red);
+  }
+  .scan-result {
+    left: 1.3rem;
+    right: 1.3rem;
+    bottom: 1.3rem;
+  }
+  .section-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .makes-section {
+    padding: 5.5rem 0 6.5rem;
+  }
+  .makes-section::before {
+    top: 1.35rem;
+    width: calc(100% - 28px);
+    padding-inline: 0.55rem;
+    font-size: 0.52rem;
+    letter-spacing: 0.07em;
+  }
+  .makes-section h2 {
+    font-size: clamp(2.65rem, 12.5vw, 3.6rem);
+    line-height: 0.94;
+  }
+  .section-heading-row > p {
+    margin: 0;
+    font-size: 0.98rem;
+  }
+  .ride-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    padding: 2.25rem 0.8rem 0.9rem;
+    overflow: visible;
+    background-size: auto;
+    box-shadow: 6px 6px 0 var(--yellow);
+  }
+  .ride-track li {
+    min-height: 124px;
+    /* The oval curves inward at the sides, so the label needs real horizontal
+       room or captions run past the edge of the shape. */
+    padding: 0.7rem 1.15rem;
+    border-width: 3px;
+    outline-width: 2px;
+  }
+  .ride-track strong {
+    font-size: 1rem;
+  }
+  .ride-track small {
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+  .ride-track li:nth-child(5) {
+    grid-column: 1 / -1;
+    min-height: 92px;
+  }
+  .ride-track li:nth-child(5) > a {
+    grid-template-columns: auto auto;
+    column-gap: 0.65rem;
+    align-content: center;
+    justify-content: center;
+  }
+  .ride-track li:nth-child(5) span {
+    grid-row: 1 / 3;
+    margin: 0;
+  }
+  .driveway-callout {
+    grid-template-columns: 44px 1fr;
+    gap: 0.75rem;
+    padding: 0.85rem;
+  }
+  .driveway-callout > span {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+    outline-width: 2px;
+  }
+  .driveway-callout p {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  /* Four columns so the 28-tile wall lands in seven complete rows. */
+  .make-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .make-grid li {
+    min-height: 78px;
+    gap: 0.3rem;
+    padding: 0.35rem 0.15rem;
+  }
+  .make-grid li img {
+    width: 28px;
+    height: 28px;
+  }
+  .make-grid span {
+    font-size: 0.48rem;
+    letter-spacing: -0.01em;
+  }
+  .award-section {
+    padding: 5.5rem 0;
+  }
+  .award-badge {
+    width: 240px;
+    margin-inline: auto;
+  }
+  .inner-hero,
+  .services-board,
+  .repair-ticket,
+  .dropoff-arrival {
+    min-height: 0;
+    padding: 158px 0 90px;
+  }
+  .inner-hero h1,
+  .services-board h1,
+  .repair-ticket h1,
+  .dropoff-arrival h1 {
+    font-size: clamp(2.4rem, 10.5vw, 3.4rem);
+  }
+  .reviews-hero {
+    padding-bottom: 105px;
+  }
+  .reviews-hero-grid {
+    gap: 2.5rem;
+  }
+  .reviews-hero h1 {
+    font-size: clamp(2.4rem, 10.5vw, 3.4rem);
+  }
+  .shore-sticker-board {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    filter: drop-shadow(6px 7px 0 rgba(0, 0, 0, 0.52));
+  }
+  .shore-sticker,
+  .shore-sticker-blue {
+    grid-column: auto;
+    width: min(100%, 360px);
+    min-height: 158px;
+    justify-self: center;
+    padding: 1.7rem 2.2rem;
+  }
+  .shore-sticker-red {
+    transform: rotate(-2deg);
+  }
+  .shore-sticker-yellow {
+    transform: rotate(2deg);
+  }
+  .shore-sticker-blue {
+    transform: rotate(-1deg);
+  }
+  .shore-sticker strong {
+    max-width: 220px;
+    font-size: clamp(1.05rem, 5.5vw, 1.35rem);
+  }
+  .services-board-grid {
+    grid-template-columns: 1fr;
+  }
+  .bay-counter {
+    width: 150px;
+    aspect-ratio: 1;
+    justify-self: start;
+  }
+  .bay-counter strong {
+    font-size: 3.2rem;
+  }
+  .board-copy {
+    grid-column: auto;
+  }
+  .service-directory-frame {
+    padding: 0.9rem;
+    box-shadow: 7px 7px 0 var(--red);
+  }
+  .service-directory-frame::after {
+    inset: 5px;
+  }
+  .service-directory-heading {
+    margin-inline: 0.15rem;
+    font-size: 0.58rem;
+  }
+  .service-directory {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+  .service-directory article,
+  .service-directory .service-card-reverse {
+    min-height: 0;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-areas:
+      "number tag"
+      "icon title"
+      "icon copy"
+      ". link";
+    column-gap: 0.9rem;
+    padding: 1.3rem;
+    text-align: left;
+    transform: none;
+  }
+  .service-directory .catalog-card-tag {
+    justify-self: end;
+    transform: rotate(1deg);
+  }
+  .service-directory .service-icon {
+    width: 40px;
+    height: 40px;
+    justify-self: start;
+  }
+  .service-directory h2 {
+    margin-top: 0.9rem;
+  }
+  .service-directory a {
+    justify-self: start;
+  }
+  .repair-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+  .ticket-number {
+    width: 135px;
+  }
+  .ticket-number strong {
+    font-size: 5rem;
+  }
+  .service-workbench {
+    padding: 4rem 0;
+  }
+  .service-workbench::before {
+    display: none;
+  }
+  .service-workbench-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .service-panel,
+  .service-panel-signs,
+  .service-panel-includes,
+  .service-panel-diagnosis,
+  .service-panel-why-us,
+  .service-panel-cost,
+  .service-panel-cost-wide,
+  .service-panel-resources,
+  .service-panel-related {
+    grid-column: auto;
+    margin-top: 0;
+    transform: none;
+  }
+  .service-panel-signs {
+    padding: 0;
+  }
+  .service-panel-signs ul,
+  .service-panel-includes ul {
+    grid-template-columns: 1fr;
+  }
+  .service-panel h2 {
+    font-size: clamp(2rem, 8.5vw, 2.7rem);
+  }
+  .service-faqs .theme-grid {
+    grid-template-columns: 1fr;
+    margin-top: 1.75rem;
+  }
+  .detail-grid,
+  .checklist-grid,
+  .community-band .shell {
+    grid-template-columns: 1fr;
+  }
+  .includes-card {
+    box-shadow: 8px 8px 0 var(--red);
+  }
+  .inner-cta > .shell,
+  .drive-copy {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .inner-cta .button,
+  .drive-copy .button {
+    width: 100%;
+  }
+  .dropoff-photo {
+    min-height: 340px;
+    box-shadow: 9px 9px 0 var(--yellow);
+  }
+  .dropoff-grid,
+  .theme-grid,
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .shop-map-frame {
+    min-height: 230px;
+  }
+  .dropoff-grid::before {
+    display: none;
+  }
+  .dropoff-grid article,
+  .dropoff-grid article:nth-child(even),
+  .theme-grid article,
+  .theme-grid article:nth-child(even),
+  .profile-grid > a:last-child {
+    min-height: 200px;
+    margin-top: 0;
+    transform: none;
+    grid-column: auto;
+  }
+  .dropoff-steps {
+    padding-bottom: 5.5rem;
+  }
+  .dropoff-location img {
+    box-shadow: 8px 8px 0 var(--blue);
+  }
+  .dropoff-note .shell {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+  .gallery-grid .gallery-wide {
+    grid-column: auto;
+    min-height: 300px;
+  }
+  .gallery-grid figure,
+  .gallery-grid figure:nth-child(3),
+  .gallery-grid figure:nth-child(4) {
+    min-height: 260px;
+    transform: none;
+  }
+  .community-band .shell > span {
+    font-size: 7rem;
+  }
+  .drive-sky {
+    min-height: 430px;
+    padding-bottom: 9rem;
+  }
+  .classic-car {
+    animation-duration: 6s;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .footer-bottom {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-cta {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    /* Without this, a staggered entrance still holds its `from` state for the
+       length of the delay — the motion is gone but the content flashes in. */
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
