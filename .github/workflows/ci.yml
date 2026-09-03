@@ -5,78 +5,256 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"
   workflow_dispatch:
+    inputs:
+      run_resilience:
+        description: Run the slow-network and memory checks
+        type: boolean
+        default: false
+      deploy:
+        description: Deploy the tested artifact to GitHub Pages (main only)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NODE_VERSION: 24
 
 jobs:
-  quality:
-    name: Full quality suite
+  formatting:
+    name: Formatting
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
+      - run: npm ci --prefer-offline
+      - run: npm run format:check
 
-      - name: Install dependencies
-        run: npm ci
-
-      # Formatting is checked here rather than in `build:static`, on purpose.
-      # It used to run as the first step of the production build, which meant
-      # an unformatted file — even one nobody had looked at — failed the Vercel
-      # deploy and took the site's updates down with it. A style rule should
-      # never be able to block a deploy. Failing here is loud, safe, and fixed
-      # with `npm run check:fix`.
-      - name: Formatting
-        run: npm run format:check
-
+  static-analysis:
+    name: Static analysis
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --prefer-offline
       - name: Lint
         run: npm run lint
-
+      - name: Next.js framework lint
+        run: npm run lint:next
       - name: Typecheck
         run: npm run typecheck
-
       - name: Dead code
         run: npm run check:deadcode
+      - name: Architecture
+        run: npm run check:architecture
+      - name: Code-bloat report
+        run: npm run check:bloat
 
-      - name: Full test suite
-        run: npm test
-
-  # Cross-platform guard. The build tooling is written for a Unix shell
-  # (bash scripts, `VAR=value cmd` syntax), so it passes on Linux and can
-  # silently break on Windows — cmd.exe rejects inline env vars and the WSL
-  # `bash` shim rejects `pipefail`. This job runs the same shell-dependent
-  # commands on a Windows runner so a portability regression fails CI instead
-  # of a developer's machine.
-  windows:
-    name: Windows build (cross-platform guard)
-    runs-on: windows-latest
-    timeout-minutes: 20
+  test-build:
+    name: Test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
+      - run: npm ci --prefer-offline
+      - run: npm test
+      - name: Upload tested static site
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: static-site-${{ github.run_id }}
+          path: dist/client
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 3
 
-      - name: Install dependencies
-        run: npm ci
+  browser-quality:
+    name: Browser quality
+    if: github.event_name != 'schedule'
+    needs: test-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --prefer-offline
+      - name: Install Playwright Chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Download tested static site
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: static-site-${{ github.run_id }}
+          path: dist/client
+      - run: npm run check:pages
+      - run: npm run check:bundle
+      - name: Lighthouse (all pages, single run per page)
+        run: npm run check:lighthouse
+        env:
+          LH_RUNS: 1
+      - run: npm run check:a11y
 
-      - name: Build (catches shell/portability issues)
-        run: npm run build
+  dependency-security:
+    name: Dependency security
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Audit runtime and development dependencies
+        run: npm audit --audit-level=high
+      - name: Review dependency changes
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          fail-on-scopes: development, runtime
 
-      - name: Lint
-        run: npm run lint
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
+        with:
+          languages: javascript-typescript
+          build-mode: none
+      - name: Analyze
+        uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
 
-      - name: Typecheck
-        run: npm run typecheck
+  windows:
+    name: Windows compatibility
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --prefer-offline
+      - run: npm run build
+      - run: npm run lint
+      - run: npm run lint:next
+      - run: npm run typecheck
+
+  resilience:
+    name: Slow network and memory
+    # Intentionally scheduled/manual-only, not per-PR: both checks need a full
+    # static build plus Chromium and add several minutes to every run. They are
+    # deterministic regressions but slow; run them on demand with
+    # `workflow_dispatch` (run_resilience) or on the weekly schedule.
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_resilience)
+    needs: test-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --prefer-offline
+      - name: Install Playwright Chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Download tested static site
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: static-site-${{ github.run_id }}
+          path: dist/client
+      - run: npm run check:slow-network
+      - run: npm run check:memory
+      - name: Lighthouse (all pages, median of 3 runs)
+        run: npm run check:lighthouse
+        env:
+          LH_RUNS: 3
+
+  package-pages:
+    name: Package Pages artifact
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main')
+    needs: [static-analysis, test-build, browser-quality, dependency-security, codeql]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      pages: write
+    steps:
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - name: Require domain-root Pages hosting
+        if: steps.pages.outputs.base_path != ''
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          echo "::error::GitHub Pages resolved a non-root base path: $PAGES_BASE_PATH"
+          echo "Configure a custom domain or an owner.github.io repository before deploying."
+          exit 1
+      - name: Download tested static site
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: static-site-${{ github.run_id }}
+          path: dist/client
+      - name: Package Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist/client
+
+  deploy:
+    name: Deploy GitHub Pages
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main')
+    needs: package-pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

@@ -1,10 +1,7 @@
 # Ocean Heights Auto & Tire — Website
 
 [![CI](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml)
-[![Quality](https://github.com/cconway1-stevens/ohat-website/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/quality.yml)
-[![Performance](https://github.com/cconway1-stevens/ohat-website/actions/workflows/performance.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/performance.yml)
-[![CodeQL](https://github.com/cconway1-stevens/ohat-website/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/codeql.yml)
-[![GitHub Pages build](https://github.com/cconway1-stevens/ohat-website/actions/workflows/deploy-pages.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/deploy-pages.yml)
+[![GitHub Pages build](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml)
 [![Production website](https://img.shields.io/website?url=https%3A%2F%2Fohat-website.vercel.app%2F&up_message=online&down_message=offline&label=production)](https://ohat-website.vercel.app/)
 
 The website for **Ocean Heights Auto & Tire**, a family-run auto repair shop
@@ -16,52 +13,63 @@ The primary conversion on every page: **call (609) 241-1546 to book service.**
 
 ## Website status
 
-| Area                    | Status                                                                 | What it means                                                                                                                                                   |
-| ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Production              | **Online** — [open the Vercel site](https://ohat-website.vercel.app/)  | The homepage returned HTTP 200 when verified on August 1, 2026. The badge above checks availability continuously.                                               |
-| Main-branch quality     | **Passing locally; CI enforced on GitHub**                             | Every push and pull request runs formatting, lint, both production builds, rendered-route tests, service SEO checks, hours logic, and static-export validation. |
-| Static deployment       | **Latest completed workflow passed**                                   | GitHub Pages builds the same static artifact configured for Vercel and publishes it when Pages is served from a domain root.                                    |
-| Last PageSpeed snapshot | **Mobile: 78 performance; 100 accessibility, best practices, and SEO** | Measured August 1, 2026 before the latest AVIF/responsive-image improvements. Re-run PageSpeed after deployment before treating 78 as the current score.        |
+| Area                    | Status                                                                 | What it means                                                                                                                                                                                                             |
+| ----------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production              | **Online** — [open the Vercel site](https://ohat-website.vercel.app/)  | The homepage returned HTTP 200 when verified on August 1, 2026. The badge above checks availability continuously.                                                                                                         |
+| Main-branch quality     | **Passing locally; CI enforced on GitHub**                             | Every push and pull request runs formatting, lint, both production builds, rendered-route tests, service SEO checks, hours logic, and static-export validation.                                                           |
+| Static deployment       | **Latest completed workflow passed**                                   | GitHub Pages builds the same static artifact configured for Vercel and publishes it when Pages is served from a domain root.                                                                                              |
+| Last PageSpeed snapshot | **Mobile: 78 performance; 100 accessibility, best practices, and SEO** | Measured August 1, 2026 before the latest AVIF/responsive-image improvements. The Lighthouse gate now targets **performance ≥ 80** on every public page; re-run after deployment before treating 78 as the current score. |
 
 The status badges are the fastest way to read health: **CI** proves the checked-in code builds and passes tests, **GitHub Pages build** proves the static deployment path works, and **Production website** confirms the public URL responds.
 
 ## Build and test workflow
 
-GitHub Actions is the visible source of truth for repository health. Four
-workflows run on every push to `main` and every pull request, cheapest and
-most decisive first:
+GitHub Actions is the visible source of truth for repository health. A single
+workflow, [`.github/workflows/ci.yml`](.github/workflows/ci.yml), runs on every
+push to `main` and every pull request, cheapest and most decisive first:
 
-- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — the merge gate.
-  Runs formatting (Prettier), lint (ESLint), typecheck (`tsc --noEmit`), dead
-  code (`knip`), and the full test suite (`npm test`, which builds both the
-  Cloudflare and static/Vercel artifacts and runs route, SEO, and hours tests).
-- [`.github/workflows/quality.yml`](.github/workflows/quality.yml) — deeper
-  quality. Reports code bloat (advisory), audits dependencies for high/critical
-  vulnerabilities, then builds the static site and runs the page smoke test,
-  bundle-size budget, Lighthouse, and accessibility (axe-core) audits.
-- [`.github/workflows/performance.yml`](.github/workflows/performance.yml) —
-  resilience. Loads the site under a throttled slow-3G connection and checks
-  for memory leaks across repeated navigation.
-- [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml) — GitHub's
-  static security analysis, plus a weekly scheduled scan.
-- [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) —
-  builds the static site on `main` and publishes it when GitHub Pages is
-  configured at a domain root.
+- **Formatting** — Biome.
+- **Static analysis** — Biome lint, Next.js framework lint
+  (`@next/eslint-plugin-next`), `tsc --noEmit`, dead code (`knip`), architecture
+  rules (`dependency-cruiser`), and a code-bloat report (advisory).
+- **Test and build** — `npm test`, which builds both the Cloudflare and
+  static/Vercel artifacts and runs the route, SEO, hours, and static-export
+  tests. The tested static site is uploaded as an artifact for the browser
+  jobs.
+- **Browser quality** — against that artifact: the page smoke test (every page
+  loads, links resolve, the call CTA works), the bundle-size budget, **Lighthouse
+  on every public page** (performance, accessibility, best-practices, and SEO on
+  indexable pages), and an axe-core accessibility audit on every page.
+- **Dependency security** — `npm audit` (fails on high/critical) plus a
+  dependency-review action on PRs.
+- **CodeQL** — GitHub's static security analysis, plus a weekly scheduled scan.
+- **Windows compatibility** — build, lint, Next.js lint, and typecheck on
+  `windows-latest`.
+- **Resilience** (scheduled weekly + manual `workflow_dispatch`) — slow-3G load
+  and memory-leak checks, plus **Lighthouse on every page with a median of 3
+  runs** as the performance stability reference.
+- **Package + deploy** — packages the tested static site and publishes it to
+  GitHub Pages when Pages is configured at a domain root.
 
 Every check is also runnable locally via `npm run check:<name>`; `npm run
 check:all` runs the whole sequence in CI order. The individual checks are:
 
-| Command                      | What it verifies                                                   |
-| ---------------------------- | ------------------------------------------------------------------ |
-| `npm run check`              | Format, lint, typecheck, tests, and a real-browser asset check     |
-| `npm run check:deadcode`     | No unused files, exports, or dependencies (`knip`)                 |
-| `npm run check:bloat`        | No source file exceeds its role-based line budget (advisory)       |
-| `npm run check:pages`        | Every page loads with a title, H1, no errors, and no dead links    |
-| `npm run check:bundle`       | Shipped JS+CSS stays under the byte budget                         |
-| `npm run check:lighthouse`   | Lighthouse performance/accessibility/best-practices/SEO thresholds |
-| `npm run check:a11y`         | Zero axe-core WCAG 2.1 AA violations                               |
-| `npm run check:slow-network` | Pages load within budget on a throttled slow-3G connection         |
-| `npm run check:memory`       | No DOM-node or heap growth across repeated navigation              |
+| Command                      | What it verifies                                                                                          |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `npm run check`              | Format, lint, types, tests, and a real-browser asset check                                                |
+| `npm run check:deadcode`     | No unused files, exports, or dependencies (`knip`)                                                        |
+| `npm run check:architecture` | No circular deps, no `src`→`dev` imports, no worker→component imports (`dependency-cruiser`)               |
+| `npm run check:bloat`        | No source file exceeds its role-based line budget (advisory)                                              |
+| `npm run check:pages`        | Every page loads with a title, H1, no errors, and no dead links                                           |
+| `npm run check:bundle`       | Shipped JS+CSS stays under the byte budget                                                                |
+| `npm run check:lighthouse`   | Lighthouse on **every public page** (perf ≥ 80; a11y/BP/SEO ≥ 100)                                        |
+| `npm run check:a11y`         | Zero axe-core WCAG 2.1 AA violations on **every page**                                                    |
+| `npm run check:slow-network` | Every page loads within budget on a throttled slow-3G connection                                          |
+| `npm run check:memory`       | No DOM-node or heap growth across repeated navigation                                                     |
+
+The canonical testing document is `dev/docs/test-program.md`: the master test
+matrix, the page-discovery rules, and which checks gate PRs vs run scheduled.
+Any change to a `check:*` script's coverage must update it.
 
 To investigate a failure, open the failing badge, select the newest run, then
 open the failed step. A red **Lint** step points to source-quality errors; a
@@ -99,6 +107,10 @@ and re-imported from `app/globals.css`.
 | `/contact`                                                                                         | Call, visit, and after-hours contact options                                            |
 | `/vehicle-drop-off`                                                                                | Secure after-hours key-drop guide                                                       |
 | `/links`                                                                                           | Link-tree hub for social bios                                                           |
+| `/links/qr`                                                                                        | QR-code landing for the link tree (noindex)                                             |
+| `/privacy`                                                                                         | Privacy notice (noindex)                                                                |
+| `/arcade` (+ 15 games)                                                                             | The Garage Arcade — easter-egg games, all noindex                                       |
+| `/adgent`                                                                                          | Dev playground for the pixel-crew mascot and chat brain (noindex)                       |
 | `/contact-card.vcf`                                                                                | Downloadable vCard                                                                      |
 | Legacy: `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments` | Permanent redirects to the new structure                                                |
 
@@ -171,9 +183,10 @@ Requires Node.js `24.x` (Linux with `flock`, `curl`, GNU `timeout`).
 ```bash
 npm run install:ci   # one bounded lockfile install
 npm run dev          # Vite dev server at http://localhost:5173
-npm run format       # format all maintained repository files
+npm run format       # format all maintained repository files (Biome)
 npm run format:check # verify formatting without changing files
-npm run lint         # ESLint
+npm run lint         # Biome lint
+npm run lint:next    # Next.js framework lint (ESLint)
 npm test             # production build + rendered-HTML tests
 npm run build        # build and validate the deployable Sites artifact
 ```
@@ -198,9 +211,9 @@ pre-rendered HTML:
 npm run build:static   # -> dist/client, servable by any static host
 ```
 
-`.github/workflows/deploy-pages.yml` runs this on every push to `main` and
-publishes to GitHub Pages (enable it once under **Settings → Pages → Source:
-GitHub Actions**).
+The `package-pages` and `deploy` jobs in `.github/workflows/ci.yml` run this on
+every push to `main` and publish to GitHub Pages (enable it once under
+**Settings → Pages → Source: GitHub Actions**).
 
 `scripts/build-static.mjs` closes the gaps a bare export leaves: it rewrites
 the Worker-only `/_vinext/image` URLs to the original assets, writes
@@ -216,7 +229,7 @@ domain or an `<owner>.github.io` repo. A project-site subpath
 (the dynamic service routes fail to export) and it does not implement
 `assetPrefix`, so its runtime JS and CSS stay pinned to the domain root.
 Rewriting the emitted URLs is not a way around it either — the client chunks
-and RSC router still request `/assets/*.js` and `/services.rsc`, so scripts and
+and RSC router still request `/assets/*.js` and `/services.txt`, so scripts and
 navigation break even though the pages render. The build fails early with that
 explanation rather than publishing a broken site.
 

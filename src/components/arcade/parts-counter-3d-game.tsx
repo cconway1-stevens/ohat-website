@@ -14,8 +14,8 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { cozyAudio, speakWords, stopWords } from "@/lib/arcade/garage-audio";
 import {
-  CUSTOMERS_PER_DAY,
   buyUpgrade,
+  CUSTOMERS_PER_DAY,
   canAfford,
   coinsForOrder,
   isDayComplete,
@@ -23,15 +23,15 @@ import {
   nextCounterOrder,
   orderPart,
   orderTotal,
+  type PartsOrder,
   partsStock,
   stockEntry,
   streakAdvance,
   upgrades,
-  type PartsOrder,
 } from "@/lib/arcade/parts-orders";
 import { CozyShell, useAmbience } from "./cozy/cozy-shell";
+import { type Character, makeBubble, makeClerk, makeCustomer, makeEmote } from "./parts-avatars";
 import { buildWorld, type WorldHandle } from "./parts-world";
-import { makeBubble, makeClerk, makeCustomer, makeEmote, type Character } from "./parts-avatars";
 
 const SAVE_KEY = "ohat-parts-3d-v1";
 const SPEED = 3.2;
@@ -68,7 +68,7 @@ const FIRST_ORDER: PartsOrder = {
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 export default function PartsCounter3DGame() {
   const [sound, setSound] = useState(false);

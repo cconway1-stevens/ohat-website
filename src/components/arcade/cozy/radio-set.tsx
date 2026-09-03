@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   type AmbienceLayer,
-  type Band,
-  BANDS,
   ambience,
+  BANDS,
+  type Band,
   cozyAudio,
   radio,
   stationLock,
@@ -173,6 +173,7 @@ export function RadioSet({
           <div className="car-dial" aria-hidden="true">
             {Array.from({ length: 21 }, (_, index) => (
               <span
+                // biome-ignore lint/suspicious/noArrayIndexKey: static decorative dial, 21 fixed ticks, never reordered.
                 key={index}
                 className={index % 4 === 0 ? "is-major" : ""}
                 style={{ left: `${(index / 20) * 100}%` }}
@@ -249,6 +250,7 @@ export function RadioSet({
           const active = Math.abs(value - dial) < range.step / 2;
           return (
             <button
+              // biome-ignore lint/suspicious/noArrayIndexKey: fixed 5-slot preset bank, never reordered; slot is the stable key.
               key={slot}
               type="button"
               className={`car-push${active ? " is-down" : ""}${held === slot ? " is-holding" : ""}`}

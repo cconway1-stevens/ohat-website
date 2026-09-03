@@ -10,10 +10,11 @@
 // The build itself runs earlier in the `npm test` pipeline; a failure there
 // fails the run before this file executes. What follows verifies the result.
 import assert from "node:assert/strict";
-import test from "node:test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { discoverRoutes } from "../scripts/lib/routes.mjs";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const vercel = JSON.parse(readFileSync(join(root, "vercel.json"), "utf8"));
@@ -121,6 +122,28 @@ test("arcade pages are noindex and stay out of the sitemap", () => {
       `${page.slice(outDir.length)} should carry noindex`,
     );
   }
+});
+
+test("sitemap routes match the discovered indexable pages", () => {
+  // The sitemap is derived from the emitted tree by build-static.mjs, and the
+  // page-level checks discover routes from the same tree via routes.mjs. If
+  // these two disagree, a page is either escaping the sitemap or escaping the
+  // browser audits — both are silent regressions. This pins them together.
+  const sitemap = readFileSync(join(outDir, "sitemap.xml"), "utf8");
+  const sitemapRoutes = [...sitemap.matchAll(/<loc>https?:\/\/[^/]+([^<]*)<\/loc>/g)]
+    .map((m) => m[1] || "/")
+    .sort();
+
+  const indexable = discoverRoutes(outDir)
+    .filter((p) => p.kind === "indexable")
+    .map((p) => p.route)
+    .sort();
+
+  assert.deepEqual(
+    indexable,
+    sitemapRoutes,
+    "sitemap and discovered indexable pages drifted apart",
+  );
 });
 
 test("exported pages carry no Worker-only image URLs", () => {

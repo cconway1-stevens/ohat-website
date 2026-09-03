@@ -7,7 +7,7 @@
  * and play once. Everything runs on refs and one rAF loop, like the arcade
  * cabinet — no React state per frame.
  */
-import { useEffect, useRef, useState, type JSX } from "react";
+import { type JSX, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import {
   buildPal,
@@ -219,7 +219,7 @@ export default function TirePalScene({
         const duration = EMOTE_DURATIONS[activeEmote.kind];
         const p = duration > 0 ? Math.min(1, activeEmote.t / duration) : 1;
         if (activeEmote.kind === "celebrate") {
-          const ease = 1 - Math.pow(1 - p, 3);
+          const ease = 1 - (1 - p) ** 3;
           spin = still ? 0 : ease * Math.PI * 2;
           hop += still ? 0 : Math.sin(p * Math.PI) * 0.35;
         } else if (activeEmote.kind === "thinking") {

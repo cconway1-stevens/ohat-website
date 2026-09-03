@@ -144,7 +144,7 @@
 .contact-route-details {
   background:
     linear-gradient(90deg, var(--red) 0 34%, var(--yellow) 34% 67%, var(--blue) 67%) top / 100% 6px
-      no-repeat,
+    no-repeat,
     var(--paper);
   padding-top: calc(1rem + 6px);
 }

@@ -210,17 +210,15 @@ export function GarageBlackjack() {
   const recordOutcome = useCallback((completedRound: Round) => {
     const results = roundOutcomes(completedRound);
     if (!results.length) return;
-    setScore((current) =>
-      results.reduce(
-        (next, result) =>
-          result === "player"
-            ? { ...next, wins: next.wins + 1 }
-            : result === "house"
-              ? { ...next, losses: next.losses + 1 }
-              : { ...next, pushes: next.pushes + 1 },
-        current,
-      ),
-    );
+    setScore((current) => {
+      const wins = results.filter((r) => r === "player").length;
+      const losses = results.filter((r) => r === "house").length;
+      return {
+        wins: current.wins + wins,
+        losses: current.losses + losses,
+        pushes: current.pushes + (results.length - wins - losses),
+      };
+    });
     if (results.includes("player")) garageAudio.blackjackWin();
   }, []);
 
@@ -285,9 +283,9 @@ export function GarageBlackjack() {
     advancedMode &&
     Boolean(
       activePlayer &&
-      round?.players.length === 1 &&
-      activePlayer.cards.length === 2 &&
-      activePlayer.cards[0].rank === activePlayer.cards[1].rank,
+        round?.players.length === 1 &&
+        activePlayer.cards.length === 2 &&
+        activePlayer.cards[0].rank === activePlayer.cards[1].rank,
     );
   const canDouble = advancedMode && Boolean(activePlayer && activePlayer.cards.length === 2);
   const canSurrender =

@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SiteImage } from "../ui/site-image";
 import { useEffect, useRef, useState } from "react";
-import { addressDisplay, DirectionsTrigger } from "../ui/directions-dialog";
-import { ShopAlmanac } from "../shop/shop-almanac";
 import { shop } from "@/lib/shop/shop";
+import { ShopAlmanac } from "../shop/shop-almanac";
+import { addressDisplay, DirectionsTrigger } from "../ui/directions-dialog";
+import { SiteImage } from "../ui/site-image";
 
 // Re-exported from the shared config so the many components already importing
 // these names keep working, while the values live in exactly one place.

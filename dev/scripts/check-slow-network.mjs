@@ -11,10 +11,10 @@
  * Run after `npm run build:static`. Budgets are overridable via env:
  *   SLOW_MAX_MS (default 20000), SLOW_MAX_KB (default 1500)
  */
-import { createServer } from "node:http";
-import { existsSync, readFileSync, statSync } from "node:fs";
-import { extname, join, normalize } from "node:path";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { auditableRoutes, createStaticServer } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
@@ -22,8 +22,6 @@ const PORT = Number(process.env.SLOW_PORT ?? 8934);
 
 const MAX_MS = Number(process.env.SLOW_MAX_MS ?? 30000);
 const MAX_KB = Number(process.env.SLOW_MAX_KB ?? 2000);
-
-const ROUTES = (process.env.SLOW_ROUTES ?? "/,/services/,/our-shop/,/contact/").split(",");
 
 // Slow 3G: 400ms round-trip, ~500kbps down/up.
 const THROTTLE = {
@@ -33,41 +31,12 @@ const THROTTLE = {
   uploadThroughput: (500 * 1024) / 8,
 };
 
-const TYPES = {
-  ".html": "text/html",
-  ".js": "text/javascript",
-  ".mjs": "text/javascript",
-  ".css": "text/css",
-  ".svg": "image/svg+xml",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".webp": "image/webp",
-  ".avif": "image/avif",
-  ".ico": "image/x-icon",
-  ".json": "application/json",
-  ".woff2": "font/woff2",
-  ".txt": "text/plain",
-  ".xml": "application/xml",
-};
-
 if (!existsSync(CLIENT)) {
   console.error("dist/client not found — run `npm run build:static` first.");
   process.exit(1);
 }
 
-const server = createServer((req, res) => {
-  const path = decodeURIComponent(new URL(req.url, "http://x").pathname);
-  let file = join(CLIENT, normalize(path).replace(/^(\.\.[/\\])+/, ""));
-  if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
-  if (!existsSync(file) && existsSync(`${file}.html`)) file = `${file}.html`;
-  if (!existsSync(file) || statSync(file).isDirectory()) {
-    res.writeHead(404).end("not found");
-    return;
-  }
-  res.writeHead(200, { "content-type": TYPES[extname(file)] ?? "application/octet-stream" });
-  res.end(readFileSync(file));
-});
+const server = createStaticServer(CLIENT);
 
 await new Promise((resolve) => server.listen(PORT, resolve));
 
@@ -77,7 +46,8 @@ const executablePath =
 const browser = await chromium.launch(existsSync(executablePath) ? { executablePath } : {});
 
 let failed = false;
-for (const route of ROUTES) {
+const routes = process.env.SLOW_ROUTES?.split(",").filter(Boolean) ?? auditableRoutes(CLIENT);
+for (const route of routes) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Network.enable");

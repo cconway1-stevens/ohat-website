@@ -1,0 +1,1358 @@
+/* Adgent Studio — retro game-menu shell: framed panels, a character dossier
+   with stat bars, feature call-out badges, and a CRT stage. */
+
+.adgent-studio {
+  --adgent-scanline: 0.04;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  background: var(--cream);
+}
+.adgent-studio.adgent-scan-subtle {
+  --adgent-scanline: 0.015;
+}
+.adgent-studio.adgent-scan-full {
+  --adgent-scanline: 0.05;
+}
+
+/* --- sidebar (dark CRT) -------------------------------------------------- */
+
+.adgent-sidebar {
+  background: #0d0c0a;
+  color: #5dd56e;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  font-family: var(--font-vt323), ui-monospace, monospace;
+  font-size: var(--adgent-font-size, 18px);
+}
+.adgent-sidebar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, var(--adgent-scanline)) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.adgent-logo {
+  font-family: var(--font-pixel), monospace;
+  font-size: 14px;
+  color: #f6a30b;
+  margin: 0;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(246, 163, 11, 0.4);
+}
+
+.adgent-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 0.5rem;
+}
+.adgent-nav button {
+  background: transparent;
+  border: none;
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--adgent-font-size, 18px);
+  text-align: left;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.1s;
+}
+.adgent-nav button:hover {
+  background: rgba(93, 213, 110, 0.1);
+}
+.adgent-nav button.is-active {
+  color: #f6a30b;
+  background: rgba(246, 163, 11, 0.12);
+}
+
+.adgent-side-agent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(93, 213, 110, 0.2);
+}
+.adgent-side-agent-label {
+  font-family: var(--font-pixel), monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: rgba(93, 213, 110, 0.6);
+}
+.adgent-side-agent-name {
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #f6a30b;
+}
+.adgent-side-agent select {
+  background: #16130f;
+  color: #5dd56e;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  border-radius: 3px;
+  font-family: var(--font-vt323), monospace;
+  font-size: 16px;
+  padding: 0.15rem 0.3rem;
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.adgent-sidebar-foot {
+  margin-top: auto;
+  color: rgba(93, 213, 110, 0.5);
+  font-size: 0.85em;
+}
+.adgent-sidebar-foot p {
+  margin: 0.2rem 0;
+}
+
+/* --- main content -------------------------------------------------------- */
+
+.adgent-main {
+  padding: 1.5rem 2rem 2.5rem;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.adgent-main-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.adgent-main-head h2 {
+  font-family: var(--font-pixel), monospace;
+  font-size: 18px;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+.adgent-feature-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.adgent-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+}
+
+/* --- game panel (frame) --------------------------------------------------- */
+
+.adgent-frame {
+  position: relative;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.adgent-frame.is-dark {
+  background: #0d0c0a;
+  color: #5dd56e;
+}
+.adgent-frame.is-dark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, var(--adgent-scanline)) 0 1px,
+    transparent 1px 4px
+  );
+}
+.adgent-frame-head {
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 0.75rem;
+  background: var(--ink);
+  color: var(--yellow);
+  border-bottom: 3px solid var(--ink);
+}
+.adgent-frame.is-dark .adgent-frame-head {
+  background: #16130f;
+  color: #f6a30b;
+  border-bottom-color: rgba(93, 213, 110, 0.25);
+}
+.adgent-frame-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+.adgent-fill {
+  flex: 1;
+}
+
+/* --- feature badges ------------------------------------------------------- */
+
+.adgent-badge {
+  font-family: var(--font-pixel), monospace;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.5rem;
+  background: #0d0c0a;
+  color: #5dd56e;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 var(--ink);
+  white-space: nowrap;
+}
+
+/* --- stat bars ------------------------------------------------------------ */
+
+.adgent-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.adgent-stat {
+  display: grid;
+  grid-template-columns: 64px 1fr 24px;
+  align-items: center;
+  gap: 0.5rem;
+}
+.adgent-stat-label {
+  font-family: var(--font-pixel), monospace;
+  font-size: 8px;
+  color: var(--muted);
+}
+.adgent-stat-bar {
+  height: 10px;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.adgent-stat-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--yellow));
+}
+.adgent-stat-val {
+  font-family: var(--font-vt323), monospace;
+  font-size: 16px;
+  color: var(--ink);
+  text-align: right;
+}
+
+/* --- pixel canvas --------------------------------------------------------- */
+
+.adgent-pixel {
+  image-rendering: pixelated;
+  /* biome-ignore lint/suspicious/noDuplicateProperties: pixelated is the fallback, crisp-edges the standard — both intentional. */
+  image-rendering: crisp-edges;
+  background: #0d0c0a;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+}
+.adgent-pixel-lg {
+  width: 256px;
+  height: 256px;
+}
+.adgent-pixel-sm {
+  width: 64px;
+  height: 64px;
+  border-width: 2px;
+  border-radius: 4px;
+}
+
+/* 3D object canvases — same dark framed look as the pixel stage. */
+.adgent-object3d {
+  background: #0d0c0a;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.adgent-object3d-lg {
+  width: 256px;
+  height: 256px;
+}
+.adgent-object3d-sm {
+  width: 64px;
+  height: 64px;
+  border-width: 2px;
+  border-radius: 4px;
+}
+
+/* --- looks mode: stage + dossier ------------------------------------------ */
+
+.adgent-looks-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .adgent-looks-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adgent-stage .adgent-frame-body {
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.adgent-stage-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 1rem 0 0;
+}
+.adgent-stage-pedestal {
+  width: 60%;
+  height: 8px;
+  margin-top: -4px;
+  background: linear-gradient(180deg, #2a2a2a, #0d0c0a);
+  border: 2px solid rgba(93, 213, 110, 0.3);
+  border-radius: 50%;
+}
+.adgent-stage-name {
+  font-family: var(--font-pixel), monospace;
+  font-size: 16px;
+  color: #f6a30b;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+  text-shadow: 0 0 8px rgba(246, 163, 11, 0.4);
+}
+.adgent-stage-zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-vt323), monospace;
+  color: rgba(93, 213, 110, 0.7);
+  font-size: 14px;
+}
+.adgent-stage-zoom button {
+  background: transparent;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: 14px;
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.adgent-stage-zoom button.is-active {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+
+.adgent-dossier-name {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin: 0;
+  color: var(--ink);
+}
+.adgent-dossier-blurb {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+.adgent-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+/* --- crew select + customize ---------------------------------------------- */
+
+.adgent-crew-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 700px) {
+  .adgent-crew-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.adgent-crew-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: transform 0.1s;
+}
+.adgent-crew-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.adgent-crew-card.is-active {
+  border-color: var(--red);
+  box-shadow: 3px 3px 0 var(--red);
+  background: var(--yellow-tint);
+}
+
+.adgent-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-end;
+}
+.adgent-controls-stack {
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 420px;
+  gap: 1rem;
+}
+.adgent-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.adgent-field-grow {
+  flex: 1;
+  min-width: 180px;
+}
+.adgent-field select,
+.adgent-field input[type="range"] {
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.3rem 0.4rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  background: var(--cream);
+}
+
+/* --- behavior mode --------------------------------------------------------- */
+
+.adgent-mini-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+.adgent-mini-picker button {
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  padding: 2px;
+  cursor: pointer;
+  line-height: 0;
+}
+.adgent-mini-picker button.is-active {
+  border-color: var(--yellow);
+}
+.adgent-mini-picker .adgent-pixel {
+  border-width: 2px;
+  border-radius: 4px;
+}
+
+.adgent-emote-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.adgent-emote-row button {
+  padding: 0.4rem 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--yellow);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.1s;
+}
+.adgent-emote-row button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.adgent-emote-row button.is-active {
+  background: var(--red);
+  color: var(--cream);
+}
+.adgent-play {
+  background: var(--blue) !important;
+  color: white !important;
+}
+
+.adgent-behavior-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.adgent-behavior-list > div {
+  padding: 0.6rem 0.75rem;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+.adgent-behavior-list dt {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.adgent-behavior-list dd {
+  margin: 0.2rem 0 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* --- dark terminal readout ------------------------------------------------- */
+
+.adgent-terminal {
+  background: #0d0c0a;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.75rem;
+  position: relative;
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--adgent-font-size, 18px);
+  overflow: hidden;
+}
+.adgent-terminal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, var(--adgent-scanline)) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+/* --- brains mode ----------------------------------------------------------- */
+
+.adgent-brains-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  flex: 1;
+  min-height: 0;
+}
+@media (max-width: 1000px) {
+  .adgent-brains-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.adgent-brains-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.adgent-filter {
+  width: 100%;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+.adgent-faq-list {
+  flex: 1;
+  min-height: 0;
+  max-height: 62vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.25rem;
+}
+.adgent-faq {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.adgent-faq summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.adgent-faq-test {
+  margin: 0.25rem 0 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  background: var(--yellow);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.adgent-faq-test:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.adgent-faq-name {
+  display: block;
+  color: var(--red);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.adgent-faq p {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0.4rem 0 0 0;
+}
+
+.adgent-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.adgent-lab-input {
+  display: flex;
+  gap: 0.5rem;
+}
+.adgent-lab-input input {
+  flex: 1;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+.adgent-lab-input button,
+.adgent-prompts button {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.2rem 0.75rem;
+  cursor: pointer;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.adgent-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.adgent-prompts button {
+  background: var(--blue);
+  color: white;
+}
+
+.adgent-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.adgent-answer {
+  padding: 0.75rem;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+.adgent-answer p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+.adgent-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.adgent-chip {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--red);
+  border-radius: 3px;
+  color: var(--red);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.adgent-chip:hover {
+  background: var(--red);
+  color: var(--cream);
+}
+
+.adgent-debug {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.5rem;
+}
+.adgent-debug dt {
+  color: rgba(93, 213, 110, 0.5);
+}
+.adgent-debug dd {
+  margin: 0;
+  color: #c8e6c8;
+}
+.adgent-tokens {
+  margin: 0.5rem 0 0 0;
+  color: rgba(93, 213, 110, 0.7);
+  font-size: 0.85em;
+}
+.adgent-fallback {
+  color: #f6a30b;
+  font-style: italic;
+}
+
+.adgent-synonym-add {
+  display: flex;
+  gap: 0.4rem;
+}
+.adgent-synonym-add input {
+  flex: 1;
+  min-width: 0;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.8rem;
+}
+.adgent-synonym-add button {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+.adgent-synonym-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+}
+.adgent-synonym-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0;
+}
+.adgent-synonym-list button {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-weight: 700;
+}
+.adgent-hint {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* --- sources mode ----------------------------------------------------------- */
+
+.adgent-tree {
+  margin: 0;
+  white-space: pre;
+  line-height: 1.5;
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--adgent-font-size, 18px);
+}
+
+.adgent-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+@media (max-width: 700px) {
+  .adgent-compare {
+    grid-template-columns: 1fr;
+  }
+}
+.adgent-compare-col {
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.adgent-compare-col h4 {
+  font-family: var(--font-pixel), monospace;
+  font-size: 9px;
+  color: var(--ink);
+  margin: 0;
+}
+.adgent-compare-col p {
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* --- history mode ------------------------------------------------------------ */
+
+.adgent-history-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.adgent-seg {
+  display: flex;
+  gap: 2px;
+}
+.adgent-seg button {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+}
+.adgent-seg button.is-active {
+  background: var(--yellow);
+}
+.adgent-history-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.adgent-history-actions button {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+}
+.adgent-history-actions button:hover {
+  background: var(--yellow);
+}
+
+.adgent-empty {
+  color: var(--muted);
+  font-style: italic;
+}
+.adgent-history-list {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.adgent-history-row {
+  border-bottom: 1px solid var(--line);
+}
+.adgent-history-row:last-child {
+  border-bottom: none;
+}
+.adgent-history-row summary {
+  display: grid;
+  grid-template-columns: 150px 1fr 160px 60px;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  align-items: center;
+}
+.adgent-history-row p {
+  margin: 0;
+  padding: 0 0.75rem 0.75rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.adgent-history-time {
+  color: var(--muted);
+  font-family: var(--font-vt323), monospace;
+}
+.adgent-history-q {
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adgent-history-match {
+  color: var(--red);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adgent-history-score {
+  color: var(--muted);
+  font-family: var(--font-vt323), monospace;
+}
+
+/* --- settings mode ------------------------------------------------------------ */
+
+.adgent-settings-frame {
+  max-width: 480px;
+}
+.adgent-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.adgent-toggle input {
+  width: 18px;
+  height: 18px;
+}
+.adgent-reset {
+  background: var(--red);
+  color: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 var(--ink);
+  align-self: flex-start;
+}
+
+/* --- code mode ------------------------------------------------------------------ */
+
+.adgent-code-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.adgent-code-tabs button {
+  background: transparent;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  color: #5dd56e;
+  font-family: var(--font-vt323), monospace;
+  font-size: 14px;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.adgent-code-tabs button.is-active {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+.adgent-code {
+  margin: 0;
+  white-space: pre-wrap;
+  color: #c8e6c8;
+  line-height: 1.5;
+  font-family: var(--font-vt323), monospace;
+  font-size: var(--adgent-font-size, 18px);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+/* --- demo mode (test drive) ------------------------------------------------- */
+
+.adgent-demo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .adgent-demo {
+    grid-template-columns: 1fr;
+  }
+}
+.adgent-demo-frame .adgent-frame-body {
+  gap: 0.75rem;
+  min-height: 0;
+}
+.adgent-demo-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.adgent-demo-title {
+  display: flex;
+  flex-direction: column;
+}
+.adgent-demo-title strong {
+  font-family: var(--font-pixel), monospace;
+  font-size: 12px;
+  color: #f6a30b;
+}
+.adgent-demo-title span {
+  color: rgba(93, 213, 110, 0.6);
+  font-size: 0.85em;
+}
+.adgent-demo-log {
+  flex: 1;
+  min-height: 220px;
+  max-height: 46vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(93, 213, 110, 0.15);
+  border-radius: 6px;
+}
+.adgent-msg {
+  display: flex;
+}
+.adgent-msg-user {
+  justify-content: flex-end;
+}
+.adgent-bubble {
+  position: relative;
+  max-width: 85%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.adgent-msg-tread .adgent-bubble {
+  background: rgba(93, 213, 110, 0.12);
+  border: 1px solid rgba(93, 213, 110, 0.3);
+  color: #c8e6c8;
+}
+.adgent-msg-user .adgent-bubble {
+  background: var(--yellow);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+.adgent-bubble p {
+  margin: 0;
+}
+.adgent-bubble .adgent-chips {
+  margin-top: 0.5rem;
+}
+.adgent-rate {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+.adgent-rate button {
+  background: transparent;
+  border: 1px solid rgba(93, 213, 110, 0.4);
+  color: #5dd56e;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1;
+}
+.adgent-rate button:hover {
+  background: rgba(93, 213, 110, 0.15);
+}
+.adgent-rate button.is-active {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+.adgent-thinking {
+  display: flex;
+  gap: 4px;
+}
+.adgent-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5dd56e;
+  animation: adgent-blink 1s infinite;
+}
+.adgent-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.adgent-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes adgent-blink {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.adgent-eval-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+.adgent-demo-side .adgent-badges {
+  margin-top: auto;
+}
+
+/* --- notes mode (feedback) -------------------------------------------------- */
+
+.adgent-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.adgent-note {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  background: var(--cream);
+}
+.adgent-note-like {
+  border-left: 6px solid var(--blue);
+}
+.adgent-note-hate {
+  border-left: 6px solid var(--red);
+}
+.adgent-note-note {
+  border-left: 6px solid var(--yellow);
+}
+.adgent-note header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.adgent-note-icon {
+  font-weight: 700;
+}
+.adgent-note-like .adgent-note-icon {
+  color: var(--blue);
+}
+.adgent-note-hate .adgent-note-icon {
+  color: var(--red);
+}
+.adgent-note-meta {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-vt323), monospace;
+  flex: 1;
+}
+.adgent-note header button {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-weight: 700;
+}
+.adgent-note p {
+  margin: 0;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+.adgent-note-target {
+  color: var(--blue);
+  font-family: var(--font-vt323), monospace;
+  font-size: 0.8rem;
+  margin: 0 0 0.3rem 0;
+}
+
+/* --- floating notepad -------------------------------------------------------- */
+
+.adgent-notepad-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 50;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.adgent-notepad-fab:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.adgent-notepad {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 5.5rem;
+  z-index: 50;
+  width: 300px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.adgent-notepad-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.adgent-notepad-head strong {
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+}
+.adgent-notepad-head span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-vt323), monospace;
+}
+.adgent-notepad textarea {
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0.4rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+.adgent-notepad-save {
+  background: var(--blue);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 0.4rem;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.adgent-notepad-pick {
+  background: var(--cream);
+  border: 2px dashed var(--ink);
+  border-radius: 6px;
+  padding: 0.4rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+.adgent-notepad-pick:hover {
+  background: var(--yellow-tint);
+}
+.adgent-notepad-target {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--blue-tint);
+  border: 2px solid var(--blue);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  font-family: var(--font-vt323), monospace;
+}
+.adgent-notepad-target span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adgent-notepad-target button {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* --- element picker overlay ------------------------------------------------- */
+
+.adgent-pick-banner {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: var(--ink);
+  color: var(--yellow);
+  font-family: var(--font-pixel), monospace;
+  font-size: 10px;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  box-shadow: var(--hard-shadow);
+  pointer-events: none;
+}
+.adgent-pick-highlight {
+  position: fixed;
+  z-index: 99;
+  border: 3px solid var(--yellow);
+  background: rgba(246, 189, 56, 0.15);
+  border-radius: 4px;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+/* --- responsive ------------------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .adgent-studio {
+    grid-template-columns: 1fr;
+  }
+  .adgent-sidebar {
+    position: relative;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .adgent-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .adgent-sidebar-foot {
+    margin-top: 0;
+  }
+  .adgent-main {
+    padding: 1rem;
+  }
+}
+
+/* --- reduced motion ----------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .adgent-crew-card,
+  .adgent-emote-row button,
+  .adgent-faq-test {
+    transition: none;
+  }
+}

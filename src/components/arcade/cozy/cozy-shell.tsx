@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ambience, type AmbienceLayer } from "@/lib/arcade/garage-audio";
+import { type AmbienceLayer, ambience } from "@/lib/arcade/garage-audio";
 
 /**
  * The frame every cozy scene sits in: the newspaper header the rest of the

@@ -703,6 +703,11 @@ export const services: Service[] = [
         answer:
           "An illuminated check-engine light fails the NJ emissions inspection on most passenger vehicles, so emissions faults should be diagnosed and repaired—and the vehicle driven enough to reset its readiness monitors—before you go for inspection.",
       },
+      {
+        question: "Do you do the NJ state safety or emissions inspection?",
+        answer:
+          "We are not a licensed state-inspection station, so we cannot issue the sticker. What we do is fix the things that commonly fail inspection—an illuminated check-engine light, an exhaust leak ahead of the O2 sensor, a monitor that has not reset—and then drive the vehicle enough to confirm the readiness monitors are set, so the inspection lane is a one-stop visit. Call for the nearest licensed station if you just need the sticker.",
+      },
     ],
     related: ["advanced-diagnostics", "engine-cooling", "oil-maintenance"],
   },

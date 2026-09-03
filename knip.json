@@ -2,6 +2,6 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": ["src/app/**/*.{ts,tsx}", "src/worker/index.ts", "dev/scripts/*.mjs", "dev/tests/*.mjs"],
   "project": ["src/**/*.{ts,tsx}", "dev/**/*.mjs"],
-  "ignore": ["src/lib/shop/shop.ts", "dev/scripts/run-with-timeout.mjs"],
+  "ignore": ["src/lib/shop/shop.ts"],
   "ignoreDependencies": ["axe-core", "tailwindcss"]
 }

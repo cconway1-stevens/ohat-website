@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { getShopHoursStatus, getShopStatusLabel } from "@/lib/shop/shop-hours.mjs";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { shop } from "@/lib/shop/shop";
+import { getShopHoursStatus, getShopStatusLabel } from "@/lib/shop/shop-hours.mjs";
 
 /**
  * The shop's open/closed placard.
@@ -15,20 +15,49 @@ import { shop } from "@/lib/shop/shop";
  * The wording all comes from `shop.hours.status.labels`, so the sign can be
  * reworded without touching this file or the scheduling logic.
  */
+
+// Status is read by useSyncExternalStore: the server renders `null` and the
+// client snapshot computes the open/closed state once on first read, then
+// ticks forward on the same refresh cadence used by the masthead almanac.
+// That removes the old useState-in-effect pattern without losing the
+// background refresh.
+let snapshot: ReturnType<typeof getShopHoursStatus> | null = null;
+const listeners = new Set<() => void>();
+let refreshTimer: number | null = null;
+
+function clientSnapshot(): ReturnType<typeof getShopHoursStatus> | null {
+  if (snapshot === null) snapshot = getShopHoursStatus();
+  return snapshot;
+}
+
+const serverSnapshot = () => null;
+
+function subscribe(notify: () => void): () => void {
+  listeners.add(notify);
+  if (refreshTimer === null && typeof window !== "undefined") {
+    refreshTimer = window.setInterval(() => {
+      snapshot = getShopHoursStatus();
+      for (const listener of listeners) listener();
+    }, shop.hours.status.refreshMs);
+  }
+  return () => {
+    listeners.delete(notify);
+    if (listeners.size === 0 && refreshTimer !== null && typeof window !== "undefined") {
+      window.clearInterval(refreshTimer);
+      refreshTimer = null;
+    }
+  };
+}
+
 export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
-  const [status, setStatus] = useState(() => getShopHoursStatus());
+  const status = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const [previewState, setPreviewState] = useState<string | null>(null);
   const holdTimer = useRef<number | null>(null);
   const cycleTimer = useRef<number | null>(null);
   const preview = shop.hours.status.signPreview;
 
   useEffect(() => {
-    const timer = window.setInterval(
-      () => setStatus(getShopHoursStatus()),
-      shop.hours.status.refreshMs,
-    );
     return () => {
-      window.clearInterval(timer);
       if (holdTimer.current !== null) window.clearTimeout(holdTimer.current);
       if (cycleTimer.current !== null) window.clearInterval(cycleTimer.current);
     };
@@ -63,8 +92,10 @@ export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
     holdTimer.current = null;
   }
 
-  const shownStatus = previewState ?? status.status;
-  const shownLabel = previewState ? getShopStatusLabel(previewState) : status.label;
+  const shownStatus = previewState ?? status?.status ?? "pending";
+  const shownLabel = previewState
+    ? getShopStatusLabel(previewState)
+    : (status?.label ?? "Checking hours");
   const statusLines: string[] = shownLabel.split(". ").filter(Boolean);
 
   return (
@@ -98,7 +129,7 @@ export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
           ))}
         </span>
       </span>
-      {status.holiday ? <span className="shop-hours-holiday">{status.holidayNotice}</span> : null}
+      {status?.holiday ? <span className="shop-hours-holiday">{status.holidayNotice}</span> : null}
     </span>
   );
 }

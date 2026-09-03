@@ -11,7 +11,7 @@
  * `--strict` to exit non-zero when any file is over budget. Run it locally
  * with `npm run check:bloat`.
  */
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 

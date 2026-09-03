@@ -6,15 +6,16 @@
   padding: 3rem 1rem;
   background:
     linear-gradient(115deg, rgba(111, 13, 18, 0.96), rgba(168, 22, 28, 0.93)),
-    url("/media/shop-exterior.jpg") center/cover;
+    url("/media/shop-exterior.jpg") center / cover;
   color: #fff;
 }
 .link-hub-checker {
   position: fixed;
   inset: 0 auto 0 0;
   width: 18px;
-  background: conic-gradient(var(--paper) 25%, var(--ink) 0 50%, var(--paper) 0 75%, var(--ink) 0) 0
-    0 / 18px 18px;
+  background:
+    conic-gradient(var(--paper) 25%, var(--ink) 0 50%, var(--paper) 0 75%, var(--ink) 0) 0 0 / 18px
+    18px;
 }
 .link-hub-card {
   width: min(100%, 620px);

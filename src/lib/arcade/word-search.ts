@@ -80,11 +80,11 @@ export function createSearch(difficulty: Difficulty): SearchPuzzle {
     words.push({ word, cells: cells.map((cell) => keyFor(cell.row, cell.col)) });
   }
 
-  grid.forEach((row) =>
+  grid.forEach((row) => {
     row.forEach((letter, col) => {
       if (!letter) row[col] = FILLERS[Math.floor(Math.random() * FILLERS.length)];
-    }),
-  );
+    });
+  });
   return { grid, words };
 }
 

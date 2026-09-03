@@ -4,7 +4,7 @@
 # is at any point:
 #
 #   1. Dependencies  - node_modules and the Playwright browser are installed
-#   2. Tests/checks  - prettier, eslint, typecheck (advisory), unit tests,
+#   2. Tests/checks  - biome, eslint (next), typecheck (advisory), unit tests,
 #                       and a production build + static export as part of that
 #   3. Build verify  - confirm the static export in dist/client is present
 #   4. Dev server    - boot the app so you can see it in a browser

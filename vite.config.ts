@@ -1,7 +1,7 @@
+import { readFileSync } from "node:fs";
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import { readFileSync } from "node:fs";
-import { sites } from "./src/build/sites-vite-plugin";
+import { sites } from "./src/build/sites-vite-plugin.ts";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID = "00000000-0000-4000-8000-000000000000";
 
@@ -56,6 +56,14 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    // three.js (used only by lazy `dynamic(..., { ssr: false })` scenes on
+    // /adgent, /arcade/parts-counter-3d, and the contact page) is inherently
+    // over the default 500kb warning limit but already isolated to its own
+    // route-scoped chunk, so raise the threshold instead of chasing a
+    // false-positive warning.
+    build: {
+      chunkSizeWarningLimit: 600,
+    },
     server: {
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],

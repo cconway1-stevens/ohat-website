@@ -30,12 +30,13 @@ import { useState } from "react";
  * which paints behind a loading image, is covered the moment pixels arrive,
  * and costs the surrounding CSS nothing.
  */
-export function SiteImage({ className, onLoad, ...props }: ImageProps) {
+export function SiteImage({ alt, className, onLoad, ...props }: ImageProps) {
   const [loaded, setLoaded] = useState(false);
 
   return (
     <Image
       {...props}
+      alt={alt}
       className={`site-image${loaded ? " is-loaded" : ""}${className ? ` ${className}` : ""}`}
       unoptimized
       onLoad={(event) => {

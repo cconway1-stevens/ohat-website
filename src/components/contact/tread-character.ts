@@ -264,21 +264,3 @@ export function buildPal(options: Partial<TreadVariant> = {}): PalParts {
 
   return { group, leftEye, rightEye, shadow };
 }
-
-/** Curated presets for the /adgent studio. The first is the production look. */
-export const TREAD_VARIANTS: TreadVariant[] = [
-  { id: "tread", label: "Tread (production)" },
-  { id: "big-eyes", label: "Big Eyes", eyeScale: 1.35, cap: false },
-  { id: "chunky", label: "Chunky", tireTube: 0.24, faceRadius: 0.26 },
-  { id: "slim", label: "Slim", tireTube: 0.15, faceRadius: 0.32 },
-  {
-    id: "classic",
-    label: "Classic (old)",
-    tireTube: 0.22,
-    faceRadius: 0.27,
-    eyeScale: 0.8,
-    mouth: "smile",
-    grooves: true,
-  },
-  { id: "no-cap", label: "No Cap", cap: false },
-];

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { arcadePresets } from "@/lib/arcade/arcade";
 import { garageAudio } from "@/lib/arcade/garage-audio";
 import { PrizeBanner } from "./prize";
-import { arcadePresets } from "@/lib/arcade/arcade";
 
 const BEST_KEY = "ohat-shorerun-best";
 

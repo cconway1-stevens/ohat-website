@@ -3,8 +3,8 @@
 // always produce a puzzle that is actually solvable, out of words that suit
 // the level. Run with `node --test tests/arcade.test.mjs`.
 
-import test from "node:test";
 import assert from "node:assert/strict";
+import test from "node:test";
 
 import {
   arcadePresets,
@@ -320,8 +320,8 @@ test("Tow Chain: an unanswered service call expires", () => {
 /* ------------------------- Parts Counter 3D orders ---------------------- */
 
 import {
-  CUSTOMERS_PER_DAY,
   buyUpgrade,
+  CUSTOMERS_PER_DAY,
   canAfford,
   coinsForOrder,
   isDayComplete,

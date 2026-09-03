@@ -18,8 +18,9 @@
  *
  * Requires `npm run build:static` to have produced dist/client.
  */
-import { createServer } from "node:http";
+
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 

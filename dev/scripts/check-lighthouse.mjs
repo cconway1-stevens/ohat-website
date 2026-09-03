@@ -7,63 +7,69 @@
  * binary; it reuses the Playwright-installed Chromium (the same one
  * `check-assets.mjs` uses) so CI does not download a second browser.
  *
- * Run after `npm run build:static`. Thresholds are overridable via env:
+ * It audits EVERY public page, discovered automatically from the static export
+ * (see dev/scripts/lib/routes.mjs). Pages are tiered by their own markup:
+ *   - indexable pages: performance, accessibility, best-practices, SEO
+ *   - noindex pages (arcade, adgent): performance, accessibility, best-practices
+ *     (SEO is intentionally not asserted — the page is noindex on purpose)
+ *   - redirect stubs and the 404 page are not audited
+ *
+ * Performance is variable, so it is aggregated over LH_RUNS runs (default 3)
+ * and the median is asserted. The deterministic categories (accessibility,
+ * best-practices, SEO) are asserted from a single run — a failure there is a
+ * real bug, never noise.
+ *
+ * Run after `npm run build:static` (or let this script build it for you).
+ * Thresholds are overridable via env:
  *   LH_PERF, LH_A11Y, LH_BP, LH_SEO  (0-100)
+ *   LH_RUNS (default 3), LH_ROUTES (comma-separated debug subset)
+ *   LH_REPORT_DIR (optional dir for per-page JSON snapshots; gitignored)
  */
-import { createServer } from "node:http";
-import { existsSync, readFileSync, statSync } from "node:fs";
-import { extname, join, normalize } from "node:path";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createStaticServer, discoverRoutes } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
 const PORT = Number(process.env.LH_PORT ?? 8932);
 
 const THRESHOLDS = {
-  performance: Number(process.env.LH_PERF ?? 60),
+  performance: Number(process.env.LH_PERF ?? 80),
   accessibility: Number(process.env.LH_A11Y ?? 100),
   "best-practices": Number(process.env.LH_BP ?? 100),
   seo: Number(process.env.LH_SEO ?? 100),
 };
+// The noindex tier (arcade, adgent) ships heavy client JS by design, so its
+// performance floor is set separately from the indexable 80 goal. The default
+// is a placeholder until the Stage-7 baseline run observes real medians and
+// pins an evidence-based floor (dev/docs/test-program.md §9).
+const NOINDEX_PERF = Number(process.env.LH_PERF_NOINDEX ?? 40);
+const RUNS = Number(process.env.LH_RUNS ?? 3);
+const REPORT_DIR = process.env.LH_REPORT_DIR;
 
-const ROUTES = process.env.LH_ROUTES?.split(",") ?? ["/"];
-
-const TYPES = {
-  ".html": "text/html",
-  ".js": "text/javascript",
-  ".mjs": "text/javascript",
-  ".css": "text/css",
-  ".svg": "image/svg+xml",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".webp": "image/webp",
-  ".avif": "image/avif",
-  ".ico": "image/x-icon",
-  ".json": "application/json",
-  ".woff2": "font/woff2",
-  ".txt": "text/plain",
-  ".xml": "application/xml",
-};
+// Deterministic categories are asserted from a single run; performance is
+// aggregated over RUNS and the median asserted.
+const DETERMINISTIC = ["accessibility", "best-practices", "seo"];
+const METRICS = [
+  "largest-contentful-paint",
+  "cumulative-layout-shift",
+  "first-contentful-paint",
+  "total-blocking-time",
+  "speed-index",
+];
 
 if (!existsSync(CLIENT)) {
-  console.error("dist/client not found — run `npm run build:static` first.");
-  process.exit(1);
+  console.log("dist/client not found — building the static export first.");
+  const build = spawnSync("npm", ["run", "build:static"], {
+    stdio: "inherit",
+    shell: process.platform === "win32",
+  });
+  if (build.status !== 0) process.exit(1);
 }
 
-const server = createServer((req, res) => {
-  const path = decodeURIComponent(new URL(req.url, "http://x").pathname);
-  let file = join(CLIENT, normalize(path).replace(/^(\.\.[/\\])+/, ""));
-  if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
-  if (!existsSync(file) && existsSync(`${file}.html`)) file = `${file}.html`;
-  if (!existsSync(file) || statSync(file).isDirectory()) {
-    res.writeHead(404).end("not found");
-    return;
-  }
-  res.writeHead(200, { "content-type": TYPES[extname(file)] ?? "application/octet-stream" });
-  res.end(readFileSync(file));
-});
-
+const server = createStaticServer(CLIENT);
 await new Promise((resolve) => server.listen(PORT, resolve));
 
 const { default: lighthouse } = await import("lighthouse");
@@ -73,35 +79,111 @@ const { chromium } = await import("playwright");
 // and point Lighthouse at its debugging port. This avoids chrome-launcher's
 // platform-specific Chrome discovery, which fails on the Playwright build.
 const DEBUG_PORT = Number(process.env.LH_DEBUG_PORT ?? 9222);
-const browser = await chromium.launch({
-  args: [`--remote-debugging-port=${DEBUG_PORT}`],
-});
+// Several arcade pages initialize canvas, audio, and WebGL; one Chromium for
+// the whole 40+ page sweep grows until the OS kills it (the same reason
+// check-pages recycles). Relaunch every PAGES_PER_BROWSER pages.
+const PAGES_PER_BROWSER = 8;
+async function launchBrowser() {
+  return chromium.launch({ args: [`--remote-debugging-port=${DEBUG_PORT}`] });
+}
+let browser = await launchBrowser();
 
-let failed = false;
-for (const route of ROUTES) {
-  const url = `http://127.0.0.1:${PORT}${route}`;
+const median = (values) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+};
+
+const formatMetric = (id, value) => {
+  if (id === "cumulative-layout-shift") return value.toFixed(2);
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}s`;
+  return `${Math.round(value)}ms`;
+};
+
+async function runAudit(url, categories) {
   const result = await lighthouse(url, {
     port: DEBUG_PORT,
     output: "json",
     logLevel: "error",
-    onlyCategories: Object.keys(THRESHOLDS),
+    onlyCategories: categories,
   });
+  return JSON.parse(result.report);
+}
 
-  const report = JSON.parse(result.report);
-  const scores = report.categories;
-  console.log(`\nLighthouse — ${route}`);
-  for (const [key, threshold] of Object.entries(THRESHOLDS)) {
-    const score = Math.round(scores[key].score * 100);
+const pages = discoverRoutes(CLIENT).filter((p) => p.kind !== "error" && p.kind !== "redirect");
+const routes = process.env.LH_ROUTES?.split(",").filter(Boolean) ?? pages.map((p) => p.route);
+
+let failed = false;
+let audited = 0;
+for (const page of pages) {
+  if (!routes.includes(page.route)) continue;
+  if (audited > 0 && audited % PAGES_PER_BROWSER === 0) {
+    await browser.close();
+    browser = await launchBrowser();
+  }
+  audited += 1;
+  const url = `http://127.0.0.1:${PORT}${page.route}`;
+  const categories =
+    page.kind === "indexable"
+      ? ["performance", ...DETERMINISTIC]
+      : ["performance", ...DETERMINISTIC.filter((c) => c !== "seo")];
+
+  // Run 1 covers every applicable category; extra runs cover performance only.
+  const reports = [await runAudit(url, categories)];
+  for (let i = 1; i < RUNS; i++) {
+    reports.push(await runAudit(url, ["performance"]));
+  }
+
+  const scores = {};
+  for (const cat of categories) {
+    scores[cat] = Math.round(median(reports.map((r) => r.categories[cat].score)) * 100);
+  }
+  const metrics = {};
+  for (const id of METRICS) {
+    metrics[id] = median(reports.map((r) => r.audits[id]?.numericValue ?? 0));
+  }
+
+  console.log(
+    `\nLighthouse — ${page.route}  [${page.kind}]  (median of ${reports.length} run${reports.length > 1 ? "s" : ""})`,
+  );
+  for (const cat of categories) {
+    const threshold =
+      cat === "performance" && page.kind === "noindex" ? NOINDEX_PERF : THRESHOLDS[cat];
+    const score = scores[cat];
     const pass = score >= threshold;
-    console.log(`  ${pass ? "✓" : "✗"} ${key.padEnd(16)} ${score} / ${threshold}`);
     if (!pass) failed = true;
+    const metricLine =
+      cat === "performance"
+        ? `    ${METRICS.map((id) => `${id === "largest-contentful-paint" ? "LCP" : id === "cumulative-layout-shift" ? "CLS" : id === "first-contentful-paint" ? "FCP" : id === "total-blocking-time" ? "TBT" : "SI"} ${formatMetric(id, metrics[id])}`).join("  ")}`
+        : "";
+    console.log(`  ${pass ? "✓" : "✗"} ${cat.padEnd(16)} ${score} / ${threshold}${metricLine}`);
+    if (!pass) {
+      const report = reports[0];
+      for (const auditRef of report.categories[cat].auditRefs ?? []) {
+        const audit = report.audits[auditRef.id];
+        if (audit?.score !== null && audit?.score < 1) {
+          console.log(`      - ${audit.title}: ${audit.displayValue ?? audit.description}`);
+        }
+      }
+    }
+  }
+
+  if (REPORT_DIR) {
+    const dir = join(REPORT_DIR, page.route.replace(/^\//, "").replace(/\//g, "__") || "index");
+    mkdirSync(dir, { recursive: true });
+    reports.forEach((r, i) => {
+      writeFileSync(join(dir, `run-${i + 1}.json`), JSON.stringify(r));
+    });
   }
 }
 
 await browser.close();
 server.close();
+
 if (failed) {
-  console.error("\nLighthouse audit failed: one or more categories below threshold.");
+  console.error(
+    `\nLighthouse audit failed: ${audited} page(s) audited, one or more categories below threshold.`,
+  );
   process.exit(1);
 }
-console.log("\nLighthouse audit passed.");
+console.log(`\nLighthouse audit passed: ${audited} page(s) at or above threshold.`);

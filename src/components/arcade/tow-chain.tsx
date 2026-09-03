@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { garageAudio } from "@/lib/arcade/garage-audio";
-import { PrizeBanner } from "./prize";
 import { arcadePresets } from "@/lib/arcade/arcade";
+import { garageAudio } from "@/lib/arcade/garage-audio";
 import {
   type BonusKind,
   type ChainState,
@@ -13,6 +12,7 @@ import {
   tick,
   turn as turnState,
 } from "@/lib/arcade/tow-chain";
+import { PrizeBanner } from "./prize";
 
 const BEST_KEY = "ohat-towchain-best";
 // Five pickups is a couple of laps of the lot — reachable on a first shift.

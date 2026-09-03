@@ -274,8 +274,6 @@ export const garageAudio = {
     }),
 };
 
-type GarageAudio = typeof garageAudio;
-
 /* ------------------------------------------------------------------ *
  * Cozy scenes: one-shots you tap, and sustained beds that stay on.
  * ------------------------------------------------------------------ */
@@ -439,7 +437,14 @@ export function stopWords() {
 /* --- sustained beds ------------------------------------------------ */
 
 export type AmbienceLayer =
-  "rain" | "shopHum" | "road" | "water" | "fluorescent" | "static" | "traffic" | "casino";
+  | "rain"
+  | "shopHum"
+  | "road"
+  | "water"
+  | "fluorescent"
+  | "static"
+  | "traffic"
+  | "casino";
 
 type Bed = { gain: GainNode; stop: () => void };
 
@@ -696,10 +701,6 @@ export const BANDS: Record<Band, { min: number; max: number; step: number }> = {
   FM: { min: 87.5, max: 108, step: 0.1 },
   AM: { min: 530, max: 1700, step: 10 },
 };
-
-// Kept for the older callers that only ever knew about FM.
-const DIAL_MIN = BANDS.FM.min;
-const DIAL_MAX = BANDS.FM.max;
 
 let radioVoices: OscillatorNode[] = [];
 let radioBus: GainNode | null = null;

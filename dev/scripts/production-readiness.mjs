@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { createServer } from "node:net";
-import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { join, relative, sep } from "node:path";
 import { spawn } from "node:child_process";
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { createServer } from "node:net";
+import { join, relative, sep } from "node:path";
 import { chromium } from "playwright";
 
 const root = new URL("../..", import.meta.url).pathname;

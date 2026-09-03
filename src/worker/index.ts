@@ -1,10 +1,11 @@
 /** Cloudflare Worker entry point for Ocean Heights Auto & Tire. */
+
+import handler from "vinext/server/app-router-entry";
 import {
-  handleImageOptimization,
   DEFAULT_DEVICE_SIZES,
   DEFAULT_IMAGE_SIZES,
+  handleImageOptimization,
 } from "vinext/server/image-optimization";
-import handler from "vinext/server/app-router-entry";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };

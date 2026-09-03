@@ -2,6 +2,7 @@
 
 import { type CSSProperties, useRef, useState } from "react";
 import { arcadePresets } from "@/lib/arcade/arcade";
+import { garageAudio } from "@/lib/arcade/garage-audio";
 import {
   createSearch,
   type Difficulty,
@@ -10,7 +11,6 @@ import {
   type Point,
   type SearchPuzzle,
 } from "@/lib/arcade/word-search";
-import { garageAudio } from "@/lib/arcade/garage-audio";
 import { PrizeBanner } from "./prize";
 
 const CONFIG = arcadePresets.serviceSearch;

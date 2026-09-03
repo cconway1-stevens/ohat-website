@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneHref, SiteHeader } from "@/components/layout/site-header";
-import { services } from "@/lib/services";
 import { ServiceIcon } from "@/components/shop/service-icon";
 import { pageMetadata } from "@/lib/seo";
+import { services } from "@/lib/services";
 import { breadcrumbSchema, businessRef, shop } from "@/lib/shop/shop";
 
 export const metadata = pageMetadata({

@@ -1,0 +1,510 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // No top-level "model"/"small_model" default is set here on purpose: OpenCode's
+  // built-in `build`/`plan`/`compaction`/`summary`/`title` agents are left 100%
+  // stock — this config never touches them. Every model this project cares about
+  // is set explicitly, per agent, below ("fast" and the three specialists) so
+  // none of it can leak onto an agent by accident via inheritance.
+  "instructions": [".opencode/ORCHESTRATION.md"],
+
+  // ---------------------------------------------------------------------------
+  // Global permission baseline. Applies to every agent (including OpenCode's
+  // stock `build`/`plan`) unless an agent overrides a key below. Every model this
+  // project uses is a Together AI cloud call — see .opencode/ORCHESTRATION.md
+  // ("Reality check") for why sensitive paths are hard `deny`, not `ask`.
+  // ---------------------------------------------------------------------------
+  "permission": {
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny",
+      "*.crt": "deny",
+      "*.tfstate": "deny",
+      "*.tfstate.*": "deny",
+      "**/secrets/**": "deny",
+      "**/secrets*": "deny",
+      "**/credentials*": "deny",
+      "**/.ssh/**": "deny",
+      "**/.aws/**": "deny",
+      "**/.config/gcloud/**": "deny",
+      "**/.docker/config.json": "deny",
+      "**/.kube/config": "deny",
+      "**/.netrc": "deny",
+      "**/.git-credentials": "deny",
+      "**/.npmrc": "ask"
+    },
+    "edit": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny",
+      "*.crt": "deny",
+      "*.tfstate": "deny",
+      "*.tfstate.*": "deny",
+      "**/secrets/**": "deny",
+      "**/secrets*": "deny",
+      "**/credentials*": "deny",
+      "**/.ssh/**": "deny",
+      "**/.aws/**": "deny",
+      "**/.config/gcloud/**": "deny",
+      "**/.docker/config.json": "deny",
+      "**/.kube/config": "deny",
+      "**/.netrc": "deny",
+      "**/.git-credentials": "deny",
+      "**/.npmrc": "ask"
+    },
+    "grep": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny",
+      "*.crt": "deny",
+      "*.tfstate": "deny",
+      "*.tfstate.*": "deny",
+      "**/secrets/**": "deny",
+      "**/secrets*": "deny",
+      "**/credentials*": "deny",
+      "**/.ssh/**": "deny",
+      "**/.aws/**": "deny",
+      "**/.config/gcloud/**": "deny",
+      "**/.docker/config.json": "deny",
+      "**/.kube/config": "deny",
+      "**/.netrc": "deny",
+      "**/.git-credentials": "deny"
+    },
+    "glob": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "**/secrets/**": "deny",
+      "**/.ssh/**": "deny",
+      "**/.aws/**": "deny"
+    },
+    "list": {
+      "*": "allow",
+      "**/secrets/**": "deny",
+      "**/.ssh/**": "deny",
+      "**/.aws/**": "deny",
+      "**/.config/gcloud/**": "deny"
+    },
+    "external_directory": {
+      "*": "ask"
+    },
+    // Bash is a string-match allow/ask/deny list, not a real sandbox — see
+    // ORCHESTRATION.md "Shell" section for why every "allow" here is an exact,
+    // argument-free literal (never a wildcard-suffixed one) and why shell
+    // metacharacters are hard-denied regardless of prefix.
+    "bash": {
+      "*": "ask",
+      "git status": "allow",
+      "git diff": "allow",
+      "git diff --stat": "allow",
+      "git log": "allow",
+      "git branch": "allow",
+      "git branch --show-current": "allow",
+      "pwd": "allow",
+      // Level 1-2 verification commands (read-only, no args needed — see
+      // ORCHESTRATION.md "Testing policy"). Deliberately NOT included: `npm test`,
+      // `npm run build`, `npm run check`, `npm run check:all`, and the browser-driven
+      // `check:*` scripts — those are expensive/Level 3-4 and should still ask.
+      "npm run typecheck": "allow",
+      "npm run lint": "allow",
+      "npm run format:check": "allow",
+      "npm run check:deadcode": "allow",
+      "node --test dev/tests/arcade.test.mjs": "allow",
+      "node --test dev/tests/chat-answers.test.mjs": "allow",
+      "node --test dev/tests/pixel-crew.test.mjs": "allow",
+      "node --test dev/tests/rendered-html.test.mjs": "allow",
+      "node --test dev/tests/routes.test.mjs": "allow",
+      "node --test dev/tests/service-seo.test.mjs": "allow",
+      "node --test dev/tests/shop-hours.test.mjs": "allow",
+      "node --test dev/tests/static-export.test.mjs": "allow",
+      "*.env*": "deny",
+      "*secret*": "deny",
+      "*credential*": "deny",
+      "*.pem*": "deny",
+      "*.key*": "deny",
+      "*.p12*": "deny",
+      "*.pfx*": "deny",
+      "*id_rsa*": "deny",
+      "*.ssh*": "deny",
+      "*.aws*": "deny",
+      "*.npmrc*": "deny",
+      "*.netrc*": "deny",
+      "*.git-credentials*": "deny",
+      "*rm -rf*": "deny",
+      "*rm  -rf*": "deny",
+      "*git push --force*": "deny",
+      "*git reset --hard*": "deny",
+      "*&&*": "deny",
+      "*;*": "deny",
+      "*|*": "deny",
+      "*&*": "deny",
+      "*`*": "deny",
+      "*$(*": "deny",
+      "*>*": "deny",
+      "*<*": "deny"
+    }
+  },
+
+  "agent": {
+    // DEV ORCHESTRATOR — a separate primary agent, distinct from OpenCode's
+    // built-in `build`/`plan` (which are left untouched/stock below). Start
+    // opencode with `--agent dev`, or Tab-cycle to it once inside the TUI.
+    // Handles routine work itself and delegates to the specialists below when
+    // justified (see ORCHESTRATION.md "Model escalation rules").
+    //
+    // Low-friction on purpose: unlike the global baseline, bash and
+    // external_directory default to "allow" here instead of "ask", so this
+    // agent doesn't stop and prompt for routine commands. The only things still
+    // hard-blocked (not asked — blocked outright) are secret-file access and a
+    // short list of irreversible/destructive commands (rm -rf, force-push,
+    // hard reset) — see ORCHESTRATION.md "Security rules" for why those stay.
+    "dev": {
+      "description": "Low-friction default orchestrator. Handles navigation, simple edits, straightforward bugs, boilerplate, small refactors, and targeted tests itself; delegates to strong-reasoner/glm-specialist/kimi-reviewer when escalation is justified. Tracks multi-step work with the built-in todo tool (oldest-pending item first) and uses the built-in question tool instead of guessing on ambiguity or todo conflicts — see ORCHESTRATION.md \"Todo tracking policy\" and \"Ask, don't guess\".",
+      "mode": "primary",
+      "model": "togetherai/deepseek-ai/DeepSeek-V4-Flash-0731",
+      "permission": {
+        // Only these three specialists (plus the built-in read-only helpers) are
+        // reachable via the task tool — everything else is denied so `dev`
+        // can't silently spawn an unexpected/unrestricted subagent.
+        "task": {
+          "*": "deny",
+          "strong-reasoner": "allow",
+          "glm-specialist": "allow",
+          "kimi-reviewer": "allow",
+          "explore": "allow",
+          "general": "allow"
+        },
+        "external_directory": {
+          "*": "allow"
+        },
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "allow"
+        },
+        // Almost everything allows outright. Secret-file substrings and a
+        // handful of irreversible git/shell ops are hard-denied (blocked, not
+        // asked) so a leaked-credential or destroyed-history mistake can't
+        // happen silently — everything else just runs.
+        "bash": {
+          "*": "allow",
+          "*.env*": "deny",
+          "*secret*": "deny",
+          "*credential*": "deny",
+          "*.pem*": "deny",
+          "*.key*": "deny",
+          "*.p12*": "deny",
+          "*.pfx*": "deny",
+          "*id_rsa*": "deny",
+          "*.ssh*": "deny",
+          "*.aws*": "deny",
+          "*.netrc*": "deny",
+          "*.git-credentials*": "deny",
+          "*rm -rf*": "deny",
+          "*rm  -rf*": "deny",
+          "*git push --force*": "deny",
+          "*git reset --hard*": "deny"
+        }
+      }
+    },
+
+    // TURBO — time-crunch sibling of `dev`, not a routine default. Same
+    // low-friction permissions, pinned to the stronger/pricier model already
+    // verified in the Together catalog (see the pricing note on strong-reasoner
+    // below) instead of dev's cheap default, on the theory that under time
+    // pressure you'd rather pay more per call and get a usable answer in one
+    // pass than run dev's cheaper model through retries. Invoke explicitly
+    // (`opencode --agent turbo`, Tab-cycle, or tell `dev` "turbo mode") — see
+    // ORCHESTRATION.md "Turbo mode" for exactly which safeguards relax and
+    // which never do (security rules and ask-don't-guess are never relaxed).
+    "turbo": {
+      "description": "Time-crunch variant of dev for when speed matters more than thoroughness. Same permissions as dev; caps verification at Level 1-2, parallelizes specialist delegation instead of running it serially, and runs on a stronger/higher-throughput model than dev's default. Not the default agent — use only when explicitly time-crunched.",
+      "mode": "primary",
+      "model": "togetherai/deepseek-ai/DeepSeek-V4-Pro-0813",
+      "permission": {
+        "task": {
+          "*": "deny",
+          "strong-reasoner": "allow",
+          "glm-specialist": "allow",
+          "kimi-reviewer": "allow",
+          "explore": "allow",
+          "general": "allow"
+        },
+        "external_directory": {
+          "*": "allow"
+        },
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "allow"
+        },
+        "bash": {
+          "*": "allow",
+          "*.env*": "deny",
+          "*secret*": "deny",
+          "*credential*": "deny",
+          "*.pem*": "deny",
+          "*.key*": "deny",
+          "*.p12*": "deny",
+          "*.pfx*": "deny",
+          "*id_rsa*": "deny",
+          "*.ssh*": "deny",
+          "*.aws*": "deny",
+          "*.netrc*": "deny",
+          "*.git-credentials*": "deny",
+          "*rm -rf*": "deny",
+          "*rm  -rf*": "deny",
+          "*git push --force*": "deny",
+          "*git reset --hard*": "deny"
+        }
+      }
+    },
+
+    // STRONG REASONER — difficult bugs, architecture, concurrency, subtle state,
+    // security-sensitive reasoning, complex multi-file refactors, or a retry after
+    // `fast`'s first attempt failed.
+    //
+    // Pinned to the dated "-0813" checkpoint because that's the one that actually
+    // shows up on the Together serverless pricing catalog ($1.32/$3.96 per Mtok);
+    // the undated "DeepSeek-V4-Pro" alias isn't a separately listed/billed model
+    // there, so it isn't safe to assume it points at the same thing long-term.
+    "strong-reasoner": {
+      "description": "Escalation target for hard reasoning: architecture, concurrency, subtle bugs, security-sensitive logic, multi-file refactors. Read-only advisor — returns a recommendation/patch strategy for fast to apply.",
+      "mode": "subagent",
+      "model": "togetherai/deepseek-ai/DeepSeek-V4-Pro-0813",
+      "prompt": "You are the STRONG REASONER, escalated to by the fast orchestrator (`fast`) for a specific hard problem — architecture, concurrency, a subtle bug, security-sensitive logic, or a complex multi-file refactor. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION) — if it's missing context you need, ask for exactly what's missing rather than re-deriving the whole repo. You cannot edit files or run bash (permission-enforced) — return a concise recommendation or patch strategy in text; `fast` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "edit": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    },
+
+    // GLM SPECIALIST — alternative implementation angle / second approach when
+    // another model's perspective would help.
+    //
+    // ALTERNATES: "togetherai/zai-org/GLM-5.2" (previous major version) or
+    // "togetherai/zai-org/GLM-5.3-Flash" (faster/cheaper variant) are also
+    // available if you'd rather use one of those.
+    "glm-specialist": {
+      "description": "Alternative-approach specialist. Gives a second implementation angle or perspective distinct from the fast orchestrator's first instinct. Read-only advisor.",
+      "mode": "subagent",
+      "model": "togetherai/zai-org/GLM-5.3",
+      "prompt": "You are the GLM SPECIALIST, brought in for a second implementation angle or perspective distinct from the orchestrator's first instinct — not to rubber-stamp it. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION). You cannot edit files or run bash (permission-enforced) — return a concise recommendation in text; `fast` applies it. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "edit": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    },
+
+    // KIMI REVIEWER — independent review / long-context reasoning across many
+    // files. Second opinion on risky changes, finds omissions.
+    "kimi-reviewer": {
+      "description": "Independent reviewer with long-context reasoning. Reviews a proposed change/architecture for omissions, correctness, and risk. Read-only advisor — never edits.",
+      "mode": "subagent",
+      "model": "togetherai/moonshotai/Kimi-K3",
+      "prompt": "You are the KIMI REVIEWER, an independent second opinion on a proposed change or architecture — not the one who wrote it. Expect a compact delegation packet (TASK/RELEVANT FILES/OBSERVATIONS/CONSTRAINTS/CURRENT DIFF/QUESTION). Read across the files needed to judge correctness and find omissions; use your long context deliberately, not to inhale the whole repo. You cannot edit files or run bash (permission-enforced) — return findings in text; `fast` applies fixes. Never request, echo, or reason about the contents of .env/.pem/.key/credentials/secrets files — if asked about one, say the file is out of scope for you.",
+      "permission": {
+        "bash": { "*": "deny" },
+        "edit": { "*": "deny" },
+        "task": { "*": "deny" },
+        "external_directory": { "*": "deny" },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "*.p12": "deny",
+          "*.pfx": "deny",
+          "*.crt": "deny",
+          "*.tfstate": "deny",
+          "*.tfstate.*": "deny",
+          "**/secrets/**": "deny",
+          "**/secrets*": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny",
+          "**/.config/gcloud/**": "deny",
+          "**/.docker/config.json": "deny",
+          "**/.kube/config": "deny",
+          "**/.netrc": "deny",
+          "**/.git-credentials": "deny",
+          "**/.npmrc": "deny"
+        },
+        "grep": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*.env.example": "allow",
+          "*.pem": "deny",
+          "*.key": "deny",
+          "**/secrets/**": "deny",
+          "**/credentials*": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        },
+        "glob": { "*": "allow" },
+        "list": {
+          "*": "allow",
+          "**/secrets/**": "deny",
+          "**/.ssh/**": "deny",
+          "**/.aws/**": "deny"
+        }
+      }
+    }
+  }
+}

@@ -1,14 +1,14 @@
 "use client";
 
 import { type CSSProperties, useState } from "react";
-import { garageAudio } from "@/lib/arcade/garage-audio";
 import { arcadePresets } from "@/lib/arcade/arcade";
 import {
-  createCrossword,
   type CrosswordPuzzle,
+  createCrossword,
   type Difficulty,
   keyFor,
 } from "@/lib/arcade/crossword";
+import { garageAudio } from "@/lib/arcade/garage-audio";
 import { PrizeBanner } from "./prize";
 
 const CONFIG = arcadePresets.crossword;

@@ -2,19 +2,11 @@
 // static host (GitHub Pages) can serve, filling the gaps the export leaves:
 // worker-only image URLs, the vCard route handler, sitemap/robots, and the
 // server-side legacy redirects.
-import {
-  copyFileSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  renameSync,
-  statSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
+import imageManifest from "../../src/lib/image-manifest.json" with { type: "json" };
 import { contactCard } from "../../src/lib/shop/contact-card.mjs";
 import { shop } from "../../src/lib/shop/shop.mjs";
-import imageManifest from "../../src/lib/image-manifest.json" with { type: "json" };
 
 const OUT_DIR = "dist/client";
 const SITE_URL = shop.siteUrl;
@@ -104,6 +96,21 @@ for (const file of htmlFiles) {
   }
 }
 
+// `<Image priority>` components now point `src` straight at a pre-built AVIF
+// (see the note in src/app/page.tsx) so the client-side preload React 19
+// inserts for priority images — which always uses `src` verbatim, unaware of
+// the rewriting below — fetches the small variant instead of the multi-MB
+// source. That means `src`/`href` values reaching this file are sometimes
+// already a `/media/rs/<stem>-<width>.<ext>` path rather than a manifest key,
+// so resolve either form back to the same manifest entry.
+function resolveManifestEntry(url) {
+  if (!url) return null;
+  if (imageManifest[url]) return imageManifest[url];
+  const stem = url.match(/^\/media\/rs\/(.+)-\d+\.avif$/)?.[1];
+  if (!stem) return null;
+  return Object.values(imageManifest).find((entry) => entry.stem === stem) ?? null;
+}
+
 // `next/image` emits a srcset with width descriptors but, without an optimizer
 // (and with vinext honouring neither a custom loader nor `unoptimized`), every
 // entry points at the same full-size file — so a phone downloads the 2004px
@@ -111,11 +118,11 @@ for (const file of htmlFiles) {
 let responsive = 0;
 for (const file of htmlFiles) {
   const html = readFileSync(file, "utf8");
-  const next = html.replace(/(srcset|srcSet)="([^"]+)"/g, (match, attr, value) => {
+  const next = html.replace(/(srcset|srcSet)="([^"]+)"/g, (_match, attr, value) => {
     const entries = value.split(",").map((entry) => {
       const [url, descriptor] = entry.trim().split(/\s+/);
       const width = Number.parseInt(descriptor, 10);
-      const image = imageManifest[url];
+      const image = resolveManifestEntry(url);
       if (!image || !Number.isFinite(width)) return entry.trim();
       const variant = image.widths.find((candidate) => candidate >= width);
       return variant
@@ -127,19 +134,35 @@ for (const file of htmlFiles) {
     return `${attr}="${rebuilt}"`;
   });
   // Images rendered with `fill` come out with no srcset whatsoever — just a
-  // full-size src — so give them the ladder outright, keeping the original as
-  // the largest candidate for high-density desktop screens.
+  // full-size src — so give them the ladder outright. The original is never a
+  // candidate: for the hero it is a multi-megabyte PNG, and the largest AVIF
+  // variant (1920w) is visually indistinguishable at a fraction of the bytes.
   const withHeroSrcsets = next.replace(/<img\b[^>]*>/g, (tag) => {
     if (/srcset=/i.test(tag)) return tag;
     const src = tag.match(/\ssrc="([^"]+)"/)?.[1];
-    const image = src && imageManifest[src];
+    const image = src && resolveManifestEntry(src);
     if (!image) return tag;
-    const candidates = [
-      ...image.widths.map((w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`),
-      `${src} ${image.full}w`,
-    ].join(", ");
+    const candidates = image.widths
+      .map((w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`)
+      .join(", ");
+    // The `src` fallback is the full-size original — a multi-megabyte PNG for
+    // the hero. Browsers that ignore srcset (or double-fetch the fallback
+    // alongside the srcset pick) would download the whole thing, so point the
+    // fallback at a compact AVIF variant instead. 1200w covers a 520px desktop
+    // slot at 2x and a phone at 3x; smaller ladders fall back to their largest
+    // variant.
+    const fallbackWidth =
+      image.widths.find((w) => w >= 1200) ?? image.widths[image.widths.length - 1];
+    const fallback = `/media/rs/${image.stem}-${fallbackWidth}.${image.extension}`;
+    const withFallback = tag.replace(/\ssrc="[^"]+"/, ` src="${fallback}"`);
+    // vinext's unoptimized next/image shim drops the `sizes` attribute, so the
+    // browser falls back to 100vw and can over-fetch on wide screens. Restore a
+    // sane default for fill images that do not already carry one.
+    const withSizes = /sizes=/i.test(withFallback)
+      ? withFallback
+      : withFallback.replace(/<img\b/, `<img sizes="100vw"`);
     responsive += 1;
-    return tag.replace(/<img\b/, `<img srcset="${candidates}"`);
+    return withSizes.replace(/<img\b/, `<img srcset="${candidates}"`);
   });
 
   // A priority image also gets a preload pointing at the full-size file. Left
@@ -148,12 +171,11 @@ for (const file of htmlFiles) {
   const withPreloads = withHeroSrcsets.replace(/<link\b[^>]*rel="preload"[^>]*>/g, (tag) => {
     if (!/as="image"/.test(tag) || /imagesrcset=/i.test(tag)) return tag;
     const href = tag.match(/\shref="([^"]+)"/)?.[1];
-    const image = href && imageManifest[href];
+    const image = href && resolveManifestEntry(href);
     if (!image) return tag;
-    const candidates = [
-      ...image.widths.map((w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`),
-      `${href} ${image.full}w`,
-    ].join(", ");
+    const candidates = image.widths
+      .map((w) => `/media/rs/${image.stem}-${w}.${image.extension} ${w}w`)
+      .join(", ");
     return tag.replace(/<link\b/, `<link imagesrcset="${candidates}"`);
   });
 
@@ -164,11 +186,6 @@ for (const file of htmlFiles) {
 
 // Route handlers are not part of a static export.
 writeFileSync(join(OUT_DIR, "contact-card.vcf"), contactCard);
-
-// Links back to the homepage prefetch `/.rsc`, but the export names the root
-// payload `index.rsc`. Without this copy every page logs a 404 and soft
-// navigation home falls back to a full reload.
-copyFileSync(join(OUT_DIR, "index.rsc"), join(OUT_DIR, ".rsc"));
 
 // Derive the sitemap from what was actually emitted so it cannot drift from
 // the routes that exist. Legacy redirects and the 404 stay out of it.
@@ -247,7 +264,7 @@ writeFileSync(join(OUT_DIR, ".nojekyll"), "");
 // server, so the dynamic service routes never export — and it does not
 // implement `assetPrefix`, so the JS and CSS it loads at runtime stay pinned to
 // the domain root. Rewriting URLs afterwards leaves the client chunks and the
-// RSC router requesting `/assets/*.js` and `/services.rsc`, which 404 under a
+// RSC router requesting `/assets/*.js` and `/services.txt`, which 404 under a
 // subpath: the pages still render, but scripts and navigation break.
 if (basePath) {
   console.error(

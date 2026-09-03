@@ -36,6 +36,7 @@ yarn-error.log*
 # typescript
 next-env.d.ts
 /dist/
+/dist_old*/
 /.wrangler/
 /.sites-runtime/
 /outputs/
@@ -52,3 +53,13 @@ tsconfig.tsbuildinfo
 
 # generated Lighthouse snapshots
 /dev/reports/
+
+# local debug / temp artifacts (narrow — never hide source)
+*.bak
+*.orig
+*.tmp
+*.dump
+*.swp
+*.swo
+scratch-*
+*-copy.md

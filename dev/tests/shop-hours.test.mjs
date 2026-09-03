@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getShopHoursStatus, getShopStatusLabel } from "../../src/lib/shop/shop-hours.mjs";
 import { shop } from "../../src/lib/shop/shop.mjs";
+import { getShopHoursStatus, getShopStatusLabel } from "../../src/lib/shop/shop-hours.mjs";
 
 test("uses configured opening and closing status windows", () => {
   assert.equal(getShopHoursStatus(new Date("2026-07-27T11:29:00Z")).status, "closed");

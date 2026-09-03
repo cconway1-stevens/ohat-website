@@ -1,15 +1,14 @@
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteImage } from "@/components/ui/site-image";
 import Link from "next/link";
-import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
-import { DirectionsTrigger } from "@/components/ui/directions-dialog";
-import { services } from "@/lib/services";
 import { MakeGrid } from "@/components/arcade/make-grid";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
+import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
+import { DirectionsTrigger } from "@/components/ui/directions-dialog";
+import { SiteImage } from "@/components/ui/site-image";
 import { brandSrc, heroMakes } from "@/lib/makes";
-
+import { services } from "@/lib/services";
 import { carfaxUrl } from "@/lib/shop/business";
 import { autoRepairSchema, shop } from "@/lib/shop/shop";
-import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
 
 export default function Home() {
   // One @graph rather than several stand-alone blocks, so the WebSite, the
@@ -103,7 +102,16 @@ export default function Home() {
             <figure className="hero-photo">
               <div className="hero-photo-frame">
                 <SiteImage
-                  src="/media/cecf1b30-365d-430d-b925-1fd22429c9e1.png"
+                  // The pre-built AVIF, not the 2.7 MB source PNG: `priority`
+                  // makes next/image preload whatever `src` is verbatim (it
+                  // does not know about the responsive rewrite build-static.mjs
+                  // applies to the rendered <img> below), so pointing it at
+                  // the original had the browser fetching the full-size PNG
+                  // *and* the correctly-sized AVIF on every load. See
+                  // build-static.mjs's `resolveManifestEntry` — it maps this
+                  // path back to the same manifest entry so the rendered tag
+                  // still gets the full responsive ladder.
+                  src="/media/rs/cecf1b30-365d-430d-b925-1fd22429c9e1-1200.avif"
                   alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
                   fill
                   priority
@@ -196,6 +204,7 @@ export default function Home() {
               </span>
               <div className="catalog-make-track" aria-hidden="true">
                 {[...heroMakes, ...heroMakes].map((name, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: duplicated marquee track; name alone would collide, so name+index is the unique stable key.
                   <span className="catalog-make-logo" key={`${name}-${index}`}>
                     <SiteImage src={brandSrc(name)} width={44} height={44} alt="" />
                     <strong>{name}</strong>

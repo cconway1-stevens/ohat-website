@@ -1,11 +1,11 @@
 "use client";
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { SiteImage } from "../ui/site-image";
-import { garageAudio } from "@/lib/arcade/garage-audio";
-import { PrizeBanner } from "./prize";
-import { brandSrc, makes, shuffle } from "@/lib/makes";
 import { arcadePresets } from "@/lib/arcade/arcade";
+import { garageAudio } from "@/lib/arcade/garage-audio";
+import { brandSrc, makes, shuffle } from "@/lib/makes";
+import { SiteImage } from "../ui/site-image";
+import { PrizeBanner } from "./prize";
 
 const MATCH_CONFIG = arcadePresets.logoMatch;
 const BEST_KEY = "ohat-match-best";

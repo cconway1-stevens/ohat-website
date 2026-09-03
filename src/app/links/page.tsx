@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { SiteImage } from "@/components/ui/site-image";
-import { DirectionsTrigger } from "@/components/ui/directions-dialog";
 import { phoneDisplay, phoneHref } from "@/components/layout/site-header";
+import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
+import { DirectionsTrigger } from "@/components/ui/directions-dialog";
+import { SiteImage } from "@/components/ui/site-image";
+import { pageMetadata } from "@/lib/seo";
 import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/shop/business";
 import { shop } from "@/lib/shop/shop";
-import { pageMetadata } from "@/lib/seo";
-import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
 
 // Deliberately not chasing "auto repair Egg Harbor Township" here — /contact
 // and the service pages own those queries, and a second page competing for
@@ -33,7 +33,9 @@ export default function LinksPage() {
       <section className="link-hub-card" aria-labelledby="link-hub-title">
         <Link className="link-hub-logo" href="/" aria-label="Back to Ocean Heights Auto and Tire">
           <SiteImage
-            src="/media/logo-transparent.png"
+            // Pre-built AVIF, not the source PNG — matches the header's
+            // BrandMark, which already does this correctly.
+            src="/media/logo-transparent.avif"
             width={315}
             height={231}
             alt="Ocean Heights Auto and Tire"

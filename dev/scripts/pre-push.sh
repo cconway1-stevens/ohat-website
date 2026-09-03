@@ -5,8 +5,8 @@
 #   npm run check
 #
 # This exists because the same handful of things kept getting missed and only
-# surfaced later: a file that was never Prettier-formatted (which now fails the
-# build outright), an image that 404s only after hydration, a test that was not
+# surfaced later: a file that was never formatted (which now fails the build
+# outright), an image that 404s only after hydration, a test that was not
 # re-run after a "cosmetic" change. Each step below is here because it caught a
 # real bug in this repo, not because it is conventional.
 #
@@ -24,10 +24,12 @@ FIX=0
 # package is missing, npx quietly downloads a *different* version and reports
 # success — which is exactly how a file that passed locally failed the build
 # on Vercel, where the pinned version is the one installed.
-if [[ ! -x ./node_modules/.bin/prettier ]]; then
-  echo "node_modules is incomplete — run 'npm install' first." >&2
-  exit 1
-fi
+for tool in biome eslint tsc knip depcruise; do
+  if [[ ! -x "./node_modules/.bin/$tool" ]]; then
+    echo "node_modules is incomplete — run 'npm install' first." >&2
+    exit 1
+  fi
+done
 
 FAILED=()
 step() {
@@ -41,25 +43,35 @@ step() {
   fi
 }
 
+# 0. Repository junk. Cheapest of all: a quick scan for accidentally committed
+#    temp/debug artifacts (`.bak`, `.orig`, scratch dumps). Fails in seconds.
+step "repo junk" node dev/scripts/check-junk.mjs
+
 # 1. Formatting. The build enforces this, so an unformatted file breaks every
 #    build until someone notices — worth catching first and cheapest.
 if [[ $FIX -eq 1 ]]; then
-  step "prettier (writing)" ./node_modules/.bin/prettier --write . --log-level warn
+  step "biome format (writing)" ./node_modules/.bin/biome format --write .
 else
-  step "prettier --check" ./node_modules/.bin/prettier --check . --log-level warn
+  step "biome format --check" ./node_modules/.bin/biome format .
 fi
 
 # 2. Lint and types.
-step "eslint" npm run lint
-# tsc has pre-existing errors in worker/ and a few untyped deps, so this
-# reports without failing the run; read it, do not ignore it.
-printf '\n\033[1m▶ typecheck (advisory)\033[0m\n'
-./node_modules/.bin/tsc --noEmit 2>&1 | head -20 || true
+step "biome lint" ./node_modules/.bin/biome lint .
+step "next lint (eslint)" ./node_modules/.bin/eslint .
+step "typecheck" ./node_modules/.bin/tsc --noEmit
 
-# 3. Tests, which include the static export checks.
+# 3. Dead code. Knip flags unused files, exports, types, and dependencies.
+step "dead code" ./node_modules/.bin/knip
+
+# 4. Architecture. dependency-cruiser enforces the rules Biome and ESLint
+#    cannot express: no circular deps, no src→dev imports, no worker→component
+#    imports.
+step "architecture (dependency-cruiser)" ./node_modules/.bin/depcruise src dev --config .dependency-cruiser.cjs
+
+# 5. Tests, which include the static export checks.
 step "tests" npm test
 
-# 4. Assets. The one that keeps biting: markup can be perfectly correct and the
+# 6. Assets. The one that keeps biting: markup can be perfectly correct and the
 #    image still 404s, because next/image recomputes its URL on the client and
 #    points at an optimiser endpoint that does not exist in a static export.
 #    Only a real browser catches it.

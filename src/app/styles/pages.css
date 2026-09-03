@@ -275,7 +275,7 @@
 .story-hero {
   background:
     linear-gradient(100deg, rgba(20, 17, 15, 0.95), rgba(87, 8, 12, 0.88)),
-    url("/media/1527173976927-building8-21-14.31.jpg") center/cover;
+    url("/media/1527173976927-building8-21-14.31.jpg") center / cover;
 }
 
 /* Reviews cover / Jersey Shore recommendation stickers */
@@ -1127,7 +1127,7 @@
 .dropoff-arrival {
   background:
     linear-gradient(100deg, rgba(20, 17, 15, 0.97) 0 48%, rgba(24, 98, 112, 0.9)),
-    url("/media/Building-drop-box.jpg") center/cover;
+    url("/media/Building-drop-box.jpg") center / cover;
 }
 .dropoff-hero-grid {
   position: relative;

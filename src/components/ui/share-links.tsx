@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import QRCode from "qrcode";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 // The link hub's shareable address. Derived from wherever the site is
 // actually being served — the prototype host today, the real domain after

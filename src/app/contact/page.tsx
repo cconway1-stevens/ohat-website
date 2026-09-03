@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { DirectionsTrigger } from "@/components/ui/directions-dialog";
-import { EmailCopyAction } from "@/components/ui/copy-field";
-import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
-import { contactEmail } from "@/lib/shop/business";
-import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
 import { TirePal } from "@/components/contact/tire-pal";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
+import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
+import { EmailCopyAction } from "@/components/ui/copy-field";
+import { DirectionsTrigger } from "@/components/ui/directions-dialog";
+import { contactEmail } from "@/lib/shop/business";
 import { autoRepairSchema, breadcrumbSchema, shop } from "@/lib/shop/shop";
 
 // The wording is page-specific SEO copy and stays here, but the details

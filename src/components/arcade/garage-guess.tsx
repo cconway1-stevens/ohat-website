@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { garageAudio } from "@/lib/arcade/garage-audio";
 import { arcadePresets, garageGuessClues, garageGuessWords } from "@/lib/arcade/arcade";
+import { garageAudio } from "@/lib/arcade/garage-audio";
 import { PrizeBanner } from "./prize";
 
 const CONFIG = arcadePresets.garageGuess;
@@ -202,8 +202,10 @@ export function GarageGuess() {
           const guess = guesses[row] ?? (row === guesses.length && !over ? draft : "");
           const states = guesses[row] ? scoreGuess(guesses[row], answer) : [];
           return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: fixed guess grid, rows never reorder.
             <div className="garage-guess-row" key={row}>
               {Array.from({ length: CONFIG.wordLength }, (_, column) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: fixed word-length grid, columns never reorder.
                 <span key={column} className={states[column] ? `is-${states[column]}` : ""}>
                   {guess[column] ?? ""}
                 </span>

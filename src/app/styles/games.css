@@ -1136,6 +1136,7 @@ body.is-play-locked .arcade-stage,
   flex-direction: column-reverse;
   justify-content: flex-end;
   height: 100vh;
+  /* biome-ignore lint/suspicious/noDuplicateProperties: vh is the fallback, dvh the modern value - both intentional. */
   height: 100dvh;
   background: var(--cream, #f7efd9);
 }

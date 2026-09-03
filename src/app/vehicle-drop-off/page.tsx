@@ -1,7 +1,7 @@
 import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteImage } from "@/components/ui/site-image";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
 import { DirectionsTrigger } from "@/components/ui/directions-dialog";
+import { SiteImage } from "@/components/ui/site-image";
 import { pageMetadata } from "@/lib/seo";
 import { breadcrumbSchema } from "@/lib/shop/shop";
 
@@ -76,7 +76,9 @@ export default function VehicleDropOffPage() {
             </div>
             <div className="dropoff-photo">
               <SiteImage
-                src="/media/drop-box.jpg"
+                // Pre-built AVIF, not the source JPG — see the matching note
+                // on the homepage hero in src/app/page.tsx.
+                src="/media/rs/drop-box-512.avif"
                 alt="The secure key drop location beside the Ocean Heights service bays"
                 fill
                 priority

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { DirectionsTrigger } from "@/components/ui/directions-dialog";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
+import { DirectionsTrigger } from "@/components/ui/directions-dialog";
+import { pageMetadata } from "@/lib/seo";
 import { serviceBySlug, services } from "@/lib/services";
 import { autoRepairSchema, breadcrumbSchema, businessRef, faqSchema, shop } from "@/lib/shop/shop";
-import { pageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }));

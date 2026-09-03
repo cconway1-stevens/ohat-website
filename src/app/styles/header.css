@@ -131,7 +131,7 @@
   background: var(--yellow);
   color: var(--ink);
   cursor: pointer;
-  font: 950 1.65rem/1 var(--font-serif);
+  font: 950 1.65rem / 1 var(--font-serif);
   box-shadow: 3px 3px 0 var(--ink);
 }
 .directions-dialog-close:hover,
@@ -308,9 +308,9 @@
   height: 9px;
   background:
     linear-gradient(32deg, transparent 45%, currentColor 47% 53%, transparent 55%) left / 50% 100%
-      no-repeat,
+    no-repeat,
     linear-gradient(-32deg, transparent 45%, currentColor 47% 53%, transparent 55%) right / 50% 100%
-      no-repeat;
+    no-repeat;
   transform: translateX(-50%);
   opacity: 0.72;
 }
@@ -403,7 +403,7 @@
   border-radius: 50%;
   background: var(--red);
   color: #fff;
-  font: 950 1rem/1 var(--font-serif);
+  font: 950 1rem / 1 var(--font-serif);
 }
 .directions-dialog-options strong {
   align-self: end;

@@ -11,10 +11,10 @@
  * Run after `npm run build:static`. Budgets are overridable via env:
  *   MEM_MAX_HEAP_MB (default 64), MEM_MAX_GROWTH (default 1.5x)
  */
-import { createServer } from "node:http";
-import { existsSync, readFileSync, statSync } from "node:fs";
-import { extname, join, normalize } from "node:path";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createStaticServer } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
@@ -24,43 +24,18 @@ const MAX_HEAP_MB = Number(process.env.MEM_MAX_HEAP_MB ?? 64);
 const MAX_GROWTH = Number(process.env.MEM_MAX_GROWTH ?? 1.5);
 const NAVIGATIONS = Number(process.env.MEM_NAVIGATIONS ?? 6);
 
-const ROUTES = ["/", "/services/", "/our-shop/", "/contact/"];
-
-const TYPES = {
-  ".html": "text/html",
-  ".js": "text/javascript",
-  ".mjs": "text/javascript",
-  ".css": "text/css",
-  ".svg": "image/svg+xml",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".webp": "image/webp",
-  ".avif": "image/avif",
-  ".ico": "image/x-icon",
-  ".json": "application/json",
-  ".woff2": "font/woff2",
-  ".txt": "text/plain",
-  ".xml": "application/xml",
-};
+// A curated navigation set, not every page: this check measures *transitions*
+// under repeated navigation, so it needs the heaviest client pages (the arcade
+// and adgent ship the most JS) rather than every route. Documented exclusion in
+// dev/docs/test-program.md §4.
+const ROUTES = ["/", "/services/", "/contact/", "/arcade/", "/adgent/"];
 
 if (!existsSync(CLIENT)) {
   console.error("dist/client not found — run `npm run build:static` first.");
   process.exit(1);
 }
 
-const server = createServer((req, res) => {
-  const path = decodeURIComponent(new URL(req.url, "http://x").pathname);
-  let file = join(CLIENT, normalize(path).replace(/^(\.\.[/\\])+/, ""));
-  if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
-  if (!existsSync(file) && existsSync(`${file}.html`)) file = `${file}.html`;
-  if (!existsSync(file) || statSync(file).isDirectory()) {
-    res.writeHead(404).end("not found");
-    return;
-  }
-  res.writeHead(200, { "content-type": TYPES[extname(file)] ?? "application/octet-stream" });
-  res.end(readFileSync(file));
-});
+const server = createStaticServer(CLIENT);
 
 await new Promise((resolve) => server.listen(PORT, resolve));
 

@@ -1,7 +1,8 @@
 // Crossword construction, kept out of the component so it can be tested
 // directly. Pure and deterministic apart from Math.random.
-import { type ClueWord, wordsForLevel } from "./arcade-words.ts";
+
 import { arcadePresets } from "./arcade.ts";
+import { type ClueWord, wordsForLevel } from "./arcade-words.ts";
 
 const CONFIG = arcadePresets.crossword;
 export type Difficulty = keyof typeof CONFIG.difficulties;

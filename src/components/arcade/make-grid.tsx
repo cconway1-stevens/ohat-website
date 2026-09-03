@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SiteImage } from "../ui/site-image";
 import { brandSrc, makes, shuffle, WALL_SIZE } from "@/lib/makes";
+import { SiteImage } from "../ui/site-image";
 import { MakeMatchGame } from "./make-match-game";
 
 type Order = "shuffled" | "alphabetical";

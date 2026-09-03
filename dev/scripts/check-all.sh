@@ -7,7 +7,8 @@
 #   npm run check:all
 #
 # Stages:
-#   1. Static (no build): format, lint, typecheck, dead code, bloat.
+#   1. Static (no build): format, lint, next lint, typecheck, dead code,
+#      architecture, bloat.
 #   2. Build + tests: both production builds and the route/SEO/hours tests.
 #   3. Browser audits (need dist/client + Chromium): bundle, Lighthouse,
 #      accessibility, slow-bandwidth, memory.
@@ -30,8 +31,10 @@ step() {
 # 1. Static checks.
 step "format" npm run format:check
 step "lint" npm run lint
+step "next lint" npm run lint:next
 step "typecheck" npm run typecheck
 step "dead code" npm run check:deadcode
+step "architecture" npm run check:architecture
 step "bloat (advisory)" npm run check:bloat
 
 # 2. Build and tests.

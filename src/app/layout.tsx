@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Fraunces } from "next/font/google";
+import { Fraunces, Geist, Press_Start_2P, VT323 } from "next/font/google";
 import { CallTracking } from "@/components/analytics/analytics";
-import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { VercelAnalytics } from "@/components/analytics/vercel-analytics";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { gaMeasurementId } from "@/lib/analytics";
 import { shop } from "@/lib/shop/shop";
 import "tetris-kit/layout.css";
@@ -19,6 +19,18 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
   style: ["normal", "italic"],
+});
+
+const vt323 = VT323({
+  variable: "--font-vt323",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const pressStart2P = Press_Start_2P({
+  variable: "--font-pixel",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -134,7 +146,9 @@ gtag('config', '${gaMeasurementId}', {
         <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      <body className={`${geistSans.variable} ${fraunces.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${fraunces.variable} ${vt323.variable} ${pressStart2P.variable} antialiased`}
+      >
         {children}
         <ScrollReveal />
         <CallTracking />

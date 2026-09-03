@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { DirectionsTrigger } from "../ui/directions-dialog";
-import { MakerRibbon } from "../arcade/maker-ribbon";
-import { DockVisibility } from "../ui/dock-visibility";
-import { shop } from "@/lib/shop/shop";
-import { BrandMark, phoneDisplay, phoneHref } from "./site-header";
-
 import { profileLinks } from "@/lib/shop/business";
+import { shop } from "@/lib/shop/shop";
+import { MakerRibbon } from "../arcade/maker-ribbon";
 import { ShopHoursStatus } from "../shop/shop-hours-status";
+import { DirectionsTrigger } from "../ui/directions-dialog";
+import { DockVisibility } from "../ui/dock-visibility";
+import { BrandMark, phoneDisplay, phoneHref } from "./site-header";
 
 const socialLinks = profileLinks.map(({ name, href }) => [name, href]);
 

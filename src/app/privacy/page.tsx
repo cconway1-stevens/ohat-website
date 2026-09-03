@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
-import { contactEmail } from "@/lib/shop/business";
 import { pageMetadata } from "@/lib/seo";
+import { contactEmail } from "@/lib/shop/business";
 import { shop } from "@/lib/shop/shop";
 
 export const metadata = pageMetadata({
