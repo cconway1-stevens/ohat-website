@@ -33,6 +33,10 @@
  * performance numbers get noisier under CPU contention than a serial run —
  * fine for a quick pass/fail read while iterating, but the authoritative
  * numbers (and what CI enforces) come from a serial run.
+ *
+ * --skip-noindex (or LH_SKIP_NOINDEX=1) drops the noindex tier (arcade,
+ * agent — dev/demo pages, not production content) from the sweep entirely.
+ * Opt-in only; CI keeps auditing them.
  */
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -99,7 +103,15 @@ if (!existsSync(CLIENT)) {
   if (build.status !== 0) process.exit(1);
 }
 
-const pages = discoverRoutes(CLIENT).filter((p) => p.kind !== "error" && p.kind !== "redirect");
+// --skip-noindex (or LH_SKIP_NOINDEX=1) drops the noindex tier (arcade,
+// agent) entirely — those are dev/demo pages, not the indexable production
+// surface. Opt-in only: test-program.md's tiered policy still expects
+// accessibility/best-practices to be gated on them in CI, so this stays a
+// local-iteration shortcut, not a default.
+const SKIP_NOINDEX = process.argv.includes("--skip-noindex") || process.env.LH_SKIP_NOINDEX === "1";
+const pages = discoverRoutes(CLIENT).filter(
+  (p) => p.kind !== "error" && p.kind !== "redirect" && !(SKIP_NOINDEX && p.kind === "noindex"),
+);
 const routes = process.env.LH_ROUTES?.split(",").filter(Boolean) ?? pages.map((p) => p.route);
 
 // Orchestrator/worker split for --fast / LH_CONCURRENCY: the parent shards
