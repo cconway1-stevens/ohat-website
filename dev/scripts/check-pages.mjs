@@ -88,8 +88,21 @@ async function checkRoute(page, route) {
   // the real response independently, so redirects are judged by the absence
   // of a failure there rather than by this return value.
   const response = await page.goto(`${base}${route}`, {
-    waitUntil: isRedirect ? "domcontentloaded" : "networkidle",
+    waitUntil: isRedirect ? "domcontentloaded" : "load",
   });
+
+  // "networkidle" as a hard `goto` condition has hung the full 30s timeout
+  // three times in CI, always on the first real navigation of a fresh page,
+  // never twice for the same reason — it is an environment flake, not a page
+  // defect, and it took the whole sweep down via the thrown TimeoutError.
+  // Settling is still useful (deferred chunks, lazy fonts), so wait for it
+  // bounded and best-effort: genuine failures are caught independently by
+  // the response listener (status >= 400), the console/pageerror listeners,
+  // and the post-scroll broken-image check below, none of which depend on
+  // network quiescence.
+  if (!isRedirect) {
+    await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
+  }
 
   if (isRedirect) {
     if (failedResponses.length) fail("Route requested missing assets", { route, failedResponses });
@@ -177,13 +190,10 @@ async function checkLinks(page, route) {
 const ROUTES_PER_BROWSER = 8;
 for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
   const routePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  // A brand-new page's very first "networkidle" navigation can hang
-  // indefinitely in this CI environment, redirect or not — it hit the
-  // /oil-changes redirect stub when that happened to lead off a batch, and
-  // once that was fixed it hit /arcade/logo-match, an ordinary page, the
-  // next time it led off one. A throwaway navigation first gives the page's
-  // navigation/network tracking a chance to settle before anything timed
-  // depends on it.
+  // A brand-new page's very first navigation is the flaky one in this CI
+  // environment (see the bounded-networkidle note in checkRoute). A
+  // throwaway navigation first gives the page's navigation/network tracking
+  // a chance to settle before anything timed depends on it.
   await routePage.goto("about:blank").catch(() => {});
   for (const route of routes.slice(start, start + ROUTES_PER_BROWSER)) {
     try {
@@ -212,7 +222,10 @@ for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
 
 // The primary conversion: the call button must point at the shop's number.
 const homePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-await homePage.goto(`${base}/`, { waitUntil: "networkidle" });
+// Same bounded settle as checkRoute — this is a fresh page's first
+// navigation, the exact case where a hard "networkidle" has hung in CI.
+await homePage.goto(`${base}/`, { waitUntil: "load" });
+await homePage.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
 const callHref = await homePage.evaluate(() => {
   const el = document.querySelector('a[href^="tel:"]');
   return el?.getAttribute("href") ?? null;
