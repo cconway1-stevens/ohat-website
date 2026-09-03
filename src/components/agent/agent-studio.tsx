@@ -908,6 +908,7 @@ function BrainsMode() {
                 <input
                   type="text"
                   spellCheck={false}
+                  aria-label="Ask the brain a question"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask the brain a question…"
@@ -993,6 +994,7 @@ function BrainsMode() {
               <input
                 type="text"
                 spellCheck={false}
+                aria-label="Synonym alias"
                 placeholder="alias (rim)"
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}
@@ -1000,6 +1002,7 @@ function BrainsMode() {
               <input
                 type="text"
                 spellCheck={false}
+                aria-label="Synonym canonical"
                 placeholder="canonical (tire)"
                 value={canonical}
                 onChange={(e) => setCanonical(e.target.value)}
@@ -1040,6 +1043,7 @@ function BrainsMode() {
           <input
             type="text"
             spellCheck={false}
+            aria-label="Filter knowledge base"
             className="agent-filter"
             placeholder="Filter FAQs…"
             value={filter}
@@ -1115,6 +1119,7 @@ function SourcesMode() {
             <input
               type="text"
               spellCheck={false}
+              aria-label="Compare backends on a question"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Compare backends on a question…"
@@ -1947,6 +1952,7 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
           <textarea
             value={text}
             spellCheck={false}
+            aria-label="Research note"
             onChange={(e) => setText(e.target.value)}
             placeholder="What do you like or hate here?"
             rows={3}
