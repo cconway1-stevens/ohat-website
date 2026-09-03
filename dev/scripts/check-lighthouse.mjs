@@ -7,12 +7,13 @@
  * binary; it reuses the Playwright-installed Chromium (the same one
  * `check-assets.mjs` uses) so CI does not download a second browser.
  *
- * It audits EVERY public page, discovered automatically from the static export
- * (see dev/scripts/lib/routes.mjs). Pages are tiered by their own markup:
- *   - indexable pages: performance, accessibility, best-practices, SEO
- *   - noindex pages (arcade, agent): performance, accessibility, best-practices
- *     (SEO is intentionally not asserted — the page is noindex on purpose)
- *   - redirect stubs and the 404 page are not audited
+ * It audits every indexable public page, discovered automatically from the
+ * static export (see dev/scripts/lib/routes.mjs): performance, accessibility,
+ * best-practices, SEO. Noindex pages (arcade, agent — dev/demo content, not
+ * production surface) are skipped by default; pass --include-noindex (or
+ * LH_SKIP_NOINDEX=0) to audit them too (performance, accessibility,
+ * best-practices — SEO stays inapplicable, the page is noindex on purpose).
+ * Redirect stubs and the 404 page are never audited.
  *
  * Performance is variable, so it is aggregated over LH_RUNS runs (default 3)
  * and the median is asserted. The deterministic categories (accessibility,
@@ -33,10 +34,6 @@
  * performance numbers get noisier under CPU contention than a serial run —
  * fine for a quick pass/fail read while iterating, but the authoritative
  * numbers (and what CI enforces) come from a serial run.
- *
- * --skip-noindex (or LH_SKIP_NOINDEX=1) drops the noindex tier (arcade,
- * agent — dev/demo pages, not production content) from the sweep entirely.
- * Opt-in only; CI keeps auditing them.
  */
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -103,12 +100,14 @@ if (!existsSync(CLIENT)) {
   if (build.status !== 0) process.exit(1);
 }
 
-// --skip-noindex (or LH_SKIP_NOINDEX=1) drops the noindex tier (arcade,
-// agent) entirely — those are dev/demo pages, not the indexable production
-// surface. Opt-in only: test-program.md's tiered policy still expects
-// accessibility/best-practices to be gated on them in CI, so this stays a
-// local-iteration shortcut, not a default.
-const SKIP_NOINDEX = process.argv.includes("--skip-noindex") || process.env.LH_SKIP_NOINDEX === "1";
+// Noindex pages (arcade, agent) are dev/demo content, not the indexable
+// production surface, and are skipped by default — including in CI, since it
+// runs this same command. Pass --include-noindex (or LH_SKIP_NOINDEX=0) to
+// audit them anyway (performance/accessibility/best-practices; SEO stays
+// inapplicable — the page is noindex on purpose).
+const SKIP_NOINDEX = !(
+  process.argv.includes("--include-noindex") || process.env.LH_SKIP_NOINDEX === "0"
+);
 const pages = discoverRoutes(CLIENT).filter(
   (p) => p.kind !== "error" && p.kind !== "redirect" && !(SKIP_NOINDEX && p.kind === "noindex"),
 );
@@ -136,9 +135,19 @@ if (CONCURRENCY > 1 && !process.env.LH_WORKER) {
       `(${RUNS} run${RUNS > 1 ? "s" : ""} each)...`,
   );
 
-  const runWorker = (shard, index) =>
-    new Promise((resolve) => {
-      const child = spawn(process.execPath, [SCRIPT_PATH], {
+  const runWorker = async (shard, index) => {
+    // Stagger launches so N Chromium cold-starts don't all hit the CPU at
+    // once — a burst like that can starve the first navigation in a worker
+    // before its browser is warm, producing a spurious all-zero report
+    // instead of a real score.
+    await new Promise((resolve) => setTimeout(resolve, index * 400));
+    return new Promise((resolve) => {
+      // Forward flags the worker needs to recompute its route set the same
+      // way the orchestrator did; otherwise --include-noindex is silently
+      // dropped and the worker filters out every noindex shard.
+      const forwardedArgs = [SCRIPT_PATH];
+      if (!SKIP_NOINDEX) forwardedArgs.push("--include-noindex");
+      const child = spawn(process.execPath, forwardedArgs, {
         env: {
           ...process.env,
           LH_WORKER: "1",
@@ -160,8 +169,9 @@ if (CONCURRENCY > 1 && !process.env.LH_WORKER) {
       relay(child.stderr, console.error);
       child.on("exit", (code) => resolve(code ?? 1));
     });
+  };
 
-  const codes = await Promise.all(nonEmptyShards.map(runWorker));
+  const codes = await Promise.all(nonEmptyShards.map((shard, index) => runWorker(shard, index)));
   process.exit(codes.some((code) => code !== 0) ? 1 : 0);
 }
 
@@ -226,6 +236,13 @@ for (const page of pages) {
   const reports = [await runAudit(url, categories)];
   for (let i = 1; i < RUNS; i++) {
     reports.push(await runAudit(url, ["performance"]));
+  }
+  for (const [i, report] of reports.entries()) {
+    if (report.runtimeError) {
+      console.warn(
+        `  ! runtimeError on ${page.route} run ${i + 1}: ${report.runtimeError.code} — ${report.runtimeError.message}`,
+      );
+    }
   }
 
   const scores = {};

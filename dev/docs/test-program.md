@@ -154,6 +154,13 @@ Therefore:
   the documented exclusion the requirements ask for.
 - **Redirect stubs / 404** — not browser-audited (see section 2).
 
+**Update (2026-09-03):** the noindex tier (arcade, agent — dev/demo content,
+not the indexable production surface) is now skipped by `check-lighthouse.mjs`
+by default, in every invocation including CI, rather than audited with a
+relaxed policy. Pass `--include-noindex` (or `LH_SKIP_NOINDEX=0`) to restore
+the tiered audit above for a one-off run. `check:pages` (console/page-error
+gate) is unaffected and still covers every route.
+
 ### AD-4 — Keep the raw `lighthouse` package; do not add `@lhci/cli` (review fix #2)
 
 The requirement says "use Lighthouse CI" but also says "audit the repository
