@@ -111,7 +111,7 @@ jobs:
           path: dist/client
       - run: npm run check:pages
       - run: npm run check:bundle
-      - name: Lighthouse (all pages, single run per page)
+      - name: Lighthouse (indexable pages, single run per page)
         run: npm run check:lighthouse
         env:
           LH_RUNS: 1
@@ -198,7 +198,7 @@ jobs:
           path: dist/client
       - run: npm run check:slow-network
       - run: npm run check:memory
-      - name: Lighthouse (all pages, median of 3 runs)
+      - name: Lighthouse (indexable pages, median of 3 runs)
         run: npm run check:lighthouse
         env:
           LH_RUNS: 3
