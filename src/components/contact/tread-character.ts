@@ -2,7 +2,7 @@
 
 /**
  * Tread's character builder — the parametric 3D tire mascot shared by the
- * contact-page widget and the /adgent studio.
+ * contact-page widget and the /agent studio.
  *
  * Everything is procedural (no models, no downloads): a torus tire, a cream
  * face disc, kawaii eyes with sparkle highlights, a cat mouth, soft blush, a

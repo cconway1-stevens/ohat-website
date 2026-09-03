@@ -26,9 +26,9 @@ const NAVIGATIONS = Number(process.env.MEM_NAVIGATIONS ?? 6);
 
 // A curated navigation set, not every page: this check measures *transitions*
 // under repeated navigation, so it needs the heaviest client pages (the arcade
-// and adgent ship the most JS) rather than every route. Documented exclusion in
+// and agent ship the most JS) rather than every route. Documented exclusion in
 // dev/docs/test-program.md §4.
-const ROUTES = ["/", "/services/", "/contact/", "/arcade/", "/adgent/"];
+const ROUTES = ["/", "/services/", "/contact/", "/arcade/", "/agent/"];
 
 if (!existsSync(CLIENT)) {
   console.error("dist/client not found — run `npm run build:static` first.");

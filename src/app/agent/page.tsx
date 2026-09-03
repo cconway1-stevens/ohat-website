@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { AdgentStudio } from "@/components/adgent/adgent-studio";
+import { AgentStudio } from "@/components/agent/agent-studio";
 
 export const metadata: Metadata = {
-  title: "Adgent",
+  title: "Agent",
   description: "Blank canvas for testing and building 3D AI agents.",
-  alternates: { canonical: "/adgent" },
+  alternates: { canonical: "/agent" },
   robots: { index: false },
 };
 
-export default function AdgentPage() {
+export default function AgentPage() {
   return (
     <main>
-      <AdgentStudio />
+      <AgentStudio />
     </main>
   );
 }

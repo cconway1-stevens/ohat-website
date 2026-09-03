@@ -85,7 +85,7 @@ are embedded here so no second audit pass is needed.
 | G3  | slow-network / memory use hand-picked route lists that can drift from reality.                                                                                                    | Medium                    |
 | G4  | Six scripts (`check-pages`, `check-lighthouse`, `check-a11y`, `check-slow-network`, `check-memory`, `check-assets`) each re-implement the same static file server and MIME table. | Medium (maintenance)      |
 | G5  | No canonical testing document; no per-test local/CI parity matrix.                                                                                                                | High (this file fixes it) |
-| G6  | README references four workflow files that no longer exist; site map omits `/arcade`, `/adgent`, `/privacy`, `/links/qr`.                                                         | Medium                    |
+| G6  | README references four workflow files that no longer exist; site map omits `/arcade`, `/agent`, `/privacy`, `/links/qr`.                                                         | Medium                    |
 | G7  | No consistency test pinning "sitemap routes == exported indexable routes".                                                                                                        | Medium                    |
 
 ### 1.3 Local/CI parity audit
@@ -107,7 +107,7 @@ page's own markup — never from a list in a test file.
 | Class              | Count | Routes                                                                                                                                                        | Detection rule                                             |
 | ------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | **Indexable**      | 23    | `/`, `/services`, 14 × `/services/[slug]`, `/our-shop`, `/reviews`, `/offers`, `/contact`, `/vehicle-drop-off`, `/links`, `/privacy`                          | Has `<h1>`, no `noindex`, no meta refresh                  |
-| **Noindex pages**  | 18    | `/adgent`, `/arcade` + 15 arcade games, `/links/qr`                                                                                                           | `<meta name="robots" content="noindex…">`, no meta refresh |
+| **Noindex pages**  | 18    | `/agent`, `/arcade` + 15 arcade games, `/links/qr`                                                                                                           | `<meta name="robots" content="noindex…">`, no meta refresh |
 | **Redirect stubs** | 9     | `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments`, `/services/tires-alignments`, `/logo-match`, `/arcade/drag-strip` | `<meta http-equiv="refresh">`                              |
 | **Error page**     | 1     | `/404`                                                                                                                                                        | filename `404.html`                                        |
 
@@ -142,7 +142,7 @@ Each discovered HTML file is read once and classified by the rules in
 **The original requirement said "run all four categories against EVERY page."
 That is impossible:** Lighthouse's SEO category contains the `is-crawlable`
 audit, which _fails by design_ on any `noindex` page. Running SEO on `/arcade`
-or `/adgent` would be a permanent deterministic failure, not a real signal.
+or `/agent` would be a permanent deterministic failure, not a real signal.
 
 Therefore:
 
@@ -273,7 +273,7 @@ Consumers:
 | `check-lighthouse.mjs`   | `indexable` (4 categories) + `noindex` (3 categories)                                                                                                                                                           |
 | `check-a11y.mjs`         | `indexable` + `noindex`                                                                                                                                                                                         |
 | `check-slow-network.mjs` | `indexable` + `noindex`                                                                                                                                                                                         |
-| `check-memory.mjs`       | curated navigation set: `/`, `/services/`, `/contact/`, `/arcade/`, `/adgent/` — it tests _transitions_ under repeated navigation, so it needs the heaviest client pages, not every page (documented exclusion) |
+| `check-memory.mjs`       | curated navigation set: `/`, `/services/`, `/contact/`, `/arcade/`, `/agent/` — it tests _transitions_ under repeated navigation, so it needs the heaviest client pages, not every page (documented exclusion) |
 | `check-assets.mjs`       | unchanged (deliberately one-of-each-layout for speed; `check:pages` already covers all routes for 404s)                                                                                                         |
 
 **Consistency test** (new, in `static-export.test.mjs`): the set of
@@ -349,7 +349,7 @@ Ordered so the repo stays green at every step.
 | 2   | Refactor `check-pages.mjs` to consume the lib (behavior identical)                                                                                                          | Same command, less code                                 | None                                        | None (already all-page)         |
 | 3   | Rewrite `check-lighthouse.mjs`: all-page discovery, tiered categories, median perf (`LH_RUNS`), per-page metrics output, auto-build when `dist/client` missing (AD-3/4/6/9) | `check:lighthouse` now audits 41 routes                 | browser-quality audits every page per PR    | **G1 fixed**                    |
 | 4   | Rewrite `check-a11y.mjs` on the lib; drop hardcoded list                                                                                                                    | `check:a11y` audits 41 routes                           | browser-quality                             | **G2 fixed**                    |
-| 5   | Point `check-slow-network.mjs` at the lib; expand `check-memory.mjs` rotation to include `/arcade/` + `/adgent/`                                                            | scheduled checks cover reality                          | resilience job                              | **G3 fixed**                    |
+| 5   | Point `check-slow-network.mjs` at the lib; expand `check-memory.mjs` rotation to include `/arcade/` + `/agent/`                                                            | scheduled checks cover reality                          | resilience job                              | **G3 fixed**                    |
 | 6   | **Baseline run**: full `check:all`; record per-page scores; set the noindex-tier perf floor; fix or debt-list any arcade a11y violations (with owner + date in this doc)    | Establishes existing-debt vs new-regression line        | Baseline archived in dev/reports            | Thresholds now evidence-based   |
 | 7   | Add sitemap↔indexable consistency test to `static-export.test.mjs` (G7)                                                                                                     | `npm test` catches classification drift                 | test-build                                  | New pages can't escape silently |
 | 8   | Wire `ci.yml`: browser-quality runs all-page lighthouse (`LH_RUNS=1`) + all-page a11y; resilience adds `LH_RUNS=3` lighthouse; bump job timeouts as measured                | —                                                       | PR gate now covers every page               | Enforcement complete            |

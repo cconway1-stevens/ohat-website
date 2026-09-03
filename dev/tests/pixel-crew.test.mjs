@@ -6,7 +6,7 @@ import {
   PIXEL_GRID,
   RETRO_CREW,
   TIRE_BOTS,
-} from "../../src/components/adgent/pixel-crew.ts";
+} from "../../src/components/agent/pixel-crew.ts";
 
 const EMOTES = ["idle", "celebrate", "thinking", "happy", "sleep"];
 const EYE_SIZES = ["small", "medium", "big"];

@@ -36,7 +36,7 @@ test("known pages classify into the right tier", () => {
   assert.equal(byRoute.get("/privacy"), "indexable");
   assert.equal(byRoute.get("/arcade"), "noindex");
   assert.equal(byRoute.get("/arcade/parts-counter-3d"), "noindex");
-  assert.equal(byRoute.get("/adgent"), "noindex");
+  assert.equal(byRoute.get("/agent"), "noindex");
   assert.equal(byRoute.get("/links/qr"), "noindex");
   assert.equal(byRoute.get("/auto-repair"), "redirect");
   assert.equal(byRoute.get("/services/tires-alignments"), "redirect");
