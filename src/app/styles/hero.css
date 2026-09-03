@@ -1,25 +1,491 @@
-/* Home hero: the bay door. Dark asphalt, one big promise, one big button.
-   Vintage-catalog print texture: a faint halftone of paper dots over the
-   asphalt, so the section reads like an inked page rather than flat pixels. */
-.hero {
+/* Homepage hero: one clear, full-scale brand statement. The layout keeps the
+   call, live hours, logo, and real shop image together in the first viewport. */
+.home-hero {
   position: relative;
-  padding: 172px 0 clamp(3.5rem, 7vw, 6rem);
-  color: #fff;
   overflow: hidden;
+  min-height: clamp(620px, calc(100svh - 112px), 790px);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding-top: clamp(1rem, 2.4vw, 2rem);
+  border-bottom: 4px solid var(--ink);
   background:
-    radial-gradient(circle, rgba(255, 247, 231, 0.05) 1px, transparent 1.7px) 0 0 / 15px 15px,
-    radial-gradient(circle at 88% 8%, rgba(168, 22, 28, 0.5), transparent 44%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(135deg, var(--red-dark), var(--red) 58%, #7c1015);
+  color: var(--paper);
+}
+
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 78% 22%, rgba(246, 189, 56, 0.3), transparent 32%);
+  pointer-events: none;
+}
+
+.home-hero-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1380px, calc(100% - 48px));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(390px, 0.82fr) minmax(520px, 1.28fr);
+  align-items: stretch;
+  border: 4px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 12px 12px 0 rgba(23, 20, 18, 0.72);
+}
+
+.home-hero-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(1.5rem, 3.2vw, 3.5rem);
+  border-right: 4px solid var(--ink);
+  background:
+    linear-gradient(150deg, transparent 0 76%, rgba(246, 189, 56, 0.3) 76% 77%, transparent 77%),
+    var(--paper);
+}
+
+.home-hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: clamp(1rem, 2.4vh, 1.5rem);
+  padding-bottom: 0.9rem;
+  border-bottom: 3px double var(--ink);
+}
+
+.home-hero-logo {
+  width: clamp(96px, 9vw, 136px);
+  height: auto;
+  flex: 0 0 auto;
+  filter: drop-shadow(3px 4px 0 rgba(23, 20, 18, 0.22));
+}
+
+.home-hero-brand p {
+  display: grid;
+  gap: 0.22rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(0.64rem, 0.72vw, 0.76rem);
+  font-weight: 800;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.home-hero-brand p span {
+  color: var(--red);
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.home-hero-kicker {
+  margin: 0;
+  color: var(--red);
+  font-size: clamp(0.68rem, 0.8vw, 0.8rem);
+  font-weight: 950;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.home-hero h1 {
+  max-width: 10ch;
+  margin: 0.5rem 0 0;
+  font-family: var(--font-serif);
+  font-size: clamp(3.1rem, 5.25vw, 6.2rem);
+  font-weight: 900;
+  letter-spacing: -0.065em;
+  line-height: 0.82;
+  text-wrap: balance;
+}
+
+.home-hero h1 span {
+  display: block;
+  margin-top: 0.16em;
+  color: var(--red);
+}
+
+.home-hero-lede {
+  max-width: 50ch;
+  margin: 1.1rem 0 0;
+  color: var(--muted);
+  font-size: clamp(0.94rem, 1.08vw, 1.08rem);
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.home-hero-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1.35rem;
+}
+
+.home-hero-actions .button {
+  min-width: 0;
+  min-height: 52px;
+  padding: 0.75rem 0.9rem;
+  font-size: clamp(0.76rem, 0.9vw, 0.92rem);
+}
+
+.home-hero-directions {
+  background: var(--red);
+  color: #fff;
+}
+
+.home-hero-directions:hover {
+  background: var(--ink);
+}
+
+.home-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.15rem;
+}
+
+.home-hero-meta > p {
+  display: grid;
+  gap: 0.12rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 750;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.home-hero-meta > p strong {
+  color: var(--ink);
+  font-size: 0.72rem;
+}
+
+.home-hero-photo {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  margin: 0;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.home-hero-photo-image {
+  position: relative;
+  min-height: 430px;
+  overflow: hidden;
+}
+
+.home-hero-photo-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(23, 20, 18, 0.12),
+    transparent 24% 76%,
+    rgba(23, 20, 18, 0.08)
+  );
+  pointer-events: none;
+}
+
+.home-hero-photo-image img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.home-hero-photo figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 64px;
+  padding: 0.8rem 1.1rem;
+  border-top: 4px solid var(--ink);
+  background: var(--yellow);
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+.home-hero-photo figcaption span {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 900;
+}
+
+.home-hero-photo figcaption strong {
+  font-size: clamp(0.58rem, 0.72vw, 0.7rem);
+  letter-spacing: 0.09em;
+  text-align: right;
+}
+
+.home-hero-photo-tag {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 112px;
+  min-height: 112px;
+  display: grid;
+  place-content: center;
+  gap: 0.12rem;
+  padding: 0.75rem;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  box-shadow: 5px 5px 0 var(--yellow);
+  font-size: 0.58rem;
+  font-weight: 950;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(4deg);
+}
+
+.home-hero-photo-tag b {
+  color: var(--yellow);
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  line-height: 0.85;
+}
+
+.home-hero-proof {
+  position: relative;
+  z-index: 2;
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  width: min(1380px, calc(100% - 48px));
+  margin: 0 auto;
+  color: var(--paper);
+  font-size: clamp(0.6rem, 0.78vw, 0.75rem);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.home-hero-proof span {
+  padding: 0.72rem 1rem;
+}
+
+.home-hero-proof span + span {
+  border-left: 1px solid rgba(255, 250, 240, 0.32);
+}
+
+@media (max-width: 1050px) {
+  .home-hero-shell {
+    grid-template-columns: minmax(350px, 0.9fr) minmax(430px, 1.1fr);
+  }
+
+  .home-hero-meta > p {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .home-hero {
+    min-height: 0;
+    padding-top: 12px;
+  }
+
+  .home-hero-shell {
+    width: calc(100% - 24px);
+    grid-template-areas:
+      "photo"
+      "copy";
+    grid-template-columns: 1fr;
+    box-shadow: 8px 8px 0 rgba(23, 20, 18, 0.72);
+  }
+
+  .home-hero-copy {
+    grid-area: copy;
+    padding: clamp(1.35rem, 6vw, 2.25rem);
+    border-top: 4px solid var(--ink);
+    border-right: 0;
+  }
+
+  .home-hero-photo {
+    grid-area: photo;
+  }
+
+  .home-hero-photo-image {
+    min-height: clamp(220px, 47vw, 360px);
+  }
+
+  .home-hero-photo figcaption {
+    display: none;
+  }
+
+  .home-hero h1 {
+    max-width: 12ch;
+    font-size: clamp(3rem, 10vw, 5rem);
+  }
+
+  .home-hero-proof {
+    width: calc(100% - 24px);
+  }
+}
+
+@media (max-width: 560px) {
+  .home-hero-brand {
+    margin-bottom: 0.8rem;
+  }
+
+  .home-hero-logo {
+    width: 86px;
+  }
+
+  .home-hero-brand p {
+    font-size: 0.58rem;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(2.75rem, 13vw, 4rem);
+  }
+
+  .home-hero-lede {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .home-hero-actions {
+    margin-top: 1rem;
+  }
+
+  .home-hero-actions .button {
+    min-height: 48px;
+    padding-inline: 0.55rem;
+    font-size: clamp(0.66rem, 3vw, 0.78rem);
+  }
+
+  .home-hero-meta {
+    margin-top: 0.9rem;
+  }
+
+  .home-hero-photo-tag {
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 84px;
+    min-height: 84px;
+    padding: 0.5rem;
+    font-size: 0.45rem;
+    box-shadow: 4px 4px 0 var(--yellow);
+  }
+
+  .home-hero-photo-tag b {
+    font-size: 1.65rem;
+  }
+
+  .home-hero-proof {
+    grid-template-columns: 1fr;
+    padding-block: 0.35rem;
+  }
+
+  .home-hero-proof span {
+    padding: 0.34rem 0.5rem;
+  }
+
+  .home-hero-proof span + span {
+    border-top: 1px solid rgba(255, 250, 240, 0.25);
+    border-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero-shell {
+    animation: hero-arrive 0.55s ease-out both;
+  }
+
+  @keyframes hero-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The hero stack: one homepage, four front ends, one shared stage.
+
+   Every panel is server-rendered and hidden here; the inline script in
+   app/layout.tsx stamps `data-hero` on <html> before first paint when a
+   returning visitor picked another gear, and the shifter
+   (components/hero/hero-shifter.tsx) flips the same attribute on tap. No
+   attribute means the catalog cover — the default gear — so first-time
+   visitors and no-JS browsers always land on it.
+
+   The stack is a single fixed-height canvas: every panel is absolutely
+   positioned to fill it, so switching gears never changes the hero's height
+   and the page does not jump. Each panel compresses its own content to fit
+   `--hero-h` (see the per-gear stylesheets).
+-------------------------------------------------------------------------- */
+.hero-stack {
+  position: relative;
+  /* Shared clearance for the shifter rail at the stage's foot — every gear
+     uses this so no panel's tail can slide under the knob. */
+  --hero-rail-clear: 5.5rem;
+  height: var(--hero-h, clamp(660px, 92vh, 860px));
+}
+.hero-panel {
+  position: absolute;
+  inset: 0;
+  display: none;
+  overflow: hidden;
+}
+html:not([data-hero]) .hero-panel-cover,
+html[data-hero="cover"] .hero-panel-cover,
+html[data-hero="gazette"] .hero-panel-gazette,
+html[data-hero="classic"] .hero-panel-classic,
+html[data-hero="turntable"] .hero-panel-turntable {
+  display: block;
+}
+/* On phones the stage is the full viewport; a panel that runs long can still
+   scroll rather than lose its call button. */
+@media (max-width: 860px) {
+  .hero-stack {
+    --hero-h: 100svh;
+  }
+  .hero-panel {
+    overflow-y: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Gear 1: the catalog cover. A "Service & repair annual" sheet on the shop's
+   red wall: masthead topline with the 1178 odometer, the cover grid (name
+   plate, Fig. 1 photo, details column), and the road strip rolling the eye
+   into the credentials band.
+-------------------------------------------------------------------------- */
+.catalog-cover-hero {
+  position: relative;
+  /* The stage owns the height; this padding just clears the header above and
+     the shifter rail below. Wide, not tall — the sheet fills the row. */
+  padding: clamp(2.5rem, 5vh, 3.5rem) 0 var(--hero-rail-clear);
+  background:
     repeating-linear-gradient(
       115deg,
       transparent 0 88px,
-      rgba(255, 255, 255, 0.04) 88px 91px,
+      rgba(255, 255, 255, 0.05) 88px 91px,
       transparent 91px 150px
     ),
-    linear-gradient(165deg, #26211e 0%, #171412 55%, #100d0b 100%);
+    linear-gradient(165deg, #871318 0%, var(--red-dark) 52%, #45090c 100%);
 }
-/* The hero sits on asphalt: a road strip with a dashed center line closes
-   the section and rolls the eye toward the credentials band. */
-.hero::after {
+/* The cover sits on asphalt: a road strip with a dashed center line closes
+   the hero and rolls the eye toward the credentials section. */
+.catalog-cover-hero::after {
   content: "";
   position: absolute;
   z-index: 0;
@@ -34,250 +500,283 @@
     linear-gradient(180deg, #3a332f, #26211e);
   pointer-events: none;
 }
-.hero-grid {
+.cover-shell {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: center;
+  width: min(1280px, calc(100% - 32px));
+  margin-inline: auto;
 }
-/* Service record card: the copy column is a paper job card lying on the
-   asphalt — ruled ledger lines, a red margin rule, and a hard offset shadow
-   so it reads as print, not UI. */
-.hero-copy {
-  min-width: 0;
+.cover-sheet {
+  --sheet-pad: clamp(1.4rem, 4vw, 3.5rem);
   position: relative;
-  padding: clamp(1.3rem, 2.4vw, 2rem) clamp(1.1rem, 2.2vw, 1.9rem);
-  padding-left: clamp(2.5rem, 3vw, 3rem);
-  border: 3px solid var(--ink);
+  animation: sheet-in 0.65s ease-out both;
+  padding: clamp(1.1rem, 2.2vw, 1.8rem) var(--sheet-pad) 0;
+  border: 4px solid var(--ink);
   background:
-    linear-gradient(90deg, transparent 0 26px, rgba(168, 22, 28, 0.3) 26px 28px, transparent 28px),
-    repeating-linear-gradient(0deg, transparent 0 30px, rgba(23, 20, 18, 0.07) 30px 31px),
+    radial-gradient(circle at 22% 14%, rgba(23, 20, 18, 0.05) 0 1px, transparent 1.5px),
     var(--paper);
+  background-size:
+    15px 17px,
+    auto;
   color: var(--ink);
-  /* Cover frame: a paper keyline and a red ring around the card, like the
-     bordered cover of a parts catalog, then the hard offset shadow. */
-  box-shadow:
-    0 0 0 4px var(--paper),
-    0 0 0 7px var(--red),
-    12px 12px 0 rgba(12, 8, 7, 0.5);
-  transform: rotate(-0.4deg);
+  box-shadow: 16px 16px 0 rgba(12, 8, 7, 0.5);
 }
-/* Folio header: the form's own caption strip — record number on the left,
-   ownership line on the right, ruled off from the body of the card. */
-.record-head {
+.cover-topline {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.3rem 0.9rem;
-  margin: 0;
-  padding-bottom: 0.55rem;
-  border-bottom: 2px solid var(--ink);
-  font-size: 0.72rem;
-  font-weight: 950;
-  letter-spacing: 0.12em;
+  gap: 1rem;
+  margin: 0 0 clamp(0.8rem, 1.6vw, 1.1rem);
+  padding: 0.55rem 0 0.52rem;
+  border-block: 4px double var(--ink);
+  font-size: 0.63rem;
+  font-weight: 900;
+  letter-spacing: 0.17em;
   text-transform: uppercase;
 }
-.record-head span:first-child {
+.cover-topline-title {
   color: var(--red);
 }
-.record-head span:last-child {
+/* Issue number as an odometer readout: individual digit drums, because this
+   is a garage and 1178 is a mileage as much as an issue number. */
+.cover-issue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.odometer {
+  display: inline-flex;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--ink);
+  box-shadow: 2px 2px 0 rgba(23, 20, 18, 0.35);
+}
+.odometer b {
+  display: grid;
+  place-items: center;
+  min-width: 1.05ch;
+  padding: 0.1rem 0.2rem 0.06rem;
+  background: linear-gradient(180deg, #4a4340 0%, #241f1c 18%, #171412 82%, #3d3633 100%);
+  color: #fff7e7;
+  font-size: 0.72rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+.odometer b + b {
+  border-left: 1px solid rgba(255, 247, 231, 0.28);
+}
+/* One folded panel: the copy column on the left (1/3) and the shop photo as
+   the image slot on the right (2/3), with a vertical fold seam between them
+   like a newspaper folded down the middle. The copy column is vertically
+   centered so the sheet reads as one screen. */
+.cover-grid {
+  position: relative;
+  display: grid;
+  grid-template-areas: "copy photo";
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-items: stretch;
+  column-gap: clamp(1.5rem, 3vw, 2.6rem);
+  padding-bottom: clamp(1.2rem, 2.5vw, 2rem);
+}
+/* The fold seam: a soft vertical crease at the 1/3 boundary. */
+.cover-grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(33.333% - 1px);
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    rgba(23, 20, 18, 0.12) 18%,
+    rgba(23, 20, 18, 0.12) 82%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+.cover-copy {
+  grid-area: copy;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* The dateline: a ruled line at the head of the copy column, like the date
+   line on a newspaper front page. */
+.cover-dateline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  margin: 0 0 clamp(0.45rem, 0.9vw, 0.65rem);
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ink);
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.cover-dateline span:first-child {
+  color: var(--red);
+}
+.cover-dateline span:last-child {
   color: var(--muted);
 }
-/* The oval badge is the stamp of record: centered, tilted like it was
-   pressed onto the card, with a hard ink shadow instead of a soft glow. */
-.hero-oval-badge {
-  display: block;
-  width: clamp(230px, 24vw, 320px);
+/* The real decal, tilted like it was pressed onto the cover at the counter. */
+.cover-logo {
+  width: clamp(72px, 8vw, 100px);
   height: auto;
-  margin: 1.05rem auto 0.2rem;
-  transform: rotate(-2deg);
+  margin: 0 0 clamp(0.35rem, 0.8vw, 0.5rem) -4px;
+  transform: rotate(-3deg);
   filter: drop-shadow(4px 4px 0 rgba(23, 20, 18, 0.3));
 }
-@media (prefers-reduced-motion: no-preference) {
-  .hero-oval-badge {
-    animation: badge-stamp-in 0.5s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-  }
-  .hero-years-stamp {
-    animation: years-stamp-in 0.45s 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-  }
-}
-@keyframes badge-stamp-in {
-  from {
-    opacity: 0;
-    transform: rotate(-2deg) scale(1.3);
-  }
-}
-@keyframes years-stamp-in {
-  from {
-    opacity: 0;
-    transform: rotate(10deg) scale(1.5);
-  }
-}
-/* Round years stamp: red ink, half off the card's top edge, blended into
-   the paper like a real rubber stamp. */
-.hero-years-stamp {
-  position: absolute;
-  z-index: 2;
-  top: -24px;
-  right: 14px;
-  width: clamp(84px, 8vw, 104px);
-  height: auto;
-  transform: rotate(10deg);
-  mix-blend-mode: multiply;
-}
-/* Cover-title type: red serif kicker, giant slanted grotesque with hard 3D
-   depth, black band — the parts-catalog cover formula. */
-.hero h1 {
-  margin: 0.65rem 0 0;
-  text-transform: uppercase;
-}
-.hero-h1-kicker {
-  display: block;
-  color: var(--red);
-  font-family: var(--font-serif);
-  font-size: clamp(1.05rem, 1.8vw, 1.5rem);
-  font-weight: 900;
-  letter-spacing: 0.18em;
-}
-.hero-h1-big {
-  display: block;
-  margin-top: 0.08em;
-  color: var(--blue);
-  font-family: var(--font-geist-sans), Arial, sans-serif;
-  font-size: clamp(2.5rem, 5vw, 4.4rem);
-  font-weight: 950;
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  transform: skewX(-5deg);
-  text-shadow: 4px 4px 0 var(--ink);
-}
-.hero-h1-band {
-  display: inline-block;
-  margin-top: 0.5em;
-  padding: 0.28em 0.55em 0.24em;
+/* Sharper dark accent: the brand tag is ink-on-ink with the yellow underline
+   popping out, the way a stamped label sits on the page. */
+.cover-brand-line {
+  width: fit-content;
+  margin: 0 0 0.5rem;
+  padding: 0.36rem 0.6rem 0.32rem;
+  border: 2px solid var(--ink);
   background: var(--ink);
-  color: #fff;
-  font-family: var(--font-geist-sans), Arial, sans-serif;
-  font-size: clamp(1.05rem, 1.9vw, 1.6rem);
-  font-weight: 950;
-  letter-spacing: 0.02em;
-  transform: rotate(-1deg);
-  box-shadow: 4px 4px 0 var(--yellow);
-}
-.hero-h1-band em {
   color: var(--yellow);
-  font-style: normal;
-}
-/* Ledger rows: label in red small caps, entry in ink, dashed rule between
-   rows like a filled-in service form. */
-.hero-ledger {
-  margin: 1rem 0 0;
-  border-top: 2px solid var(--ink);
-}
-.hero-ledger > div {
-  display: grid;
-  grid-template-columns: 86px 1fr;
-  align-items: baseline;
-  gap: 0.7rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px dashed rgba(23, 20, 18, 0.4);
-}
-.hero-ledger dt {
-  color: var(--red);
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   font-weight: 950;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-/* Blue square bullets, straight off the catalog cover's feature list. */
-.hero-ledger dt::before {
-  content: "";
-  display: inline-block;
-  width: 0.55em;
-  height: 0.55em;
-  margin-right: 0.45em;
-  background: var(--blue);
-}
-.hero-ledger dd {
+.catalog-cover-hero h1 {
   margin: 0;
-  font-size: 0.98rem;
-  font-weight: 600;
-  line-height: 1.4;
+  max-width: 660px;
+  font-family: var(--font-serif);
+  font-size: clamp(1.55rem, 2.5vw, 2.7rem);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  text-align: left;
+  text-transform: uppercase;
+  text-wrap: balance;
 }
-.hero-tagline {
-  margin: 1rem 0 0;
-  color: var(--red-dark);
+.cover-business-name {
+  display: block;
+}
+.cover-service-name {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--ink);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+/* A vintage New Jersey plate: buff gradient, embossed blue lettering, bolt
+   heads either side. */
+.cover-location {
+  position: relative;
+  width: fit-content;
+  margin: clamp(0.5rem, 0.9vw, 0.7rem) 0 0;
+  padding: 0.32rem 1.1rem 0.28rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #f7ebc3, #ecd9a0);
+  color: #24406e;
+  font-size: clamp(0.72rem, 1vw, 0.86rem);
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 252, 240, 0.75);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 252, 240, 0.65),
+    4px 4px 0 var(--ink);
+}
+.cover-location::before,
+.cover-location::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border: 1px solid rgba(23, 20, 18, 0.55);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #d8cba4, #8f835f);
+  transform: translateY(-50%);
+}
+.cover-location::before {
+  left: 5px;
+}
+.cover-location::after {
+  right: 5px;
+}
+.catalog-cover-hero h1 em {
+  display: block;
+  margin-top: 0.07em;
+  color: var(--red);
+  letter-spacing: -0.05em;
+}
+.cover-tagline {
+  margin: 0.55rem 0 0;
+  color: var(--red);
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
   letter-spacing: -0.01em;
+  text-align: left;
 }
-.hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-/* Status is filed on the card like the final stamp: a small red label and
-   the shared placard, tilted to match the badge. The placard's own design
-   stays untouched — one sign, every placement. */
-.hero-status {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+.cover-actions {
+  display: grid;
   gap: 0.6rem;
-  margin: 1.3rem 0 0;
+  margin-top: 0.9rem;
 }
-.hero-status-label {
-  color: var(--red);
-  font-size: 0.72rem;
-  font-weight: 950;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.cover-actions .button {
+  width: 100%;
+  min-height: 50px;
 }
-.hero-status .shop-hours-status {
-  transform: rotate(-0.8deg);
+/* The live open/closed sign sits under the hero call buttons. */
+.cover-status {
+  margin: 0.55rem 0 0;
 }
-.hero-photo {
+.cover-photo-panel {
+  grid-area: photo;
   position: relative;
   min-width: 0;
-  min-height: clamp(420px, 42vw, 540px);
   margin: 0;
   overflow: hidden;
   border: 4px solid var(--ink);
   background: #a9c6d8;
-  box-shadow: 12px 12px 0 var(--yellow);
-  transform: rotate(1.2deg);
+  /* Sharper dark accent: ink shadow under the photo instead of yellow. */
+  box-shadow: 8px 8px 0 var(--ink);
+  aspect-ratio: 16 / 10;
 }
-/* Catalog photo mount: a dashed inner frame sits on the print like a photo
-   corner-mounted into an old catalogue page. It layers above the image but
-   below the bay signal and caption. */
-.hero-photo::before {
-  content: "";
+.cover-photo-panel::before {
+  content: "Shop photo / EHT";
   position: absolute;
-  z-index: 2;
-  inset: 10px;
-  border: 2px dashed rgba(255, 247, 231, 0.4);
-  pointer-events: none;
+  z-index: 3;
+  top: 0.85rem;
+  right: 0.85rem;
+  padding: 0.38rem 0.55rem 0.32rem;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.54rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
-.hero-photo-frame {
+.cover-photo-image {
   position: relative;
   width: 100%;
   height: 100%;
   min-height: inherit;
   overflow: hidden;
 }
-.hero-photo-frame img {
+.cover-photo-image img {
   object-fit: cover;
-  object-position: 28% center;
-  /* Aged print: a faint sepia wash so the photo reads like a catalogue plate
-     rather than a fresh digital shot. */
-  filter: sepia(0.16) saturate(0.9) contrast(1.03);
+  object-position: center;
 }
-.hero-photo-frame::after {
+.cover-photo-image::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -293,14 +792,12 @@
 /* Bay signal: the traffic light over a service bay door. It rests on green
    (bay open) and runs a full green → yellow → red cycle every 14s. Base
    styles are the resting state, so with animations disabled the signal
-   simply stays green. It hangs top-right: top-left is where the photo's own
-   real traffic light stands, and stacking a prop on the real thing read as
-   a double signal. */
+   simply stays green. */
 .bay-signal {
   position: absolute;
   z-index: 3;
   top: 0.85rem;
-  right: 0.85rem;
+  left: 0.85rem;
   display: grid;
   justify-items: center;
   gap: 0.32rem;
@@ -322,13 +819,9 @@
   background: #151210;
 }
 .bay-signal-red {
-  background: radial-gradient(circle at 35% 30%, #ff9a8a, #c22e22 70%);
-  box-shadow: 0 0 8px 2px rgba(224, 58, 47, 0.55);
   animation: bay-red-cycle 14s linear infinite;
 }
 .bay-signal-yellow {
-  background: radial-gradient(circle at 35% 30%, #ffe08a, #d99e06 70%);
-  box-shadow: 0 0 8px 2px rgba(242, 183, 5, 0.55);
   animation: bay-yellow-cycle 14s linear infinite;
 }
 .bay-signal-green {
@@ -341,65 +834,191 @@
   border: 2px solid var(--ink);
   background: var(--paper);
   color: var(--ink);
-  font-size: 0.58rem;
+  font-size: 0.5rem;
   font-weight: 950;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   box-shadow: 2px 2px 0 rgba(12, 8, 7, 0.45);
 }
-/* Tilted catalog sticker on the photo, like the feature box on an old
-   cover — yellow paper, ink border, hard shadow, hand-placed tilt. */
-.hero-photo-sticker {
-  position: absolute;
-  z-index: 3;
-  left: -12px;
-  bottom: 58px;
-  display: grid;
-  gap: 0.15rem;
-  padding: 0.55rem 0.8rem;
-  border: 2.5px solid var(--ink);
-  background: var(--yellow);
-  color: var(--ink);
-  box-shadow: 5px 5px 0 rgba(12, 8, 7, 0.45);
-  transform: rotate(-3deg);
-  text-transform: uppercase;
-}
-.hero-photo-sticker strong {
-  font-size: 0.78rem;
-  font-weight: 950;
-  letter-spacing: 0.06em;
-}
-.hero-photo-sticker small {
-  font-size: 0.62rem;
-  font-weight: 850;
-  letter-spacing: 0.1em;
-}
-/* Catalog plate caption: a slim paper strip with a red folio number, not a
-   banner — the photo stays the loudest thing in the frame. */
-.hero-photo figcaption {
+.cover-photo-panel figcaption {
   position: absolute;
   z-index: 3;
   left: 0;
   right: 0;
   bottom: 0;
+  min-height: 54px;
   display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.6rem 0.9rem;
-  border-top: 3px solid var(--ink);
-  background: var(--paper);
+  align-items: center;
+  padding: 0.78rem 1rem;
+  border-top: 4px solid var(--ink);
+  background: var(--yellow);
   color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-.hero-photo figcaption span {
-  color: var(--red);
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   font-weight: 950;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Bay signal cycle: green 0–55%, yellow 57–63%, red 65–93%, back to green.
+   The 100% state matches each light's base style, so the flattened
+   single-iteration run under prefers-reduced-motion lands on green. */
+@keyframes bay-green-cycle {
+  0%,
+  55% {
+    background: radial-gradient(circle at 35% 30%, #7df0a4, #23a74f 70%);
+    box-shadow: 0 0 8px 2px rgba(47, 191, 95, 0.55);
+  }
+  57%,
+  93% {
+    background: #151210;
+    box-shadow: none;
+  }
+  95%,
+  100% {
+    background: radial-gradient(circle at 35% 30%, #7df0a4, #23a74f 70%);
+    box-shadow: 0 0 8px 2px rgba(47, 191, 95, 0.55);
+  }
+}
+@keyframes bay-yellow-cycle {
+  0%,
+  55% {
+    background: #151210;
+    box-shadow: none;
+  }
+  57%,
+  63% {
+    background: radial-gradient(circle at 35% 30%, #ffe08a, #d99e06 70%);
+    box-shadow: 0 0 8px 2px rgba(242, 183, 5, 0.55);
+  }
+  65%,
+  100% {
+    background: #151210;
+    box-shadow: none;
+  }
+}
+@keyframes bay-red-cycle {
+  0%,
+  63% {
+    background: #151210;
+    box-shadow: none;
+  }
+  65%,
+  93% {
+    background: radial-gradient(circle at 35% 30%, #ff9a8a, #c22e22 70%);
+    box-shadow: 0 0 8px 2px rgba(224, 58, 47, 0.55);
+  }
+  95%,
+  100% {
+    background: #151210;
+    box-shadow: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The shifter: an automatic-selector rail spanning the foot of the hero,
+   the way carousel pagination spans a slide. Four stops on a console track,
+   one yellow knob that clunks stop to stop. Every hero panel reserves room
+   for it in its own bottom padding.
+-------------------------------------------------------------------------- */
+.hero-stack {
+  position: relative;
+}
+.hero-shifter {
+  --gear-index: 0;
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  width: min(600px, calc(100% - 28px));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 5px;
+  border: 3px solid var(--ink);
+  background: linear-gradient(180deg, #3a332f, #211d1b);
+  box-shadow: 5px 5px 0 rgba(12, 8, 7, 0.5);
+}
+/* The shift slot running behind the stops. */
+.hero-shifter::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  background: rgba(255, 247, 231, 0.28);
+  pointer-events: none;
+}
+/* The knob: one slider wide as a stop, driven by --gear-index on the rail. */
+.shifter-slider {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / 4);
+  border: 2px solid var(--ink);
+  background: var(--yellow);
+  transform: translateX(calc(var(--gear-index) * 100%));
+  transition: transform 0.28s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.shifter-gear {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.1rem;
+  min-height: 46px;
+  padding: 0.3rem 0.2rem;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 247, 231, 0.72);
+  font: inherit;
+  cursor: pointer;
+}
+.shifter-gear b {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.shifter-gear span {
+  overflow: hidden;
+  max-width: 100%;
+  font-size: 0.54rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.shifter-gear.is-active {
+  color: var(--ink);
+}
+.shifter-gear:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+@media (max-width: 480px) {
+  .shifter-gear b {
+    font-size: 0.92rem;
+  }
+  .shifter-gear span {
+    font-size: 0.48rem;
+    letter-spacing: 0.04em;
+  }
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
