@@ -75,7 +75,36 @@ async function checkRoute(page, route) {
   page.on("pageerror", onPageError);
   page.on("response", onResponse);
 
-  const response = await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
+  // Redirect stubs carry a `content="0"` meta-refresh that navigates away
+  // immediately — sometimes before "domcontentloaded" even returns control
+  // here. Waiting for "networkidle" races that navigation and can hang
+  // Chromium indefinitely; evaluating the DOM afterward races it too
+  // ("Execution context was destroyed"). A stub has nothing worth inspecting
+  // beyond its own HTTP status anyway, so skip straight past both.
+  const isRedirect = kindByRoute.get(route) === "redirect";
+  // The same immediate-navigation race can make `goto` itself resolve with a
+  // null response (Playwright loses track of which document to report on),
+  // even though the request plainly succeeded. `onResponse` above observed
+  // the real response independently, so redirects are judged by the absence
+  // of a failure there rather than by this return value.
+  const response = await page.goto(`${base}${route}`, {
+    waitUntil: isRedirect ? "domcontentloaded" : "networkidle",
+  });
+
+  if (isRedirect) {
+    if (failedResponses.length) fail("Route requested missing assets", { route, failedResponses });
+    if (consoleErrors.length) fail("Route emitted console errors", { route, consoleErrors });
+    if (pageErrors.length) fail("Route emitted page errors", { route, pageErrors });
+    page.off("console", onConsole);
+    page.off("pageerror", onPageError);
+    page.off("response", onResponse);
+    return;
+  }
+
+  if (!response || response.status() !== 200) {
+    fail("Route returned non-200", { route, status: response?.status() ?? null });
+  }
+
   // Scroll so lazy images actually load before we check them.
   await page.evaluate(async () => {
     for (let y = 0; y < document.body.scrollHeight; y += 700) {
@@ -94,13 +123,8 @@ async function checkRoute(page, route) {
       .map((img) => img.currentSrc || img.src),
   }));
 
-  if (response.status() !== 200) {
-    fail("Route returned non-200", { route, status: response.status() });
-  }
   if (!state.title) fail("Route has no document title", { route });
-  // Redirect stubs are meta-refresh placeholders, not content pages — they
-  // carry a title and a canonical target but no H1. Only content pages need one.
-  if (!state.h1 && kindByRoute.get(route) !== "redirect") fail("Route has no H1", { route });
+  if (!state.h1) fail("Route has no H1", { route });
   if (consoleErrors.length) fail("Route emitted console errors", { route, consoleErrors });
   if (pageErrors.length) fail("Route emitted page errors", { route, pageErrors });
   if (failedResponses.length) fail("Route requested missing assets", { route, failedResponses });
@@ -139,7 +163,11 @@ for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
   const routePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   for (const route of routes.slice(start, start + ROUTES_PER_BROWSER)) {
     await checkRoute(routePage, route);
-    await checkLinks(routePage, route);
+    // A redirect stub's own frame is gone by now (its meta-refresh already
+    // navigated it away) — its one link is the canonical target, already
+    // covered by kind classification, and the target page gets checked in
+    // its own right when its turn in `routes` comes up.
+    if (kindByRoute.get(route) !== "redirect") await checkLinks(routePage, route);
     process.stdout.write(`  ${route}\n`);
   }
   await routePage.close();
