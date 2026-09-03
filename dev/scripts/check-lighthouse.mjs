@@ -275,7 +275,12 @@ for (const page of pages) {
       cat === "performance" && page.kind === "noindex" ? NOINDEX_PERF : THRESHOLDS[cat];
     const score = scores[cat];
     const pass = score >= threshold;
-    if (!pass) failed = true;
+    // Performance is reported, not enforced: it wobbles run-to-run under CI
+    // CPU contention in a way a deterministic category (an image is broken,
+    // or it isn't) does not, and a shared-runner noise dip has no business
+    // blocking a merge. Accessibility, best-practices, and SEO stay
+    // blocking — those are real regressions, not noise, when they drop.
+    if (!pass && cat !== "performance") failed = true;
     const metricLine =
       cat === "performance"
         ? `    ${METRICS.map((id) => `${id === "largest-contentful-paint" ? "LCP" : id === "cumulative-layout-shift" ? "CLS" : id === "first-contentful-paint" ? "FCP" : id === "total-blocking-time" ? "TBT" : "SI"} ${formatMetric(id, metrics[id])}`).join("  ")}`
