@@ -12,6 +12,8 @@
     "format:check": "biome format .",
     "build": "bash dev/scripts/build-verified.sh",
     "build:static": "node dev/scripts/generate-image-variants.mjs && node dev/scripts/build-static-export.mjs && node dev/scripts/build-static.mjs",
+    "clean": "node dev/scripts/clean.mjs",
+    "clean:deep": "node dev/scripts/clean.mjs --deep",
     "start": "vinext start",
     "test": "npm run build && node --test dev/tests/shop-hours.test.mjs dev/tests/chat-answers.test.mjs dev/tests/pixel-crew.test.mjs dev/tests/arcade.test.mjs dev/tests/rendered-html.test.mjs dev/tests/service-seo.test.mjs && npm run build:static && node --test dev/tests/static-export.test.mjs dev/tests/routes.test.mjs",
     "report": "node dev/scripts/run-tests-report.mjs",
