@@ -303,3 +303,27 @@ page clearly invites visitors to call and book.
 - [ ] Capture and review fresh desktop, ultra-wide, tablet, and mobile screenshots.
 - [ ] Replace or archive the untracked 87 MB master photograph before committing or publishing.
 - [ ] Publish the approved refinement and verify the live deployment.
+
+## Deferred work — owner-posted notices via Google Sheet
+
+The notice banner (`src/components/layout/notice-banner.tsx`) currently takes
+notices from two local sources: the owner-editable list in
+`src/lib/shop/announcements.mjs` and the automatic federal-holiday engine.
+The deferred step moves the first source outside the repo so the owner can
+post a notice without a code change. The agreed design (full spec also lives
+as a TODO at the top of `announcements.mjs`):
+
+- Owner edits a Google Sheet published via File → Share → Publish to web.
+  Four columns per row: **message | start | end | on/off** — the toggle lets a
+  notice be switched off without deleting the row.
+- The site fetches the sheet's public URL client-side, following the
+  shop-almanac weather-fetch pattern (AbortController timeout, silent
+  failure, kept out of the page's critical window).
+- Source chain, highest priority first: sheet rows → `announcements` list →
+  automatic federal-holiday notices. Each layer covers the one above it, so
+  the banner never goes dark because a third party did. Works identically on
+  Vercel, GitHub Pages and Cloudflare — no server, no keys.
+- Dates compared in America/New_York; every row validated like the local
+  entries; the phone link stays single-sourced from `shop.mjs`.
+- localStorage caches the last fetch so repeat visits paint the banner
+  instantly and refresh silently in the background.

@@ -81,7 +81,7 @@
   align-items: center;
   gap: 0.6rem;
   margin: 0;
-  color: var(--red);
+  color: var(--red-dark);
   font-family: var(--font-geist-sans), sans-serif;
   font-size: 0.62rem;
   font-weight: 950;

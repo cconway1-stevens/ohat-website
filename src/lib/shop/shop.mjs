@@ -104,6 +104,11 @@ export const shop = {
       holidayNotice: {
         beforeName: "Holiday hours may vary for",
         afterName: "Please give us a call before stopping by.",
+        /** Wording for the days leading up to a federal holiday — the banner
+         *  shows it once fewer than `HOLIDAY_LEAD_DAYS` shop business days
+         *  remain before the next one. Same rewordable-data rule as above. */
+        upcomingKicker: "Coming up:",
+        upcomingNote: "Hours may vary around the holiday.",
       },
       signPreview: {
         holdMs: 5_000,

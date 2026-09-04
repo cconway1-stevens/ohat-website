@@ -36,13 +36,16 @@ function jsonLdTypes(html) {
     .map((value) => value["@type"]);
 }
 
+const HTML_ENTITIES = new Map([
+  ["amp", "&"],
+  ["quot", '"'],
+  ["#x27", "'"],
+  ["lt", "<"],
+  ["gt", ">"],
+]);
+const HTML_ENTITY_PATTERN = new RegExp(`&(${[...HTML_ENTITIES.keys()].join("|")});`, "g");
 function decodeHtml(value) {
-  return value
-    .replaceAll("&amp;", "&")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#x27;", "'")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">");
+  return value.replace(HTML_ENTITY_PATTERN, (_, name) => HTML_ENTITIES.get(name) ?? `&${name};`);
 }
 
 test("every service page ships complete, unique local-search signals", async () => {

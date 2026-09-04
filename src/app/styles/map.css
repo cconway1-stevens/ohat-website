@@ -338,7 +338,7 @@
 /* Tablet — stacked two-band composition. */
 @media (min-width: 701px) and (max-width: 1024px) {
   .contact-route {
-    padding-top: 168px;
+    padding-top: calc(168px + var(--notice-h, 0px));
   }
   .contact-route-grid {
     display: grid;
@@ -501,7 +501,7 @@
 
 @media (max-width: 350px) {
   .contact-route {
-    padding-top: 112px;
+    padding-top: calc(112px + var(--notice-h, 0px));
   }
   .contact-route-details,
   .contact-arrival {

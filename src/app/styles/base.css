@@ -77,8 +77,12 @@ img {
   position: fixed;
   z-index: 200;
   left: 1rem;
-  top: 1rem;
-  transform: translateY(-180%);
+  top: calc(1rem + var(--notice-h, 0px));
+  /* Parked clear of the top edge by its own height plus whatever offset the
+     top rule carries. A percentage-only translate was measured against the
+     box, not the offset, so once the notice banner pushed `top` down the tail
+     of the link stayed on screen over the strip. */
+  transform: translateY(calc(-100% - 1rem - var(--notice-h, 0px) - 6px));
   background: #fff;
   color: #111;
   padding: 0.8rem 1rem;

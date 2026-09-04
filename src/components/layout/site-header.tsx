@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { shop } from "@/lib/shop/shop";
+import { NoticeBanner } from "./notice-banner";
 import { ShopAlmanac } from "../shop/shop-almanac";
 import { addressDisplay, DirectionsTrigger } from "../ui/directions-dialog";
 import { SiteImage } from "../ui/site-image";
@@ -123,6 +124,7 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
+      <NoticeBanner />
       <div className="garage-strip">
         <DirectionsTrigger className="directions-menu-trigger">
           {addressDisplay} <span aria-hidden="true">▾</span>

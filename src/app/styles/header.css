@@ -2,7 +2,9 @@
 .site-header {
   position: absolute;
   z-index: 50;
-  top: 0;
+  /* Sits below the notice banner when one is active — the banner publishes
+     its height as --notice-h (0px on notice-free days). */
+  top: var(--notice-h, 0px);
   left: 0;
   width: 100%;
   color: #fff;

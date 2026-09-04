@@ -195,7 +195,7 @@
 .dropoff-arrival {
   position: relative;
   min-height: 0;
-  padding: 196px 0 96px;
+  padding: calc(196px + var(--notice-h, 0px)) 0 96px;
   overflow: hidden;
   color: #fff;
   background:

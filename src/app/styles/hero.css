@@ -7,7 +7,7 @@
   grid-template-rows: auto auto;
   /* The site masthead is intentionally absolute. Reserve its full height so
      the navigation never covers the first line or the hero frame. */
-  padding-top: calc(142px + clamp(0.75rem, 1.5vw, 1.25rem));
+  padding-top: calc(142px + clamp(0.75rem, 1.5vw, 1.25rem) + var(--notice-h, 0px));
   border-bottom: 4px solid var(--ink);
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px) 0 0 / 64px 64px,
@@ -72,7 +72,10 @@
   max-width: 10.5ch;
   margin: 0;
   padding: 0.15em 0.35em;
-  background: var(--yellow);
+  background:
+    linear-gradient(105deg, transparent 34%, rgba(255, 255, 255, 0.55) 50%, transparent 66%) -120% 0
+    / 42% 100% no-repeat,
+    var(--yellow);
   border: 3px solid var(--ink);
   box-shadow: 5px 5px 0 var(--ink);
   transform: rotate(-1deg);
@@ -176,6 +179,11 @@
 
 .home-hero-directions:hover {
   background: var(--ink);
+}
+
+.home-hero-actions .button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 var(--ink);
 }
 
 /* One unified sign instead of two mismatched boxes: the open/closed status
@@ -371,6 +379,7 @@
    down the page, so the racing motif reads as one deliberate brand touch
    rather than a one-off sticker. A slow drift keeps it feeling alive. */
 .home-hero-checker {
+  position: relative;
   display: block;
   height: 16px;
   border-block: 3px solid var(--ink);
@@ -379,9 +388,45 @@
     8px;
 }
 
+.home-hero-tire {
+  position: absolute;
+  top: 50%;
+  left: -32px;
+  width: 24px;
+  height: 24px;
+  margin-top: -12px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--paper) 0 5px, var(--ink) 5px);
+}
+
+.home-hero-tire::before,
+.home-hero-tire::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 4px;
+  height: 5px;
+  margin-left: -2px;
+  border-radius: 1px;
+  background: var(--paper);
+}
+
+.home-hero-tire::before {
+  top: 0;
+}
+
+.home-hero-tire::after {
+  bottom: 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .home-hero-checker {
     animation: home-hero-checker-drift 6s linear infinite;
+  }
+
+  .home-hero-tire {
+    animation: hero-tire-roll 13s linear infinite;
   }
 }
 
@@ -391,6 +436,18 @@
   }
   to {
     background-position: 16px 0;
+  }
+}
+
+@keyframes hero-tire-roll {
+  0%,
+  5% {
+    transform: translateX(0) rotate(0deg);
+  }
+
+  95%,
+  100% {
+    transform: translateX(calc(100vw + 64px)) rotate(1080deg);
   }
 }
 
@@ -515,7 +572,7 @@
     min-height: 0;
     /* Measured masthead: 145px at 721-860. Sitting flush kills the stray red
        band the old reservation left between the nav and the photo. */
-    padding-top: 145px;
+    padding-top: calc(145px + var(--notice-h, 0px));
   }
 
   .home-hero-shell {
@@ -656,13 +713,17 @@
 @media (max-width: 720px) {
   .home-hero {
     /* Measured masthead on phones: 104px. Flush seat for the photo card. */
-    padding-top: 104px;
+    padding-top: calc(104px + var(--notice-h, 0px));
   }
 }
 
 @media (min-width: 1600px) {
   .home-hero {
-    padding-top: calc(clamp(158px, 8.3vw, 284px) + clamp(0.75rem, 1vw, 2rem));
+    padding-top: calc(
+      clamp(158px, 8.3vw, 284px) +
+      clamp(0.75rem, 1vw, 2rem) +
+      var(--notice-h, 0px)
+    );
   }
 
   .home-hero-shell {
@@ -812,19 +873,152 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .home-hero-shell {
-    animation: hero-arrive 0.55s ease-out both;
+  .home-hero-kicker,
+  .home-hero-promise,
+  .home-hero-lede,
+  .home-hero-actions,
+  .home-hero-meta,
+  .home-hero-proof {
+    animation: hero-piece-arrive 0.5s ease-out both;
   }
 
-  @keyframes hero-arrive {
+  .home-hero-kicker {
+    animation-delay: 0.05s;
+  }
+
+  .home-hero-promise {
+    animation-delay: 0.22s;
+  }
+
+  .home-hero-lede {
+    animation-delay: 0.3s;
+  }
+
+  .home-hero-actions {
+    animation-delay: 0.38s;
+  }
+
+  .home-hero-meta {
+    animation-delay: 0.46s;
+  }
+
+  .home-hero-proof {
+    animation-delay: 0.6s;
+  }
+
+  .home-hero h1 {
+    animation:
+      hero-nameplate-slam 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s both,
+      hero-nameplate-shine 9s linear 2.2s infinite;
+  }
+
+  .home-hero-photo {
+    animation: hero-photo-arrive 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+  }
+
+  .home-hero-photo-image > img {
+    animation: hero-photo-drift 20s ease-in-out infinite alternate;
+  }
+
+  .home-hero-photo-tag {
+    animation:
+      hero-tag-slam 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.85s both,
+      hero-tag-rock 4.5s ease-in-out 1.6s infinite;
+  }
+
+  .home-hero-meta .shop-hours-status {
+    animation: hero-hours-flicker 1.1s linear 1.05s 1;
+  }
+
+  @keyframes hero-piece-arrive {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(10px);
+    }
+  }
+
+  @keyframes hero-photo-arrive {
+    from {
+      opacity: 0;
+      transform: translateX(28px);
+    }
+  }
+
+  @keyframes hero-nameplate-slam {
+    from {
+      opacity: 0;
+      transform: rotate(-2.5deg) scale(1.28);
+    }
+  }
+
+  @keyframes hero-nameplate-shine {
+    0%,
+    40% {
+      background-position: -120% 0;
+    }
+
+    58%,
+    100% {
+      background-position: 225% 0;
+    }
+  }
+
+  @keyframes hero-tag-slam {
+    from {
+      opacity: 0;
+      transform: rotate(4deg) scale(1.3);
+    }
+  }
+
+  @keyframes hero-tag-rock {
+    0%,
+    100% {
+      transform: rotate(4deg);
+    }
+
+    50% {
+      transform: rotate(5.4deg);
+    }
+  }
+
+  @keyframes hero-photo-drift {
+    from {
+      transform: scale(1);
     }
 
     to {
+      transform: scale(1.045);
+    }
+  }
+
+  @keyframes hero-hours-flicker {
+    0% {
       opacity: 1;
-      transform: translateY(0);
+    }
+
+    10% {
+      opacity: 0.25;
+    }
+
+    16% {
+      opacity: 1;
+    }
+
+    26% {
+      opacity: 0.4;
+    }
+
+    34% {
+      opacity: 1;
+    }
+
+    45% {
+      opacity: 0.65;
+    }
+
+    52%,
+    100% {
+      opacity: 1;
     }
   }
 }

@@ -1198,7 +1198,7 @@
   .repair-ticket,
   .dropoff-arrival {
     min-height: 0;
-    padding: 158px 0 90px;
+    padding: calc(158px + var(--notice-h, 0px)) 0 90px;
   }
   .inner-hero h1,
   .services-board h1,

@@ -3,5 +3,6 @@
   "entry": ["src/app/**/*.{ts,tsx}", "src/worker/index.ts", "dev/scripts/*.mjs", "dev/tests/*.mjs"],
   "project": ["src/**/*.{ts,tsx}", "dev/**/*.mjs"],
   "ignore": ["src/lib/shop/shop.ts"],
+  "ignoreBinaries": ["du"],
   "ignoreDependencies": ["axe-core", "tailwindcss"]
 }

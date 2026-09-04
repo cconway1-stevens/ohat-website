@@ -23,7 +23,7 @@ function dateKey(date) {
   return date.toISOString().slice(0, 10);
 }
 
-function holidayFor(year, month, day) {
+export function holidayFor(year, month, day) {
   const { fixed, floating } = shop.hours.federalHolidays;
   const candidates = fixed.map((holiday) => ({
     date: observedDate(year, holiday.month, holiday.day),
@@ -41,7 +41,10 @@ function holidayFor(year, month, day) {
   return candidates.find((holiday) => dateKey(holiday.date) === key)?.name ?? null;
 }
 
-function localParts(now) {
+// Shared with lib/announcements.mjs so the notice banner reads the same
+// timezone-aware calendar parts and federal-holiday engine as the hours
+// sign — one date-math source, never a duplicate.
+export function localParts(now) {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: shop.timezone,
     weekday: "long",

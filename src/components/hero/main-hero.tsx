@@ -70,7 +70,9 @@ export function MainHero() {
               />
             </span>
           </div>
-          <span className="home-hero-checker" aria-hidden="true" />
+          <span className="home-hero-checker" aria-hidden="true">
+            <i className="home-hero-tire" />
+          </span>
           <figcaption>
             <span>Your local family garage</span>
             <strong>Gas · Diesel · Hybrid · Electric · Classic</strong>

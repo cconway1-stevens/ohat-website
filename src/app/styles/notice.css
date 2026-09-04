@@ -1,0 +1,198 @@
+/* Shop notice banner: the fixed strip at the very top of every page. It
+   publishes its measured height as --notice-h (see notice-banner.tsx); the
+   masthead and every hero that reserves masthead space add that variable to
+   their offsets, so the page slides down beneath the strip and nothing is
+   covered. With no notice active the variable stays 0px and the layout is
+   unchanged. */
+:root {
+  --notice-h: 0px;
+}
+
+/* Ink, not red. The masthead below opens on a yellow strip and the hero is
+   built from the brand red, so a red bar read as one more slab of chrome
+   rather than as a notice. Ink is the one value the page never uses at full
+   bleed, and the checker rule along its bottom edge (the racing motif from
+   the hero) makes the seam against the yellow strip deliberate. */
+.notice-banner {
+  position: fixed;
+  z-index: 60;
+  inset: 0 0 auto 0;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Bottom edge: the same conic checkerboard as the hero seam, so the strip
+   ends on a brand mark instead of a plain rule. */
+.notice-banner::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  /* One full tile tall: a shorter rule clips the checker to its top row of
+     squares and reads as a dashed line rather than the motif. */
+  height: 8px;
+  background:
+    conic-gradient(var(--paper) 25%, var(--ink) 0 50%, var(--paper) 0 75%, var(--ink) 0) 0 0 / 8px
+    8px;
+}
+
+/* Three columns mirroring .garage-strip, so the notice stays optically
+   centred on the page while the close button lands on the masthead's own
+   right margin instead of floating out against the viewport edge (which on a
+   wide display left it a screen away from the copy, beside the scrollbar). */
+.notice-banner-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 46px;
+  padding: 0.5rem max(1.25rem, calc((100vw - 1180px) / 2));
+  padding-bottom: calc(0.5rem + 8px);
+}
+
+.notice-banner-message {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem 0.75rem;
+  text-align: center;
+}
+
+/* Stamped label: names the strip in one word so the copy can open on the
+   notice itself rather than on "Notice:". */
+.notice-banner-flag {
+  /* Inline inside the copy rather than beside it: as its own flex item it
+     claimed a whole line to itself once the message wrapped on a phone. */
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.16rem 0.42rem;
+  vertical-align: 1px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.notice-banner-copy {
+  margin: 0;
+  font-size: clamp(0.78rem, 0.24vw + 0.72rem, 0.94rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+}
+
+/* Hard shadow in brand red: an ink shadow would vanish against the strip. */
+.notice-banner-call {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: clamp(0.74rem, 0.2vw + 0.7rem, 0.88rem);
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 3px 3px 0 var(--red);
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    background 0.14s ease;
+}
+
+.notice-banner-call:hover {
+  background: var(--yellow-tint);
+}
+
+.notice-banner-call:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--red);
+}
+
+/* Outlined rather than filled: a solid white square at this size read as a
+   stray element floating over the strip. */
+.notice-banner-close {
+  grid-column: 3;
+  justify-self: end;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid rgba(255, 250, 240, 0.5);
+  background: transparent;
+  color: var(--paper);
+  font-size: 0.82rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.notice-banner-close:hover {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.notice-banner-call:focus-visible,
+.notice-banner-close:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+/* Narrow screens: the centring columns cost more than they buy, so the copy
+   goes flush left and the close button keeps the right margin. */
+/* The masthead abandons the 1180px measure at this width for a 7vw margin
+   (header.css), so the close button follows it there — held to the shell it
+   sat a couple of hundred pixels inside the masthead's own right edge. */
+@media (min-width: 1600px) {
+  .notice-banner-inner {
+    padding-inline: 7vw;
+  }
+}
+
+@media (max-width: 720px) {
+  .notice-banner-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    padding-inline: 0.85rem;
+  }
+
+  .notice-banner-message {
+    grid-column: 1;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .notice-banner-copy {
+    font-size: 0.78rem;
+  }
+
+  .notice-banner-call {
+    padding: 0.26rem 0.6rem;
+  }
+
+  .notice-banner-close {
+    grid-column: 2;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .notice-banner {
+    animation: notice-banner-arrive 0.35s ease-out both;
+  }
+
+  @keyframes notice-banner-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
+}
