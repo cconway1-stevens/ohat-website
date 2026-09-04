@@ -125,7 +125,6 @@
   color: var(--muted);
 }
 .tread-close {
-  margin-left: auto;
   width: 2rem;
   height: 2rem;
   flex: 0 0 2rem;
@@ -138,6 +137,23 @@
   cursor: pointer;
 }
 .tread-close:hover {
+  background: var(--yellow);
+}
+.tread-export {
+  margin-left: auto;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+.tread-export:hover {
   background: var(--yellow);
 }
 
@@ -205,6 +221,19 @@
 }
 .tread-chip:hover {
   background: var(--yellow);
+}
+/* Lead chips — call, email and the save-contact card are the widget's whole
+   job, so they get the shop red instead of blending in with the link chips. */
+.tread-chip-call,
+.tread-chip-email,
+.tread-chip-download {
+  background: var(--red);
+  color: #fff;
+}
+.tread-chip-call:hover,
+.tread-chip-email:hover,
+.tread-chip-download:hover {
+  background: var(--red-dark);
 }
 
 .tread-thinking {

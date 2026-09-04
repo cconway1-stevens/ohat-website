@@ -66,11 +66,17 @@ export const shop = {
     days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
     opens: "08:00",
     closes: "17:00",
-    weekdayLabel: "Monday-Friday",
+    /** Days whose close time differs from `closes` above. Friday closes an
+     *  hour early; every other configured day falls through to `closes`. */
+    closesByDay: { Friday: "16:00" },
+    weekdayLabel: "Monday-Thursday",
+    weekdayHours: "8:00 AM–5:00 PM",
+    fridayLabel: "Friday",
+    fridayHours: "8:00 AM–4:00 PM",
     weekendLabel: "Saturday-Sunday",
     weekendValue: "Closed",
-    display: "Monday–Friday, 8:00 AM–5:00 PM",
-    compact: "Monday–Friday · 8:00 AM–5:00 PM",
+    display: "Monday–Thursday, 8:00 AM–5:00 PM; Friday, 8:00 AM–4:00 PM",
+    compact: "Mon–Thu 8:00 AM–5:00 PM · Fri 8:00 AM–4:00 PM",
     closedNote: "Closed weekends and major holidays.",
     status: {
       openingSoonMinutes: 30,
@@ -228,12 +234,21 @@ export function autoRepairSchema(extra = {}) {
       longitude: shop.geo.longitude,
     },
     openingHoursSpecification: [
+      // Built from `shop.hours.closesByDay` rather than a second hardcoded day
+      // list, so a day added there picks up its own OpeningHoursSpecification
+      // automatically instead of silently keeping the default close time.
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: shop.hours.days,
+        dayOfWeek: shop.hours.days.filter((day) => !(day in shop.hours.closesByDay)),
         opens: shop.hours.opens,
         closes: shop.hours.closes,
       },
+      ...Object.entries(shop.hours.closesByDay).map(([day, closes]) => ({
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [day],
+        opens: shop.hours.opens,
+        closes,
+      })),
       {
         // Saying "closed" explicitly rather than by omission: an equal
         // opens/closes time is schema.org's documented way to mark a day

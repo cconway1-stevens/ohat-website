@@ -60,6 +60,10 @@ function timeToMinutes(value) {
   return hours * 60 + minutes;
 }
 
+function closesAt(weekday) {
+  return shop.hours.closesByDay[weekday] ?? shop.hours.closes;
+}
+
 function openingTimeLabel() {
   const [hour, minute] = shop.hours.opens.split(":").map(Number);
   return new Intl.DateTimeFormat("en-US", {
@@ -96,7 +100,7 @@ export function getShopHoursStatus(now = new Date()) {
   const holiday = holidayFor(Number(parts.year), Number(parts.month), Number(parts.day));
   const minutes = Number(parts.hour) * 60 + Number(parts.minute);
   const openAt = timeToMinutes(shop.hours.opens);
-  const closeAt = timeToMinutes(shop.hours.closes);
+  const closeAt = timeToMinutes(closesAt(parts.weekday));
   const { openingSoonMinutes, closingSoonMinutes, holidayNotice } = shop.hours.status;
   const isWeekday = shop.hours.days.includes(parts.weekday);
   const isOpenDay = isWeekday && !holiday;

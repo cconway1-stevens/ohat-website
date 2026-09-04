@@ -393,7 +393,9 @@ export default function Home() {
               <div>
                 <small>Shop hours</small>
                 <strong>{shop.hours.weekdayLabel}</strong>
-                <span>{shop.hours.display.split(", ")[1]}</span>
+                <span>{shop.hours.weekdayHours}</span>
+                <strong>{shop.hours.fridayLabel}</strong>
+                <span>{shop.hours.fridayHours}</span>
                 <ShopHoursStatus />
               </div>
               <div>

@@ -193,14 +193,29 @@
   overflow: hidden;
 }
 
-/* Fixed width, content centered within it — not left-packed — so the panel's
-   overall width stays stable whether this says "Open", "Closing soon", or
-   the "Checking hours" placeholder the server shows before the client knows
-   the real status. A fixed box with left-packed text inside it is what
-   looked like a broken empty block for the short "Open" case; centering the
-   content inside that same fixed box reads as designed instead. */
+/* Both halves grow to divide the panel between them, and each fills its own
+   half edge to edge — otherwise the two sat at their natural widths, centered
+   as a pair, and the leftover width showed up as bare paper inside the border:
+   the status colour stopped short of the left edge and the address stopped
+   short of the right, so the sign read as a half-filled field rather than two
+   tenanted sections. `flex-basis: auto` keeps each half's natural content
+   width as its floor, so growing only ever absorbs slack — it never squeezes
+   "1178 Ocean Heights Ave." into an extra line at narrow widths.
+
+   Height is the same story on the other axis: the wrap's default
+   `align-items: center` (meant for the header and footer, where the pill
+   floats free) held the pill at its own text height, stranding paper above
+   and below it whenever the address half ran taller. */
+.home-hero-meta .shop-hours-status-wrap {
+  flex: 1 1 auto;
+  align-items: stretch;
+  align-self: stretch;
+}
+
 .home-hero-meta .shop-hours-status {
   min-width: 148px;
+  width: 100%;
+  height: 100%;
   justify-content: center;
   grid-template-columns: auto auto;
   border: 0;
@@ -213,8 +228,9 @@
   display: inline-grid;
   grid-template-columns: auto auto;
   align-items: center;
+  justify-content: center;
   gap: 0 0.5rem;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-width: 0;
   margin: 0;
   padding: 0.5rem 0.85rem;
@@ -707,6 +723,30 @@
 
   .home-hero-meta {
     margin-top: clamp(0.75rem, 0.75vw, 1.6rem);
+  }
+
+  /* The status pill's own padding/type must scale in step with the address
+     half below, or the pill stays pinned at its base size while the address
+     side grows with viewport width — leaving the pill vertically centered
+     in a row that's grown taller than it is, stranding it in a visible
+     margin of paper above and below instead of filling its section. */
+  .home-hero-meta .shop-hours-status {
+    min-width: clamp(148px, 9vw, 230px);
+    padding: clamp(0.42rem, 0.4vw, 0.85rem) clamp(0.7rem, 0.6vw, 1.4rem)
+      clamp(0.42rem, 0.4vw, 0.85rem) clamp(0.55rem, 0.5vw, 1.1rem);
+  }
+
+  .home-hero-meta .shop-status-dot {
+    width: clamp(0.62rem, 0.5vw, 1.1rem);
+    height: clamp(0.62rem, 0.5vw, 1.1rem);
+  }
+
+  .home-hero-meta .shop-status-copy > span:first-child {
+    font-size: clamp(0.92rem, 0.72vw, 1.5rem);
+  }
+
+  .home-hero-meta .shop-status-copy > span:not(:first-child) {
+    font-size: clamp(0.64rem, 0.5vw, 1.05rem);
   }
 
   .home-hero-address {

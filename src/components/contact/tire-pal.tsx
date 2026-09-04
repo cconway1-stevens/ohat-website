@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type { ChatChip } from "@/lib/chat/answers";
+import { loadRecent, recordEntry, serializeTranscript } from "@/lib/chat/transcript";
 import type { TirePalEmote } from "./tire-pal-scene";
 
 /**
@@ -24,12 +25,13 @@ const TirePalScene = dynamic(() => import("./tire-pal-scene"), {
   loading: () => <TirePalFace className="tread-scene-fallback" />,
 });
 
-/** The cute inline tire face: dark ring, cream hubcap, eyes, smile, red cap. */
+/** The cute inline tire face: dark ring, whitewall band, cream hubcap, eyes, smile, red cap. */
 function TirePalFace({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 100 100" className={className} aria-hidden="true" focusable="false">
       <circle cx="50" cy="50" r="46" fill="#2a2624" />
       <circle cx="50" cy="50" r="46" fill="none" stroke="#171412" strokeWidth="3" />
+      <circle cx="50" cy="50" r="40" fill="#f5f1e8" />
       <circle cx="50" cy="50" r="30" fill="#f7efd9" />
       <circle cx="40" cy="46" r="5" fill="#171412" />
       <circle cx="60" cy="46" r="5" fill="#171412" />
@@ -72,25 +74,28 @@ type Message = {
 const GREETING_KEY = "ohat-tread-greeted";
 
 // Inlined copy of `quickPrompts` from answers.ts. The full answers module
-// (57 KB) is lazy-loaded after mount; inlining 6 strings avoids pulling
+// (57 KB) is lazy-loaded after mount; inlining 7 strings avoids pulling
 // the whole matcher into the initial page load just for the prompt chips.
 const QUICK_PROMPTS = [
   "Are you open?",
   "Can you fix a flat?",
   "Book an appointment",
-  "Save your number",
+  "Talk to a person",
   "Do you do NJ inspection?",
   "Do you take cards?",
+  "Tell me a joke",
 ];
 
-// Message ids and emote ids are just "newer than the last one" — Date.now is
-// fine, but it must live in module helpers so the purity rule doesn't see an
-// impure call in the component body.
+// Message ids and emote ids just need to be unique and ever-increasing — a
+// module-level counter avoids the Date.now() collisions that broke React
+// keys when several messages were restored in the same millisecond.
+let idSeq = 0;
 function nextId(): number {
-  return Date.now();
+  idSeq += 1;
+  return idSeq;
 }
 function nextEmote(kind: NonNullable<TirePalEmote>["kind"]): TirePalEmote {
-  return { kind, id: Date.now() };
+  return { kind, id: nextId() };
 }
 
 export function TirePal() {
@@ -193,9 +198,25 @@ export function TirePal() {
     setSceneMounted(true);
     setOpen(true);
     if (messages.length === 0) {
-      void getAnswers().then(({ treadGreeting }) => {
-        setMessages((m) => [...m, { id: nextId(), role: "tread", text: treadGreeting() }]);
-      });
+      // Restore the last day of conversation from the local log so a
+      // returning visitor picks up where they left off. If there's no
+      // history, fall through to the greeting.
+      const restored = loadRecent(window.localStorage).map((entry) => ({
+        id: nextId(),
+        role: entry.role,
+        text: entry.text,
+      }));
+      if (restored.length > 0) {
+        setMessages(restored);
+        return;
+      }
+      getAnswers()
+        .then(({ treadGreeting }) => {
+          setMessages((m) => [...m, { id: nextId(), role: "tread", text: treadGreeting() }]);
+        })
+        .catch(() => {
+          // Brain failed to load — the send path shows the honest fallback.
+        });
     }
   }
 
@@ -203,33 +224,70 @@ export function TirePal() {
     const trimmed = text.trim();
     if (!trimmed) return;
     setMessages((m) => [...m, { id: nextId(), role: "user", text: trimmed }]);
+    recordEntry(window.localStorage, { t: Date.now(), role: "user", text: trimmed });
     setInput("");
     setThinking(true);
     setEmote(nextEmote("thinking"));
     const delay = reducedMotion ? 0 : 450;
     window.setTimeout(() => {
-      void getAnswers().then(({ answerQuestion }) => {
-        const answer = answerQuestion(trimmed);
-        const id = nextId();
-        setMessages((m) => [
-          ...m,
-          {
-            id,
+      getAnswers()
+        .then(({ debugAnswer }) => {
+          const resolved = debugAnswer(trimmed);
+          const answer = resolved.answer;
+          const id = nextId();
+          setMessages((m) => [
+            ...m,
+            {
+              id,
+              role: "tread",
+              text: answer.text,
+              chips: answer.chips,
+              fullText: answer.fullText,
+              suggestions: answer.suggestions,
+            },
+          ]);
+          recordEntry(window.localStorage, {
+            t: Date.now(),
             role: "tread",
             text: answer.text,
-            chips: answer.chips,
-            fullText: answer.fullText,
-            suggestions: answer.suggestions,
-          },
-        ]);
-        setThinking(false);
-        if (answer.fallback) {
+            miss: answer.fallback || undefined,
+            matched: resolved.matched,
+          });
+          setThinking(false);
+          if (answer.fallback) {
+            setEmote(nextEmote("sleep"));
+          } else if (answer.chips.some((c) => c.kind === "download")) {
+            setEmote(nextEmote("happy"));
+          }
+        })
+        .catch(() => {
+          // The brain failed to load or run — never leave the visitor
+          // staring at a thinking bubble. Be honest and point at the humans.
+          setMessages((m) => [
+            ...m,
+            {
+              id: nextId(),
+              role: "tread",
+              text: "My brain hiccuped loading my answers — please try again, or call the shop with the button at the top of the page.",
+            },
+          ]);
+          setThinking(false);
           setEmote(nextEmote("sleep"));
-        } else if (answer.chips.some((c) => c.kind === "download")) {
-          setEmote(nextEmote("happy"));
-        }
-      });
+        });
     }, delay);
+  }
+
+  /** Local-only transcript export — the log never leaves the device unless
+   *  the visitor (or the shop, on their own machine) downloads it. */
+  function downloadTranscript() {
+    const json = serializeTranscript(window.localStorage);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "tread-transcript.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   /** Speech-to-text capture for the input. Returns true if it started, so the
@@ -300,6 +358,24 @@ export function TirePal() {
             </div>
             <button
               type="button"
+              className="tread-export"
+              aria-label="Download transcript"
+              title="Download transcript — it stays on your device"
+              onClick={downloadTranscript}
+            >
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
+                <path
+                  d="M8 2v8m0 0L5 7m3 3l3-3M3 12h10v2H3z"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
               className="tread-close"
               aria-label="Close chat"
               onClick={() => setOpen(false)}
@@ -330,9 +406,9 @@ export function TirePal() {
                         <a
                           key={chip.href + chip.label}
                           href={chip.href}
-                          className="tread-chip"
+                          className={`tread-chip tread-chip-${chip.kind}`}
                           {...(chip.kind === "download" ? { download: true } : {})}
-                          {...(chip.kind === "directions"
+                          {...(chip.href.startsWith("http")
                             ? { target: "_blank", rel: "noreferrer" }
                             : {})}
                           onClick={() => onChipClick(chip)}

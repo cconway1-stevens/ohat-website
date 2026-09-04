@@ -11,6 +11,15 @@ test("uses configured opening and closing status windows", () => {
   assert.equal(getShopHoursStatus(new Date("2026-07-27T21:00:00Z")).status, "closed");
 });
 
+test("closes an hour early on Fridays", () => {
+  // 2026-07-31 is a Friday; EDT is UTC-4, so 16:00 local is 20:00Z.
+  assert.equal(getShopHoursStatus(new Date("2026-07-31T19:29:00Z")).status, "open");
+  assert.equal(getShopHoursStatus(new Date("2026-07-31T19:30:00Z")).status, "closing-soon");
+  assert.equal(getShopHoursStatus(new Date("2026-07-31T20:00:00Z")).status, "closed");
+  // Same clock time on a Thursday is still well within the regular close.
+  assert.equal(getShopHoursStatus(new Date("2026-07-30T20:00:00Z")).status, "open");
+});
+
 test("warns on every configured observed federal holiday", () => {
   const observed2026 = [
     ["2026-01-01T17:00:00Z", "New Year's Day"],

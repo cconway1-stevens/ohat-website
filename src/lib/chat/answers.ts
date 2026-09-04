@@ -107,17 +107,31 @@ const STOPWORDS = new Set(
 
 /** Variant → the form the site's own copy uses, so slang lands on real words. */
 const SYNONYMS: Record<string, string> = {
+  // Flat tires
   puncture: "flat",
   punctured: "flat",
   blowout: "flat",
+  // Tires
   tyre: "tire",
   tpms: "tire",
+  // Repair
   patch: "repair",
   plug: "repair",
   fix: "repair",
   fixes: "repair",
+  // Brakes
   squeak: "squeal",
   squeaking: "squeal",
+  squealing: "squeal",
+  braking: "brake",
+  brakes: "brake",
+  pad: "brake",
+  pads: "brake",
+  rotor: "brake",
+  rotors: "brake",
+  caliper: "brake",
+  calipers: "brake",
+  // Vibration / pull
   wobble: "vibration",
   wobbling: "vibration",
   shimmy: "vibration",
@@ -126,23 +140,70 @@ const SYNONYMS: Record<string, string> = {
   drifting: "pull",
   veer: "pull",
   veers: "pull",
+  // Starting
   jump: "start",
   jumps: "start",
   jumped: "start",
   crank: "start",
   cranking: "start",
+  // Cooling
   overheat: "temperature",
   overheating: "temperature",
   overheats: "temperature",
+  coolant: "cooling",
+  antifreeze: "cooling",
+  radiator: "cooling",
+  thermostat: "cooling",
+  // A/C and climate
   ac: "air",
   aircon: "air",
+  heater: "air",
+  // Oil
   oilchange: "oil",
+  // Hybrid / EV
   tesla: "ev",
   prius: "hybrid",
+  priuses: "hybrid",
+  hybrids: "hybrid",
+  electric: "ev",
+  electrified: "ev",
+  // Diagnostics
+  diagnose: "diagnostic",
+  diagnosing: "diagnostic",
+  diagnosis: "diagnostic",
+  // Alignment
+  align: "alignment",
+  aligned: "alignment",
+  // Transmission
+  trans: "transmission",
+  tranny: "transmission",
+  gearbox: "transmission",
+  // Electrical
+  alternator: "electrical",
+  starter: "electrical",
+  wiring: "electrical",
+  ecu: "electrical",
+  ecm: "electrical",
+  electricals: "electrical",
+  // Suspension
+  shock: "suspension",
+  shocks: "suspension",
+  strut: "suspension",
+  struts: "suspension",
+  // Exhaust
   muffler: "exhaust",
+  catalytic: "exhaust",
+  // Emissions / inspection
   inspection: "emissions",
   inspections: "emissions",
   inspect: "emissions",
+  inspected: "emissions",
+  inspecting: "emissions",
+  // Breakdown — the urgent intent's canonical token.
+  broke: "breakdown",
+  broken: "breakdown",
+  stranded: "breakdown",
+  stuck: "breakdown",
   // Tire brands → routed to the tires service via the matcher; the synonym
   // folds the brand into a generic "tire" so brand-specific queries land on
   // the tires vocabulary instead of failing.
@@ -267,11 +328,12 @@ function tokenize(
 
 /** One-edit-distance neighbors of a token, checked against the global vocab.
  *  Catches "teir→tire", "braks→brakes", "alignmnet→alignment", etc.
- *  Both the input token and the candidate must be at least four characters —
- *  three-letter tokens have too many false-positive neighbors (e.g. "est"
- *  matching "eht"). */
+ *  The input token must be at least five characters: four-letter words have
+ *  too many false-positive neighbors — "shot" was being rewritten to "slot"
+ *  (a booking trigger), hijacking "my shocks are shot" into an appointment
+ *  answer. Candidates may be four letters so "tired" still lands on "tire". */
 function nearestVocabNeighbor(token: string, vocab: Set<string>): string | undefined {
-  if (token.length < 4) return undefined;
+  if (token.length < 5) return undefined;
   let best: { token: string; dist: number } | null = null;
   for (const candidate of vocab) {
     if (candidate.length < 4) continue;
@@ -446,20 +508,65 @@ const INTENTS: {
       "dial",
       "ring",
       "telephone",
-      "reach",
       "talk",
       "speak",
       "human",
       "person",
+      "representative",
+      "agent",
+      "operator",
+      "manager",
+      "owner",
+      "receptionist",
+      "counter",
+      "front desk",
     ],
     build: (now) => ({
-      text: `The shop line is ${shop.phone.display}. ${hoursStatus(now).label}.`,
-      chips: [callChip, saveChip],
+      text: `The shop line is ${shop.phone.display} — a person at the counter picks up, not a phone tree. ${hoursStatus(now).label}.`,
+      chips: [callChip, saveChip, emailChip],
+    }),
+  },
+  {
+    id: "contact",
+    triggers: [
+      "contact",
+      "contacts",
+      "touch",
+      "reach",
+      "get ahold",
+      "get hold",
+      "get in touch",
+      "contact info",
+      "contact information",
+      "reach out",
+    ],
+    build: () => ({
+      text: `Everything in one place — call ${shop.phone.display}, email ${shop.email.service}, or stop by ${shop.address.full}. Save the card and it's all in your phone for the day you need it.`,
+      chips: [callChip, emailChip, directionsChip, saveChip],
+    }),
+  },
+  {
+    id: "urgent",
+    triggers: [
+      "emergency",
+      "urgent",
+      "asap",
+      "breakdown",
+      "accident",
+      "unsafe",
+      "dangerous",
+      "danger",
+      "fire",
+      "immediately",
+    ],
+    build: () => ({
+      text: `If it's a true emergency — accident, fire, or smoke — call 911 first. Otherwise call the shop line right now and we'll tell you what's doable today: ${shop.phone.display}.`,
+      chips: [callChip, directionsChip],
     }),
   },
   {
     id: "save-contact",
-    triggers: ["save", "saved", "contact", "contacts", "vcard", "add", "download", "keep", "handy"],
+    triggers: ["save", "saved", "vcard", "add", "download", "keep", "handy"],
     build: () => ({
       text: "Nice — tap below to save the shop card: phone, email, address and hours in one tap. We're in your phone before you ever need a tow.",
       chips: [saveChip, callChip],
@@ -571,9 +678,14 @@ const INTENTS: {
       "safety inspection",
     ],
     build: () => ({
-      text: "We're not a licensed state-inspection station, so we cannot issue the sticker. What we do is fix the things that commonly fail inspection — check-engine lights, exhaust leaks, monitors that haven't reset — and drive the vehicle enough to confirm readiness. Call for the nearest licensed station if you just need the sticker.",
+      text: "The MVC inspection is free, and the closest station is right in Mays Landing — 1477 19th St. We're not a licensed state-inspection station, so we can't issue the sticker, but bring the car in and we can test it before you go: check-engine lights, exhaust leaks, and readiness monitors are what usually fail, and we'll get you ready to pass the first time. No inspection fee here — just our normal diagnostic time, and the sticker itself costs you nothing at the MVC.",
       chips: [
         { label: "Exhaust & emissions details", href: "/services/exhaust-emissions", kind: "link" },
+        {
+          label: "NJ MVC inspection locations",
+          href: "https://www.nj.gov/mvc/locations/inspection.htm",
+          kind: "link",
+        },
         callChip,
       ],
     }),
@@ -681,6 +793,89 @@ const INTENTS: {
     build: () => ({
       text: "We don't run a tow truck ourselves, but we work with local roadside partners and can usually point you to one. If you've already broken down, save our number for the next stop and we'll get you on the schedule.",
       chips: [saveChip, callChip],
+    }),
+  },
+  {
+    id: "help",
+    triggers: ["help", "assist", "assistance", "support", "guide", "options"],
+    build: () => ({
+      text: `I can answer questions about hours, services, directions and pricing — or cut to the chase and talk to a human: ${shop.phone.display}.`,
+      chips: [callChip, { label: "All services", href: "/services", kind: "link" }],
+    }),
+  },
+  /* --- Easter eggs: silly, honest, and always ending in a next step ------- */
+  {
+    id: "joke",
+    triggers: ["joke", "jokes", "funny", "laugh", "humor", "humour", "comedian", "silly"],
+    build: () => ({
+      text: "Why did the tire go to school? To get a little more tread-ucation. ...I'm a tire, not a comedian — the humans at the counter have better material.",
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "love",
+    triggers: ["love", "marry", "date", "girlfriend", "boyfriend", "valentine", "kiss", "cute"],
+    build: () => ({
+      text: "I'm flattered, but I'm a tire — my one true love is proper inflation. If your car needs some love, the shop is one call away.",
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "creator",
+    triggers: [
+      "made you",
+      "built you",
+      "created you",
+      "programmed you",
+      "wrote you",
+      "your maker",
+      "your creator",
+      "who made",
+      "who built",
+    ],
+    build: () => ({
+      text: "Some very patient humans at the shop built me out of JavaScript and shop trivia. I run entirely on your device — no cloud, no servers, just tire.",
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "philosophy",
+    triggers: ["alive", "sentient", "conscious", "real", "philosophy", "meaning of life"],
+    build: () => ({
+      text: "Am I alive? I'm a tire with good PR — I think, therefore I tread. For the deeper questions, the humans at the counter are wiser than me.",
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "games",
+    triggers: ["marco", "ping", "pong", "play", "game", "games", "bored", "boring"],
+    build: () => ({
+      text: "Marco? Polo! Ping? Pong! I roll with it. If you're killing time, the shop arcade has real games — and if the car needs work, you know the number.",
+      chips: [{ label: "Play the arcade", href: "/arcade", kind: "link" }, callChip],
+    }),
+  },
+  {
+    id: "thanks",
+    triggers: ["thanks", "thank", "thx", "ty", "appreciated", "appreciate"],
+    build: () => ({
+      text: "You're welcome — that's what I'm here for. If the car still needs work, you know the number; if I helped, tell a friend.",
+      chips: [callChip, saveChip],
+    }),
+  },
+  {
+    id: "goodbye",
+    triggers: ["bye", "goodbye", "later", "see ya", "seeya", "farewell", "gtg", "cya"],
+    build: () => ({
+      text: "See you on the road! Save the number before you go — future-you, stranded on the parkway, will be grateful.",
+      chips: [saveChip, callChip],
+    }),
+  },
+  {
+    id: "insult",
+    triggers: ["stupid", "dumb", "useless", "suck", "sucks", "terrible", "awful", "idiot", "hate"],
+    build: () => ({
+      text: `Fair enough — I'm a tire doing my best. For a real conversation, the humans at the counter are standing by: ${shop.phone.display}.`,
+      chips: [callChip],
     }),
   },
 ];
@@ -825,6 +1020,17 @@ export type MatcherConfig = {
  */
 const IDENTITY_RE = /\b(who|what)('s| are| is)?\s+(you|this)\b|\byour name\b/i;
 
+/**
+ * More pure-stopword phrases the matcher can never see: "what can you do"
+ * tokenizes to nothing, and "thank you" loses both words to the stopword
+ * list (leaving a stray "much" that would otherwise land on the cost
+ * intent). Catch them up front like IDENTITY_RE and route by intent id.
+ */
+const STOPWORD_ROUTE_RES: { re: RegExp; id: string }[] = [
+  { re: /\bwhat (can|do) (you|u) do\b/i, id: "help" },
+  { re: /^\s*(thank(s| you)?|thx|ty|much appreciated|appreciate it)\b/i, id: "thanks" },
+];
+
 function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved {
   const persona = config.persona ?? TREAD_PERSONA;
   const synonyms = { ...SYNONYMS, ...config.extraSynonyms };
@@ -836,6 +1042,16 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
       matched: { kind: "intent", id: "identity", score: 99, label: "identity" },
       tokens: [],
     };
+  }
+  for (const { re, id } of STOPWORD_ROUTE_RES) {
+    if (re.test(input)) {
+      const intent = INTENTS.find((i) => i.id === id)!;
+      return {
+        answer: intent.build(now, persona),
+        matched: { kind: "intent", id, score: 99, label: id },
+        tokens: [],
+      };
+    }
   }
   const tokens = tokenize(input, synonyms, VOCAB);
   if (tokens.length === 0)
@@ -1098,9 +1314,10 @@ export const quickPrompts = [
   "Are you open?",
   "Can you fix a flat?",
   "Book an appointment",
-  "Save your number",
+  "Talk to a person",
   "Do you do NJ inspection?",
   "Do you take cards?",
+  "Tell me a joke",
 ];
 
 /** Read-only config snapshot for the /agent studio's knowledge-base viewer. */

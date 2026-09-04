@@ -110,7 +110,11 @@ export default function ContactPage() {
                     <dl className="contact-hours-list">
                       <div>
                         <dt>{shop.hours.weekdayLabel}</dt>
-                        <dd>{shop.hours.display.split(", ")[1]}</dd>
+                        <dd>{shop.hours.weekdayHours}</dd>
+                      </div>
+                      <div>
+                        <dt>{shop.hours.fridayLabel}</dt>
+                        <dd>{shop.hours.fridayHours}</dd>
                       </div>
                       <div>
                         <dt>{shop.hours.weekendLabel}</dt>

@@ -733,7 +733,16 @@
   place-items: center;
   border: 18px solid var(--yellow);
   border-radius: 50%;
-  animation: slow-spin 14s linear infinite;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .part-stamp {
+    animation: slow-spin 14s linear infinite;
+  }
+  /* The ring spins under the mark, so the mark counter-rotates in sync —
+     same duration, timing and start — and "OHAT" reads upright forever. */
+  .part-stamp span {
+    animation: slow-spin 14s linear infinite reverse;
+  }
 }
 .part-stamp::before {
   content: "";
@@ -747,32 +756,34 @@
   font-size: 1.45rem;
   font-weight: 900;
 }
+/* The stamp is fluid (an fr column, aspect-ratio 1), so the lug spokes must
+   not pivot on a hardcoded offset — the old calc(50% + 92px) origin only
+   lined up at one size and scattered the lugs inside the ring. Each <i> now
+   spans the stamp plus a symmetric overhang, which puts its own center on
+   the stamp's center (the default transform-origin), and paints only its
+   top 38px: the lug crosses the rim exactly as before, at every size. */
 .part-stamp i {
   position: absolute;
-  width: 18px;
-  height: 38px;
   top: -28px;
-  background: var(--yellow);
+  left: calc(50% - 9px);
+  width: 18px;
+  height: calc(100% + 56px);
+  background: linear-gradient(to bottom, var(--yellow) 38px, transparent 38px);
 }
 .part-stamp i:nth-child(2) {
   transform: rotate(60deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(3) {
   transform: rotate(120deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(4) {
   transform: rotate(180deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(5) {
   transform: rotate(240deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(6) {
   transform: rotate(300deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .ticket-locale {
   display: block;

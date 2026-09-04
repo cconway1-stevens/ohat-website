@@ -69,6 +69,41 @@ export const services: Service[] = [
         answer:
           "This is one of the most common reasons drivers come to us. We start the diagnosis from scratch with system-level testing rather than assuming the previous parts were the answer, and we explain the evidence behind our conclusion.",
       },
+      {
+        question: "What causes a check engine light to come on?",
+        answer:
+          "A loose gas cap, faulty oxygen sensor, catalytic converter issue, misfire, or vacuum leak can all trigger it. We scan the system and tell you exactly what the computer found.",
+      },
+      {
+        question: "Why does my car shake when accelerating?",
+        answer:
+          "A misfire from bad spark plugs, worn coils, leaking injectors, or a vacuum leak can cause shaking. We test each system and find the weak link.",
+      },
+      {
+        question: "Is a new car that shows a check engine light serious?",
+        answer:
+          "It can be — under warranty the fix should be free, but it should be explained with details and parts that can be traded or credited if wrong. We document everything on your invoice.",
+      },
+      {
+        question: "How long does a computer check take?",
+        answer:
+          "A live data check is about 30 minutes, a full module scan and circuit test takes around an hour, we give you written findings you can keep.",
+      },
+      {
+        question: "Can you tell me why something is happening before you fix it?",
+        answer:
+          "That is the whole point of diagnosis — we test across the modules, read sensor data, and explain the evidence behind the fault before recommending any repair.",
+      },
+      {
+        question: "Do modern cars send phone calls about problems?",
+        answer:
+          "Some vehicles do call their warranty factory when a fault is found, we are not that shop and never sell you work to clear a code.",
+      },
+      {
+        question: "What is a freeze frame and does it help?",
+        answer:
+          "Freeze frame captures the exact engine conditions when the light came on — RPM, load, temperature — it is critical evidence that confirms which system failed.",
+      },
     ],
     related: ["battery-electrical", "engine-cooling", "exhaust-emissions"],
   },
@@ -116,6 +151,26 @@ export const services: Service[] = [
         question: "Do hybrid and electric vehicles still need brake service?",
         answer:
           "Yes. Regenerative braking means the friction brakes work less, but that can let calipers and hardware seize from disuse, especially near salt air. Hybrid and EV brakes need periodic inspection and service using the correct electronic-brake procedures, which we perform here.",
+      },
+      {
+        question: "Should I replace brake pads in pairs or all four at once?",
+        answer:
+          "Front and rear should always be done as pairs, but since front pads wear faster, doing all four at the same time is cheaper than doing the front twice on the rear.",
+      },
+      {
+        question: "Which brake fluid is right for my car?",
+        answer:
+          "Any DOT 3, DOT 4, or DOT 5.1 performs well when it satisfies the manufacturer's specification and you follow the recommended flush interval.",
+      },
+      {
+        question: "Can brakes squeal because of moisture in the air?",
+        answer:
+          "Salt air and humidity can cause pads to glaze or rust overnight, especially for a quiet minute before driving kicks the pads. We clean and inspect the hardware.",
+      },
+      {
+        question: "My brakes squealed and I replaced the pads but they still squealed?",
+        answer:
+          "It is missing anti-rattle clips, hardware, or the slide pins are missing lubrication — it takes care to put the complete system back together.",
       },
     ],
     related: ["tires", "wheel-alignment", "suspension-steering"],
@@ -166,6 +221,31 @@ export const services: Service[] = [
         answer:
           "Tires can be 25% low before they look low. The light can also mean a slow leak, a temperature swing, a failing TPMS sensor, or a system that needs a relearn after a rotation. We check actual pressures and sensor data rather than guessing.",
       },
+      {
+        question: "What tires are best for harsh South Jersey winters?",
+        answer:
+          "All-season is fine for typical driving with mild snow, but dedicated winter tires give better grip and stop-and-go control. We recommend all-season for typical driving, winter if you drive hard or tow.",
+      },
+      {
+        question: "Can my 225/60R16 tires be repaired after a nail hit?",
+        answer:
+          "Check where the puncture landed — if it went straight through the tread center and is no more than a quarter-inch, we repair and balance it. Tread-only punctures are our best value.",
+      },
+      {
+        question: "Do all wheel bearings last 100,000 miles or do I need them sooner?",
+        answer:
+          "They are rated for life, but we see failures all the time from potholes, salt corrosion, and poor maintenance. Check them during rotation or brake work if you drive hard or tow.",
+      },
+      {
+        question: "Is tire rotation required at the tire center or can I do it myself?",
+        answer:
+          "It is a quick service that keeps handling predictable and extends tire tread life. We rotate the wheels and balance the car after.",
+      },
+      {
+        question: "Why does my car vibrate at high speed?",
+        answer:
+          "Usually a tire balance issue, warped rotor, or uneven wear from old alignment or suspension. We inspect and fix the symptom as soon as we find it.",
+      },
     ],
     related: ["wheel-alignment", "brake-repair", "suspension-steering"],
   },
@@ -213,6 +293,36 @@ export const services: Service[] = [
         question: "My car pulls to one side. Is that always alignment?",
         answer:
           "No. Tire conicity, mismatched pressures, a dragging brake caliper, and road crown can all cause pull. Part of our alignment process is separating those causes, which is why the inspection comes first.",
+      },
+      {
+        question: "Can I ignore a crooked steering wheel?",
+        answer:
+          "Don't — a crooked wheel indicates the wheels are toe'd out, which causes uneven tire wear. An alignment fixes it and preserves your new-rubber investment.",
+      },
+      {
+        question: "Do South Jersey potholes really hurt alignment?",
+        answer:
+          "Yes — impact damage from potholes knocks the suspension out of spec. Even if the car drives fine, the inspection finds what is worn before it fails.",
+      },
+      {
+        question: "Is four-wheel alignment worth it over front only?",
+        answer:
+          "Yes — most cars have noticeable rear play, especially after hard winters or salt corrosion. Four-wheel alignment is more accurate and keeps your handling true.",
+      },
+      {
+        question: "How long does an alignment take and do I need it done on-site?",
+        answer:
+          "The alignment is usually done while you wait — about 30 minutes. The car stays put and the tech adjusts the wheels to the proper specs.",
+      },
+      {
+        question: "Can I do my own alignment or should I come in?",
+        answer:
+          "Don't — alignment requires dealer-grade equipment to measure steer angles and apply torque to bolt assemblies. We also inspect the linkage before adjustment.",
+      },
+      {
+        question: "Why did my new tires wear fast after one year?",
+        answer:
+          "Most likely your alignment drifted from a pothole impact or worn suspension components. We fix the root cause so your next set lasts.",
       },
     ],
     related: ["tires", "suspension-steering", "brake-repair"],
@@ -262,6 +372,31 @@ export const services: Service[] = [
         question: "What maintenance do hybrids and EVs still need?",
         answer:
           "Hybrids need normal engine maintenance plus attention to their cooling and 12-volt systems. EVs skip oil changes but still need tire rotations, brake inspections, cabin filters, coolant service for the battery and electronics, and suspension checks—their weight is hard on tires and chassis parts.",
+      },
+      {
+        question: "Why does my oil look black after just 2000 miles?",
+        answer:
+          "Normal — oil picks up combustion by-products and fuel dilution faster on stop-and-go driving or in hot climates. Synthetic keeps going longer than conventional.",
+      },
+      {
+        question: "Do I need high-mileage oil past 75 000 miles?",
+        answer:
+          "Not strictly necessary if you service on schedule, but high-mileage blends have additives for aging seals and some engines benefit from the extra protection. Synthetic is not required.",
+      },
+      {
+        question: "Can I drain and fill at home or should I come in?",
+        answer:
+          "Don't — old oil stays trapped, new oil doesn't circulate through filter, and you risk adding wrong fluids. Our machine flushes, installs a new filter, and oils the engine thoroughly.",
+      },
+      {
+        question: "Do I need fully synthetic oil or is a blend ok?",
+        answer:
+          "Follow the manufacturer's spec first — by volume, fully synthetic for most modern engines. A blend is fine but synthetic lasts longer.",
+      },
+      {
+        question: "Does South Jersey heat ruin engine oil faster?",
+        answer:
+          "Yes — heat breaks down oil and its additives, especially with the short-trip driving common in coastal areas. We recommend synthetic for your climate.",
       },
     ],
     related: ["tires", "engine-cooling", "battery-electrical"],
@@ -706,7 +841,7 @@ export const services: Service[] = [
       {
         question: "Do you do the NJ state safety or emissions inspection?",
         answer:
-          "We are not a licensed state-inspection station, so we cannot issue the sticker. What we do is fix the things that commonly fail inspection—an illuminated check-engine light, an exhaust leak ahead of the O2 sensor, a monitor that has not reset—and then drive the vehicle enough to confirm the readiness monitors are set, so the inspection lane is a one-stop visit. Call for the nearest licensed station if you just need the sticker.",
+          "We are not a licensed state-inspection station, so we cannot issue the sticker. What we do is fix the things that commonly fail inspection—an illuminated check-engine light, an exhaust leak ahead of the O2 sensor, a monitor that has not reset—and then drive the vehicle enough to confirm the readiness monitors are set, so the inspection lane is a one-stop visit. The MVC inspection itself is free; the closest station is in Mays Landing at 1477 19th St, and the MVC lists every location on its website.",
       },
     ],
     related: ["advanced-diagnostics", "engine-cooling", "oil-maintenance"],

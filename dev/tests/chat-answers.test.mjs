@@ -172,6 +172,29 @@ test("routes state inspection questions to the state-inspection intent", () => {
   assert.ok(chipHrefs(answer).some((href) => href.includes("/services/exhaust-emissions")));
 });
 
+test("inspection answer points at the free MVC station with the Mays Landing address", () => {
+  const answer = answerQuestion("where do I get my car inspected?", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  // The MVC's own test is free — say so, and give the nearby station.
+  assert.match(answer.text, /MVC inspection is free/i);
+  assert.match(answer.text, /Mays Landing/i);
+  assert.match(answer.text, /1477 19th St/i);
+  assert.ok(
+    chipHrefs(answer).includes("https://www.nj.gov/mvc/locations/inspection.htm"),
+    "should link the NJ MVC inspection locations page",
+  );
+});
+
+test("inspection answer is honest about charging diagnostic time, never a free check", () => {
+  const answer = answerQuestion("do you do inspections?", TUESDAY_OPEN);
+  // The shop always charges its diagnostic time — the copy must never
+  // promise a free inspection prep or a no-charge check.
+  assert.doesNotMatch(answer.text, /free inspection prep/i);
+  assert.doesNotMatch(answer.text, /at no charge/i);
+  assert.match(answer.text, /diagnostic time/i);
+  assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
+});
+
 test("routes payment questions to the payment intent", () => {
   const answer = answerQuestion("do you take credit cards?", TUESDAY_OPEN);
   assert.notEqual(answer.fallback, true);
@@ -321,5 +344,141 @@ test("STUDIO_CONFIG exposes the new Spanish synonym table and intents", () => {
     "service-area",
   ]) {
     assert.ok(intentIds.includes(id), `intents should include ${id}`);
+  }
+});
+
+/* --- Lead routing: urgent, contact, phone, help --------------------------- */
+
+test("routes a breakdown to the urgent intent with a call-first answer", () => {
+  const answer = answerQuestion("I broke down on the parkway, what do I do?", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /call 911 first/i);
+  assert.match(answer.text, /\(609\) 241-1546/);
+  assert.equal(answer.chips[0].kind, "call");
+});
+
+test("routes 'how do I contact you' to the contact intent with every channel", () => {
+  const answer = answerQuestion("how do I contact you?", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  const kinds = answer.chips.map((chip) => chip.kind);
+  assert.ok(kinds.includes("call"), "contact answer includes a call chip");
+  assert.ok(kinds.includes("email"), "contact answer includes an email chip");
+  assert.ok(kinds.includes("directions"), "contact answer includes a directions chip");
+  assert.ok(kinds.includes("download"), "contact answer includes the save-card chip");
+});
+
+test("routes 'talk to a real person' to the phone intent, person-first", () => {
+  const answer = answerQuestion("can I talk to a real person?", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /a person at the counter picks up/i);
+  assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
+});
+
+test("answers 'what can you do' with the help intent instead of shrugging", () => {
+  const answer = answerQuestion("what can you do", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
+});
+
+test("greets 'hi tread' with the identity answer, not a fallback", () => {
+  const answer = answerQuestion("hi tread", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /Tread, the shop tire/);
+});
+
+/* --- Easter eggs: silly, honest, always ending in a next step ------------- */
+
+test("tells a joke when asked, and still offers the call chip", () => {
+  const answer = answerQuestion("tell me a joke", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /tread-ucation/i);
+  assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
+});
+
+test("plays marco polo and links the arcade", () => {
+  const answer = answerQuestion("marco", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /polo/i);
+  assert.ok(chipHrefs(answer).includes("/arcade"));
+});
+
+test("answers a love note honestly and routes to the shop", () => {
+  const answer = answerQuestion("i love you tread", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /I'm a tire/i);
+  assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
+});
+
+test("answers 'who made you' honestly about running on-device", () => {
+  const answer = answerQuestion("who made you?", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /entirely on your device/i);
+});
+
+test("thanks and goodbye stay polite and offer next steps", () => {
+  const thanks = answerQuestion("thank you so much", TUESDAY_OPEN);
+  assert.notEqual(thanks.fallback, true);
+  assert.match(thanks.text, /You're welcome/i);
+  const bye = answerQuestion("bye", TUESDAY_OPEN);
+  assert.notEqual(bye.fallback, true);
+  assert.ok(chipHrefs(bye).includes("/contact-card.vcf"));
+});
+
+test("takes an insult on the chin and hands over to the humans", () => {
+  const answer = answerQuestion("you are useless", TUESDAY_OPEN);
+  assert.notEqual(answer.fallback, true);
+  assert.match(answer.text, /humans at the counter/i);
+  assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
+});
+
+/* --- Expanded synonyms route to the right service ------------------------- */
+
+test("routes brake-hardware words to brake repair", () => {
+  for (const q of ["my brake pads are worn", "I think my rotors are warped"]) {
+    const answer = answerQuestion(q, TUESDAY_OPEN);
+    assert.equal(answer.serviceSlug, "brake-repair", `${q} should route to brake-repair`);
+  }
+});
+
+test("routes cooling words to engine cooling", () => {
+  const answer = answerQuestion("i have a coolant leak", TUESDAY_OPEN);
+  assert.equal(answer.serviceSlug, "engine-cooling");
+});
+
+test("routes suspension words to suspension-steering", () => {
+  const answer = answerQuestion("my shocks are shot", TUESDAY_OPEN);
+  assert.equal(answer.serviceSlug, "suspension-steering");
+});
+
+test("routes transmission slang to transmission-driveline", () => {
+  const answer = answerQuestion("my trans is slipping", TUESDAY_OPEN);
+  assert.equal(answer.serviceSlug, "transmission-driveline");
+});
+
+test("routes electrical words to battery-electrical", () => {
+  const answer = answerQuestion("i think my alternator is dead", TUESDAY_OPEN);
+  assert.equal(answer.serviceSlug, "battery-electrical");
+});
+
+/* --- Every production answer carries a lead chip --------------------------- */
+
+test("every intent answer includes a call or email chip", () => {
+  const probes = [
+    "are you open",
+    "where are you located",
+    "what is your phone number",
+    "how do I contact you",
+    "how much does it cost",
+    "do you take walk-ins",
+    "do you offer towing",
+    "help",
+    "tell me a joke",
+    "thank you",
+    "bye",
+  ];
+  for (const probe of probes) {
+    const answer = answerQuestion(probe, TUESDAY_OPEN);
+    const hasLead = answer.chips.some((chip) => chip.kind === "call" || chip.kind === "email");
+    assert.ok(hasLead, `"${probe}" should include a call or email chip`);
   }
 });
