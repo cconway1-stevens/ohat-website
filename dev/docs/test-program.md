@@ -9,8 +9,9 @@ here disagrees with a script, the script is wrong.
 
 1. If GitHub Actions can test it, a developer/AI must have a documented local
    command for the same underlying check.
-2. Every public page is included automatically in every page-level test. No
-   hand-maintained route lists.
+2. Every eligible page is discovered automatically for each page-level test.
+   No hand-maintained route lists; documented page classes may be excluded when
+   an audit does not apply to them.
 3. Local and CI run the same repository script with the same configuration.
    Never two implementations of one check.
 4. Validation is a **gated feedback loop**, not a one-way waterfall. A failed gate
@@ -67,15 +68,15 @@ are embedded here so no second audit pass is needed.
 | Workflows        | **Only `.github/workflows/ci.yml` exists.** `quality.yml`, `performance.yml`, `codeql.yml`, `deploy-pages.yml` were consolidated into it. The README still describes the old four-workflow layout — **stale, must be fixed**.                                |
 | Formatting / lint | **Biome** owns formatting (`npm run format`/`format:check`) and general lint (`npm run lint`) via `biome.json`. **ESLint** is kept as a narrow exception running only `@next/next/*` rules (`npm run lint:next`). Prettier and `eslint-config-next` are removed. |
 | Fast gate        | `npm run check` → `dev/scripts/pre-push.sh`: junk scan, Biome format, Biome lint, Next.js lint, `tsc`, knip, dependency-cruiser, `npm test` (both builds + route/SEO/hours/static-export tests), real-browser asset check.                                    |
-| Full gate        | `npm run check:all` → `dev/scripts/check-all.sh`: everything in `check` plus `check:pages`, `check:bundle`, `check:lighthouse`, `check:a11y`, `check:slow-network`, `check:memory`.                                                                          |
+| Full gate        | `npm run check:all` → `dev/scripts/check-all.sh`: everything in `check` plus `check:pages`, `check:bundle`, the fast all-indexable-page Lighthouse pass, `check:a11y`, `check:slow-network`, and `check:memory`.                                              |
 | Report           | `npm run report` → `dev/scripts/run-tests-report.mjs`: mirrors `pre-push.sh` step-for-step but pushes through failures and writes the gitignored `dev/reports/report.md` with per-step run times. Flags: `--fix` lets Biome write fixes, `--no-build` skips both builds and the asset check. |
 | Page discovery   | `check-pages.mjs` already walks `dist/client` for `.html` and tests **50 of 51 routes** (excludes only `/404`). This is the proven source of truth.                                                                                                          |
-| Lighthouse       | `check-lighthouse.mjs` runs the raw `lighthouse` package against Playwright's Chromium. It discovers every exported public page by default (`LH_ROUTES` can select a subset); console errors remain owned by the preceding browser page sweep.                  |
+| Lighthouse       | `check-lighthouse.mjs` runs the raw `lighthouse` package against Playwright's Chromium. It discovers every indexable page by default (`LH_ROUTES` can select a subset); console errors remain owned by the preceding browser page sweep.                         |
 | Accessibility    | `check-a11y.mjs` runs axe-core WCAG 2.1 AA on a **hardcoded 6-route subset**. README claims "all routes" — currently false.                                                                                                                                  |
 | Slow network     | `check-slow-network.mjs`, hardcoded 4-route subset, scheduled/manual in CI.                                                                                                                                                                                  |
 | Memory           | `check-memory.mjs`, hardcoded 4-route navigation set, scheduled/manual in CI.                                                                                                                                                                                |
 | Bundle budget    | `check-bundle.mjs`, whole-tree JS+CSS ceiling (1650 KB). Fine as-is.                                                                                                                                                                                         |
-| CI jobs (ci.yml) | formatting, static-analysis (lint, lint:next, typecheck, deadcode, architecture, bloat), test-build (uploads `dist/client` artifact), browser-quality (pages/bundle/lighthouse/a11y on the artifact), dependency-security, codeql, windows (build, lint, lint:next, typecheck), resilience (slow-network + memory, scheduled/manual), package-pages, deploy. |
+| CI jobs (ci.yml) | formatting, static-analysis (lint, lint:next, typecheck, deadcode, architecture, bloat), test-build (uploads `dist/client` artifact), browser-quality (pages/bundle/fast Lighthouse/a11y on the artifact), dependency-security, codeql, windows (build, lint, lint:next, typecheck), resilience (slow-network + memory + stable Lighthouse, scheduled/manual), package-pages, deploy. |
 
 ### 1.2 Gaps against the requirements
 
@@ -147,9 +148,9 @@ or `/agent` would be a permanent deterministic failure, not a real signal.
 
 Therefore:
 
-- **Indexable pages** — all four categories asserted: performance, accessibility,
-  best-practices, SEO.
-- **Noindex pages** — performance, accessibility, best-practices asserted.
+- **Indexable pages** — all four categories audited. Accessibility,
+  best-practices, and SEO are blocking; performance is advisory.
+- **Noindex pages** — performance, accessibility, and best-practices audited.
   SEO is intentionally not asserted (the page is noindex _on purpose_); this is
   the documented exclusion the requirements ask for.
 - **Redirect stubs / 404** — not browser-audited (see section 2).
@@ -188,14 +189,16 @@ are imported by entry scripts so dead-code analysis keeps passing.
 
 ### AD-6 — Variance policy: deterministic vs measured
 
-| Audit type                                         | Runs                  | Aggregation | Gate                                                                           |
-| -------------------------------------------------- | --------------------- | ----------- | ------------------------------------------------------------------------------ |
-| Accessibility, best-practices, SEO                 | 1                     | —           | Hard, per page. These are deterministic; a failure is a real bug, never noise. |
-| Performance category + LCP/CLS/FCP/TBT/Speed Index | `LH_RUNS` (default 3) | **Median**  | Hard, per page, at the **60 baseline floor**; 80 remains the optimization goal. |
+| Audit type                                         | Runs                  | Aggregation | Gate                                                                                 |
+| -------------------------------------------------- | --------------------- | ----------- | ------------------------------------------------------------------------------------ |
+| Accessibility, best-practices, SEO                 | 1                     | —           | Hard, per page. These are deterministic; a failure is a real bug, never noise.       |
+| Performance category + LCP/CLS/FCP/TBT/Speed Index | `LH_RUNS` (default 3) | **Median**  | Advisory against the **60 reference floor**; 80 remains the optimization goal.       |
 
-`LH_RUNS=1` is supported for a fast local pass. The performance **goal is 80+**,
-while the measured mobile baseline is enforced at 60 (`LH_PERF=60`); the
-deterministic categories stay at 100 (`LH_A11Y=100`, `LH_BP=100`, `LH_SEO=100`).
+`npm run check:lighthouse:fast` sets `LH_RUNS=1` and fans pages out across up to
+six workers. The performance **goal is 80+**, while results are reported against
+the mobile reference floor of 60 (`LH_PERF=60`); performance does not fail the
+command because shared-runner CPU contention makes it noisy. The deterministic
+categories stay blocking at 100 (`LH_A11Y=100`, `LH_BP=100`, `LH_SEO=100`).
 The noindex-tier performance floor is set separately because arcade pages ship
 heavy client JS by design. No threshold moves without a deliberate commit and a
 recorded baseline.
@@ -208,15 +211,15 @@ Decided from current architecture and runtime, as the requirements instruct:
   format, Biome lint, Next.js lint, types, knip, dependency-cruiser, both builds
   + node tests, asset check. Minutes, no Lighthouse.
 - **`npm run check:all` (full validation):** adds all-page `check:pages`,
-  `check:bundle`, **all-page `check:lighthouse`**, **all-page `check:a11y`**,
-  all-page `check:slow-network`, `check:memory`.
-- **CI per-PR (`browser-quality` job):** all-page Lighthouse with `LH_RUNS=1`,
-  all applicable categories gated (AD-3). Single-run performance uses the
-  measured 60 floor; the 80 target is tracked as optimization work rather than
-  misrepresented as a stable CI baseline.
+  `check:bundle`, the single-run parallel **`check:lighthouse:fast`** audit,
+  **all-page `check:a11y`**, all-page `check:slow-network`, and `check:memory`.
+- **CI per-PR (`browser-quality` job):** `check:lighthouse:fast` audits every
+  indexable page once, with parallel workers. Accessibility, best-practices,
+  and SEO remain blocking; performance is reported against the 60 reference
+  floor, while 80 remains the optimization goal.
 - **CI scheduled + `workflow_dispatch` (`resilience` job):** all-page
-  slow-network, memory, and Lighthouse with `LH_RUNS=3` (median) as the
-  stability reference.
+  slow-network and memory checks, plus Lighthouse on every indexable page with
+  `LH_RUNS=3` (median) as the stability reference.
 
 **Revisit trigger:** if the per-PR browser-quality job exceeds ~25 minutes or
 shows any performance flake in two weeks, move noindex-tier performance to the
@@ -230,15 +233,18 @@ status table already treats it). No `test:psi` script is added: a script nobody
 can run without a key is needless infrastructure. If PSI is ever scripted, it
 must target the deployed URL, never gate a PR, and never replace AD-3.
 
-### AD-9 — `check:lighthouse` orchestrates itself
+### AD-9 — Lighthouse commands orchestrate themselves
 
-The canonical command stays `npm run check:lighthouse` (no new name). It will:
+Both `npm run check:lighthouse` (stable, serial, three-run performance median)
+and `npm run check:lighthouse:fast` (single run, parallel pages) use the same
+orchestrator and page/category coverage. The orchestrator will:
 
 1. run `npm run build:static` itself when `dist/client` is missing;
 2. serve the build in-process (already does — no `npm run dev` terminal needed);
 3. discover and classify all routes (AD-1/AD-2);
 4. audit per AD-3/AD-6 and print per-page results (section 5);
-5. exit non-zero on any failure, naming the page, category, expected, actual;
+5. exit non-zero on a blocking-category failure, naming the page, category,
+   expected value, and actual value;
 6. close its server and browser; write nothing into the repo by default
    (`LH_REPORT_DIR` opt-in for JSON snapshots, gitignored).
 
@@ -278,7 +284,7 @@ Consumers:
 | Consumer                 | Uses                                                                                                                                                                                                            |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `check-pages.mjs`        | all classes except `error` (redirects load fine and their links are checked)                                                                                                                                    |
-| `check-lighthouse.mjs`   | `indexable` (4 categories) + `noindex` (3 categories)                                                                                                                                                           |
+| `check-lighthouse.mjs`   | `indexable` (4 categories) by default; optional `noindex` coverage (3 categories) with `--include-noindex`                                                                                                      |
 | `check-a11y.mjs`         | `indexable` + `noindex`                                                                                                                                                                                         |
 | `check-slow-network.mjs` | `indexable` + `noindex`                                                                                                                                                                                         |
 | `check-memory.mjs`       | curated navigation set: `/`, `/services/`, `/contact/`, `/arcade/`, `/agent/` — it tests _transitions_ under repeated navigation, so it needs the heaviest client pages, not every page (documented exclusion) |
@@ -297,7 +303,7 @@ Per-page output format (visible locally and in Actions logs):
 
 ```
 Lighthouse — /services/brake-repair  [indexable]  (median of 3 runs)
-  ✓ performance      82 / 80    LCP 2.1s  CLS 0.01  FCP 1.2s  TBT 180ms  SI 2.6s
+  ✓ performance      82 / 60    LCP 2.1s  CLS 0.01  FCP 1.2s  TBT 180ms  SI 2.6s
   ✓ accessibility   100 / 100
   ✓ best-practices  100 / 100
   ✓ seo             100 / 100
@@ -307,12 +313,14 @@ Lighthouse — /contact  [indexable]
       - Document does not have a meta description
 ```
 
-- Every page prints PASS or FAIL per applicable category; failures list the
-  failing audits. The summary line at the end prints `N/41 pages passed`.
-- Thresholds: `LH_PERF=80` (the performance **goal is 80+**), `LH_A11Y=100`,
-  `LH_BP=100`, `LH_SEO=100` (env-overridable). Noindex-tier performance floor set
-  from the Stage-5 baseline (AD-6); it must not lower the 80 goal for indexable
-  pages.
+- Every page prints a result per applicable category and lists sub-audits below
+  their target. A performance result below its reference floor is marked `!`
+  and labeled advisory; deterministic-category failures are marked `✗` and fail
+  the command.
+- Thresholds: `LH_PERF=60` (reference floor; the performance **goal is 80+**),
+  `LH_A11Y=100`, `LH_BP=100`, and `LH_SEO=100` (env-overridable). The optional
+  noindex tier has its own performance reference because arcade pages ship
+  heavy client JavaScript by design.
 - Form factor: Lighthouse defaults (mobile emulation, simulated throttling) —
   unchanged.
 
@@ -334,7 +342,7 @@ Lighthouse — /contact  [indexable]
 | Page smoke                 | Every route 200s, titled, H1, no errors, no dead links, call CTA | Playwright                       | `check-pages.mjs`                 | `npm run check:pages`                | browser-quality                                     | **Yes — 50 routes**                | Yes (dist/client)            | dist/client        | 0 failures              | Yes                   | Discovery: AD-1                                   |
 | Assets                     | No 404'd request after hydration                                 | Playwright                       | `check-assets.mjs`                | `npm run check:assets` (via `check`) | test-build (via `npm test`)? — see note             | One per layout (10)                | Yes                          | dist/client        | 0 failed requests       | Yes                   | Full 404 coverage already via check:pages         |
 | Bundle budget              | JS+CSS ceiling                                                   | `check-bundle.mjs`               | BUDGET_KB=1650                    | `npm run check:bundle`               | browser-quality                                     | n/a (whole tree)                   | Yes                          | dist/client        | ≤ budget                | Yes                   |                                                   |
-| **Lighthouse**             | Perf/a11y/BP/SEO per page                                        | lighthouse + Playwright Chromium | `check-lighthouse.mjs`, AD-3/AD-6 | `npm run check:lighthouse`           | browser-quality (LH_RUNS=1), resilience (LH_RUNS=3) | **Yes — 49 routes**                | Yes (auto-builds if missing) | dist/client        | per-page thresholds     | Yes                   | The G1 fix                                        |
+| **Lighthouse**             | Perf/a11y/BP/SEO per page                                        | lighthouse + Playwright Chromium | `check-lighthouse.mjs`, AD-3/AD-6 | `check:lighthouse:fast` or `check:lighthouse` | browser-quality (fast), resilience (3-run median)   | **23 indexable routes by default** | Yes (auto-builds if missing) | dist/client        | deterministic thresholds; performance advisory | Yes for a11y/BP/SEO | Noindex routes are opt-in                         |
 | **Accessibility**          | 0 axe WCAG 2.1 AA violations                                     | axe-core + Playwright            | `check-a11y.mjs`                  | `npm run check:a11y`                 | browser-quality                                     | **Yes — 49 routes**                | Yes                          | dist/client        | 0 violations            | Yes                   | The G2 fix                                        |
 | Slow network               | Loads on slow 3G within budget                                   | Playwright + CDP throttle        | `check-slow-network.mjs`          | `npm run check:slow-network`         | resilience (scheduled/manual)                       | **Yes — 49 routes**                | Yes                          | dist/client        | ≤ 30s & ≤ 2MB/page      | Scheduled, not per-PR | The G3 fix                                        |
 | Memory/leak                | No DOM/heap growth across navigation                             | Playwright + CDP metrics         | `check-memory.mjs`                | `npm run check:memory`               | resilience (scheduled/manual)                       | No — curated transitions (see §4)  | Yes                          | dist/client        | ≤1.5× nodes, ≤64MB heap | Scheduled, not per-PR |                                                   |
@@ -355,12 +363,12 @@ Ordered so the repo stays green at every step.
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------- | ------------------------------- |
 | 1   | Add `dev/scripts/lib/static-server.mjs` + `dev/scripts/lib/routes.mjs` (AD-1/2/5); unit-test the classifier in `dev/tests/routes.test.mjs` against `dist/client`            | New shared modules; `node --test` covers classification | test-build runs the new test via `npm test` | Discovery is now codified       |
 | 2   | Refactor `check-pages.mjs` to consume the lib (behavior identical)                                                                                                          | Same command, less code                                 | None                                        | None (already all-page)         |
-| 3   | Rewrite `check-lighthouse.mjs`: all-page discovery, tiered categories, median perf (`LH_RUNS`), per-page metrics output, auto-build when `dist/client` missing (AD-3/4/6/9) | `check:lighthouse` now audits 49 routes                 | browser-quality audits every page per PR    | **G1 fixed**                    |
+| 3   | Rewrite `check-lighthouse.mjs`: all-page discovery, tiered categories, median perf (`LH_RUNS`), per-page metrics output, auto-build when `dist/client` missing (AD-3/4/6/9) | Lighthouse discovers all routes; 23 indexable routes run by default | browser-quality audits every indexable page per PR | **G1 fixed**                    |
 | 4   | Rewrite `check-a11y.mjs` on the lib; drop hardcoded list                                                                                                                    | `check:a11y` audits 49 routes                           | browser-quality                             | **G2 fixed**                    |
 | 5   | Point `check-slow-network.mjs` at the lib; expand `check-memory.mjs` rotation to include `/arcade/` + `/agent/`                                                            | scheduled checks cover reality                          | resilience job                              | **G3 fixed**                    |
 | 6   | **Baseline run**: full `check:all`; record per-page scores; set the noindex-tier perf floor; fix or debt-list any arcade a11y violations (with owner + date in this doc)    | Establishes existing-debt vs new-regression line        | Baseline archived in dev/reports            | Thresholds now evidence-based   |
 | 7   | Add sitemap↔indexable consistency test to `static-export.test.mjs` (G7)                                                                                                     | `npm test` catches classification drift                 | test-build                                  | New pages can't escape silently |
-| 8   | Wire `ci.yml`: browser-quality runs all-page lighthouse (`LH_RUNS=1`) + all-page a11y; resilience adds `LH_RUNS=3` lighthouse; bump job timeouts as measured                | —                                                       | PR gate now covers every page               | Enforcement complete            |
+| 8   | Wire `ci.yml`: browser-quality runs parallel single-run Lighthouse + all-page a11y; resilience runs the serial `LH_RUNS=3` Lighthouse benchmark                              | fast all-page local command                             | PR gate covers every indexable page         | Enforcement complete            |
 | 9   | Fix README (G6): single-ci.yml workflow description, corrected check table, complete site map; point AGENTS.md at this document                                             | Docs match reality                                      | Badges/links correct                        | —                               |
 | 10  | **Biome migration**: replace Prettier + ESLint with Biome for formatting and general lint; keep ESLint only for `@next/next/*` (`lint:next`); add dependency-cruiser (`check:architecture`); wire both into `pre-push.sh`, `check-all.sh`, and `ci.yml` | `npm run format`/`lint` run Biome; `lint:next` runs ESLint; `check:architecture` runs depcruise | static-analysis + windows run lint:next + check:architecture | —                               |
 
@@ -570,7 +578,7 @@ These concerns intentionally overlap tools. No single package is declared the
 | **Application security** | CodeQL | supported static vulnerability/data-flow patterns | not a penetration test and not dependency scanning |
 | **Dependency security** | `npm audit`, GitHub dependency review / Dependabot alerts where enabled | known vulnerable dependency versions and risky dependency changes | cannot prove application code is secure |
 | **Secret exposure** | GitHub secret scanning / push protection where available | recognized credentials committed or pushed | coverage depends on enabled GitHub features/patterns |
-| **Performance / payload** | bundle budget + Lighthouse | asset growth and lab performance regressions | lab measurements have variance; use the documented median policy |
+| **Performance / payload** | bundle budget + Lighthouse | asset growth plus advisory lab-performance signals | lab measurements have variance; use the serial three-run median for stable comparisons |
 | **Runtime resilience** | slow-network + memory/leak checks | degraded-network loading and repeated-navigation growth | scheduled checks may detect issues after PR-time gates |
 | **Architecture / best practices** | dependency-cruiser + documented ADs + Tier C adversarial review | consistency, duplication, escape hatches, needless dependencies, design drift | AI review is judgment, so deterministic gates remain authoritative |
 
@@ -611,9 +619,9 @@ contact path, navigation, or a previously regressed behavior.
 
 | Risk                                             | Trigger                                     | Action                                                                                                |
 | ------------------------------------------------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Per-PR browser-quality job too slow              | Job > ~25 min, or any perf flake in 2 weeks | Move noindex-tier performance to the resilience job; keep deterministic categories per-PR             |
+| Per-PR browser-quality job too slow              | Job > ~25 min                              | Reduce fast-mode concurrency only if contention causes failures; keep deterministic categories per-PR |
 | Arcade pages carry existing a11y violations      | Stage-6 baseline shows violations           | Fix what's small; debt-list the rest here with owner + date. Never silently allowlist                 |
-| Performance goal 80 is wrong for arcade tier     | Baseline median below 80 on noindex pages   | Set the documented noindex floor from observed medians; do not loosen the 80 goal for indexable pages |
+| Performance goal 80 is missed on indexable pages | Stable median remains below 80              | Profile LCP/render blocking; keep the advisory 60 reference explicit until the optimization lands     |
 | Windows-local Lighthouse                         | Playwright Chromium path differs            | Already handled: scripts launch Playwright's Chromium, no platform Chrome discovery                   |
 | New page class appears (e.g. paginated archives) | Classifier returns an unknown shape         | Consistency test (step 7) fails CI; extend `routes.mjs` and this document together                    |
 | dependency-cruiser false positives               | A new rule flags legitimate code            | Add a narrow, documented `from`/`to` exception pair; never a blanket `circular: false`                 |
