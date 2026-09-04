@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       run_resilience:
-        description: Run the slow-network and memory checks
+        description: Run slow-network, memory, and stable Lighthouse checks
         type: boolean
         default: false
       deploy:
@@ -111,10 +111,8 @@ jobs:
           path: dist/client
       - run: npm run check:pages
       - run: npm run check:bundle
-      - name: Lighthouse (indexable pages, median of 3 runs per page)
-        run: npm run check:lighthouse
-        env:
-          LH_RUNS: 3
+      - name: Lighthouse (all indexable pages, single run in parallel)
+        run: npm run check:lighthouse:fast
       - run: npm run check:a11y
 
   dependency-security:
@@ -181,7 +179,7 @@ jobs:
       - run: npm run typecheck
 
   resilience:
-    name: Slow network and memory
+    name: Resilience and stable performance
     # Intentionally scheduled/manual-only, not per-PR: both checks need a full
     # static build plus Chromium and add several minutes to every run. They are
     # deterministic regressions but slow; run them on demand with

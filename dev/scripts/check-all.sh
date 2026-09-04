@@ -10,7 +10,7 @@
 #   1. Static (no build): format, lint, next lint, typecheck, dead code,
 #      architecture, bloat.
 #   2. Build + tests: both production builds and the route/SEO/hours tests.
-#   3. Browser audits (need dist/client + Chromium): bundle, Lighthouse,
+#   3. Browser audits (need dist/client + Chromium): bundle, fast Lighthouse,
 #      accessibility, slow-bandwidth, memory.
 set -uo pipefail
 
@@ -43,7 +43,7 @@ step "tests (both builds)" npm test
 # 3. Browser audits against the static export.
 step "page smoke test" npm run check:pages
 step "bundle budget" npm run check:bundle
-step "lighthouse" npm run check:lighthouse
+step "lighthouse (fast all-indexable-page pass)" npm run check:lighthouse:fast
 step "accessibility" npm run check:a11y
 step "slow bandwidth" npm run check:slow-network
 step "memory" npm run check:memory

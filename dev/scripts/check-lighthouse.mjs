@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Lighthouse audit: runs Google's Lighthouse against the built static site and
- * fails when any category drops below its threshold.
+ * fails when a deterministic category drops below its threshold. Performance
+ * is reported as an advisory lab signal because shared-runner results vary.
  *
  * This is the same engine behind PageSpeed Insights. It needs a Chromium
  * binary; it reuses the Playwright-installed Chromium (the same one
@@ -175,7 +176,17 @@ if (CONCURRENCY > 1 && !process.env.LH_WORKER) {
   };
 
   const codes = await Promise.all(nonEmptyShards.map((shard, index) => runWorker(shard, index)));
-  process.exit(codes.some((code) => code !== 0) ? 1 : 0);
+  const failedWorkers = codes.filter((code) => code !== 0).length;
+  if (failedWorkers > 0) {
+    console.error(
+      `\nLighthouse fast audit failed: ${failedWorkers} of ${nonEmptyShards.length} workers reported a blocking failure.`,
+    );
+    process.exit(1);
+  }
+  console.log(
+    `\nLighthouse fast audit passed: blocking categories met their thresholds on ${routes.length} page(s).`,
+  );
+  process.exit(0);
 }
 
 const server = createStaticServer(CLIENT);
@@ -280,12 +291,15 @@ for (const page of pages) {
     // or it isn't) does not, and a shared-runner noise dip has no business
     // blocking a merge. Accessibility, best-practices, and SEO stay
     // blocking — those are real regressions, not noise, when they drop.
-    if (!pass && cat !== "performance") failed = true;
+    const blocking = cat !== "performance";
+    if (!pass && blocking) failed = true;
     const metricLine =
       cat === "performance"
         ? `    ${METRICS.map((id) => `${id === "largest-contentful-paint" ? "LCP" : id === "cumulative-layout-shift" ? "CLS" : id === "first-contentful-paint" ? "FCP" : id === "total-blocking-time" ? "TBT" : "SI"} ${formatMetric(id, metrics[id])}`).join("  ")}`
         : "";
-    console.log(`  ${pass ? "✓" : "✗"} ${cat.padEnd(16)} ${score} / ${threshold}${metricLine}`);
+    const marker = pass ? "✓" : blocking ? "✗" : "!";
+    const advisory = !pass && !blocking ? "  (advisory)" : "";
+    console.log(`  ${marker} ${cat.padEnd(16)} ${score} / ${threshold}${advisory}${metricLine}`);
     if (!pass) {
       const report = reports[0];
       for (const auditRef of report.categories[cat].auditRefs ?? []) {
@@ -310,9 +324,15 @@ await browser.close();
 server.close();
 
 if (failed) {
-  console.error(
-    `\nLighthouse audit failed: ${audited} page(s) audited, one or more categories below threshold.`,
-  );
+  if (!process.env.LH_WORKER) {
+    console.error(
+      `\nLighthouse audit failed: ${audited} page(s) audited, one or more blocking categories below threshold.`,
+    );
+  }
   process.exit(1);
 }
-console.log(`\nLighthouse audit passed: ${audited} page(s) at or above threshold.`);
+if (!process.env.LH_WORKER) {
+  console.log(
+    `\nLighthouse audit passed: blocking categories met their thresholds on ${audited} page(s).`,
+  );
+}
