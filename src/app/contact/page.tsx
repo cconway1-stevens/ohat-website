@@ -80,8 +80,25 @@ export default function ContactPage() {
                     href="/contact-card.vcf"
                     download
                   >
-                    <span>Add to contacts</span>
-                    <strong>Save</strong>
+                    <svg
+                      className="contact-action-icon"
+                      viewBox="0 0 24 24"
+                      width="22"
+                      height="22"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect x="6" y="2.5" width="12" height="20" rx="2.5" />
+                      <line x1="10" y1="5.5" x2="14" y2="5.5" />
+                      <line x1="12" y1="1" x2="12" y2="12.5" />
+                      <polyline points="9.5,10 12,12.5 14.5,10" />
+                    </svg>
+                    <span>Save to phone</span>
+                    <strong>Add contact</strong>
                   </a>
                   <div className="contact-primary-status">
                     <ShopHoursStatus />

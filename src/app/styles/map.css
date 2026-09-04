@@ -134,6 +134,13 @@
 .contact-action-vcard strong {
   font-size: clamp(0.72rem, 3.2vw, 0.86rem);
 }
+.contact-action-icon {
+  display: block;
+  justify-self: start;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 0.1rem;
+}
 .contact-action-call {
   background: var(--yellow);
 }
