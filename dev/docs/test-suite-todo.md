@@ -30,10 +30,13 @@ of one check*.
       dev/tests/server/    2 files — needs dist/server
       dev/tests/static/    2 files — needs dist/client
 
-- [x] **Reordered `npm test`** to `test:unit → build → test:server →
-      build:static → test:static`. Unit assertions now fail in ~2s instead of
-      after two multi-minute builds (binding rule 5, previously not honoured by
-      the gate).
+- [x] **Reordered `npm test`** so unit assertions fail in ~2s instead of after
+      a multi-minute build (binding rule 5, previously not honoured by the
+      gate). Now `test:unit → build:static → test:server → test:static`: the
+      static export alone produces the `dist/server` the server tier reads, so
+      the Cloudflare Worker artifact came off the critical path entirely and
+      is gated on its own (parallel CI job 2A, explicit step in pre-push.sh
+      and check-all.sh).
 - [x] **`--test-isolation=none` for the unit tier.** 352ms → 209ms internal.
       Verified honest: 154 tests, identical pass counts in both isolation modes.
 - [x] **Retired the second runner.** `run-tests-report.mjs` now calls the same
@@ -58,21 +61,18 @@ of one check*.
 - [x] **Removed the duplicate CI badge.** Two badges pointed at the same
       `ci.yml` under different names ("CI" and "GitHub Pages build"), so the
       second was the first wearing a hat. Replaced with Node and Vercel badges.
+- [x] **Logo match: brand badges rendered far too small inside their tiles.**
+      The base rule capped the mark at `clamp(20px, 48%, 44px)` and the phone
+      media query pinned it harder still at a flat 26px, so on a ~130px 3x3
+      tile the badge drew at a fifth of its square and a revealed tile read as
+      emptier than a face-down one. Now `width: 62%` with `aspect-ratio: 1`
+      and `object-fit: contain`, so it scales with the tile instead of against
+      an absolute cap, and the phone override is gone. Measured on an iPhone
+      13 viewport: 4x4 tile 80px -> badge 46px, 5x5 tile 63px -> badge 35px
+      (~57% throughout, no overflow at any size).
 
 ## Open
 
-- [ ] **Logo match: brand badges render far too small inside their tiles.**
-      On a phone the flipped tile is a ~130px square but the Hyundai/Mazda mark
-      inside it draws at roughly a fifth of that, marooned in white space,
-      while the face-down tiles fill edge to edge with "OHAT" — so a revealed
-      tile reads as emptier than a hidden one, which is backwards for a
-      matching game. The brand marks are SVGs of differing intrinsic aspect
-      ratios, so the fix is not one width: give the tile face a fixed inner
-      box and let each mark fit it (`max-width`/`max-height` at ~70% with
-      `object-fit: contain`), rather than sizing the images individually.
-      Check `.make-grid`/`make-grid.tsx` and the tile-face rule in `games.css`.
-      Confirm at 3x3, 4x4, 5x5 and Custom, since the tile shrinks with grid
-      size and a percentage that works at 3x3 can overflow at 5x5.
 - [ ] **Watch the first Windows run.** The job now executes both builds on
       `windows-latest` for the first time. `build-verified.sh` is bash — fine
       under Git Bash on the runner, but this path has never been exercised in

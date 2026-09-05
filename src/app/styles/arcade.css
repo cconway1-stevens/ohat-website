@@ -245,9 +245,19 @@
   transform: rotateY(180deg);
   box-shadow: 4px 4px 0 var(--ink);
 }
+/* The badge is the whole point of a revealed tile, so it scales with the tile
+   rather than being pinned by an absolute cap. The old `clamp(20px, 48%, 44px)`
+   stopped at 44px, so on a phone — where a 3x3 tile is ~130px — the mark drew
+   at a third of its square and sat marooned in white space, leaving a flipped
+   tile looking emptier than a face-down one. A percentage self-adjusts across
+   3x3/4x4/5x5/custom, since the tile itself shrinks as the grid grows.
+   `aspect-ratio` keeps the box square against a face whose grid tracks are
+   content-sized (so a percentage height would not resolve), and `contain`
+   letterboxes the marks whose intrinsic ratios are not square. */
 .match-tile-face img {
-  width: clamp(20px, 48%, 44px);
-  height: clamp(20px, 48%, 44px);
+  width: 62%;
+  height: auto;
+  aspect-ratio: 1;
   object-fit: contain;
 }
 .match-tile-face small {

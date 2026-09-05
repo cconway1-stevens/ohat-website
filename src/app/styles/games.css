@@ -1753,10 +1753,6 @@ body.is-play-locked {
   .match-tile-face {
     box-shadow: 3px 3px 0 var(--ink);
   }
-  .match-tile-face img {
-    width: 26px;
-    height: 26px;
-  }
   .match-tile-face small {
     font-size: 0.44rem;
   }
