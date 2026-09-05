@@ -73,7 +73,13 @@ step "architecture (dependency-cruiser)" ./node_modules/.bin/depcruise src dev -
 # 5. Tests, which include the static export checks.
 step "tests" npm test
 
-# 6. Assets. The one that keeps biting: markup can be perfectly correct and the
+# 6. Bundle size. CI gates this, so a push that grows the bundle past the
+#    ceiling fails there rather than here — which is exactly how a 14.4 KB
+#    overage got to main. Reads the same dist/client `npm test` just built,
+#    and costs a directory walk, so it goes before the browser steps.
+step "bundle size" npm run check:bundle
+
+# 7. Assets. The one that keeps biting: markup can be perfectly correct and the
 #    image still 404s, because next/image recomputes its URL on the client and
 #    points at an optimiser endpoint that does not exist in a static export.
 #    Only a real browser catches it. This must run against the static export
@@ -85,7 +91,7 @@ if step "browser preflight" node dev/scripts/check-browser.mjs; then
   step "asset check (real browser)" node dev/scripts/check-assets.mjs
 fi
 
-# 7. The deployable Cloudflare Worker artifact is a separate concern from the
+# 8. The deployable Cloudflare Worker artifact is a separate concern from the
 # static export above, so it is gated explicitly rather than as a side
 # effect. Runs last because it overwrites dist/client (see above).
 step "cloudflare worker build" npm run build
