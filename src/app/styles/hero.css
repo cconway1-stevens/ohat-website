@@ -680,24 +680,34 @@
     font-size: 0.9rem;
   }
 
-  /* Full-width stacked CTAs; the side-by-side pair crushed the phone number.
-     The freed room brings the retro phone mark back. */
+  /* Side by side: two ~56px buttons in one row instead of a 148px stack, on a
+     screen where the copy column had six blocks fighting for the fold.
+     Stacking was chosen here once because the pair crushed the phone number —
+     the retro phone mark was the ~44px that did it, so at this width the mark
+     steps aside and the number, which is the part a customer actually needs
+     to read, keeps its full size. The mark returns above 560px, and the fixed
+     booking dock carries one on every phone screen regardless. */
   .home-hero-actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
     margin-top: 0.85rem;
   }
 
-  /* Stacked into one column, each button now sizes to its own row instead of
-     sharing the desktop grid row's stretch — the Call button's icon+two-line
-     copy naturally runs taller than "Get directions" single line. A
-     min-height only sets a floor, so font-metric differences between
-     browsers/devices can still push one button above it while the other
-     sits exactly on it — a fixed height with headroom to spare is immune to
-     that instead of just usually matching. */
+  /* Equal fixed height rather than a min-height: font-metric differences
+     between browsers can push one button off a shared floor while the other
+     sits exactly on it, and a mismatched pair reads as a bug. */
   .home-hero-actions .button {
-    height: 4.25rem;
-    padding: 0.75rem 1rem;
+    height: 3.5rem;
+    padding: 0.6rem 0.7rem;
     font-size: clamp(0.72rem, 3.4vw, 0.85rem);
+  }
+
+  .home-hero-call .retro-phone-mark {
+    display: none;
+  }
+
+  .home-hero-call-copy {
+    text-align: center;
   }
 
   .home-hero-meta {
@@ -744,8 +754,9 @@
 
 @media (max-width: 720px) {
   .home-hero {
-    /* Measured masthead on phones: 104px. Flush seat for the photo card. */
-    padding-top: calc(104px + var(--notice-h, 0px));
+    /* Measured masthead on phones, now that the address strip is hidden:
+       72px of nav. Flush seat for the photo card. */
+    padding-top: calc(72px + var(--notice-h, 0px));
   }
 
   /* Phone declutter: the 40+ badge covers a third of the small photo and the
@@ -753,6 +764,15 @@
      Both stay on larger screens. */
   .home-hero-photo-tag,
   .home-hero-proof {
+    display: none;
+  }
+
+  /* Six stacked blocks ran the copy column past 570px on a phone — kicker,
+     nameplate, promise, this paragraph, the CTA row and the hours sign — so
+     nothing but the headline cleared the fold. The promise line above already
+     states the pitch; this is the supporting detail, and the services page it
+     summarises is one tap away in the nav. It stays on tablets and up. */
+  .home-hero-lede {
     display: none;
   }
 }

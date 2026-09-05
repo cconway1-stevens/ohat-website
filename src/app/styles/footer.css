@@ -860,17 +860,13 @@
   .shell {
     width: min(100% - 28px, 1180px);
   }
+  /* The strip had already shed its almanac and its phone number on phones,
+     leaving one band whose only tenant was an address ellipsed to "1178 OCEAN
+     HEIGHTS AVENU…" — unreadable, and repeated in full by the hero's own
+     address panel a few hundred pixels below. Dropping the band buys ~31px
+     and one less horizontal rule to scan past. Every masthead reservation
+     below is 31px shorter to match. */
   .garage-strip {
-    grid-template-columns: 1fr;
-    padding-inline: 14px;
-  }
-  .garage-strip > span {
-    display: none;
-  }
-  /* Third copy of the number on one phone screen — the fixed dock and the
-     hero call button already carry it, so the strip keeps just the
-     address/directions trigger. */
-  .garage-strip-phone {
     display: none;
   }
   .directions-menu-trigger {
@@ -1182,7 +1178,8 @@
   .repair-ticket,
   .dropoff-arrival {
     min-height: 0;
-    padding: calc(158px + var(--notice-h, 0px)) 0 90px;
+    /* 158px - the 31px address strip these pages no longer sit under. */
+    padding: calc(127px + var(--notice-h, 0px)) 0 90px;
   }
   .inner-hero h1,
   .services-board h1,

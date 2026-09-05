@@ -81,7 +81,13 @@ export function NoticeBanner() {
         <div className="notice-banner-message">
           <p className="notice-banner-copy">
             <span className="notice-banner-flag">Notice</span>
-            {notice.message}
+            {/* Both lengths ship; CSS picks one at the phone breakpoint. Doing
+                it here rather than from a matchMedia in JS keeps the static
+                export byte-identical across hosts and avoids a first paint at
+                the wrong length. `short` drops the "give us a call" sentence,
+                which the fixed booking dock already covers on phones. */}
+            <span className="notice-banner-copy-full">{notice.message}</span>
+            <span className="notice-banner-copy-short">{notice.short ?? notice.message}</span>
           </p>
           <a className="notice-banner-call" href={shop.phone.href}>
             <span aria-hidden="true">☎︎</span> Call {shop.phone.display}

@@ -90,7 +90,9 @@ function manualNotice(entries, key) {
     if (!message) continue;
     if (!ISO_DATE.test(entry.from ?? "") || !ISO_DATE.test(entry.to ?? "")) continue;
     if (key >= entry.from && key <= entry.to) {
-      return { id: entry.id ?? `${entry.from}_${entry.to}`, message };
+      // An owner writes their own wording, so there is no sentence this can
+      // safely drop — the phone banner shows the same line.
+      return { id: entry.id ?? `${entry.from}_${entry.to}`, message, short: message };
     }
   }
   return null;
@@ -102,6 +104,7 @@ function holidayTodayNotice(today, holidayNotice) {
   return {
     id: `holiday-${today.toISOString().slice(0, 10)}`,
     message: `${holidayNotice.beforeName} ${holiday}. ${holidayNotice.afterName}`,
+    short: `${holidayNotice.beforeName} ${holiday}.`,
   };
 }
 
@@ -122,6 +125,7 @@ function holidayAheadNotice(today, holidayNotice) {
     return {
       id: `holiday-ahead-${date.toISOString().slice(0, 10)}`,
       message: `${holidayNotice.upcomingKicker} ${holiday}. ${holidayNotice.upcomingNote} ${holidayNotice.afterName}`,
+      short: `${holidayNotice.upcomingKicker} ${holiday}. ${holidayNotice.upcomingNote}`,
     };
   }
   return null;
@@ -138,7 +142,8 @@ function exceptionTodayNotice(today, key) {
     today.getUTCDate(),
   );
   if (!exception) return null;
-  return { id: `exception-${key}`, message: exception.label };
+  // Already a placard-length line; nothing to trim for the phone banner.
+  return { id: `exception-${key}`, message: exception.label, short: exception.label };
 }
 
 /**

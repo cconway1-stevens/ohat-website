@@ -6,8 +6,11 @@
    shadows, squared corners — while keeping the page to one clean overview.
 --------------------------------------------------------------------------- */
 
+/* Phone reservation (the 701-1024 and 1025+ blocks below set their own): 85px
+   is the 116px it was less the 31px address strip that no longer renders at
+   this width, plus the notice banner's own height when one is up. */
 .contact-route {
-  padding: 116px 0 1.25rem;
+  padding: calc(85px + var(--notice-h, 0px)) 0 1.25rem;
   background: var(--cream);
 }
 /* One shared framed container holds both panels — the info column and the map
@@ -28,11 +31,13 @@
   flex-direction: column;
   gap: 0.9rem;
   padding: 0.25rem 0.15rem;
+  grid-area: panel;
 }
 .contact-map-panel {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  grid-area: map;
 }
 .contact-route-marker,
 .contact-section-label {
@@ -43,7 +48,17 @@
   letter-spacing: 0.17em;
   text-transform: uppercase;
 }
-.contact-route-intro h1 {
+/* The header panel spans the top of the grid — title, subtitle, address —
+   so the page reads top-down: who we are, then how to reach us, then where
+   we are. grid-area is set in base so it travels into every grid layout. */
+.contact-route-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.25rem 0.15rem;
+  grid-area: header;
+}
+.contact-route-header h1 {
   margin: 0;
   max-width: 14ch;
   font-family: var(--font-serif);
@@ -53,17 +68,17 @@
   text-transform: uppercase;
   text-wrap: balance;
 }
-.contact-route-intro > p:last-child {
+.contact-route-header-subtitle {
   max-width: 42rem;
   margin: 0.45rem 0 0;
   color: var(--muted);
   font-size: 0.82rem;
   line-height: 1.4;
 }
-/* The street address lives in the intro too, so a caller who skips the map
+/* The street address lives in the header too, so a caller who skips the map
    still finds where the shop is without hunting the embed. */
 .contact-route-address {
-  margin: 0.5rem 0 0;
+  margin: 0.25rem 0 0;
   color: var(--ink);
   font-size: 0.8rem;
   font-weight: 800;
@@ -349,18 +364,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "panel map"
-      "panel map";
+      "header header"
+      "panel  map";
     align-items: start;
     gap: 1rem;
   }
-  .contact-route-panel {
-    grid-area: panel;
-  }
-  .contact-map-panel {
-    grid-area: map;
-  }
-  .contact-route-intro h1 {
+  .contact-route-header h1 {
     max-width: none;
   }
   .contact-map-panel .shop-map-frame {
@@ -384,18 +393,29 @@
     flex: 1;
     display: grid;
     grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
+    grid-template-areas:
+      "header header"
+      "panel  map";
+    grid-template-rows: auto 1fr;
     align-items: stretch;
     gap: 1.25rem;
+  }
+  /* A faint dashed rule under the header panel — groups the title row above
+     the contact + map row below without adding a hard border. */
+  .contact-route-header {
+    padding: 0.4rem 0.4rem 0.9rem;
+    border-bottom: 2px dashed rgba(23, 20, 18, 0.18);
+    margin-bottom: 0.15rem;
   }
   .contact-route-panel {
     padding: 0.4rem 0.4rem;
     gap: 0.8rem;
   }
-  .contact-route-intro h1 {
+  .contact-route-header h1 {
     max-width: 12ch;
     font-size: clamp(2rem, 2.4vw, 2.6rem);
   }
-  .contact-route-intro > p:last-child {
+  .contact-route-header-subtitle {
     font-size: 0.8rem;
   }
   .contact-action {
@@ -441,7 +461,7 @@
 
 @media (max-width: 350px) {
   .contact-route {
-    padding-top: calc(112px + var(--notice-h, 0px));
+    padding-top: calc(81px + var(--notice-h, 0px));
   }
   .contact-route-panel {
     padding: 1.1rem 0.9rem;

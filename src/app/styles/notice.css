@@ -84,6 +84,12 @@
   line-height: 1.35;
 }
 
+/* The banner ships both lengths and swaps them here rather than in JS — see
+   notice-banner.tsx. Full copy everywhere but phones. */
+.notice-banner-copy-short {
+  display: none;
+}
+
 /* Hard shadow in brand red: an ink shadow would vanish against the strip. */
 .notice-banner-call {
   flex: 0 0 auto;
@@ -183,20 +189,75 @@
 }
 
 @media (max-width: 720px) {
+  /* Pinned, the strip charged 110px of an 852px phone screen for the whole
+     visit — a third of the viewport spent on a note worth reading once. It
+     now rides in the masthead's own flow and scrolls away with the page.
+     .site-header is absolutely positioned, so an in-flow banner still sits
+     above the hero; it just stops following the viewport. */
+  .notice-banner {
+    position: static;
+  }
+
+  /* The banner is inside .site-header, so offsetting the header by the
+     banner's height would count it twice. The pages' own masthead
+     reservations still add --notice-h, which now covers the banner sitting
+     in the header's box. */
+  .site-header {
+    top: 0;
+  }
+
+  /* Anchored to the top rather than centred: against a two-line message a
+     centred close button floats in the pocket left by the short second line,
+     which is what made the strip read as thrown together. In the corner it
+     squares off the block. */
   .notice-banner-inner {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.6rem;
-    padding-inline: 0.85rem;
+    align-items: start;
+    gap: 0.6rem 0.7rem;
+    min-height: 0;
+    padding-block: 0.6rem;
+    padding-bottom: calc(0.6rem + 8px);
+    padding-inline: 0.9rem;
   }
 
   .notice-banner-message {
     grid-column: 1;
-    justify-content: flex-start;
+    display: block;
     text-align: left;
   }
 
+  /* `balance` evens the two lines out (and unlike `pretty` it works on iOS,
+     which is most of this banner's audience). Ragged — a first line running
+     the full measure to within a few pixels of the close button, a second
+     barely half of it — read as text that had merely landed where it fell. */
   .notice-banner-copy {
-    font-size: 0.78rem;
+    display: block;
+    font-size: 0.76rem;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  /* Its own line, in the site's label voice. Set inline it sat mid-sentence
+     ("…around the holiday.  Full hours →") and read as the tail of the
+     sentence rather than as somewhere to tap. */
+  .notice-banner-hours {
+    display: inline-flex;
+    margin-top: 0.34rem;
+    padding: 0;
+    font-size: 0.66rem;
+    font-weight: 950;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Phone length: the "give us a call" sentence goes, since the fixed dock
+     already pins a Call button to every phone screen. */
+  .notice-banner-copy-full {
+    display: none;
+  }
+
+  .notice-banner-copy-short {
+    display: inline;
   }
 
   /* The fixed booking dock already pins a call button to every phone screen,
@@ -205,8 +266,14 @@
     display: none;
   }
 
+  /* Optically level with the first line of copy rather than with the top of
+     its box, so the corner reads as squared instead of the button sitting a
+     touch high. */
   .notice-banner-close {
     grid-column: 2;
+    width: 28px;
+    height: 28px;
+    margin-top: -2px;
   }
 }
 
