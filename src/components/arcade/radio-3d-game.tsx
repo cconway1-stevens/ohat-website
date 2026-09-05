@@ -121,6 +121,8 @@ export default function Radio3DGame() {
   const [genre, setGenre] = useState<(typeof GENRES)[number]["id"]>("oldies");
   const [status, setStatus] = useState("Off. Push the left knob, or press Power below.");
   const [sceneFailed, setSceneFailed] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [muted, setMuted] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<RadioSceneHandle | null>(null);
@@ -281,6 +283,18 @@ export default function Radio3DGame() {
     setPower((on) => !on);
   }
 
+  // The scan loop steps through stations on a timer, so it reads the freshest
+  // seek through a ref rather than a stale closure.
+  const seekRef = useRef(seek);
+  useEffect(() => {
+    seekRef.current = seek;
+  });
+  useEffect(() => {
+    if (!scanning) return;
+    const id = window.setInterval(() => seekRef.current(1), 900);
+    return () => window.clearInterval(id);
+  }, [scanning]);
+
   function cycleBand() {
     cozyAudio.click();
     setBand((current) => (current === "FM" ? "AM" : current === "AM" ? "LIVE" : "FM"));
@@ -391,13 +405,14 @@ export default function Radio3DGame() {
   }, [power, band, dial, volume, lock]);
 
   /* --- the synthesised bands --- */
+  const effectiveVolume = muted ? 0 : volume;
   useEffect(() => {
     if (power && band !== "LIVE") {
-      radio.tune(dial, { volume, tone, balance: 0, band });
+      radio.tune(dial, { volume: effectiveVolume, tone, balance: 0, band });
     } else {
       radio.off();
     }
-  }, [power, band, dial, volume, tone]);
+  }, [power, band, dial, effectiveVolume, tone]);
 
   /* --- the live band --- */
   useEffect(() => {
@@ -427,13 +442,13 @@ export default function Radio3DGame() {
 
   // Live tone + volume.
   useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
+    if (audioRef.current) audioRef.current.volume = effectiveVolume;
     const graph = graphRef.current;
     if (graph) {
       graph.bass.gain.value = (tone - 0.5) * 16;
       graph.treble.gain.value = (tone - 0.5) * 14;
     }
-  }, [volume, tone]);
+  }, [effectiveVolume, tone]);
 
   // Static while a live stream buffers.
   useEffect(() => {
@@ -467,12 +482,43 @@ export default function Radio3DGame() {
     );
   }, [power, band, dial]);
 
-  const dialReadout =
-    band === "LIVE"
-      ? (liveStation?.name ?? "—")
-      : band === "AM"
-        ? `${Math.round(dial)} kHz`
-        : `${dial.toFixed(1)} FM`;
+  /* --- derived readout + directory values --- */
+  const tuned = band === "LIVE" ? null : stationLock(dial, band);
+  const bandStations = stations.filter((s) => s.band === band).sort((a, b) => a.dial - b.dial);
+  const freqNumber = band === "AM" ? String(Math.round(dial)) : dial.toFixed(1);
+  const freqBand = band === "AM" ? "AM · kHz" : band === "LIVE" ? "LIVE" : "FM · MHz";
+  const onAir = power && (band === "LIVE" ? livePlaying : (tuned?.lock ?? 0) > 0.45);
+  const lit = !power
+    ? 0
+    : band === "LIVE"
+      ? livePlaying
+        ? 5
+        : liveLoading
+          ? 2
+          : 0
+      : Math.max(1, Math.round((tuned?.lock ?? 0) * 5));
+  const nowName = !power
+    ? "The set is off"
+    : band === "LIVE"
+      ? (liveStation?.name ?? (liveLoading ? "Scanning the dial…" : "No station"))
+      : (tuned?.lock ?? 0) > 0.45
+        ? (tuned?.station.name ?? "Between stations")
+        : "Between stations";
+  const nowMeta =
+    band === "LIVE" && liveStation
+      ? `${liveStation.country} · ${liveStation.bitrate || "?"} kbps`
+      : (tuned?.station.genre ?? "");
+
+  function presetLabel(saved: number): string {
+    if (band === "AM") return String(Math.round(saved));
+    if (band === "FM") return saved.toFixed(1);
+    const entry = liveList[saved];
+    return entry ? entry.name.slice(0, 12) : `#${saved + 1}`;
+  }
+  function isPresetTuned(saved: number): boolean {
+    if (band === "LIVE") return saved === liveIndex;
+    return Math.abs(saved - dial) < (band === "AM" ? 14 : 0.6);
+  }
 
   return (
     <CozyShell
@@ -513,108 +559,209 @@ export default function Radio3DGame() {
         {status}
       </p>
 
-      <div className="radio-3d-controls">
-        <div className="cozy-actions">
-          <button
-            type="button"
-            className={power ? "is-on" : ""}
-            aria-pressed={power}
-            onClick={togglePower}
-          >
-            {power ? "Power on" : "Power off"}
-          </button>
-          <button type="button" onClick={cycleBand} aria-label={`Band: ${band}. Press to change`}>
-            Band: {band}
-          </button>
-          <button type="button" onClick={() => seek(-1)} aria-label="Previous station">
-            ◀ Seek
-          </button>
-          <button type="button" onClick={() => seek(1)} aria-label="Next station">
-            Seek ▶
-          </button>
-          <span className="radio-3d-readout" aria-label="Dial position">
-            {dialReadout}
-          </span>
-        </div>
-
-        <div className="radio-3d-sliders">
-          <label className="radio-3d-slider">
-            <span>Volume</span>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.02}
-              value={volume}
-              aria-label="Volume"
-              onChange={(event) => setVolume(Number(event.target.value))}
-            />
-          </label>
-          <label className="radio-3d-slider">
-            <span>Tone</span>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.02}
-              value={tone}
-              aria-label="Tone"
-              onChange={(event) => setTone(Number(event.target.value))}
-            />
-          </label>
-        </div>
-
-        <div
-          className="cozy-actions"
-          role="group"
-          aria-label="Presets — tap to recall, hold to save"
-        >
-          {presets[band].map((saved, index) => (
+      <div className="radio-3d-deck">
+        <div className="radio-3d-console">
+          <div className="radio-3d-row">
             <button
-              // biome-ignore lint/suspicious/noArrayIndexKey: piano keys are positional by nature
-              key={index}
               type="button"
-              aria-label={`Preset ${index + 1}${
-                band === "AM"
-                  ? `, ${Math.round(saved)} kHz`
-                  : band === "FM"
-                    ? `, ${saved.toFixed(1)} FM`
-                    : ""
-              }. Hold to save the current station here.`}
-              onPointerDown={() => presetDown(index)}
-              onPointerUp={() => presetUp(index)}
-              onPointerLeave={() => {
-                if (holdTimerRef.current !== null) {
-                  window.clearTimeout(holdTimerRef.current);
-                  holdTimerRef.current = null;
-                }
+              className={power ? "is-on" : ""}
+              aria-pressed={power}
+              onClick={togglePower}
+            >
+              {power ? "Power on" : "Power off"}
+            </button>
+            <button type="button" onClick={cycleBand} aria-label={`Band: ${band}. Press to change`}>
+              Band: {band}
+            </button>
+            <button type="button" onClick={() => seek(-1)} aria-label="Previous station">
+              ◀ Seek
+            </button>
+            <button type="button" onClick={() => seek(1)} aria-label="Next station">
+              Seek ▶
+            </button>
+            <button
+              type="button"
+              className={scanning ? "is-on" : ""}
+              aria-pressed={scanning}
+              onClick={() => {
+                cozyAudio.click();
+                setScanning((on) => !on);
               }}
             >
-              {index + 1}
+              {scanning ? "Scanning…" : "Scan"}
             </button>
-          ))}
-        </div>
+            <button
+              type="button"
+              className={muted ? "is-on" : ""}
+              aria-pressed={muted}
+              onClick={() => {
+                cozyAudio.click();
+                setMuted((on) => !on);
+              }}
+            >
+              {muted ? "Muted" : "Mute"}
+            </button>
+          </div>
 
-        {band === "LIVE" ? (
-          <div className="cozy-actions" role="group" aria-label="Live station genre">
-            {GENRES.map((entry) => (
+          <div className="radio-3d-sliders">
+            <label className="radio-3d-slider">
+              <span>Volume</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.02}
+                value={volume}
+                aria-label="Volume"
+                onChange={(event) => setVolume(Number(event.target.value))}
+              />
+            </label>
+            <label className="radio-3d-slider">
+              <span>Tone</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.02}
+                value={tone}
+                aria-label="Tone"
+                onChange={(event) => setTone(Number(event.target.value))}
+              />
+            </label>
+          </div>
+
+          <p className="radio-3d-console-label">Presets · tap to recall, hold to save</p>
+          <div className="radio-3d-keys" role="group" aria-label="Presets">
+            {presets[band].map((saved, index) => (
               <button
-                key={entry.id}
+                // biome-ignore lint/suspicious/noArrayIndexKey: piano keys are positional by nature
+                key={index}
                 type="button"
-                className={genre === entry.id ? "is-on" : ""}
-                aria-pressed={genre === entry.id}
-                onClick={() => {
-                  cozyAudio.click();
-                  setGenre(entry.id);
-                  setLiveList([]);
-                  void fetchLive(entry.id);
+                className={isPresetTuned(saved) ? "is-lit" : ""}
+                aria-label={`Preset ${index + 1}${
+                  band === "AM"
+                    ? `, ${Math.round(saved)} kHz`
+                    : band === "FM"
+                      ? `, ${saved.toFixed(1)} FM`
+                      : ""
+                }. Hold to save the current station here.`}
+                onPointerDown={() => presetDown(index)}
+                onPointerUp={() => presetUp(index)}
+                onPointerLeave={() => {
+                  if (holdTimerRef.current !== null) {
+                    window.clearTimeout(holdTimerRef.current);
+                    holdTimerRef.current = null;
+                  }
                 }}
               >
-                {entry.label}
+                <b>{index + 1}</b>
+                <small>{presetLabel(saved)}</small>
               </button>
             ))}
           </div>
-        ) : null}
+
+          {band === "LIVE" ? (
+            <>
+              <p className="radio-3d-console-label">Pull in a band of live stations</p>
+              <div className="radio-3d-keys" role="group" aria-label="Live station genre">
+                {GENRES.map((entry) => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    className={`radio-3d-key radio-3d-key-wide${genre === entry.id ? " is-lit" : ""}`}
+                    aria-pressed={genre === entry.id}
+                    onClick={() => {
+                      cozyAudio.click();
+                      setGenre(entry.id);
+                      setLiveList([]);
+                      void fetchLive(entry.id);
+                    }}
+                  >
+                    <b>{entry.label}</b>
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : null}
+        </div>
+
+        <div className="radio-3d-guide">
+          <div className="radio-3d-readout-card">
+            <p className="radio-3d-freq">
+              <b>{freqNumber}</b>
+              <span>{freqBand}</span>
+              <em className={`radio-3d-onair${onAir ? " is-lit" : ""}`}>ON AIR</em>
+            </p>
+            <p className="radio-3d-now">
+              {nowName}
+              {nowMeta ? <small>{nowMeta}</small> : null}
+            </p>
+            <div
+              className="radio-3d-meter"
+              role="img"
+              aria-label={`Signal strength ${lit} of 5 bars`}
+            >
+              {[1, 2, 3, 4, 5].map((bar) => (
+                <i key={bar} className={bar <= lit ? "is-lit" : ""} />
+              ))}
+            </div>
+          </div>
+
+          <div className="radio-3d-list" role="group" aria-label="Station directory">
+            {band === "LIVE"
+              ? liveList.map((entry, index) => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    className={`radio-3d-station${power && index === liveIndex ? " is-tuned" : ""}`}
+                    onClick={() => {
+                      cozyAudio.click();
+                      if (!power) setPower(true);
+                      setDial(indexToDial(index, liveList.length));
+                      if (!livePlaying) void playLive(entry);
+                    }}
+                  >
+                    <span className="radio-3d-dial">{index + 1}</span>
+                    <span className="radio-3d-who">
+                      <b>{entry.name}</b>
+                      <small>
+                        {entry.country} · {entry.codec} · {entry.bitrate || "?"} kbps
+                      </small>
+                    </span>
+                  </button>
+                ))
+              : bandStations.map((entry) => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    className={`radio-3d-station${
+                      power && (tuned?.lock ?? 0) > 0.45 && tuned?.station.id === entry.id
+                        ? " is-tuned"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      cozyAudio.click();
+                      if (!power) setPower(true);
+                      setDial(entry.dial);
+                    }}
+                  >
+                    <span className="radio-3d-dial">
+                      {entry.band === "AM" ? Math.round(entry.dial) : entry.dial.toFixed(1)}
+                    </span>
+                    <span className="radio-3d-who">
+                      <b>{entry.name}</b>
+                      <small>{entry.genre}</small>
+                    </span>
+                  </button>
+                ))}
+          </div>
+
+          <p className="radio-3d-guide-note">
+            {band === "LIVE"
+              ? `${liveList.length || "No"} live station${liveList.length === 1 ? "" : "s"} on this band — pick a card to tune it in.`
+              : `${bandStations.length} stations on the ${band} band — pick a card to tune it in.`}
+          </p>
+        </div>
       </div>
 
       {band === "LIVE" ? (

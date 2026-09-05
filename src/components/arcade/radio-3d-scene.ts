@@ -568,15 +568,35 @@ export function mountRadioScene(
     radio3d.add(foot);
   }
 
-  // The shelf shadow.
-  const ground = new THREE.Mesh(
-    track(new THREE.PlaneGeometry(24, 24)),
-    track(new THREE.ShadowMaterial({ opacity: 0.35 })),
-  );
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -FACE_H / 2 - 0.13;
-  ground.receiveShadow = true;
-  scene.add(ground);
+  // A real wood shelf under the set — dark walnut, soft grain — so the chrome
+  // sits on something tangible rather than floating over a void.
+  const shelfTexture = (() => {
+    const c = document.createElement("canvas");
+    c.width = 512; c.height = 256;
+    const g = c.getContext("2d");
+    if (!g) return new THREE.CanvasTexture(c);
+    g.fillStyle = "#2a1d14"; g.fillRect(0, 0, 512, 256);
+    for (let y = 0; y < 256; y += 4) {
+      g.fillStyle = `rgba(40,30,20,${0.4 + (y % 8) * 0.05})`;
+      g.fillRect(0, y, 512, 2);
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.repeat.set(3, 2);
+    return t;
+  })();
+  const shelfMat = new THREE.MeshStandardMaterial({
+    color: 0x2e2015,
+    roughness: 0.85,
+    metalness: 0,
+    bumpMap: shelfTexture,
+    bumpScale: 0.02,
+  });
+  const shelf = new THREE.Mesh(track(new THREE.BoxGeometry(5.8, 0.14, 3.2)), shelfMat);
+  shelf.position.set(0, -FACE_H / 2 - 0.2, 0);
+  shelf.receiveShadow = true;
+  shelf.castShadow = true;
+  scene.add(shelf);
 
   /* --- state the scene renders --- */
   let band: RadioBand = "FM";
