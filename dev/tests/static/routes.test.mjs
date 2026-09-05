@@ -26,7 +26,7 @@ test("every emitted page is discovered and classified", () => {
   }, {});
   // Pinned to the census in dev/docs/test-program.md §2. If the site grows a
   // new page class or a page changes tier, update both together.
-  assert.deepEqual(counts, { indexable: 24, noindex: 26, redirect: 9, error: 1 });
+  assert.deepEqual(counts, { indexable: 24, noindex: 27, redirect: 9, error: 1 });
 });
 
 test("known pages classify into the right tier", () => {
@@ -37,6 +37,7 @@ test("known pages classify into the right tier", () => {
   assert.equal(byRoute.get("/privacy"), "indexable");
   assert.equal(byRoute.get("/arcade"), "noindex");
   assert.equal(byRoute.get("/arcade/parts-counter-3d"), "noindex");
+  assert.equal(byRoute.get("/arcade/radio-3d"), "noindex");
   assert.equal(byRoute.get("/agent"), "noindex");
   assert.equal(byRoute.get("/agent/motion"), "noindex");
   assert.equal(byRoute.get("/agent/testdrive"), "noindex");

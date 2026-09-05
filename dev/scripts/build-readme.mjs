@@ -36,7 +36,7 @@ const read = (...parts) => readFileSync(join(root, ...parts), "utf8");
 // ---------------------------------------------------------------------------
 function parseWorkflow(text) {
   const lines = text.split(/\r?\n/);
-  const jobsAt = lines.findIndex((l) => l === "jobs:");
+  const jobsAt = lines.indexOf("jobs:");
   const jobs = [];
   let current = null;
 
