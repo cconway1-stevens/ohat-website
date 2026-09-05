@@ -20,6 +20,10 @@ export function PlayLock() {
   const restoreTo = useRef(0);
   const pinnedRef = useRef(false);
   const nativeRef = useRef(false);
+  // Set the moment the player leaves the lock themselves. The auto-arm below
+  // checks it, so exiting stays possible — otherwise the next touch on the
+  // board would immediately re-lock and there would be no way out.
+  const dismissedRef = useRef(false);
 
   const stage = () => barRef.current?.closest<HTMLElement>(".arcade-stage") ?? null;
 
@@ -62,6 +66,7 @@ export function PlayLock() {
   }, [enterFallback]);
 
   const deactivate = useCallback(() => {
+    dismissedRef.current = true;
     if (nativeRef.current) {
       if (document.fullscreenElement) void document.exitFullscreen();
       // fullscreenchange updates the state when the browser actually exits.
@@ -74,6 +79,30 @@ export function PlayLock() {
     if (active) deactivate();
     else activate();
   }, [active, activate, deactivate]);
+
+  // Touching a board used to drag the page with it, so the game slid out from
+  // under your thumb mid-move. The lock always fixed that, but only if you
+  // noticed the button first — so on touch devices the first contact with the
+  // board arms it for you.
+  //
+  // Two deliberate limits. It only applies to coarse pointers: a mouse cannot
+  // drag the page by accident, and freezing a desktop page nobody asked to
+  // freeze is rude. And it never re-arms after a manual exit — without that,
+  // leaving would be impossible, because the next touch would lock it again.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia?.("(pointer: coarse)").matches) return;
+
+    const surface = barRef.current?.closest(".arcade-stage")?.querySelector(".arcade-play-surface");
+    if (!surface) return;
+
+    const onFirstTouch = () => {
+      if (pinnedRef.current || nativeRef.current || dismissedRef.current) return;
+      enterFallback();
+    };
+    surface.addEventListener("pointerdown", onFirstTouch);
+    return () => surface.removeEventListener("pointerdown", onFirstTouch);
+  }, [enterFallback]);
 
   // Track native fullscreen enter/exit (including the browser's own Esc).
   useEffect(() => {
@@ -97,6 +126,7 @@ export function PlayLock() {
     if (!active) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      dismissedRef.current = true;
       if (nativeRef.current) {
         if (document.fullscreenElement) void document.exitFullscreen();
       } else {
