@@ -1,14 +1,15 @@
 "use client";
 
 /**
- * Tread — the tire pal who lives in the contact-page chat widget. A small
- * transparent Three.js scene: a smiling tire in a red shop cap with a valve
- * stem sprout, rocking gently on a fake blob shadow. Emotes arrive as props
- * and play once. Everything runs on refs and one rAF loop, like the arcade
- * cabinet — no React state per frame.
+ * The 3D tire scene — the original Tread rig that lives in the contact-page
+ * chat widget. A small transparent Three.js scene: a smiling tire in a red
+ * shop cap with a valve stem sprout, rocking gently on a fake blob shadow.
+ * Emotes arrive as props and play once. Everything runs on refs and one rAF
+ * loop, like the arcade cabinet — no React state per frame.
  */
 import { type JSX, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import type { MascotEmote } from "@/lib/chat/mascot";
 import {
   buildPal,
   makeConfettiSprite,
@@ -17,15 +18,10 @@ import {
   type TreadVariant,
 } from "./tread-character";
 
-export type TirePalEmote = {
-  kind: "celebrate" | "thinking" | "happy" | "sleep";
-  id: number;
-} | null;
+type EmoteKind = NonNullable<MascotEmote>["kind"];
 
-type EmoteKind = NonNullable<TirePalEmote>["kind"];
-
-type TirePalSceneProps = {
-  emote: TirePalEmote;
+type Tire3DSceneProps = {
+  emote: MascotEmote;
   reducedMotion: boolean;
   onFail?: () => void;
   className?: string;
@@ -41,13 +37,13 @@ const EMOTE_DURATIONS: Record<EmoteKind, number> = {
   sleep: 0,
 };
 
-export default function TirePalScene({
+export default function Tire3DScene({
   emote,
   reducedMotion,
   onFail,
   className,
   variant,
-}: TirePalSceneProps): JSX.Element {
+}: Tire3DSceneProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -61,7 +57,7 @@ export default function TirePalScene({
   useEffect(() => {
     reducedRef.current = reducedMotion;
   }, [reducedMotion]);
-  const emoteRef = useRef<TirePalEmote>(emote);
+  const emoteRef = useRef<MascotEmote>(emote);
   useEffect(() => {
     emoteRef.current = emote;
   }, [emote]);

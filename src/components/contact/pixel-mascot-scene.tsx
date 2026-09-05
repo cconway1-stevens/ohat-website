@@ -8,14 +8,10 @@
  */
 import { type JSX, useEffect, useRef } from "react";
 import { PIXEL_CREW, PIXEL_GRID, type PixelEmote } from "@/components/agent/pixel-crew";
-
-export type TirePalEmote = {
-  kind: "celebrate" | "thinking" | "happy" | "sleep";
-  id: number;
-} | null;
+import type { MascotEmote } from "@/lib/chat/mascot";
 
 type PixelMascotSceneProps = {
-  emote: TirePalEmote;
+  emote: MascotEmote;
   reducedMotion: boolean;
   onFail?: () => void;
   className?: string;
@@ -24,7 +20,7 @@ type PixelMascotSceneProps = {
 };
 
 // The widget's emote kinds map 1:1 onto the pixel crew's emote names.
-const EMOTES: Record<NonNullable<TirePalEmote>["kind"], PixelEmote> = {
+const EMOTES: Record<NonNullable<MascotEmote>["kind"], PixelEmote> = {
   celebrate: "celebrate",
   thinking: "thinking",
   happy: "happy",
@@ -39,7 +35,7 @@ export default function PixelMascotScene({
 }: PixelMascotSceneProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // The loop reads the latest props through refs so it never re-subscribes.
-  const emoteRef = useRef<TirePalEmote>(emote);
+  const emoteRef = useRef<MascotEmote>(emote);
   useEffect(() => {
     emoteRef.current = emote;
   }, [emote]);

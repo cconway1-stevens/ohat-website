@@ -197,30 +197,43 @@
 .contact-action-email:focus-visible {
   background: var(--red-dark);
 }
-/* One card for everything hours-related, read top to bottom: the note
-   (holidays + night drop), then the standing schedule, then the live
-   open/closed sign. The dashed frame holds the sign centred so it keeps its
-   native paper-and-shadow look rather than taking the button chrome. */
+/* The hours card sits below the four action tiles and picks up their solid
+   border + drop-shadow language instead of a dashed "note" frame, so it
+   reads as one more tile in the set rather than a stray aside. A title
+   banner up top ("Shop hours") gives the block a label the way every other
+   section on the page gets one, and everything below it is left-aligned to
+   match. */
 .contact-hours-card {
   grid-column: span 4;
   display: grid;
   gap: 0.55rem;
-  padding: 0.6rem 0.8rem 0.7rem;
+  padding: 0 0.8rem 0.7rem;
   background: var(--cream);
-  border: 2px dashed var(--ink);
+  border: 2px solid var(--ink);
   border-radius: 2px;
+  box-shadow: 4px 4px 0 var(--ink);
+  text-align: left;
 }
-/* The grid's default justify-items: stretch was blowing this wrapper up
-   to the card's full width, which forced the placard inside it to wrap the
-   "closed" headline across two lines and read as a big colored block. Pin
-   it to its own content width instead — a small badge, not a banner. The
-   sign now sits at the bottom of the card, so a dashed rule separates it
-   from the schedule above. */
+.contact-hours-title {
+  margin: 0 -0.8rem 0.15rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--ink);
+  color: var(--yellow-tint);
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: left;
+}
+/* The open/closed sign leads the card — it's the first thing a caller
+   checks — pinned to its own content width so it stays a small badge
+   rather than stretching into a banner, then a dashed rule hands off to
+   the schedule below. */
 .contact-hours-card .shop-hours-status-wrap {
-  justify-self: center;
-  justify-content: center;
-  padding-top: 0.55rem;
-  border-top: 1px dashed rgba(23, 20, 18, 0.28);
+  justify-self: start;
+  justify-content: flex-start;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px dashed rgba(23, 20, 18, 0.28);
 }
 .contact-hours-card .shop-hours-status {
   display: inline-flex;
@@ -241,10 +254,10 @@
   gap: 0.4rem;
 }
 .contact-hours-card .shop-status-copy > span:first-child {
-  font-size: 0.78rem;
+  font-size: 0.92rem;
 }
 .contact-hours-card .shop-status-copy > span:not(:first-child) {
-  font-size: 0.66rem;
+  font-size: 0.78rem;
 }
 .contact-hours-card .shop-hours-holiday {
   margin-top: 0.3rem;
@@ -256,7 +269,7 @@
   border: 1.5px solid var(--red);
   border-radius: 4px;
   color: var(--red-dark);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 800;
   line-height: 1.35;
 }
@@ -265,32 +278,31 @@
   gap: 0.25rem;
   margin: 0;
 }
-/* The schedule is centred as a two-column table — day right-aligned, hours
-   left-aligned — so the rows line up on a shared axis instead of hugging the
-   card's left edge. */
+/* Day on the left, hours on the right — the same left-anchored table pattern
+   as the /hours page, so the two places agree instead of one centering its
+   schedule and the other not. */
 .contact-hours-list > div {
   display: grid;
-  grid-template-columns: auto auto;
-  justify-content: center;
+  grid-template-columns: 1fr auto;
   gap: 0.7rem;
-  font-size: 0.76rem;
+  font-size: 0.88rem;
 }
 .contact-hours-list dt {
   font-weight: 900;
-  text-align: right;
+  text-align: left;
 }
 .contact-hours-list dd {
   margin: 0;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
-  text-align: left;
+  text-align: right;
 }
 .contact-hours-note {
   margin: 0;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   line-height: 1.4;
-  text-align: center;
+  text-align: left;
 }
 .contact-hours-note a {
   color: var(--red);
@@ -346,6 +358,41 @@
   min-height: 300px;
   aspect-ratio: 1 / 1;
   border-bottom-width: 2px;
+}
+/* The open/closed sign (and any active holiday notice) floated in the map's
+   corner — this replaces the full contact-hours-card that used to sit in
+   the action column (commented out in the page). Sized up for legibility
+   and pinned to its own content width so it reads as a card on the map,
+   not a banner stretching edge to edge. */
+.shop-map-hours-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: grid;
+  gap: 0.4rem;
+  justify-items: end;
+  max-width: min(78%, 20rem);
+}
+.shop-map-hours-badge .shop-hours-status-wrap {
+  display: inline-flex;
+}
+.shop-map-hours-badge .shop-hours-status {
+  padding: 0.5rem 0.85rem;
+  border-width: 2px;
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.shop-map-hours-badge .shop-status-copy > span:first-child {
+  font-size: 0.95rem;
+}
+.shop-map-hours-badge .shop-status-copy > span:not(:first-child) {
+  font-size: 0.76rem;
+}
+.shop-map-hours-badge .contact-hours-warning {
+  text-align: right;
+  font-size: 0.76rem;
 }
 .contact-map-panel .shop-map figcaption {
   flex-wrap: nowrap;

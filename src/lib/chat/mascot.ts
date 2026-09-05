@@ -15,6 +15,13 @@ export type MascotConfig = {
   scene: "tire-3d" | "pixel";
 };
 
+/** A one-shot emote the widget hands to the scene — the id makes each play
+ *  once, so a repeated "happy" still re-triggers the animation. */
+export type MascotEmote = {
+  kind: "celebrate" | "thinking" | "happy" | "sleep";
+  id: number;
+} | null;
+
 export const MASCOTS: Record<MascotId, MascotConfig> = {
   tread: {
     persona: { name: "Tread", kind: "the shop tire", self: "a tire" },

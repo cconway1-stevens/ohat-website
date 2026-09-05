@@ -3,9 +3,9 @@ import test from "node:test";
 import {
   loadRecent,
   MAX_ENTRIES,
+  RESTORE_MAX,
   readEntries,
   recordEntry,
-  RESTORE_MAX,
   serializeTranscript,
   TRANSCRIPT_KEY,
 } from "../../src/lib/chat/transcript.ts";
@@ -39,14 +39,23 @@ test("readEntries ignores a non-array payload", () => {
   assert.deepEqual(readEntries(store), []);
 });
 
+test("readEntries migrates legacy 'tread' roles to 'mascot'", () => {
+  const store = makeStore({
+    [TRANSCRIPT_KEY]: JSON.stringify([{ t: 1000, role: "tread", text: "old log" }]),
+  });
+  const entries = readEntries(store);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].role, "mascot");
+});
+
 test("recordEntry appends and persists round-trippable entries", () => {
   const store = makeStore();
   recordEntry(store, { t: 1000, role: "user", text: "are you open?" });
-  recordEntry(store, { t: 1001, role: "tread", text: "Yes — we're open right now." });
+  recordEntry(store, { t: 1001, role: "mascot", text: "Yes — we're open right now." });
   const entries = readEntries(store);
   assert.equal(entries.length, 2);
   assert.equal(entries[0].text, "are you open?");
-  assert.equal(entries[1].role, "tread");
+  assert.equal(entries[1].role, "mascot");
 });
 
 test("recordEntry caps the log at MAX_ENTRIES, dropping the oldest", () => {
@@ -64,7 +73,7 @@ test("recordEntry keeps miss flags and matched debug info", () => {
   const store = makeStore();
   recordEntry(store, {
     t: 1,
-    role: "tread",
+    role: "mascot",
     text: "I'm just a tire — that one's beyond me.",
     miss: true,
     matched: null,
@@ -79,7 +88,7 @@ test("loadRecent returns only entries inside the restore window, newest last", (
   const store = makeStore();
   recordEntry(store, { t: now - 48 * 60 * 60 * 1000, role: "user", text: "two days ago" });
   recordEntry(store, { t: now - 60 * 60 * 1000, role: "user", text: "an hour ago" });
-  recordEntry(store, { t: now - 1000, role: "tread", text: "just now" });
+  recordEntry(store, { t: now - 1000, role: "mascot", text: "just now" });
   const recent = loadRecent(store, now);
   assert.deepEqual(
     recent.map((entry) => entry.text),

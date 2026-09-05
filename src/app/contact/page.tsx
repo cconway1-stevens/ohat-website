@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { TirePal } from "@/components/contact/tire-pal";
+import { ChatWidget } from "@/components/contact/chat-widget";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
 import { HoursCardNotice } from "@/components/shop/hours-card-notice";
@@ -100,17 +100,13 @@ export default function ContactPage() {
                     <span>Plan your route</span>
                     <strong>Get directions</strong>
                   </DirectionsTrigger>
-                  {/* One card for everything hours-related, read top to bottom:
-                      the note first (holidays + night drop), then the standing
-                      schedule, then the live open/closed sign — so a visitor
-                      sees "when" before "are we open right now". */}
-                  <div className="contact-hours-card">
-                    <p className="contact-hours-note">
-                      Holiday hours can vary — every posted closure and the full week are on the{" "}
-                      <Link href="/hours">hours page</Link>. The{" "}
-                      <Link href="/vehicle-drop-off">secure night drop</Link> is available around
-                      the clock.
-                    </p>
+                  {/* TRYING: full hours card moved onto the map as a corner
+                      badge (see contact-map-panel below) — commented out
+                      here instead of deleted so it's a one-line swap back
+                      if the badge doesn't earn its keep. */}
+                  {/* <div className="contact-hours-card">
+                    <p className="contact-hours-title">Shop hours</p>
+                    <ShopHoursStatus />
                     <dl className="contact-hours-list">
                       <div>
                         <dt>{shop.hours.weekdayLabel}</dt>
@@ -126,8 +122,10 @@ export default function ContactPage() {
                       </div>
                     </dl>
                     <HoursCardNotice />
-                    <ShopHoursStatus />
-                  </div>
+                    <p className="contact-hours-note">
+                      <Link href="/vehicle-drop-off">Secure night drop</Link> available 24/7.
+                    </p>
+                  </div> */}
                   <EmailCopyAction
                     email={contactEmail}
                     className="contact-action contact-action-email"
@@ -185,6 +183,13 @@ export default function ContactPage() {
                     referrerPolicy="no-referrer-when-downgrade"
                     allowFullScreen
                   />
+                  {/* The hours card (commented out above) now lives here:
+                      status sign + any active holiday notice, floated in
+                      the map's corner. */}
+                  <div className="shop-map-hours-badge">
+                    <ShopHoursStatus hideMore />
+                    <HoursCardNotice />
+                  </div>
                 </div>
                 <figcaption>
                   <span>
@@ -204,7 +209,7 @@ export default function ContactPage() {
           </div>
         </section>
       </main>
-      <TirePal />
+      <ChatWidget />
       <SiteFooter />
     </>
   );

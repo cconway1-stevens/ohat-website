@@ -3,10 +3,10 @@ import test from "node:test";
 import {
   answerQuestion,
   debugAnswer,
+  mascotGreeting,
   quickPrompts,
   STUDIO_CONFIG,
   TREAD_PERSONA,
-  treadGreeting,
 } from "../../src/lib/chat/answers.ts";
 
 // Fixed moments in the shop's America/New_York day: Tuesday 10:00 AM (open)
@@ -62,16 +62,16 @@ test("shrugs with a fallback on gibberish", () => {
 });
 
 test("greets as Sparky (the production mascot) whether open or closed", () => {
-  assert.match(treadGreeting(TUESDAY_OPEN), /Sparky/);
-  assert.match(treadGreeting(SUNDAY_CLOSED), /Sparky/);
+  assert.match(mascotGreeting(TUESDAY_OPEN), /Sparky/);
+  assert.match(mascotGreeting(SUNDAY_CLOSED), /Sparky/);
 });
 
 test("greets with a custom persona when one is given", () => {
   const torque = { name: "Torque", kind: "the blackwall tire-bot", self: "the blackwall tire-bot" };
-  assert.match(treadGreeting(TUESDAY_OPEN, torque), /Hi! I'm Torque, the blackwall tire-bot\./);
-  assert.doesNotMatch(treadGreeting(TUESDAY_OPEN, torque), /shop tire/);
+  assert.match(mascotGreeting(TUESDAY_OPEN, torque), /Hi! I'm Torque, the blackwall tire-bot\./);
+  assert.doesNotMatch(mascotGreeting(TUESDAY_OPEN, torque), /shop tire/);
   const bit = { name: "Bit", kind: "the original cloud-bot", self: "the original cloud-bot" };
-  assert.match(treadGreeting(SUNDAY_CLOSED, bit), /Hi! I'm Bit, the original cloud-bot\./);
+  assert.match(mascotGreeting(SUNDAY_CLOSED, bit), /Hi! I'm Bit, the original cloud-bot\./);
 });
 
 test("answers 'what are you' with the mascot identity instead of shrugging", () => {
@@ -159,8 +159,8 @@ test("every quick prompt produces a non-fallback answer", () => {
 test("greets as Sparky on both a weekday and a weekend date", () => {
   const weekday = new Date("2026-09-02T14:00:00Z");
   const weekend = new Date("2026-09-12T15:00:00Z");
-  assert.match(treadGreeting(weekday), /Sparky/);
-  assert.match(treadGreeting(weekend), /Sparky/);
+  assert.match(mascotGreeting(weekday), /Sparky/);
+  assert.match(mascotGreeting(weekend), /Sparky/);
 });
 
 /* --- New intents --------------------------------------------------------- */
@@ -326,7 +326,7 @@ test("TREAD_PERSONA stays intact; production copy follows PRODUCTION_PERSONA", (
   assert.equal(TREAD_PERSONA.self, "a tire");
   // Production swapped to Sparky (src/lib/chat/mascot.ts) — the greeting and
   // identity the real widget ships must say Sparky now.
-  assert.match(treadGreeting(TUESDAY_OPEN), /^Hi! I'm Sparky, the shop spark plug\./);
+  assert.match(mascotGreeting(TUESDAY_OPEN), /^Hi! I'm Sparky, the shop spark plug\./);
   const identity = answerQuestion("what are you", TUESDAY_OPEN);
   assert.match(identity.text, /I'm Sparky, the shop spark plug/);
 });

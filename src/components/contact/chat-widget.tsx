@@ -3,9 +3,13 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type { ChatChip } from "@/lib/chat/answers";
-import { MASCOTS, PRODUCTION_MASCOT } from "@/lib/chat/mascot";
-import { clearTranscript, loadRecent, recordEntry, serializeTranscript } from "@/lib/chat/transcript";
-import type { TirePalEmote } from "./tire-pal-scene";
+import { MASCOTS, type MascotEmote, PRODUCTION_MASCOT } from "@/lib/chat/mascot";
+import {
+  clearTranscript,
+  loadRecent,
+  recordEntry,
+  serializeTranscript,
+} from "@/lib/chat/transcript";
 
 /** The mascot config: change PRODUCTION_MASCOT in src/lib/chat/mascot.ts and
  *  every face, name and scene here follows. */
@@ -15,20 +19,22 @@ const mascot = MASCOTS[PRODUCTION_MASCOT];
 // pixel renderer) only downloads when the panel first opens. The loading
 // fallback is the same inline face used by the FAB, so nothing flashes empty.
 const MascotScene = dynamic(
-  () => (mascot.scene === "pixel" ? import("./pixel-mascot-scene") : import("./tire-pal-scene")),
+  () => (mascot.scene === "pixel" ? import("./pixel-mascot-scene") : import("./tire-3d-scene")),
   {
     ssr: false,
-    loading: () => <MascotFace className="tread-scene-fallback" />,
+    loading: () => <MascotFace className="chat-scene-fallback" />,
   },
 );
 
 /**
- * Tread — the contact-page chat widget. A fixed bottom-right FAB with a cute
- * tire face that opens a fully local Q&A panel. The 3D scene rides in its own
- * chunk (Three.js is heavy) and is only mounted after the panel has been opened
- * once, so the initial page load never pays for it. The answers module
- * (Tread's brain — TF-IDF matcher, fuzzy fallback, intents) is likewise
- * lazy-loaded so the 57 KB chunk stays out of the initial contact-page load.
+ * The contact-page chat widget. A fixed bottom-right FAB with the configured
+ * mascot (see src/lib/chat/mascot.ts — one variable swaps the character; its
+ * persona flows through the FAB, scene, avatars and chat copy) that opens a
+ * fully local Q&A panel. The 3D tire scene rides in its own chunk (Three.js
+ * is heavy) and is only mounted after the panel has been opened once, so the
+ * initial page load never pays for it. The answers module (the brain —
+ * TF-IDF matcher, fuzzy fallback, intents) is likewise lazy-loaded so the
+ * 57 KB chunk stays out of the initial contact-page load.
  */
 
 type AnswersModule = typeof import("@/lib/chat/answers");
@@ -94,10 +100,14 @@ function MascotFace({ className }: { className?: string }) {
           strokeWidth="2.5"
         />
         <path d="M50 83 L45 93 L55 93 Z" fill="#2a2624" stroke="#171412" strokeWidth="2" />
+        {/* Eyes: a round pupil with a small highlight dot instead of a flat
+            black circle, so the face reads friendly rather than blank/staring. */}
         <circle cx="44" cy="32" r="4.5" fill="#171412" />
+        <circle cx="45.3" cy="30.5" r="1.3" fill="#f5f1e8" />
         <circle cx="56" cy="32" r="4.5" fill="#171412" />
+        <circle cx="57.3" cy="30.5" r="1.3" fill="#f5f1e8" />
         <path
-          d="M41 42 Q50 50 59 42"
+          d="M41 40 Q50 47 59 40"
           fill="none"
           stroke="#171412"
           strokeWidth="3"
@@ -144,7 +154,7 @@ type SpeechRecognitionLike = {
 
 type Message = {
   id: number;
-  role: "tread" | "user";
+  role: "mascot" | "user";
   text: string;
   chips?: ChatChip[];
   /** Full FAQ text if the bubble was trimmed to fit the chat width. */
@@ -153,27 +163,25 @@ type Message = {
   suggestions?: string[];
 };
 
-const GREETING_KEY = "ohat-tread-greeted";
-const TEXT_SCALE_KEY = "ohat-tread-text-scale";
+const GREETING_KEY = "ohat-chat-greeted";
+const TEXT_SCALE_KEY = "ohat-chat-text-scale";
 /** Three text sizes for visitors who need bigger type — cycled by the "Aa"
- *  button in the header. Indexes into the `tread-zoom-*` classes. */
+ *  button in the header. Indexes into the `chat-zoom-*` classes. */
 const TEXT_SCALES = ["A", "A+", "A++"] as const;
 
 const AI_DISCLAIMER = `${mascot.persona.name} is AI and can make mistakes. It doesn't reflect the views of Ocean Heights Auto & Tire — it's just here to help you find info faster.`;
 const AI_DISCLAIMER_SHORT =
   "AI-generated answers can be wrong and don't represent Ocean Heights Auto & Tire's official views.";
 
-// Inlined copy of `quickPrompts` from answers.ts. The full answers module
-// (57 KB) is lazy-loaded after mount; inlining 7 strings avoids pulling
-// the whole matcher into the initial page load just for the prompt chips.
+// Inlined copy of the top entries in `quickPrompts` from answers.ts. The full
+// answers module (57 KB) is lazy-loaded after mount; inlining a short list
+// avoids pulling the whole matcher into the initial page load just for the
+// prompt chips, and keeps the row from crowding out the input on first open.
 const QUICK_PROMPTS = [
   "Are you open?",
   "Can you fix a flat?",
   "Book an appointment",
   "Talk to a person",
-  "Do you do NJ inspection?",
-  "Do you take cards?",
-  "Tell me a joke",
 ];
 
 // Message ids and emote ids just need to be unique and ever-increasing — a
@@ -184,7 +192,7 @@ function nextId(): number {
   idSeq += 1;
   return idSeq;
 }
-function nextEmote(kind: NonNullable<TirePalEmote>["kind"]): TirePalEmote {
+function nextEmote(kind: NonNullable<MascotEmote>["kind"]): MascotEmote {
   return { kind, id: nextId() };
 }
 
@@ -200,16 +208,20 @@ function voiceErrorMessage(reason: string): string {
   return "Voice didn't work just now — please type your question.";
 }
 
-export function TirePal() {
+export function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
-  const [emote, setEmote] = useState<TirePalEmote>(null);
+  const [emote, setEmote] = useState<MascotEmote>(null);
   const [sceneMounted, setSceneMounted] = useState(false);
   const [sceneFailed, setSceneFailed] = useState(false);
   const [nudgeVisible, setNudgeVisible] = useState(false);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
+  // The header's overflow menu (expand, clear, download) — collapsed behind
+  // one "more" button so the header only shows Aa + more + close by default,
+  // instead of five separate circles fighting the title for space.
+  const [menuOpen, setMenuOpen] = useState(false);
   // A bubble that was trimmed for fit remembers its expanded state locally
   // so the read-more chip can toggle without re-running the brain.
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
@@ -246,7 +258,7 @@ export function TirePal() {
   // long answer (or a visitor who wants room) isn't stuck in a 360px column.
   const [maximized, setMaximized] = useState(false);
   // Text size for visitors who need bigger type — persisted, cycled by the
-  // "Aa" button. Indexes into the `tread-zoom-*` classes.
+  // "Aa" button. Indexes into the `chat-zoom-*` classes.
   const [textScale, setTextScale] = useState(() => {
     if (typeof window === "undefined") return 0;
     const saved = Number(localStorage.getItem(TEXT_SCALE_KEY));
@@ -270,7 +282,7 @@ export function TirePal() {
     openRef.current = open;
   }, [open]);
 
-  // Lazy-load Tread's brain (the answers module — 57 KB of TF-IDF matcher,
+  // Lazy-load the brain (the answers module — 57 KB of TF-IDF matcher,
   // fuzzy fallback, and intents) in the background after mount so it's
   // ready by the time the user opens the panel, without blocking the
   // initial page load. The promise is cached so subsequent opens are free.
@@ -294,12 +306,16 @@ export function TirePal() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Escape closes the disclaimer popover first, then the panel, so a visitor
-  // reading the disclaimer doesn't lose their conversation by mistake.
+  // Escape closes the overflow menu or disclaimer popover first, then the
+  // panel, so a visitor mid-menu or mid-read doesn't lose their conversation.
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      if (menuOpen) {
+        setMenuOpen(false);
+        return;
+      }
       if (disclaimerOpen) {
         setDisclaimerOpen(false);
         return;
@@ -309,18 +325,29 @@ export function TirePal() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, disclaimerOpen]);
+  }, [open, disclaimerOpen, menuOpen]);
 
   // Click outside the disclaimer popover dismisses it.
   useEffect(() => {
     if (!disclaimerOpen) return;
     const onClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".tread-disclaimer")) setDisclaimerOpen(false);
+      if (!target.closest(".chat-disclaimer")) setDisclaimerOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, [disclaimerOpen]);
+
+  // Click outside the overflow menu dismisses it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".chat-menu-wrap")) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [menuOpen]);
 
   // Focus the input on open, but only for fine pointers so mobile keyboards
   // don't pop up uninvited.
@@ -372,8 +399,8 @@ export function TirePal() {
         return;
       }
       getAnswers()
-        .then(({ treadGreeting }) => {
-          setMessages((m) => [...m, { id: nextId(), role: "tread", text: treadGreeting() }]);
+        .then(({ mascotGreeting }) => {
+          setMessages((m) => [...m, { id: nextId(), role: "mascot", text: mascotGreeting() }]);
         })
         .catch(() => {
           // Brain failed to load — the send path shows the honest fallback.
@@ -404,7 +431,7 @@ export function TirePal() {
             ...m,
             {
               id,
-              role: "tread",
+              role: "mascot",
               text: answer.text,
               chips: answer.chips,
               fullText: answer.fullText,
@@ -413,7 +440,7 @@ export function TirePal() {
           ]);
           recordEntry(window.localStorage, {
             t: Date.now(),
-            role: "tread",
+            role: "mascot",
             text: answer.text,
             miss: answer.fallback || undefined,
             matched: resolved.matched,
@@ -432,7 +459,7 @@ export function TirePal() {
             ...m,
             {
               id: nextId(),
-              role: "tread",
+              role: "mascot",
               text: "My brain hiccuped loading my answers — please try again, or call the shop with the button at the top of the page.",
             },
           ]);
@@ -453,6 +480,7 @@ export function TirePal() {
     anchor.download = `${mascot.persona.name.toLowerCase()}-transcript.json`;
     anchor.click();
     URL.revokeObjectURL(url);
+    setMenuOpen(false);
   }
 
   /** Cycles the panel's text size (normal → large → larger) and remembers the
@@ -475,11 +503,12 @@ export function TirePal() {
     setThinking(false);
     setEmote(null);
     setExpanded({});
+    setMenuOpen(false);
     clearTranscript(window.localStorage);
     setMessages([]);
     getAnswers()
-      .then(({ treadGreeting }) => {
-        setMessages([{ id: nextId(), role: "tread", text: treadGreeting() }]);
+      .then(({ mascotGreeting }) => {
+        setMessages([{ id: nextId(), role: "mascot", text: mascotGreeting() }]);
       })
       .catch(() => {
         // Brain failed to load — an empty panel is fine, the input still works.
@@ -573,13 +602,11 @@ export function TirePal() {
   return (
     <>
       {nudgeVisible && (
-        <div className="tread-nudge" role="status">
-          <p>
-            Need a hand? Ask {mascot.persona.name} — I know hours, services and directions.
-          </p>
+        <div className="chat-nudge" role="status">
+          <p>Need a hand? Ask {mascot.persona.name} — I know hours, services and directions.</p>
           <button
             type="button"
-            className="tread-nudge-dismiss"
+            className="chat-nudge-dismiss"
             aria-label="Dismiss"
             onClick={markGreeted}
           >
@@ -590,44 +617,66 @@ export function TirePal() {
 
       {open && (
         <section
-          className={`tread-panel tread-zoom-${textScale}${maximized ? " tread-panel-max" : ""}`}
+          className={`chat-panel chat-zoom-${textScale}${maximized ? " chat-panel-max" : ""}`}
           aria-label={`Chat with ${mascot.persona.name}`}
         >
-          <header className="tread-panel-head">
+          <header className="chat-panel-head">
             <div
-              className="tread-scene"
+              className="chat-scene"
               role="img"
               aria-label={`${mascot.persona.name}, ${mascot.persona.kind}`}
             >
               {sceneFailed ? (
-                <MascotFace className="tread-scene-fallback" />
+                <MascotFace className="chat-scene-fallback" />
               ) : (
                 sceneMounted && (
                   <MascotScene
                     emote={emote}
                     reducedMotion={reducedMotion}
                     onFail={() => setSceneFailed(true)}
-                    className="tread-scene-canvas"
+                    className="chat-scene-canvas"
                   />
                 )
               )}
             </div>
-            <div className="tread-panel-title">
+            <div className="chat-panel-title">
               <strong>
                 {mascot.persona.name}
-                <span className="tread-disclaimer">
+                <span className="chat-disclaimer">
                   <button
                     type="button"
-                    className="tread-ai-badge"
+                    className="chat-ai-badge"
                     aria-label={`About ${mascot.persona.name}'s AI answers`}
                     aria-expanded={disclaimerOpen}
                     title={AI_DISCLAIMER_SHORT}
                     onClick={() => setDisclaimerOpen((v) => !v)}
                   >
+                    <svg
+                      viewBox="0 0 16 16"
+                      width="10"
+                      height="10"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <circle
+                        cx="8"
+                        cy="8"
+                        r="6.5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M8 7.5v3.5M8 5.2v.1"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                     AI
                   </button>
                   {disclaimerOpen && (
-                    <div className="tread-disclaimer-popover" role="tooltip">
+                    <div className="chat-disclaimer-popover" role="tooltip">
                       {AI_DISCLAIMER}
                     </div>
                   )}
@@ -635,84 +684,131 @@ export function TirePal() {
               </strong>
               <span>Local answers · no data leaves your device</span>
             </div>
-            <div className="tread-actions">
+            <div className="chat-actions">
               <button
                 type="button"
-                className="tread-icon-btn tread-text-btn"
+                className="chat-icon-btn chat-text-btn"
                 aria-label={`Text size: ${["small", "medium", "large"][textScale]} — click to increase`}
                 title="Adjust text size"
                 onClick={cycleTextScale}
               >
                 {TEXT_SCALES[textScale]}
               </button>
+              <span className="chat-menu-wrap">
+                <button
+                  type="button"
+                  className="chat-icon-btn"
+                  aria-label="More options"
+                  aria-expanded={menuOpen}
+                  title="More options"
+                  onClick={() => setMenuOpen((v) => !v)}
+                >
+                  <svg
+                    viewBox="0 0 16 16"
+                    width="14"
+                    height="14"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <circle cx="3.2" cy="8" r="1.4" fill="currentColor" />
+                    <circle cx="8" cy="8" r="1.4" fill="currentColor" />
+                    <circle cx="12.8" cy="8" r="1.4" fill="currentColor" />
+                  </svg>
+                </button>
+                {menuOpen && (
+                  <div className="chat-menu" role="menu">
+                    <button
+                      type="button"
+                      className="chat-menu-item"
+                      role="menuitem"
+                      onClick={() => {
+                        setMaximized((v) => !v);
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <svg
+                        viewBox="0 0 16 16"
+                        width="14"
+                        height="14"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        {maximized ? (
+                          <path
+                            d="M3 6h3V3M13 6h-3V3M3 10h3v3M13 10h-3v3"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        ) : (
+                          <path
+                            d="M6 3H3v3M10 3h3v3M6 13H3v-3M10 13h3v-3"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        )}
+                      </svg>
+                      {maximized ? "Shrink chat" : "Expand chat"}
+                    </button>
+                    <button
+                      type="button"
+                      className="chat-menu-item"
+                      role="menuitem"
+                      onClick={clearChat}
+                    >
+                      <svg
+                        viewBox="0 0 16 16"
+                        width="14"
+                        height="14"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          d="M3 4h10M6.5 4V2.5h3V4M4.5 4l.6 9.2a1 1 0 0 0 1 .8h3.8a1 1 0 0 0 1-.8L11.5 4"
+                          stroke="currentColor"
+                          strokeWidth="1.4"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Clear chat
+                    </button>
+                    <button
+                      type="button"
+                      className="chat-menu-item"
+                      role="menuitem"
+                      onClick={downloadTranscript}
+                    >
+                      <svg
+                        viewBox="0 0 16 16"
+                        width="14"
+                        height="14"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          d="M8 2v8m0 0L5 7m3 3l3-3M3 12h10v2H3z"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Download transcript
+                    </button>
+                  </div>
+                )}
+              </span>
               <button
                 type="button"
-                className="tread-icon-btn"
-                aria-label={maximized ? "Shrink chat" : "Expand chat"}
-                title={maximized ? "Shrink chat" : "Expand chat"}
-                onClick={() => setMaximized((v) => !v)}
-              >
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
-                  {maximized ? (
-                    <path
-                      d="M3 6h3V3M13 6h-3V3M3 10h3v3M13 10h-3v3"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  ) : (
-                    <path
-                      d="M6 3H3v3M10 3h3v3M6 13H3v-3M10 13h3v-3"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="tread-icon-btn"
-                aria-label="Clear chat"
-                title="Clear this conversation"
-                onClick={clearChat}
-              >
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
-                  <path
-                    d="M3 4h10M6.5 4V2.5h3V4M4.5 4l.6 9.2a1 1 0 0 0 1 .8h3.8a1 1 0 0 0 1-.8L11.5 4"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="tread-icon-btn"
-                aria-label="Download transcript"
-                title="Download transcript — it stays on your device"
-                onClick={downloadTranscript}
-              >
-                <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
-                  <path
-                    d="M8 2v8m0 0L5 7m3 3l3-3M3 12h10v2H3z"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="tread-icon-btn"
+                className="chat-icon-btn"
                 aria-label="Close chat"
                 onClick={() => setOpen(false)}
               >
@@ -721,16 +817,16 @@ export function TirePal() {
             </div>
           </header>
 
-          <div className="tread-log" role="log" aria-live="polite" ref={logRef}>
+          <div className="chat-log" role="log" aria-live="polite" ref={logRef}>
             {messages.map((m) => (
-              <div key={m.id} className={`tread-msg tread-msg-${m.role}`}>
-                {m.role === "tread" && <MascotFace className="tread-msg-avatar" />}
-                <div className="tread-bubble">
+              <div key={m.id} className={`chat-msg chat-msg-${m.role}`}>
+                {m.role === "mascot" && <MascotFace className="chat-msg-avatar" />}
+                <div className="chat-bubble">
                   <p>{expanded[m.id] && m.fullText ? m.fullText : m.text}</p>
                   {m.fullText && m.fullText !== m.text && (
                     <button
                       type="button"
-                      className="tread-readmore"
+                      className="chat-readmore"
                       aria-expanded={Boolean(expanded[m.id])}
                       onClick={() => setExpanded((e) => ({ ...e, [m.id]: !e[m.id] }))}
                     >
@@ -738,12 +834,12 @@ export function TirePal() {
                     </button>
                   )}
                   {m.chips && m.chips.length > 0 && (
-                    <div className="tread-chips">
+                    <div className="chat-chips">
                       {m.chips.map((chip) => (
                         <a
                           key={chip.href + chip.label}
                           href={chip.href}
-                          className={`tread-chip tread-chip-${chip.kind}`}
+                          className={`chat-chip chat-chip-${chip.kind}`}
                           {...(chip.kind === "download" ? { download: true } : {})}
                           {...(chip.href.startsWith("http")
                             ? { target: "_blank", rel: "noreferrer" }
@@ -755,17 +851,25 @@ export function TirePal() {
                       ))}
                     </div>
                   )}
-                  {m.role === "tread" && (
-                    <div className="tread-bubble-actions">
+                  {m.role === "mascot" && (
+                    <div className="chat-bubble-actions">
                       <button
                         type="button"
-                        className="tread-bubble-btn"
+                        className="chat-bubble-btn"
                         aria-label={copiedId === m.id ? "Copied" : "Copy answer"}
                         title={copiedId === m.id ? "Copied!" : "Copy answer"}
-                        onClick={() => copyMessage(m.id, expanded[m.id] && m.fullText ? m.fullText : m.text)}
+                        onClick={() =>
+                          copyMessage(m.id, expanded[m.id] && m.fullText ? m.fullText : m.text)
+                        }
                       >
                         {copiedId === m.id ? (
-                          <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
+                          <svg
+                            viewBox="0 0 16 16"
+                            width="12"
+                            height="12"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
                             <path
                               d="M3 8.5l3 3 7-7"
                               stroke="currentColor"
@@ -776,7 +880,13 @@ export function TirePal() {
                             />
                           </svg>
                         ) : (
-                          <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
+                          <svg
+                            viewBox="0 0 16 16"
+                            width="12"
+                            height="12"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
                             <rect
                               x="5.5"
                               y="5.5"
@@ -799,7 +909,7 @@ export function TirePal() {
                       {ttsSupported && (
                         <button
                           type="button"
-                          className="tread-bubble-btn"
+                          className="chat-bubble-btn"
                           aria-label={speakingId === m.id ? "Stop reading" : "Read aloud"}
                           title={speakingId === m.id ? "Stop reading" : "Read aloud"}
                           onClick={() =>
@@ -807,15 +917,24 @@ export function TirePal() {
                           }
                         >
                           {speakingId === m.id ? (
-                            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
+                            <svg
+                              viewBox="0 0 16 16"
+                              width="12"
+                              height="12"
+                              aria-hidden="true"
+                              focusable="false"
+                            >
                               <rect x="4" y="4" width="8" height="8" rx="1" fill="currentColor" />
                             </svg>
                           ) : (
-                            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
-                              <path
-                                d="M2 6v4h2.5L8 13V3L4.5 6H2z"
-                                fill="currentColor"
-                              />
+                            <svg
+                              viewBox="0 0 16 16"
+                              width="12"
+                              height="12"
+                              aria-hidden="true"
+                              focusable="false"
+                            >
+                              <path d="M2 6v4h2.5L8 13V3L4.5 6H2z" fill="currentColor" />
                               <path
                                 d="M10.5 5.5a3 3 0 0 1 0 5M12.3 3.8a5.5 5.5 0 0 1 0 8.4"
                                 stroke="currentColor"
@@ -833,24 +952,24 @@ export function TirePal() {
               </div>
             ))}
             {thinking && (
-              <div className="tread-msg tread-msg-tread">
-                <MascotFace className="tread-msg-avatar" />
-                <div className="tread-bubble tread-thinking">
+              <div className="chat-msg chat-msg-mascot">
+                <MascotFace className="chat-msg-avatar" />
+                <div className="chat-bubble chat-thinking">
                   <span className="sr-only">{mascot.persona.name} is thinking…</span>
-                  <span className="tread-dot" />
-                  <span className="tread-dot" />
-                  <span className="tread-dot" />
+                  <span className="chat-dot" />
+                  <span className="chat-dot" />
+                  <span className="chat-dot" />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="tread-prompts">
+          <div className="chat-prompts">
             {QUICK_PROMPTS.map((prompt) => (
               <button
                 key={prompt}
                 type="button"
-                className="tread-prompt"
+                className="chat-prompt"
                 onClick={() => send(prompt)}
               >
                 {prompt}
@@ -859,13 +978,13 @@ export function TirePal() {
           </div>
 
           {voiceError && (
-            <p className="tread-voice-note" role="status">
+            <p className="chat-voice-note" role="status">
               {voiceError}
             </p>
           )}
 
           <form
-            className="tread-input-row"
+            className="chat-input-row"
             onSubmit={(event) => {
               event.preventDefault();
               send(input);
@@ -885,7 +1004,7 @@ export function TirePal() {
             {sttSupported && (
               <button
                 type="button"
-                className="tread-mic"
+                className="chat-mic"
                 aria-label="Speak your question"
                 title="Speak your question"
                 onClick={startListening}
@@ -907,7 +1026,7 @@ export function TirePal() {
                 </svg>
               </button>
             )}
-            <button type="submit" className="tread-send" aria-label="Send">
+            <button type="submit" className="chat-send" aria-label="Send">
               Send
             </button>
           </form>
@@ -917,12 +1036,12 @@ export function TirePal() {
       <button
         ref={fabRef}
         type="button"
-        className={nudgeVisible ? "tread-fab tread-fab-nudged" : "tread-fab"}
+        className={nudgeVisible ? "chat-fab chat-fab-nudged" : "chat-fab"}
         aria-label={`Chat with ${mascot.persona.name}, ${mascot.persona.kind}`}
         aria-expanded={open}
         onClick={() => (open ? setOpen(false) : openPanel())}
       >
-        <MascotFace className="tread-fab-face" />
+        <MascotFace className="chat-fab-face" />
       </button>
     </>
   );

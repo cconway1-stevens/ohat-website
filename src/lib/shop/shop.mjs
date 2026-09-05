@@ -203,7 +203,7 @@ export const shop = {
          */
         reasons: {
           holiday: "Closed for {name}",
-          weekend: "Closed — we're shut every Saturday and Sunday",
+          weekend: "Closed for the weekend",
           exception: "Closed — {name}",
         },
       },

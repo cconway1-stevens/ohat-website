@@ -12,7 +12,7 @@
  * in-memory stand-in.
  */
 
-type TranscriptRole = "user" | "tread";
+type TranscriptRole = "user" | "mascot";
 
 export type TranscriptEntry = {
   /** Epoch milliseconds when the message was sent. */
@@ -32,7 +32,7 @@ export type StorageLike = {
   removeItem(key: string): void;
 };
 
-export const TRANSCRIPT_KEY = "ohat-tread-transcript";
+export const TRANSCRIPT_KEY = "ohat-chat-transcript";
 /** Keep the log bounded so a chatty visitor can't fill the quota. */
 export const MAX_ENTRIES = 200;
 /** Restore only the last day of history into the panel on reopen. */
@@ -45,7 +45,11 @@ export function readEntries(store: StorageLike): TranscriptEntry[] {
     const raw = store.getItem(TRANSCRIPT_KEY);
     if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as TranscriptEntry[]) : [];
+    if (!Array.isArray(parsed)) return [];
+    // Migrate logs written before the role was renamed "tread" → "mascot".
+    return (parsed as TranscriptEntry[]).map((entry) =>
+      (entry.role as string) === "tread" ? { ...entry, role: "mascot" } : entry,
+    );
   } catch {
     return [];
   }

@@ -10,7 +10,7 @@ import {
   type MatcherConfig,
   quickPrompts,
   STUDIO_CONFIG,
-  treadGreeting,
+  mascotGreeting,
 } from "@/lib/chat/answers";
 import { services } from "@/lib/services";
 import { shop } from "@/lib/shop/shop";
@@ -1537,7 +1537,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
   // and fallback copy from it.
   const persona = { name: character.name, ...character.persona };
   const [messages, setMessages] = useState<DemoMessage[]>([
-    { id: nextDemoId(), role: "tread", text: treadGreeting(new Date(), persona) },
+    { id: nextDemoId(), role: "tread", text: mascotGreeting(new Date(), persona) },
   ]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -1555,7 +1555,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
   const [greetedId, setGreetedId] = useState(character.id);
   if (greetedId !== character.id) {
     setGreetedId(character.id);
-    setMessages([{ id: nextDemoId(), role: "tread", text: treadGreeting(new Date(), persona) }]);
+    setMessages([{ id: nextDemoId(), role: "tread", text: mascotGreeting(new Date(), persona) }]);
   }
 
   function send(text: string) {

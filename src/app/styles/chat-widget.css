@@ -1,6 +1,6 @@
-/* Tread — the contact-page chat widget. Fixed bottom-right FAB + panel. */
+/* The contact-page chat widget. Fixed bottom-right FAB + panel. */
 
-.tread-fab {
+.chat-fab {
   position: fixed;
   right: 1.25rem;
   bottom: 1.25rem;
@@ -19,33 +19,33 @@
     transform 0.15s ease,
     box-shadow 0.15s ease;
 }
-.tread-fab:hover {
+.chat-fab:hover {
   transform: translateY(-3px);
   box-shadow: 10px 10px 0 var(--ink);
 }
-.tread-fab:active {
+.chat-fab:active {
   transform: translateY(0);
 }
-.tread-fab-face {
+.chat-fab-face {
   width: 46px;
   height: 46px;
   display: block;
   /* A gentle idle float — the mascot drifts in place so the corner feels
      alive without ever leaving its button. */
-  animation: tread-float 2.8s ease-in-out infinite;
+  animation: chat-float 2.8s ease-in-out infinite;
 }
 /* While the greeting nudge is up, a soft ring pulses out from the FAB —
    "over here!" without shaking the whole button. */
-.tread-fab-nudged::after {
+.chat-fab-nudged::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
   pointer-events: none;
-  animation: tread-fab-pulse 1.8s ease-out infinite;
+  animation: chat-fab-pulse 1.8s ease-out infinite;
 }
 
-.tread-nudge {
+.chat-nudge {
   position: fixed;
   right: 1.25rem;
   bottom: 5.5rem;
@@ -56,14 +56,14 @@
   border-radius: 14px;
   box-shadow: var(--hard-shadow);
   padding: 0.7rem 0.9rem;
-  animation: tread-nudge-in 0.3s ease;
+  animation: chat-nudge-in 0.3s ease;
 }
-.tread-nudge p {
+.chat-nudge p {
   margin: 0;
   font-size: 0.85rem;
   line-height: 1.4;
 }
-.tread-nudge-dismiss {
+.chat-nudge-dismiss {
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
@@ -76,11 +76,11 @@
   line-height: 1;
   cursor: pointer;
 }
-.tread-nudge-dismiss:hover {
+.chat-nudge-dismiss:hover {
   color: var(--ink);
 }
 
-.tread-panel {
+.chat-panel {
   position: fixed;
   right: 1.25rem;
   bottom: 5.5rem;
@@ -97,7 +97,8 @@
   overflow: hidden;
 }
 
-.tread-panel-head {
+.chat-panel-head {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -105,30 +106,31 @@
   background: var(--cream);
   border-bottom: 3px solid var(--ink);
 }
-.tread-scene {
-  width: 96px;
-  height: 96px;
-  flex: 0 0 96px;
+.chat-scene {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
   border-radius: 12px;
   overflow: hidden;
   background: var(--cream);
 }
-.tread-scene-canvas {
+.chat-scene-canvas {
   width: 100%;
   height: 100%;
 }
-.tread-scene-fallback {
+.chat-scene-fallback {
   width: 100%;
   height: 100%;
   display: block;
 }
-.tread-panel-title {
+.chat-panel-title {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  flex: 1 1 auto;
   min-width: 0;
 }
-.tread-panel-title strong {
+.chat-panel-title strong {
   font-family: var(--font-serif);
   font-size: 1.4rem;
   line-height: 1;
@@ -136,15 +138,17 @@
   align-items: center;
   gap: 0.4rem;
 }
-.tread-panel-title span {
+.chat-panel-title span {
   font-size: 0.72rem;
   color: var(--muted);
 }
-.tread-disclaimer {
-  position: relative;
+.chat-disclaimer {
   display: inline-flex;
 }
-.tread-ai-badge {
+.chat-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
   font-family: var(--font-sans, inherit);
   font-size: 0.55rem;
   font-weight: 700;
@@ -158,16 +162,19 @@
   cursor: pointer;
   opacity: 0.8;
 }
-.tread-ai-badge:hover {
+.chat-ai-badge:hover {
   opacity: 1;
   background: var(--yellow);
 }
-.tread-disclaimer-popover {
+/* Anchored to the header (not the tiny badge) and right-aligned, so the
+   warning clause always stays inside the panel instead of clipping at the
+   rounded corner. */
+.chat-disclaimer-popover {
   position: absolute;
   top: calc(100% + 0.4rem);
-  left: -0.25rem;
+  right: 0.5rem;
   z-index: 5;
-  width: min(240px, 80vw);
+  width: min(280px, calc(100vw - 3rem));
   padding: 0.6rem 0.7rem;
   background: var(--paper);
   border: 2px solid var(--ink);
@@ -180,14 +187,16 @@
 
 /* Header actions — clear, download, close — grouped as one quiet cluster so
    they read as a single control row instead of three separate circles. */
-.tread-actions {
+.chat-actions {
   margin-left: auto;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 0.35rem;
   flex: 0 0 auto;
 }
-.tread-icon-btn {
+.chat-icon-btn {
   width: 1.9rem;
   height: 1.9rem;
   flex: 0 0 1.9rem;
@@ -202,11 +211,58 @@
   line-height: 1;
   cursor: pointer;
 }
-.tread-icon-btn:hover {
+.chat-icon-btn:hover {
   background: var(--yellow);
 }
+/* The "Aa" text-size button shows its current level as a short label. */
+.chat-text-btn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
 
-.tread-log {
+/* The "more options" (⋯) dropdown — expand, clear, download live here so the
+   header only ever shows three buttons (Aa, more, close) no matter how many
+   options the panel grows to have. */
+.chat-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.chat-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 6;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.35rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+}
+.chat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chat-menu-item:hover {
+  background: var(--cream);
+}
+
+.chat-log {
   flex: 1 1 auto;
   overflow-y: auto;
   padding: 0.9rem;
@@ -215,22 +271,22 @@
   gap: 0.6rem;
   min-height: 0;
 }
-.tread-msg {
+.chat-msg {
   display: flex;
   gap: 0.5rem;
   align-items: flex-end;
-  animation: tread-msg-in 0.2s ease;
+  animation: chat-msg-in 0.2s ease;
 }
-.tread-msg-user {
+.chat-msg-user {
   justify-content: flex-end;
 }
-.tread-msg-avatar {
+.chat-msg-avatar {
   width: 26px;
   height: 26px;
   flex: 0 0 26px;
   display: block;
 }
-.tread-bubble {
+.chat-bubble {
   max-width: 78%;
   min-width: 0;
   padding: 0.55rem 0.75rem;
@@ -242,30 +298,30 @@
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-.tread-msg-tread .tread-bubble {
+.chat-msg-mascot .chat-bubble {
   background: var(--cream);
   border: 2px solid var(--ink);
   border-bottom-left-radius: 4px;
 }
-.tread-msg-user .tread-bubble {
+.chat-msg-user .chat-bubble {
   background: var(--red);
   color: #fff;
   border: 2px solid var(--ink);
   border-bottom-right-radius: 4px;
 }
-.tread-bubble p {
+.chat-bubble p {
   margin: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-.tread-chips {
+.chat-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: 0.5rem;
   max-width: 100%;
 }
-.tread-chip {
+.chat-chip {
   display: inline-block;
   max-width: 100%;
   padding: 0.3rem 0.6rem;
@@ -279,31 +335,31 @@
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-.tread-chip:hover {
+.chat-chip:hover {
   background: var(--yellow);
 }
 /* Lead chips — call, email and the save-contact card are the widget's whole
    job, so they get the shop red instead of blending in with the link chips. */
-.tread-chip-call,
-.tread-chip-email,
-.tread-chip-download {
+.chat-chip-call,
+.chat-chip-email,
+.chat-chip-download {
   background: var(--red);
   color: #fff;
 }
-.tread-chip-call:hover,
-.tread-chip-email:hover,
-.tread-chip-download:hover {
+.chat-chip-call:hover,
+.chat-chip-email:hover,
+.chat-chip-download:hover {
   background: var(--red-dark);
 }
 
 /* Copy / read-aloud row under each of Sparky's own bubbles — quiet by
    default so the reply text stays the focus. */
-.tread-bubble-actions {
+.chat-bubble-actions {
   display: flex;
   gap: 0.3rem;
   margin-top: 0.35rem;
 }
-.tread-bubble-btn {
+.chat-bubble-btn {
   width: 1.4rem;
   height: 1.4rem;
   display: inline-flex;
@@ -316,39 +372,39 @@
   cursor: pointer;
   opacity: 0.6;
 }
-.tread-bubble-btn:hover {
+.chat-bubble-btn:hover {
   opacity: 1;
   background: rgba(0, 0, 0, 0.06);
   color: var(--ink);
 }
 
-.tread-thinking {
+.chat-thinking {
   display: flex;
   gap: 0.3rem;
   align-items: center;
   padding: 0.7rem 0.85rem;
 }
-.tread-dot {
+.chat-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--muted);
-  animation: tread-bounce 1s infinite ease-in-out;
+  animation: chat-bounce 1s infinite ease-in-out;
 }
-.tread-dot:nth-child(2) {
+.chat-dot:nth-child(2) {
   animation-delay: 0.15s;
 }
-.tread-dot:nth-child(3) {
+.chat-dot:nth-child(3) {
   animation-delay: 0.3s;
 }
 
-.tread-prompts {
+.chat-prompts {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   padding: 0 0.9rem 0.6rem;
 }
-.tread-prompt {
+.chat-prompt {
   padding: 0.3rem 0.6rem;
   border: 2px solid var(--line);
   border-radius: 999px;
@@ -357,19 +413,19 @@
   font-size: 0.75rem;
   cursor: pointer;
 }
-.tread-prompt:hover {
+.chat-prompt:hover {
   border-color: var(--ink);
   background: var(--cream);
 }
 
-.tread-input-row {
+.chat-input-row {
   display: flex;
   gap: 0.5rem;
   padding: 0.75rem 0.9rem;
   border-top: 3px solid var(--ink);
   background: var(--cream);
 }
-.tread-input-row input {
+.chat-input-row input {
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.55rem 0.7rem;
@@ -380,10 +436,10 @@
   font: inherit;
   font-size: 0.9rem;
 }
-.tread-input-row input:focus-visible {
+.chat-input-row input:focus-visible {
   border-color: var(--blue);
 }
-.tread-send {
+.chat-send {
   padding: 0.55rem 0.9rem;
   border: 2px solid var(--ink);
   border-radius: 10px;
@@ -393,11 +449,11 @@
   font-size: 0.85rem;
   cursor: pointer;
 }
-.tread-send:hover {
+.chat-send:hover {
   background: var(--red-dark);
 }
 
-.tread-mic {
+.chat-mic {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -408,15 +464,15 @@
   color: var(--ink);
   cursor: pointer;
 }
-.tread-mic:hover {
+.chat-mic:hover {
   background: var(--yellow);
 }
-.tread-mic:focus-visible {
+.chat-mic:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
 
-.tread-readmore {
+.chat-readmore {
   margin-top: 0.4rem;
   padding: 0;
   border: 0;
@@ -427,11 +483,11 @@
   text-decoration: underline;
   cursor: pointer;
 }
-.tread-readmore:hover {
+.chat-readmore:hover {
   color: var(--ink);
 }
 
-@keyframes tread-nudge-in {
+@keyframes chat-nudge-in {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -441,7 +497,7 @@
     transform: translateY(0);
   }
 }
-@keyframes tread-msg-in {
+@keyframes chat-msg-in {
   from {
     opacity: 0;
     transform: translateY(4px);
@@ -451,7 +507,7 @@
     transform: translateY(0);
   }
 }
-@keyframes tread-bounce {
+@keyframes chat-bounce {
   0%,
   100% {
     transform: translateY(0);
@@ -460,7 +516,7 @@
     transform: translateY(-4px);
   }
 }
-@keyframes tread-float {
+@keyframes chat-float {
   0%,
   100% {
     transform: translateY(0);
@@ -469,7 +525,7 @@
     transform: translateY(-3px);
   }
 }
-@keyframes tread-fab-pulse {
+@keyframes chat-fab-pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(246, 189, 56, 0.55);
   }
@@ -482,38 +538,38 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tread-fab {
+  .chat-fab {
     transition: none;
   }
-  .tread-fab-face {
+  .chat-fab-face {
     animation: none;
   }
-  .tread-fab-nudged::after {
+  .chat-fab-nudged::after {
     animation: none;
   }
-  .tread-nudge {
+  .chat-nudge {
     animation: none;
   }
-  .tread-msg {
+  .chat-msg {
     animation: none;
   }
-  .tread-dot {
+  .chat-dot {
     animation: none;
   }
 }
 
 @media (max-width: 560px) {
-  .tread-panel {
+  .chat-panel {
     inset: 0.5rem;
     width: auto;
     max-width: none;
     max-height: none;
   }
-  .tread-fab {
+  .chat-fab {
     right: 0.75rem;
     bottom: 0.75rem;
   }
-  .tread-nudge {
+  .chat-nudge {
     right: 0.75rem;
     bottom: 5rem;
   }
@@ -524,10 +580,10 @@
    cover the dock's DIRECTIONS panel. Declared after the 560px block so the
    clearance wins at every dock width. */
 @media (max-width: 700px) {
-  .tread-fab {
+  .chat-fab {
     bottom: calc(78px + env(safe-area-inset-bottom));
   }
-  .tread-nudge {
+  .chat-nudge {
     bottom: calc(150px + env(safe-area-inset-bottom));
   }
 }
@@ -536,21 +592,81 @@
    64px FAB, desktop visitors get a big friendly face (and the panel/nudge
    lift to clear it). */
 @media (min-width: 701px) {
-  .tread-fab {
+  .chat-fab {
     width: 88px;
     height: 88px;
     right: 1.5rem;
     bottom: 1.5rem;
   }
-  .tread-fab-face {
+  .chat-fab-face {
     width: 64px;
     height: 64px;
   }
-  .tread-panel,
-  .tread-nudge {
+  .chat-panel,
+  .chat-nudge {
     bottom: 7.75rem;
   }
-  .tread-nudge {
+  .chat-nudge {
     max-width: 280px;
+  }
+}
+
+/* Accessibility: the "Aa" button cycles three text sizes and the expand
+   button grows the panel to fill most of the viewport. Both are desktop
+   conveniences — on phones the panel already fills the screen and pinch-zoom
+   is the native way to enlarge, so they're scoped to larger viewports. */
+@media (min-width: 561px) {
+  .chat-zoom-1 {
+    zoom: 1.15;
+  }
+  .chat-zoom-2 {
+    zoom: 1.3;
+  }
+  .chat-panel-max {
+    width: min(760px, calc(100vw - 2.5rem));
+    height: min(85vh, 900px);
+    max-height: 85vh;
+  }
+  /* Maximized proportions: everything grows with the panel instead of
+     staying pinned to the compact widget's small header and bubbles, which
+     otherwise reads as the same little chat stretched over a huge canvas. */
+  .chat-panel-max .chat-panel-head {
+    padding: 1.1rem 1.5rem;
+    gap: 1.1rem;
+  }
+  .chat-panel-max .chat-scene {
+    width: 110px;
+    height: 110px;
+    flex-basis: 110px;
+  }
+  .chat-panel-max .chat-panel-title strong {
+    font-size: 1.8rem;
+  }
+  .chat-panel-max .chat-panel-title span {
+    font-size: 0.85rem;
+  }
+  .chat-panel-max .chat-log {
+    padding: 1.5rem 2rem;
+    gap: 0.9rem;
+  }
+  .chat-panel-max .chat-bubble {
+    max-width: 62%;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+  .chat-panel-max .chat-msg-avatar {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+  .chat-panel-max .chat-prompts {
+    padding: 0 2rem 0.9rem;
+  }
+  .chat-panel-max .chat-input-row {
+    padding: 1rem 2rem;
+  }
+  .chat-panel-max .chat-input-row input {
+    font-size: 1rem;
+    padding: 0.7rem 0.9rem;
   }
 }

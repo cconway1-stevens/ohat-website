@@ -459,8 +459,8 @@ function hoursAnswer(now: Date): ChatAnswer {
     lines.push(`Almost — we open at ${formatTime(shop.hours.opens)} today.`);
   } else {
     // status.label carries the reason when there is one ("Closed for Labor
-    // Day…", "Closed — we're shut every Saturday and Sunday") — the same
-    // words the placard shows, never a second copy of the logic.
+    // Day…", "Closed for the weekend") — the same words the placard shows,
+    // never a second copy of the logic.
     lines.push(`${status.label}.`);
   }
   if (status.holidayNotice) lines.push(status.holidayNotice);
@@ -1547,7 +1547,7 @@ function suggestionChips(suggestions: string[]): ChatChip[] {
 }
 
 /** The opening line, aware of whether the shop is open right now. */
-export function treadGreeting(
+export function mascotGreeting(
   now: Date = new Date(),
   persona: ChatPersona = PRODUCTION_PERSONA,
 ): string {

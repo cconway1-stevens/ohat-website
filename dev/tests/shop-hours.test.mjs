@@ -62,7 +62,7 @@ test("keeps ordinary weekends closed without a holiday notice", () => {
   assert.equal(status.reason.kind, "weekend");
 assert.equal(
     status.label,
-    "Closed — we're shut every Saturday and Sunday. Reopens Monday at 8:00 AM",
+    "Closed for the weekend. Reopens Monday at 8:00 AM",
   );
 });
 
