@@ -1,11 +1,13 @@
 "use client";
 
 /**
- * The '56 De Luxe — game side of the 3D dash radio.
+ * The '57 De Luxe — a cherry-red Chevy dash radio, drawn entirely in CSS.
  *
- * The canvas is the fun way to play; the controls under it do everything the
- * knobs and keys do, so the radio works without WebGL, without a pointer, and
- * without motion. Two sound sources share the one dial: the synthesised local
+ * One integrated unit: a chrome faceplate with a glowing amber dial and a red
+ * needle you can drag, five piano-key presets, and two working knobs (push the
+ * left for power, drag it for volume; push the right to change bands, drag it
+ * to tune). The station guide slides out of the same dash card below — no
+ * separate panels. Two sound sources share the one dial: the synthesised local
  * stations from lib/garage-audio (always there, nothing fetched), and a LIVE
  * band that pulls real streams from the public Radio Browser directory.
  */
@@ -19,7 +21,8 @@ import {
   stations,
 } from "@/lib/arcade/garage-audio";
 import { CozyShell, useAmbience } from "./cozy/cozy-shell";
-import { mountRadioScene, type RadioBand, type RadioSceneHandle } from "./radio-3d-scene";
+
+type RadioBand = "FM" | "AM" | "LIVE";
 
 const SAVE_KEY = "ohat-radio3d-v1";
 const PRESET_COUNT = 5;
@@ -106,6 +109,20 @@ function dialToIndex(dial: number, count: number): number {
   return clamp(Math.round(t * (count - 1)), 0, count - 1);
 }
 
+/** The dial value of the station nearest to `target` on a band. */
+function nearestStationDial(band: "FM" | "AM", target: number): number {
+  const dials = stations
+    .filter((entry) => entry.band === band)
+    .map((entry) => entry.dial)
+    .sort((a, b) => a - b);
+  if (dials.length === 0) return BANDS[band].min;
+  return dials.reduce(
+    (best, candidate) =>
+      Math.abs(candidate - target) < Math.abs(best - target) ? candidate : best,
+    dials[0],
+  );
+}
+
 export default function Radio3DGame() {
   const [sound, setSound] = useState(false);
   const [save] = useState<Save>(() => loadSave());
@@ -120,21 +137,32 @@ export default function Radio3DGame() {
   const [liveLoading, setLiveLoading] = useState(false);
   const [genre, setGenre] = useState<(typeof GENRES)[number]["id"]>("oldies");
   const [status, setStatus] = useState("Off. Push the left knob, or press Power below.");
-  const [sceneFailed, setSceneFailed] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [muted, setMuted] = useState(false);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sceneRef = useRef<RadioSceneHandle | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const graphRef = useRef<{ bass: BiquadFilterNode; treble: BiquadFilterNode } | null>(null);
   const holdTimerRef = useRef<number | null>(null);
+
+  // A real car radio remembers where each band was left tuned. This is what
+  // stops the needle from hopping when the band changes: every band restores
+  // its own last dial position instead of inheriting the previous band's.
+  const dialMemoryRef = useRef<Record<RadioBand, number>>({
+    FM: nearestStationDial("FM", save.band === "LIVE" ? BANDS.FM.min : save.dial),
+    AM: nearestStationDial("AM", 1010),
+    LIVE: save.band === "LIVE" ? save.dial : indexToDial(0, 12),
+  });
 
   // The render loop and the audio graph read the freshest state through refs.
   const stateRef = useRef({ power, band, dial, volume, tone, liveList, livePlaying });
   useEffect(() => {
     stateRef.current = { power, band, dial, volume, tone, liveList, livePlaying };
   });
+
+  // Keep the per-band memory fresh as the dial moves.
+  useEffect(() => {
+    dialMemoryRef.current[band] = dial;
+  }, [band, dial]);
 
   useAmbience(sound, { fluorescent: 0.012, shopHum: 0.012 });
 
@@ -297,7 +325,12 @@ export default function Radio3DGame() {
 
   function cycleBand() {
     cozyAudio.click();
-    setBand((current) => (current === "FM" ? "AM" : current === "AM" ? "LIVE" : "FM"));
+    setBand((current) => {
+      const next = current === "FM" ? "AM" : current === "AM" ? "LIVE" : "FM";
+      // Restore this band's own last position — the needle never hops.
+      setDial(dialMemoryRef.current[next]);
+      return next;
+    });
   }
 
   function recallPreset(index: number) {
@@ -311,11 +344,10 @@ export default function Radio3DGame() {
       [band]: presets[band].map((d, i) => (i === index ? dial : d)),
     };
     setPresets(next);
-    sceneRef.current?.flashPreset(index);
     setStatus(`Preset ${index + 1} set.`);
   }
 
-  // Hold-to-save on the HTML preset buttons, mirroring the piano keys.
+  // Hold-to-save on the preset keys.
   function presetDown(index: number) {
     holdTimerRef.current = window.setTimeout(() => {
       holdTimerRef.current = null;
@@ -329,80 +361,6 @@ export default function Radio3DGame() {
       recallPreset(index);
     }
   }
-
-  /* --- mount the 3D scene once --- */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    if (!canvas.getContext("webgl2")) {
-      window.setTimeout(() => setSceneFailed(true), 0);
-      return;
-    }
-    let handle: RadioSceneHandle;
-    try {
-      handle = mountRadioScene(canvas, {
-        onTune: (next) => {
-          const range = stateRef.current.band === "AM" ? BANDS.AM : BANDS.FM;
-          setDial(clamp(next, range.min, range.max));
-        },
-        onVolume: (next) => setVolume(clamp(next, 0, 1)),
-        onPower: () => {
-          cozyAudio.click();
-          setPower((on) => !on);
-        },
-        onBand: () => {
-          cozyAudio.click();
-          setBand((current) => (current === "FM" ? "AM" : current === "AM" ? "LIVE" : "FM"));
-        },
-        onPreset: (index, action) => {
-          if (action === "save") {
-            setPresets((current) => ({
-              ...current,
-              [stateRef.current.band]: current[stateRef.current.band].map((d, i) =>
-                i === index ? stateRef.current.dial : d,
-              ),
-            }));
-            sceneRef.current?.flashPreset(index);
-          } else {
-            cozyAudio.click();
-            setDial(currentPresets(stateRef.current.band, index));
-          }
-        },
-      });
-    } catch {
-      window.setTimeout(() => setSceneFailed(true), 0);
-      return;
-    }
-    sceneRef.current = handle;
-    return () => {
-      sceneRef.current = null;
-      handle.dispose();
-    };
-    // Presets are read through a helper that closes over the latest state.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Reads the freshest presets for scene callbacks (which are bound once).
-  const presetsRef = useRef(presets);
-  useEffect(() => {
-    presetsRef.current = presets;
-  }, [presets]);
-  function currentPresets(forBand: RadioBand, index: number): number {
-    return presetsRef.current[forBand][index];
-  }
-
-  /* --- push state into the scene --- */
-  const synthLock = band === "LIVE" ? 0 : stationLock(dial, band).lock;
-  const lock = band === "LIVE" ? (livePlaying ? 1 : liveLoading ? 0.35 : 0) : synthLock;
-  useEffect(() => {
-    const handle = sceneRef.current;
-    if (!handle) return;
-    handle.setPower(power);
-    handle.setBand(band);
-    handle.setDial(dial, band);
-    handle.setVolume(volume);
-    handle.setLock(power ? lock : 0);
-  }, [power, band, dial, volume, lock]);
 
   /* --- the synthesised bands --- */
   const effectiveVolume = muted ? 0 : volume;
@@ -520,28 +478,87 @@ export default function Radio3DGame() {
     return Math.abs(saved - dial) < (band === "AM" ? 14 : 0.6);
   }
 
+  /* --- the dial and the knobs are the controls: drag them --- */
+  const dialTrackRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    kind: "dial" | "volume" | "tune";
+    startX: number;
+    startY: number;
+    startValue: number;
+    moved: number;
+  } | null>(null);
+
+  const bandRange = band === "AM" ? BANDS.AM : BANDS.FM;
+  // Needle / tune-knob position as a 0..1 sweep across the current band.
+  const dialT = clamp((dial - bandRange.min) / (bandRange.max - bandRange.min), 0, 1);
+
+  function tuneFromClientX(clientX: number) {
+    const track = dialTrackRef.current;
+    if (!track) return;
+    const rect = track.getBoundingClientRect();
+    const t = clamp((clientX - rect.left) / rect.width, 0, 1);
+    setDial(bandRange.min + t * (bandRange.max - bandRange.min));
+  }
+
+  function onFacePointerDown(kind: "dial" | "volume" | "tune") {
+    return (event: React.PointerEvent<HTMLElement>) => {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      dragRef.current = {
+        kind,
+        startX: event.clientX,
+        startY: event.clientY,
+        startValue: kind === "volume" ? volume : dial,
+        moved: 0,
+      };
+      if (kind === "dial") tuneFromClientX(event.clientX);
+    };
+  }
+  function onFacePointerMove(event: React.PointerEvent<HTMLElement>) {
+    const drag = dragRef.current;
+    if (!drag) return;
+    const dx = event.clientX - drag.startX;
+    const dy = event.clientY - drag.startY;
+    drag.moved = Math.max(drag.moved, Math.abs(dx) + Math.abs(dy));
+    if (drag.kind === "dial") {
+      tuneFromClientX(event.clientX);
+    } else if (drag.kind === "volume") {
+      setVolume(clamp(drag.startValue - dy * 0.005, 0, 1));
+    } else {
+      const span = bandRange.max - bandRange.min;
+      const track = dialTrackRef.current;
+      const width = track?.getBoundingClientRect().width ?? 300;
+      setDial(clamp(drag.startValue + (dx / width) * span, bandRange.min, bandRange.max));
+    }
+  }
+  function onFacePointerUp(event: React.PointerEvent<HTMLElement>) {
+    const drag = dragRef.current;
+    dragRef.current = null;
+    if (!drag) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    // A tap (not a drag) on a knob is the classic push-button.
+    if (drag.moved < 6) {
+      if (drag.kind === "volume") togglePower();
+      else if (drag.kind === "tune") cycleBand();
+    }
+  }
+  const faceDragHandlers = {
+    onPointerMove: onFacePointerMove,
+    onPointerUp: onFacePointerUp,
+  };
+  // Knob rotation: a 270° sweep, like a real pot.
+  const volumeAngle = -135 + volume * 270;
+  const tuneAngle = -135 + dialT * 270;
+
   return (
     <CozyShell
-      edition="Ocean Heights · the '56 De Luxe"
-      title="Chrome De Luxe 3D"
-      note="A 1950s dash radio, rebuilt in 3D. Drag the right knob — or the dial glass itself — to tune, drag the left for volume, push the left knob for power, push the right to change bands. Hold a piano key to save a preset."
+      edition="Ocean Heights · the '57 De Luxe"
+      title="Chrome De Luxe"
+      note="A 1957 Chevy dash radio. Drag the needle across the dial — or the right knob — to tune, drag the left knob for volume, push the left knob for power, push the right to change bands. Hold a piano key to save a preset."
       soundOn={sound}
       onSoundChange={setSound}
     >
-      <div className="cozy-stage radio-3d-stage">
-        <canvas
-          ref={canvasRef}
-          role="img"
-          aria-label="A chrome 1950s car dash radio with a glowing amber dial"
-        />
-        {sceneFailed ? (
-          <p className="radio-3d-fallback">
-            The 3D dash needs WebGL, which this browser will not give it — the controls below still
-            run the radio.
-          </p>
-        ) : null}
-      </div>
-
       {/* The live stream element. Nothing plays until the LIVE band is on. */}
       <audio
         ref={audioRef}
@@ -555,96 +572,44 @@ export default function Radio3DGame() {
         }}
       />
 
-      <p className="cozy-note" aria-live="polite">
-        {status}
-      </p>
-
-      <div className="radio-3d-deck">
-        <div className="radio-3d-console">
-          <div className="radio-3d-row">
-            <button
-              type="button"
-              className={power ? "is-on" : ""}
-              aria-pressed={power}
-              onClick={togglePower}
-            >
-              {power ? "Power on" : "Power off"}
-            </button>
-            <button type="button" onClick={cycleBand} aria-label={`Band: ${band}. Press to change`}>
-              Band: {band}
-            </button>
-            <button type="button" onClick={() => seek(-1)} aria-label="Previous station">
-              ◀ Seek
-            </button>
-            <button type="button" onClick={() => seek(1)} aria-label="Next station">
-              Seek ▶
-            </button>
-            <button
-              type="button"
-              className={scanning ? "is-on" : ""}
-              aria-pressed={scanning}
-              onClick={() => {
-                cozyAudio.click();
-                setScanning((on) => !on);
-              }}
-            >
-              {scanning ? "Scanning…" : "Scan"}
-            </button>
-            <button
-              type="button"
-              className={muted ? "is-on" : ""}
-              aria-pressed={muted}
-              onClick={() => {
-                cozyAudio.click();
-                setMuted((on) => !on);
-              }}
-            >
-              {muted ? "Muted" : "Mute"}
-            </button>
+      {/* One integrated dash: the radio face and the guide in a single red card. */}
+      <div className={`chevy-dash${power ? " is-on" : ""}`}>
+        {/* the radio itself */}
+        <div className="chevy-radio">
+          <div
+            ref={dialTrackRef}
+            className="chevy-dial"
+            role="slider"
+            aria-label="Tuning dial"
+            aria-valuemin={bandRange.min}
+            aria-valuemax={bandRange.max}
+            aria-valuenow={Math.round(dial * 10) / 10}
+            onPointerDown={onFacePointerDown("dial")}
+            {...faceDragHandlers}
+          >
+            <div className="chevy-dial-scale">
+              <span className="chevy-dial-band">{band === "LIVE" ? "LIVE" : band}</span>
+              <span className="chevy-dial-brand">Ocean Heights</span>
+              <span className={`chevy-dial-lamp${onAir ? " is-lit" : ""}`} />
+            </div>
+            <div className="chevy-dial-ticks" aria-hidden="true">
+              {Array.from({ length: 21 }, (_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: static decorative tick marks
+                <i key={i} className={i % 5 === 0 ? "is-major" : ""} />
+              ))}
+            </div>
+            <span className="chevy-needle" style={{ left: `${dialT * 100}%` }} aria-hidden="true" />
           </div>
 
-          <div className="radio-3d-sliders">
-            <label className="radio-3d-slider">
-              <span>Volume</span>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.02}
-                value={volume}
-                aria-label="Volume"
-                onChange={(event) => setVolume(Number(event.target.value))}
-              />
-            </label>
-            <label className="radio-3d-slider">
-              <span>Tone</span>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.02}
-                value={tone}
-                aria-label="Tone"
-                onChange={(event) => setTone(Number(event.target.value))}
-              />
-            </label>
-          </div>
-
-          <p className="radio-3d-console-label">Presets · tap to recall, hold to save</p>
-          <div className="radio-3d-keys" role="group" aria-label="Presets">
+          <p className="chevy-legend">Push button · hold to set</p>
+          <div className="chevy-keys" role="group" aria-label="Presets">
             {presets[band].map((saved, index) => (
               <button
                 // biome-ignore lint/suspicious/noArrayIndexKey: piano keys are positional by nature
                 key={index}
                 type="button"
-                className={isPresetTuned(saved) ? "is-lit" : ""}
-                aria-label={`Preset ${index + 1}${
-                  band === "AM"
-                    ? `, ${Math.round(saved)} kHz`
-                    : band === "FM"
-                      ? `, ${saved.toFixed(1)} FM`
-                      : ""
-                }. Hold to save the current station here.`}
+                className={`chevy-key${isPresetTuned(saved) ? " is-lit" : ""}`}
+                aria-label={`Preset ${index + 1}. Hold to save the current station here.`}
                 onPointerDown={() => presetDown(index)}
                 onPointerUp={() => presetUp(index)}
                 onPointerLeave={() => {
@@ -660,60 +625,133 @@ export default function Radio3DGame() {
             ))}
           </div>
 
-          {band === "LIVE" ? (
-            <>
-              <p className="radio-3d-console-label">Pull in a band of live stations</p>
-              <div className="radio-3d-keys" role="group" aria-label="Live station genre">
-                {GENRES.map((entry) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    className={`radio-3d-key radio-3d-key-wide${genre === entry.id ? " is-lit" : ""}`}
-                    aria-pressed={genre === entry.id}
-                    onClick={() => {
-                      cozyAudio.click();
-                      setGenre(entry.id);
-                      setLiveList([]);
-                      void fetchLive(entry.id);
-                    }}
-                  >
-                    <b>{entry.label}</b>
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : null}
+          <div className="chevy-knob-row">
+            <button
+              type="button"
+              className="chevy-knob"
+              aria-label="Volume knob. Drag to adjust, push for power."
+              onPointerDown={onFacePointerDown("volume")}
+              {...faceDragHandlers}
+            >
+              <span className="chevy-knob-cap" style={{ transform: `rotate(${volumeAngle}deg)` }} />
+              <small>VOL</small>
+            </button>
+
+            <div className="chevy-mini">
+              <button
+                type="button"
+                className={power ? "is-on" : ""}
+                aria-pressed={power}
+                onClick={togglePower}
+              >
+                {power ? "ON" : "PWR"}
+              </button>
+              <button type="button" onClick={cycleBand} aria-label={`Band: ${band}`}>
+                {band}
+              </button>
+              <button type="button" onClick={() => seek(-1)} aria-label="Previous station">
+                ◀
+              </button>
+              <button type="button" onClick={() => seek(1)} aria-label="Next station">
+                ▶
+              </button>
+              <button
+                type="button"
+                className={scanning ? "is-on" : ""}
+                aria-pressed={scanning}
+                onClick={() => {
+                  cozyAudio.click();
+                  setScanning((on) => !on);
+                }}
+              >
+                SCN
+              </button>
+              <button
+                type="button"
+                className={muted ? "is-on" : ""}
+                aria-pressed={muted}
+                onClick={() => {
+                  cozyAudio.click();
+                  setMuted((on) => !on);
+                }}
+              >
+                MUT
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="chevy-knob"
+              aria-label="Tuning knob. Drag to tune, push to change band."
+              onPointerDown={onFacePointerDown("tune")}
+              {...faceDragHandlers}
+            >
+              <span className="chevy-knob-cap" style={{ transform: `rotate(${tuneAngle}deg)` }} />
+              <small>TUNE</small>
+            </button>
+          </div>
+
+          <label className="chevy-tone">
+            <span>Tone</span>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.02}
+              value={tone}
+              aria-label="Tone"
+              onChange={(event) => setTone(Number(event.target.value))}
+            />
+          </label>
         </div>
 
-        <div className="radio-3d-guide">
-          <div className="radio-3d-readout-card">
-            <p className="radio-3d-freq">
+        {/* the station guide, sliding out of the same dash */}
+        <div className="chevy-guide">
+          <div className="chevy-readout">
+            <p className="chevy-freq">
               <b>{freqNumber}</b>
               <span>{freqBand}</span>
-              <em className={`radio-3d-onair${onAir ? " is-lit" : ""}`}>ON AIR</em>
+              <em className={`chevy-onair${onAir ? " is-lit" : ""}`}>ON AIR</em>
             </p>
-            <p className="radio-3d-now">
+            <p className="chevy-now">
               {nowName}
               {nowMeta ? <small>{nowMeta}</small> : null}
             </p>
-            <div
-              className="radio-3d-meter"
-              role="img"
-              aria-label={`Signal strength ${lit} of 5 bars`}
-            >
+            <div className="chevy-meter" role="img" aria-label={`Signal strength ${lit} of 5 bars`}>
               {[1, 2, 3, 4, 5].map((bar) => (
                 <i key={bar} className={bar <= lit ? "is-lit" : ""} />
               ))}
             </div>
           </div>
 
-          <div className="radio-3d-list" role="group" aria-label="Station directory">
+          {band === "LIVE" ? (
+            <div className="chevy-genres" role="group" aria-label="Live station genre">
+              {GENRES.map((entry) => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className={genre === entry.id ? "is-lit" : ""}
+                  aria-pressed={genre === entry.id}
+                  onClick={() => {
+                    cozyAudio.click();
+                    setGenre(entry.id);
+                    setLiveList([]);
+                    void fetchLive(entry.id);
+                  }}
+                >
+                  {entry.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="chevy-list" role="group" aria-label="Station directory">
             {band === "LIVE"
               ? liveList.map((entry, index) => (
                   <button
                     key={entry.id}
                     type="button"
-                    className={`radio-3d-station${power && index === liveIndex ? " is-tuned" : ""}`}
+                    className={`chevy-station${power && index === liveIndex ? " is-tuned" : ""}`}
                     onClick={() => {
                       cozyAudio.click();
                       if (!power) setPower(true);
@@ -721,8 +759,8 @@ export default function Radio3DGame() {
                       if (!livePlaying) void playLive(entry);
                     }}
                   >
-                    <span className="radio-3d-dial">{index + 1}</span>
-                    <span className="radio-3d-who">
+                    <span className="chevy-station-dial">{index + 1}</span>
+                    <span className="chevy-station-who">
                       <b>{entry.name}</b>
                       <small>
                         {entry.country} · {entry.codec} · {entry.bitrate || "?"} kbps
@@ -734,7 +772,7 @@ export default function Radio3DGame() {
                   <button
                     key={entry.id}
                     type="button"
-                    className={`radio-3d-station${
+                    className={`chevy-station${
                       power && (tuned?.lock ?? 0) > 0.45 && tuned?.station.id === entry.id
                         ? " is-tuned"
                         : ""
@@ -745,10 +783,10 @@ export default function Radio3DGame() {
                       setDial(entry.dial);
                     }}
                   >
-                    <span className="radio-3d-dial">
+                    <span className="chevy-station-dial">
                       {entry.band === "AM" ? Math.round(entry.dial) : entry.dial.toFixed(1)}
                     </span>
-                    <span className="radio-3d-who">
+                    <span className="chevy-station-who">
                       <b>{entry.name}</b>
                       <small>{entry.genre}</small>
                     </span>
@@ -756,13 +794,17 @@ export default function Radio3DGame() {
                 ))}
           </div>
 
-          <p className="radio-3d-guide-note">
+          <p className="chevy-guide-note">
             {band === "LIVE"
-              ? `${liveList.length || "No"} live station${liveList.length === 1 ? "" : "s"} on this band — pick a card to tune it in.`
-              : `${bandStations.length} stations on the ${band} band — pick a card to tune it in.`}
+              ? `${liveList.length || "No"} live station${liveList.length === 1 ? "" : "s"} on this band — pick one to tune it in.`
+              : `${bandStations.length} stations on the ${band} band — pick one to tune it in.`}
           </p>
         </div>
       </div>
+
+      <p className="cozy-note" aria-live="polite">
+        {status}
+      </p>
 
       {band === "LIVE" ? (
         <p className="cozy-note">

@@ -8,9 +8,9 @@ import {
   type ChatChip,
   debugAnswer,
   type MatcherConfig,
+  mascotGreeting,
   quickPrompts,
   STUDIO_CONFIG,
-  mascotGreeting,
 } from "@/lib/chat/answers";
 import { services } from "@/lib/services";
 import { shop } from "@/lib/shop/shop";

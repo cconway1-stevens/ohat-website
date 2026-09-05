@@ -1,4 +1,4 @@
-import { constants, existsSync, accessSync } from "node:fs";
+import { accessSync, constants, existsSync } from "node:fs";
 import { delimiter, join } from "node:path";
 
 function isExecutable(file) {

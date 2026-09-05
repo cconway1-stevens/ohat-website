@@ -42,8 +42,8 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { cpus } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createStaticServer, discoverRoutes } from "./lib/routes.mjs";
 import { launchChromium } from "./lib/browser.mjs";
+import { createStaticServer, discoverRoutes } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
