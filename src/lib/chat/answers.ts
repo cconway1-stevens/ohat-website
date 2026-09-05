@@ -957,16 +957,16 @@ const INTENTS: {
   {
     id: "joke",
     triggers: ["joke", "jokes", "funny", "laugh", "humor", "humour", "comedian", "silly"],
-    build: () => ({
-      text: "Why did the tire go to school? To get a little more tread-ucation. ...I'm a tire, not a comedian — the humans at the counter have better material.",
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Knock knock. Who's there? ...Honestly, ${persona.name} here. I'm ${persona.self}, not a comedian — the humans at the counter have better material. If the car needs work, that's the real joke worth telling.`,
       chips: [callChip],
     }),
   },
   {
     id: "love",
     triggers: ["love", "marry", "date", "girlfriend", "boyfriend", "valentine", "kiss", "cute"],
-    build: () => ({
-      text: "I'm flattered, but I'm a tire — my one true love is proper inflation. If your car needs some love, the shop is one call away.",
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `I'm flattered, but I'm ${persona.self} — my one true love is a well-tuned engine. If your car needs some love, the shop is one call away.`,
       chips: [callChip],
     }),
   },
@@ -983,16 +983,16 @@ const INTENTS: {
       "who made",
       "who built",
     ],
-    build: () => ({
-      text: "Some very patient humans at the shop built me out of JavaScript and shop trivia. I run entirely on your device — no cloud, no servers, just tire.",
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Some very patient humans at the shop built me out of JavaScript and shop trivia. I run entirely on your device — no cloud, no servers, just ${persona.self}.`,
       chips: [callChip],
     }),
   },
   {
     id: "philosophy",
     triggers: ["alive", "sentient", "conscious", "real", "philosophy", "meaning of life"],
-    build: () => ({
-      text: "Am I alive? I'm a tire with good PR — I think, therefore I tread. For the deeper questions, the humans at the counter are wiser than me.",
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Am I alive? I'm ${persona.self} with good PR — I think, therefore I ${persona.name === "Sparky" ? "spark" : "am"}. For the deeper questions, the humans at the counter are wiser than me.`,
       chips: [callChip],
     }),
   },
@@ -1023,8 +1023,8 @@ const INTENTS: {
   {
     id: "insult",
     triggers: ["stupid", "dumb", "useless", "suck", "sucks", "terrible", "awful", "idiot", "hate"],
-    build: () => ({
-      text: `Ouch — fair. I'm a tire with feelings and no paint job. The humans at the counter are nicer than me and way better at this: ${shop.phone.display}.`,
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Ouch — fair. I'm ${persona.self} with feelings. The humans at the counter are nicer than me and way better at this: ${shop.phone.display}.`,
       chips: [callChip],
     }),
   },
@@ -1528,9 +1528,12 @@ function fallbackAnswer(
   persona: ChatPersona = PRODUCTION_PERSONA,
   suggestions: string[] = [],
 ): ChatAnswer {
+  // Honest about what the bot can and can't do, lists the topics it covers
+  // so the customer can self-serve, and always ends at the phone. Never
+  // pretends to know — never guesses at a diagnosis.
   return {
-    text: `That one's past my tread depth — I'm just ${persona.self}, not a mechanic. The counter crew eats questions like this for breakfast: ${shop.phone.display}.${
-      suggestions.length > 0 ? " Or try one of these:" : ""
+    text: `That's outside what I can answer — I'm ${persona.self}, not a mechanic. I can help with hours, services, directions, pricing, payment, towing, reviews, walk-ins and the night drop. For anything vehicle-specific, the crew at the counter is one tap away: ${shop.phone.display}.${
+      suggestions.length > 0 ? " You might have meant:" : ""
     }`,
     chips: [callChip, emailChip, ...suggestionChips(suggestions)],
     fallback: true,

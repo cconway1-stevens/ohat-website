@@ -110,11 +110,11 @@ page's own markup — never from a list in a test file.
 | Class              | Count | Routes                                                                                                                                                          | Detection rule                                             |
 | ------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | **Indexable**      | 24    | `/`, `/services`, 14 × `/services/[slug]`, `/our-shop`, `/reviews`, `/offers`, `/contact`, `/vehicle-drop-off`, `/hours`, `/links`, `/privacy`                  | Has `<h1>`, no `noindex`, no meta refresh                  |
-| **Noindex pages**  | 26    | `/agent` + 8 agent tabs, `/arcade` + 15 arcade games, `/links/qr`                                                                                             | `<meta name="robots" content="noindex…">`, no meta refresh |
+| **Noindex pages**  | 27    | `/agent` + 8 agent tabs, `/arcade` + 16 arcade games, `/links/qr`                                                                                             | `<meta name="robots" content="noindex…">`, no meta refresh |
 | **Redirect stubs** | 9     | `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments`, `/services/tires-alignments`, `/logo-match`, `/arcade/drag-strip`   | `<meta http-equiv="refresh">`                              |
 | **Error page**     | 1     | `/404`                                                                                                                                                          | filename `404.html`                                        |
 
-**Audited by browser page-level tests: 50 routes** (24 indexable + 26 noindex).
+**Audited by browser page-level tests: 51 routes** (24 indexable + 27 noindex).
 Redirect stubs are validated by `static-export.test.mjs` (stub exists, target
 exists, noindex present) — auditing a meta-refresh page in a browser tests
 nothing. The 404 page is validated by the rendered-HTML tests.
