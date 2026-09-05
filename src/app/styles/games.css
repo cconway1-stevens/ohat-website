@@ -1737,7 +1737,7 @@ body.is-play-locked {
   /* The arcade hero gives up some height on phones so the board starts
      nearer the top of the screen. */
   .game-hero {
-    padding: 120px 0 38px;
+    padding: 120px 0 90px;
   }
   .game-hero h1 {
     font-size: clamp(2.6rem, 14vw, 4rem);
