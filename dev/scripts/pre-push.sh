@@ -72,6 +72,10 @@ step "architecture (dependency-cruiser)" ./node_modules/.bin/depcruise src dev -
 
 # 5. Tests, which include the static export checks.
 step "tests" npm test
+# `npm test` builds only the static export (which alone satisfies both the
+# server and static tiers). The deployable Cloudflare Worker artifact is a
+# separate concern, so it is gated explicitly rather than as a side effect.
+step "cloudflare worker build" npm run build
 
 # 6. Assets. The one that keeps biting: markup can be perfectly correct and the
 #    image still 404s, because next/image recomputes its URL on the client and

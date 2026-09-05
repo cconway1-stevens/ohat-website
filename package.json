@@ -18,7 +18,7 @@
     "test:unit": "node --test --test-isolation=none \"dev/tests/unit/*.test.mjs\"",
     "test:server": "node --test \"dev/tests/server/*.test.mjs\"",
     "test:static": "node --test \"dev/tests/static/*.test.mjs\"",
-    "test": "npm run test:unit && npm run build && npm run test:server && npm run build:static && npm run test:static",
+    "test": "npm run test:unit && npm run build:static && npm run test:server && npm run test:static",
     "report": "node dev/scripts/run-tests-report.mjs",
     "qa:production": "node dev/scripts/production-readiness.mjs",
     "ci:report": "node dev/scripts/ci-report.mjs",

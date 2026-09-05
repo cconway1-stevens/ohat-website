@@ -40,7 +40,8 @@ step "architecture" npm run check:architecture
 step "bloat (advisory)" npm run check:bloat
 
 # 2. Build and tests.
-step "tests (both builds)" npm test
+step "tests (static export + all tiers)" npm test
+step "cloudflare worker build" npm run build
 
 # 3. Browser audits against the static export. Bundle is browser-free, so it
 #    still runs when the preflight fails; the other checks would only repeat

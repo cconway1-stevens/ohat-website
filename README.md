@@ -150,7 +150,7 @@ file outside a tier is a file nothing runs.
 | `server` | `npm run test:server` | 2 | Yes — `npm run build` → `dist/server` | server-rendered HTML, per-service SEO |
 | `static` | `npm run test:static` | 2 | Yes — `npm run build:static` → `dist/client` | static export, route discovery and classification |
 
-`npm test` runs all three in order: `npm run test:unit && npm run build && npm run test:server && npm run build:static && npm run test:static`.
+`npm test` runs all three in order: `npm run test:unit && npm run build:static && npm run test:server && npm run test:static`.
 <!-- AUTOGEN:tests END -->
 
 ```mermaid
@@ -188,25 +188,20 @@ flowchart LR
     direction TB
     formatting["1A · Formatting (PR/manual) · Biome"]
     static_analysis["1B · Lint, types, unit tests · Biome/TS/Node"]
-    test_build["2 · Build + artifact tests · vinext/Node"]
+    build_worker["2A · Worker artifact · vinext"]
+    test_build["2B · Static export + artifact tests · vinext/Node"]
     dependency_security["1C · Dependency vulnerabilities · npm"]
     codeql["1D · Code security scan · CodeQL"]
     windows["1E · Windows build + tests (PR/manual) · Node"]
+    package_pages["5 · Website package (manual) · GitHub Pages"]
   end
   browser_functional["3A · Pages, links + browser errors · Playwright/axe"]
   lighthouse["3B · Speed + search + accessibility · Lighthouse — sharded"]
   resilience["4 · Slow network + memory (weekly/manual)"]
-  package_pages["5 · Website package (manual) · GitHub Pages"]
   deploy["6 · Website publish (manual) · GitHub Pages"]
   test_build --> browser_functional
   test_build --> lighthouse
   test_build --> resilience
-  static_analysis --> package_pages
-  test_build --> package_pages
-  browser_functional --> package_pages
-  lighthouse --> package_pages
-  dependency_security --> package_pages
-  codeql --> package_pages
   package_pages --> deploy
 ```
 
@@ -214,14 +209,15 @@ flowchart LR
 | --- | --- | --- |
 | **1A · Formatting (PR/manual) · Biome** | PRs + manual | — |
 | **1B · Lint, types, unit tests · Biome/TS/Node** | push and PR | — |
-| **2 · Build + artifact tests · vinext/Node** | every push and PR | — |
+| **2A · Worker artifact · vinext** | every push and PR | — |
+| **2B · Static export + artifact tests · vinext/Node** | every push and PR | — |
 | **3A · Pages, links + browser errors · Playwright/axe** | push and PR | `test-build` |
 | **3B · Speed + search + accessibility · Lighthouse — sharded** | push and PR | `test-build` |
 | **1C · Dependency vulnerabilities · npm** | every push and PR | — |
 | **1D · Code security scan · CodeQL** | every push and PR | — |
 | **1E · Windows build + tests (PR/manual) · Node** | PRs + manual | — |
 | **4 · Slow network + memory (weekly/manual)** | weekly + manual | `test-build` |
-| **5 · Website package (manual) · GitHub Pages** | main only | `static-analysis`, `test-build`, `browser-functional`, `lighthouse`, `dependency-security`, `codeql` |
+| **5 · Website package (manual) · GitHub Pages** | main only | — |
 | **6 · Website publish (manual) · GitHub Pages** | main only | `package-pages` |
 <!-- AUTOGEN:ci END -->
 
@@ -262,7 +258,7 @@ exists.
 
 | Command | Runs |
 | --- | --- |
-| `npm run test` | `npm run test:unit && npm run build && npm run test:server && npm run build:static && npm run test:static` |
+| `npm run test` | `npm run test:unit && npm run build:static && npm run test:server && npm run test:static` |
 | `npm run test:unit` | `node --test --test-isolation=none "dev/tests/unit/*.test.mjs"` |
 | `npm run test:server` | `node --test "dev/tests/server/*.test.mjs"` |
 | `npm run test:static` | `node --test "dev/tests/static/*.test.mjs"` |

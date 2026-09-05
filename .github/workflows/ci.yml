@@ -75,8 +75,27 @@ jobs:
       - name: File size · Node
         run: npm run check:bloat
 
+  # The Cloudflare Worker artifact is not a prerequisite for any test — the
+  # static export alone produces the dist/server the server tier reads — so it
+  # builds in parallel here instead of sitting on the critical path to the
+  # browser jobs, which only ever needed dist/client.
+  build-worker:
+    name: 2A · Worker artifact · vinext
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install · npm
+        run: npm ci --prefer-offline
+      - name: Build · vinext (verified Sites artifact)
+        run: npm run build
+
   test-build:
-    name: 2 · Build + artifact tests · vinext/Node
+    name: 2B · Static export + artifact tests · vinext/Node
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -87,7 +106,7 @@ jobs:
           cache: npm
       - name: Install · npm
         run: npm ci --prefer-offline
-      - name: Build + server/static tiers · vinext + Node
+      - name: Static export + server/static tiers · vinext + Node
         run: npm test
       - name: Artifact · GitHub
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -305,7 +324,16 @@ jobs:
     name: 5 · Website package (manual) · GitHub Pages
     if: >-
       github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
-    needs: [static-analysis, test-build, browser-functional, lighthouse, dependency-security, codeql]
+    needs:
+      [
+        static-analysis,
+        build-worker,
+        test-build,
+        browser-functional,
+        lighthouse,
+        dependency-security,
+        codeql,
+      ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
