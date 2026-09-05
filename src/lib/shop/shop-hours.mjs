@@ -1,16 +1,8 @@
-import { shop } from "./shop.mjs";
+import { formatTime, shop, WEEKDAY_NAMES } from "./shop.mjs";
 
-/** One name per index of Date.getUTCDay() — exported so every module that
- *  walks the shop's calendar reads the same weekday names from one place. */
-export const WEEKDAY_NAMES = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+// Re-exported from shop.mjs — the single weekday-name list lives there so
+// the hours config and the engine can never disagree about day order.
+export { WEEKDAY_NAMES };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -115,29 +107,15 @@ function closesAt(weekday) {
   return shop.hours.closesByDay[weekday] ?? shop.hours.closes;
 }
 
-function timeLabel(value) {
-  const [hour, minute] = value.split(":").map(Number);
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(2000, 0, 1, hour, minute));
-}
-
 function openingTimeLabel() {
-  return timeLabel(shop.hours.opens);
+  return formatTime(shop.hours.opens);
 }
 
 /** The day's window as the hours page and forecast show it, e.g.
  *  "8:00 AM–4:00 PM" — built from the config, never a second hardcoded
  *  copy of the hours. */
 function dayHoursLabel(weekday) {
-  return `${timeLabel(shop.hours.opens)}–${timeLabel(closesAt(weekday))}`;
-}
-
-/** Public form of the above for pages that render the regular week from the
- *  config directly — a new `closesByDay` entry flows through automatically. */
-export function getDayHoursLabel(weekday) {
-  return dayHoursLabel(weekday);
+  return `${formatTime(shop.hours.opens)}–${formatTime(closesAt(weekday))}`;
 }
 
 function nextOpening(now, currentParts, isOpenDay, minutes, openAt) {
@@ -151,11 +129,7 @@ function nextOpening(now, currentParts, isOpenDay, minutes, openAt) {
     const holiday = holidayFor(year, month, day);
     // An owner-posted closure hides the next opening as surely as a holiday
     // does — "Reopens Tuesday" would be a lie if Tuesday is shut too.
-    if (
-      shop.hours.days.includes(parts.weekday) &&
-      !holiday &&
-      !exceptionFor(year, month, day)
-    ) {
+    if (shop.hours.days.includes(parts.weekday) && !holiday && !exceptionFor(year, month, day)) {
       return { day: parts.weekday, today: offset === 0 };
     }
   }
@@ -219,10 +193,11 @@ export function getShopHoursStatus(now = new Date()) {
           ? { kind: "holiday", label: reasonPhrase("holiday", holiday) }
           : !isWeekday
             ? { kind: "weekend", label: reasonPhrase("weekend") }
-            : { kind: "after-hours", label: next?.today ? labels.closedToday : labels.closedForDay };
-  const lead =
-    reason?.label ??
-    (next?.today ? labels.closedToday : labels.closedForDay);
+            : {
+                kind: "after-hours",
+                label: next?.today ? labels.closedToday : labels.closedForDay,
+              };
+  const lead = reason?.label ?? (next?.today ? labels.closedToday : labels.closedForDay);
   const label =
     status === "closed" && next
       ? `${lead}. ` +
@@ -257,15 +232,7 @@ export function getHoursForecast(now = new Date(), days = 14) {
   // same convention as announcements.mjs): UTC has no DST, so whole-day
   // steps roll months and years cleanly and the holiday engine compares
   // the same ISO keys.
-  const anchor = new Date(
-    Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)),
-  );
-  const dateFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: shop.timezone,
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
+  const anchor = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)));
   const rows = [];
   for (let offset = 0; offset < days; offset += 1) {
     const date = new Date(anchor.getTime() + offset * 24 * 60 * 60 * 1000);

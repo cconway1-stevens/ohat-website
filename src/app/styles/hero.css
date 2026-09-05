@@ -201,6 +201,16 @@
   overflow: hidden;
 }
 
+/* The status placard's own "Full hours" link has nowhere useful to go here
+   — the hero already sits above a page that isn't /hours, and the sign's
+   fixed row height clipped this link out of view anyway on every layout
+   this component has had. Hide it explicitly instead of relying on
+   overflow to keep clipping it, so a taller layout (the narrow-phone stack
+   below) can't let it flow into view and overlap the address line. */
+.home-hero-meta .shop-hours-more {
+  display: none;
+}
+
 /* Both halves grow to divide the panel between them, and each fills its own
    half edge to edge — otherwise the two sat at their natural widths, centered
    as a pair, and the leftover width showed up as bare paper inside the border:
@@ -707,6 +717,28 @@
 
   .home-hero-photo-tag b {
     font-size: 1.65rem;
+  }
+}
+
+/* Very narrow phones: the unified sign's two halves stop fitting side by
+   side without cramping the status wording ("Closed — we're shut every
+   Saturday and Sunday" has nowhere to go), so it wrapped mid-word instead of
+   filling its half cleanly. Stack the halves and move the divider to the
+   bottom edge — same one sign, just read top-to-bottom instead of
+   left-to-right. */
+@media (max-width: 420px) {
+  .home-hero-meta {
+    flex-direction: column;
+  }
+
+  .home-hero-meta .shop-hours-status {
+    width: 100%;
+    border-right: 0;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .home-hero-address {
+    justify-content: flex-start;
   }
 }
 

@@ -113,6 +113,7 @@ and re-imported from `app/globals.css`.
 | `/offers`                                                                                          | Current offers and the preserved legacy coupon                                          |
 | `/contact`                                                                                         | Call, visit, and after-hours contact options                                            |
 | `/vehicle-drop-off`                                                                                | Secure after-hours key-drop guide                                                       |
+| `/hours`                                                                                           | Hours & closures — full weekly schedule and posted closures                             |
 | `/links`                                                                                           | Link-tree hub for social bios                                                           |
 | `/links/qr`                                                                                        | QR-code landing for the link tree (noindex)                                             |
 | `/privacy`                                                                                         | Privacy notice (noindex)                                                                |

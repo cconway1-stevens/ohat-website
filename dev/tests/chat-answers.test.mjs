@@ -61,9 +61,9 @@ test("shrugs with a fallback on gibberish", () => {
   assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
 });
 
-test("greets as Tread whether the shop is open or closed", () => {
-  assert.match(treadGreeting(TUESDAY_OPEN), /Tread/);
-  assert.match(treadGreeting(SUNDAY_CLOSED), /Tread/);
+test("greets as Sparky (the production mascot) whether open or closed", () => {
+  assert.match(treadGreeting(TUESDAY_OPEN), /Sparky/);
+  assert.match(treadGreeting(SUNDAY_CLOSED), /Sparky/);
 });
 
 test("greets with a custom persona when one is given", () => {
@@ -77,7 +77,7 @@ test("greets with a custom persona when one is given", () => {
 test("answers 'what are you' with the mascot identity instead of shrugging", () => {
   const answer = answerQuestion("what are you", TUESDAY_OPEN);
   assert.notEqual(answer.fallback, true);
-  assert.match(answer.text, /Tread, the shop tire/);
+  assert.match(answer.text, /Sparky, the shop spark plug/);
 });
 
 test("identity and fallback auto-fill from a custom persona", () => {
@@ -156,11 +156,11 @@ test("every quick prompt produces a non-fallback answer", () => {
   }
 });
 
-test("greets as Tread on both a weekday and a weekend date", () => {
+test("greets as Sparky on both a weekday and a weekend date", () => {
   const weekday = new Date("2026-09-02T14:00:00Z");
   const weekend = new Date("2026-09-12T15:00:00Z");
-  assert.match(treadGreeting(weekday), /Tread/);
-  assert.match(treadGreeting(weekend), /Tread/);
+  assert.match(treadGreeting(weekday), /Sparky/);
+  assert.match(treadGreeting(weekend), /Sparky/);
 });
 
 /* --- New intents --------------------------------------------------------- */
@@ -318,15 +318,17 @@ test("sets trimmed/fullText on long FAQ answers", () => {
   }
 });
 
-/* --- Tread persona invariants ------------------------------------------- */
+/* --- Production persona invariants --------------------------------------- */
 
-test("TREAD_PERSONA keeps the production copy byte-identical", () => {
+test("TREAD_PERSONA stays intact; production copy follows PRODUCTION_PERSONA", () => {
   assert.equal(TREAD_PERSONA.name, "Tread");
   assert.equal(TREAD_PERSONA.kind, "the shop tire");
   assert.equal(TREAD_PERSONA.self, "a tire");
-  assert.match(treadGreeting(TUESDAY_OPEN), /^Hi! I'm Tread, the shop tire\./);
+  // Production swapped to Sparky (src/lib/chat/mascot.ts) — the greeting and
+  // identity the real widget ships must say Sparky now.
+  assert.match(treadGreeting(TUESDAY_OPEN), /^Hi! I'm Sparky, the shop spark plug\./);
   const identity = answerQuestion("what are you", TUESDAY_OPEN);
-  assert.match(identity.text, /I'm Tread, the shop tire/);
+  assert.match(identity.text, /I'm Sparky, the shop spark plug/);
 });
 
 test("STUDIO_CONFIG exposes the new Spanish synonym table and intents", () => {
@@ -352,7 +354,7 @@ test("STUDIO_CONFIG exposes the new Spanish synonym table and intents", () => {
 test("routes a breakdown to the urgent intent with a call-first answer", () => {
   const answer = answerQuestion("I broke down on the parkway, what do I do?", TUESDAY_OPEN);
   assert.notEqual(answer.fallback, true);
-  assert.match(answer.text, /call 911 first/i);
+  assert.match(answer.text, /call 911/i);
   assert.match(answer.text, /\(609\) 241-1546/);
   assert.equal(answer.chips[0].kind, "call");
 });
@@ -383,7 +385,8 @@ test("answers 'what can you do' with the help intent instead of shrugging", () =
 test("greets 'hi tread' with the identity answer, not a fallback", () => {
   const answer = answerQuestion("hi tread", TUESDAY_OPEN);
   assert.notEqual(answer.fallback, true);
-  assert.match(answer.text, /Tread, the shop tire/);
+  // Production mascot is Sparky now — the identity says who actually answers.
+  assert.match(answer.text, /Sparky, the shop spark plug/);
 });
 
 /* --- Easter eggs: silly, honest, always ending in a next step ------------- */

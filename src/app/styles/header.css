@@ -271,21 +271,26 @@
   text-wrap: balance;
 }
 .shop-hours-status.is-open {
-  color: #146b3a;
-  background: linear-gradient(0deg, rgba(20, 107, 58, 0.09), rgba(20, 107, 58, 0.09)), var(--paper);
+  color: #0f5b6b;
+  background:
+    linear-gradient(0deg, rgba(26, 113, 131, 0.09), rgba(26, 113, 131, 0.09)), var(--paper);
 }
 .shop-hours-status.is-open .shop-status-dot {
-  background: #1f9150;
+  background: #1f7f9e;
   /* A lit bulb glows a little into its surround. */
-  box-shadow: 0 0 0 3px rgba(31, 145, 80, 0.24);
+  box-shadow: 0 0 0 3px rgba(31, 127, 158, 0.24);
 }
 .shop-hours-status.is-opening-soon .shop-status-dot,
 .shop-hours-status.is-closing-soon .shop-status-dot {
   background: #e08c1a;
   box-shadow: 0 0 0 3px rgba(224, 140, 26, 0.24);
 }
+/* Closed is a hollow ring, not a solid lamp: the shape (solid vs hollow) and
+   the colour (blue vs red) both carry the state, so the sign stays legible to
+   red-green colour-blind visitors who can't tell the two lamps apart. */
 .shop-hours-status.is-closed .shop-status-dot {
-  background: var(--red);
+  background: transparent;
+  border-color: var(--red);
 }
 .shop-hours-status.is-opening-soon,
 .shop-hours-status.is-closing-soon {

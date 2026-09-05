@@ -1,0 +1,205 @@
+/* Hours & closures page (/hours) — regular hours and the closures ahead.
+   The cover reuses .inner-hero (pages.css); this file dresses the body. */
+
+/* The cover is a support page, not a landing page — keep it short. */
+.hours-hero {
+  padding: calc(140px + var(--notice-h, 0px)) 0 48px;
+}
+
+.hours-hero h1 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+}
+
+.hours-body {
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+  background: var(--cream);
+}
+
+.hours-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+.hours-card {
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+}
+
+/* Each card gets its own accent shadow so the two panels read as distinct:
+   the standing schedule in yellow, the live closures in red. */
+.hours-card:first-child {
+  box-shadow: 8px 8px 0 var(--yellow);
+}
+
+.hours-card:last-child {
+  box-shadow: 8px 8px 0 var(--red);
+}
+
+.hours-card h2 {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  line-height: 1.05;
+}
+
+/* The regular-hours list: one row per line, day on the left, hours right. */
+.hours-list {
+  margin: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.hours-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+}
+
+/* Open days: a red "open" dot and bold hours on a soft cream. */
+.hours-list > div.is-open {
+  background: var(--cream);
+  border: 2px solid var(--line);
+}
+
+.hours-list > div.is-open dt::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background: var(--red);
+  vertical-align: middle;
+}
+
+.hours-list > div.is-open dd {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+/* Closed days: muted, dashed, no dot — the standing rule, not a surprise. */
+.hours-list > div.is-closed {
+  background: transparent;
+  border: 2px dashed var(--line);
+}
+
+.hours-list > div.is-closed dt,
+.hours-list > div.is-closed dd {
+  color: var(--muted);
+}
+
+.hours-list dt {
+  font-weight: 800;
+}
+
+.hours-list dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.hours-note {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* The closures list. */
+.hours-closures {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hours-closure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  padding: 0.8rem 0.9rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--cream);
+}
+
+/* Owner-posted closures read as news: yellow tint + red border. */
+.hours-closure.is-exception {
+  border-color: var(--red-dark);
+  background: var(--yellow-tint);
+}
+
+.hours-closure-date {
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.hours-closure-reason {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.hours-closure.is-exception .hours-closure-reason {
+  color: var(--ink);
+}
+
+.hours-closure-warn {
+  flex-basis: 100%;
+  margin-top: 0.3rem;
+  color: var(--red-dark);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.hours-closure-warn a {
+  color: var(--red-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hours-closures-empty {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* The hero actions: call button + live status side by side. */
+.hours-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+/* The closing line — same holiday/night-drop notice as the contact page,
+   so both places agree without a customer having to compare them. */
+.hours-footnote {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.hours-footnote a {
+  color: var(--red);
+  font-weight: 900;
+  text-underline-offset: 0.18em;
+}
+
+@media (max-width: 820px) {
+  .hours-grid {
+    grid-template-columns: 1fr;
+  }
+}

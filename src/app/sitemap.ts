@@ -59,6 +59,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.85,
     },
     {
+      // The destination behind every "Full hours" link on the placard, the
+      // notice banner, the footer and the contact page — support content,
+      // but the one page customers hit when they need the schedule.
+      url: `${baseUrl}/hours`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       // Low priority, but it belongs in the sitemap: a privacy notice has to
       // be findable to be "reasonably accessible".
       url: `${baseUrl}/privacy`,

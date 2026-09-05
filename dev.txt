@@ -1,0 +1,29 @@
+The goal (one paragraph)
+Make the site answer "why are you closed?" A reason-aware hours engine in src/lib/shop/shop.mjs + shop-hours.mjs — federal holidays, weekends, and owner-posted exceptions (storm/vacation days posted once in shop.mjs) — that feeds every surface consistently: the placard ("Closed for Labor Day. Reopens Tuesday at 8:00 AM"), the notice banner, Tread's chat answers. Plus a public /hours page (weekly schedule, upcoming closures with reasons) and an owner dashboard at /contact/hours-dash (noindex): today's state, notice-chain inspector, "what the customer sees" preview, 2-week forecast, time-travel scrubber. Placard and banner each get a "Full hours →" link to /hours. Tests + docs updated, npm run check green.
+Current state of the tree (important)
+Someone/something made parallel edits while I was stopped — they conflict with mine:
+File
+shop.mjs
+shop-hours.mjs
+announcements.mjs
+My test additions
+New files (/hours page, dash, styles, components)
+Cost/factor question
+Rough remaining scope, assuming we merge (not discard) the "Crew rest" wording that's now in shop.mjs:
+- Repair + finish the engine (~1 file rewrite, ~150 lines) — includes exceptions, getHoursForecast, getNoticeChain
+- Rebuild the 4 missing components/pages + styles (~600 lines) — these were lost
+- Reconcile tests to the merged wording (the parallel edit changed holiday-notice copy that existing tests pin)
+- Docs (README + test-program route counts) + full npm run check
+That's roughly a half-session of focused work. If you'd rather drop the dashboard and keep only the reason-aware engine + /hours page, it's noticeably cheaper — say so and I'll scope to that.
+Waiting on you: tell me to (a) merge everything as restated, (b) merge minus the dash, or (c) something else — and whether the "Crew rest" wording changes were yours to keep. I won't touch files until you pick.whast is your goal what os rhe best AI fo rthis 
+
+lost all what you aobjectiev are 
+gicing this to diff AI 
++ Thought: 24.5s
+My objective: fix your hydration error — the server HTML doesn't match what the client renders, and I'm tracking down why. I'm not stuck; I'm two steps from the answer. No need to switch AIs — but here's a complete status so anyone can pick this up:
+The diagnosis so far (proven, not guessed):
+Your error diff proves the browser received HTML rendered from OLD code (it has aria-labelledby="_R_a96i_" from React.useId, and lacks the new "Full hours" link) while the client JS is NEW code. That combination is the error.
+The working tree already contained the code fix (useId removed from directions-dialog.tsx) — uncommitted.
+I killed 5 stale dev servers (ports 5173–5177, some from yesterday), restarted fresh, ran npm run clean (wiped 423 MB of caches) — and the server still renders old markup.
+Remaining mystery: SSR renders old code even from a clean state. Two suspects: (a) a stale built copy on disk outside the cleaned paths, or (b) the working-tree files got reverted (you mentioned another AI — if it stashed/reverted the changes, SSR would render exactly this old markup).
+Checking (b) right now, since it's the cheapest decisive test:

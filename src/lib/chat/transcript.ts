@@ -29,6 +29,7 @@ export type TranscriptEntry = {
 export type StorageLike = {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
+  removeItem(key: string): void;
 };
 
 export const TRANSCRIPT_KEY = "ohat-tread-transcript";
@@ -70,6 +71,11 @@ export function loadRecent(store: StorageLike, now: number = Date.now()): Transc
   return readEntries(store)
     .filter((entry) => entry.t >= cutoff)
     .slice(-RESTORE_MAX);
+}
+
+/** Wipe the local conversation log so a fresh "clear chat" starts empty. */
+export function clearTranscript(store: StorageLike): void {
+  store.removeItem(TRANSCRIPT_KEY);
 }
 
 /** A pretty-printed JSON snapshot for the "download transcript" affordance. */

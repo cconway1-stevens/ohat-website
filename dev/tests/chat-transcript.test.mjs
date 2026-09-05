@@ -18,6 +18,9 @@ function makeStore(initial = {}) {
     setItem: (key, value) => {
       data[key] = String(value);
     },
+    removeItem: (key) => {
+      delete data[key];
+    },
     _data: data,
   };
 }

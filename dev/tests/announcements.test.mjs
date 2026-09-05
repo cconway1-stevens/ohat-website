@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getActiveNotice } from "../../src/lib/shop/announcements.mjs";
+import { getActiveNotice, getNoticeChain } from "../../src/lib/shop/announcements.mjs";
+import { shop } from "../../src/lib/shop/shop.mjs";
 
 /* All instants are UTC; the notice engine converts them to the shop's
    America/New_York calendar before comparing dates. 2026's observed federal
@@ -111,4 +112,71 @@ test("dates resolve on the shop's calendar, not the server's UTC clock", () => {
     getActiveNotice(new Date("2026-11-26T05:00:00Z")).message,
     /Holiday hours may vary for Thanksgiving Day/,
   );
+});
+
+test("the chain exposes every layer with a single winner", () => {
+  const chain = getNoticeChain(new Date("2026-11-26T17:00:00Z"));
+  assert.equal(chain.manual, null);
+  assert.equal(chain.exception, null);
+  assert.equal(chain.holidayToday?.id, "holiday-2026-11-26");
+  assert.equal(chain.winner, chain.holidayToday);
+  // The scan window from Thanksgiving only reaches Dec 10, so Christmas is
+  // not yet close enough for a holiday-ahead warning on top.
+  assert.equal(chain.holidayAhead, null);
+
+  // An ordinary day: every layer silent, no winner.
+  const quiet = getNoticeChain(new Date("2026-03-15T17:00:00Z"));
+  assert.equal(quiet.manual, null);
+  assert.equal(quiet.exception, null);
+  assert.equal(quiet.holidayToday, null);
+  assert.equal(quiet.holidayAhead, null);
+  assert.equal(quiet.winner, null);
+});
+
+test("an owner-posted closure outranks the holiday notice on the same day", () => {
+  shop.hours.exceptions = [{ from: "2026-11-26", reason: "Storm cleanup" }];
+  try {
+    const chain = getNoticeChain(new Date("2026-11-26T17:00:00Z"));
+    // The exception layer wins with the same words the placard uses; the
+    // holiday notice stays computed underneath but covered.
+    assert.equal(chain.exception?.message, "Closed — Storm cleanup");
+    assert.equal(chain.winner, chain.exception);
+    assert.equal(chain.holidayToday?.id, "holiday-2026-11-26");
+    assert.equal(
+      getActiveNotice(new Date("2026-11-26T17:00:00Z")).message,
+      "Closed — Storm cleanup",
+    );
+  } finally {
+    shop.hours.exceptions = [];
+  }
+});
+
+test("a manual posting still outranks an owner closure", () => {
+  shop.hours.exceptions = [{ from: "2026-11-23", reason: "Storm cleanup" }];
+  try {
+    const entries = [
+      { id: "special", from: "2026-11-23", to: "2026-11-23", message: "Special hours today." },
+    ];
+    const chain = getNoticeChain(new Date("2026-11-23T17:00:00Z"), entries);
+    assert.equal(chain.winner, chain.manual);
+    assert.equal(chain.manual.message, "Special hours today.");
+  } finally {
+    shop.hours.exceptions = [];
+  }
+});
+
+test("owner closures hide their days from the holiday lead count", () => {
+  // Thanksgiving 2026 is Thursday Nov 26; normally the ahead window opens
+  // Monday Nov 23 (three business days back). With Tue+Wed posted as owner
+  // closures those days stop counting as business days, so the warning
+  // switches on earlier — warning early is the safe direction.
+  shop.hours.exceptions = [
+    { from: "2026-11-24", to: "2026-11-25", reason: "Storm cleanup" },
+  ];
+  try {
+    const chain = getNoticeChain(new Date("2026-11-21T17:00:00Z"));
+    assert.equal(chain.holidayAhead?.id, "holiday-ahead-2026-11-26");
+  } finally {
+    shop.hours.exceptions = [];
+  }
 });

@@ -61,9 +61,13 @@ function subscribe(notify: () => void): () => void {
 export function ShopHoursStatus({
   onDark = false,
   now,
+  hideMore = false,
 }: {
   onDark?: boolean;
   now?: Date;
+  /** Drop the standing "Full hours" link — for the /hours page itself,
+   *  where a link to the page you're already on has nowhere useful to go. */
+  hideMore?: boolean;
 } = {}) {
   const live = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   // A pinned instant is recomputed per render — the function is pure, so the
@@ -148,9 +152,11 @@ export function ShopHoursStatus({
         </span>
       </span>
       {status?.holiday ? <span className="shop-hours-holiday">{status.holidayNotice}</span> : null}
-      <Link className="shop-hours-more" href="/hours">
-        Full hours <span aria-hidden="true">&#8594;</span>
-      </Link>
+      {hideMore ? null : (
+        <Link className="shop-hours-more" href="/hours">
+          Full hours <span aria-hidden="true">&#8594;</span>
+        </Link>
+      )}
     </span>
   );
 }

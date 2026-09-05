@@ -621,7 +621,7 @@ export const services: Service[] = [
       "Many 'transmission problems' turn out to be something else—a failing mount, a worn CV axle, low fluid from a leak, or an electronic control fault. Before anyone talks about a rebuild, we check fluid level and condition, scan the transmission control module, road-test to reproduce the symptom, and inspect the driveline. That order of operations regularly saves customers from repairs they did not need.",
     whyUs:
       "Transmission specialists have an incentive to find transmission problems. As a full-service family shop, our incentive is the correct answer—whether that is a fluid service, an axle, a mount, a software-related control issue, or an honest referral when a unit genuinely needs specialist rebuilding.",
-    cost: "There is an enormous cost range between a fluid service, a CV axle, and transmission replacement, which is exactly why diagnosis comes first. Regular fluid service on the manufacturer's schedule is the cheapest item on this page and the one that best prevents the expensive ones.",
+    cost: "There is an enormous cost range between a fluid service, a CV axle, and transmission replacement, which is exactly why diagnosis comes first. Regular fluid service on the manufacturer's schedule is the least expensive item on this page and the one that best prevents the expensive ones.",
     faqs: [
       {
         question: "My car shifts hard sometimes. Does that mean the transmission is failing?",

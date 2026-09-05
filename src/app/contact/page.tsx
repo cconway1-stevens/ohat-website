@@ -3,6 +3,7 @@ import Link from "next/link";
 import { TirePal } from "@/components/contact/tire-pal";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
+import { HoursCardNotice } from "@/components/shop/hours-card-notice";
 import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
 import { EmailCopyAction } from "@/components/ui/copy-field";
 import { DirectionsTrigger } from "@/components/ui/directions-dialog";
@@ -64,13 +65,69 @@ export default function ContactPage() {
 
                 <div className="contact-primary-actions" aria-label="Primary contact actions">
                   <a className="contact-action contact-action-call" href={phoneHref}>
+                    <svg
+                      className="contact-action-icon"
+                      viewBox="0 0 24 24"
+                      width="22"
+                      height="22"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
                     <span>Call the shop</span>
                     <strong>{phoneDisplay}</strong>
                   </a>
                   <DirectionsTrigger className="contact-action contact-action-directions">
+                    <svg
+                      className="contact-action-icon"
+                      viewBox="0 0 24 24"
+                      width="22"
+                      height="22"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                    </svg>
                     <span>Plan your route</span>
                     <strong>Get directions</strong>
                   </DirectionsTrigger>
+                  {/* One card for everything hours-related, read top to bottom:
+                      the note first (holidays + night drop), then the standing
+                      schedule, then the live open/closed sign — so a visitor
+                      sees "when" before "are we open right now". */}
+                  <div className="contact-hours-card">
+                    <p className="contact-hours-note">
+                      Holiday hours can vary — every posted closure and the full week are on the{" "}
+                      <Link href="/hours">hours page</Link>. The{" "}
+                      <Link href="/vehicle-drop-off">secure night drop</Link> is available around
+                      the clock.
+                    </p>
+                    <dl className="contact-hours-list">
+                      <div>
+                        <dt>{shop.hours.weekdayLabel}</dt>
+                        <dd>{shop.hours.weekdayHours}</dd>
+                      </div>
+                      <div>
+                        <dt>{shop.hours.fridayLabel}</dt>
+                        <dd>{shop.hours.fridayHours}</dd>
+                      </div>
+                      <div>
+                        <dt>{shop.hours.weekendLabel}</dt>
+                        <dd>{shop.hours.weekendValue}</dd>
+                      </div>
+                    </dl>
+                    <HoursCardNotice />
+                    <ShopHoursStatus />
+                  </div>
                   <EmailCopyAction
                     email={contactEmail}
                     className="contact-action contact-action-email"
@@ -100,41 +157,6 @@ export default function ContactPage() {
                     <span>Save to phone</span>
                     <strong>Add contact</strong>
                   </a>
-                  <div className="contact-primary-status">
-                    <ShopHoursStatus />
-                  </div>
-                </div>
-
-                <div className="contact-stop-card">
-                  <div className="contact-hours-block">
-                    <dl className="contact-hours-list">
-                      <div>
-                        <dt>{shop.hours.weekdayLabel}</dt>
-                        <dd>{shop.hours.weekdayHours}</dd>
-                      </div>
-                      <div>
-                        <dt>{shop.hours.fridayLabel}</dt>
-                        <dd>{shop.hours.fridayHours}</dd>
-                      </div>
-                      <div>
-                        <dt>{shop.hours.weekendLabel}</dt>
-                        <dd>{shop.hours.weekendValue}</dd>
-                      </div>
-                    </dl>
-                    <p className="contact-hours-note">
-                      Holiday hours can vary — every posted closure and the full week are on the{" "}
-                      <Link href="/hours">hours page</Link>. The{" "}
-                      <Link href="/vehicle-drop-off">secure night drop</Link> is available around
-                      the clock.
-                    </p>
-                  </div>
-                  <div className="contact-address-line">
-                    <address>
-                      <span>Ocean Heights Auto &amp; Tire</span>
-                      <strong>{shop.address.street}</strong>
-                      <span>{shop.address.cityLine}</span>
-                    </address>
-                  </div>
                 </div>
               </div>
 

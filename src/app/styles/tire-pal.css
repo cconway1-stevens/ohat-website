@@ -30,6 +30,19 @@
   width: 46px;
   height: 46px;
   display: block;
+  /* A gentle idle float — the mascot drifts in place so the corner feels
+     alive without ever leaving its button. */
+  animation: tread-float 2.8s ease-in-out infinite;
+}
+/* While the greeting nudge is up, a soft ring pulses out from the FAB —
+   "over here!" without shaking the whole button. */
+.tread-fab-nudged::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: tread-fab-pulse 1.8s ease-out infinite;
 }
 
 .tread-nudge {
@@ -119,31 +132,65 @@
   font-family: var(--font-serif);
   font-size: 1.4rem;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 .tread-panel-title span {
   font-size: 0.72rem;
   color: var(--muted);
 }
-.tread-close {
-  width: 2rem;
-  height: 2rem;
-  flex: 0 0 2rem;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
+.tread-disclaimer {
+  position: relative;
+  display: inline-flex;
 }
-.tread-close:hover {
+.tread-ai-badge {
+  font-family: var(--font-sans, inherit);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 0.25rem 0.4rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  color: var(--muted);
+  background: var(--paper);
+  cursor: pointer;
+  opacity: 0.8;
+}
+.tread-ai-badge:hover {
+  opacity: 1;
   background: var(--yellow);
 }
-.tread-export {
+.tread-disclaimer-popover {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: -0.25rem;
+  z-index: 5;
+  width: min(240px, 80vw);
+  padding: 0.6rem 0.7rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+/* Header actions — clear, download, close — grouped as one quiet cluster so
+   they read as a single control row instead of three separate circles. */
+.tread-actions {
   margin-left: auto;
-  width: 2rem;
-  height: 2rem;
-  flex: 0 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+}
+.tread-icon-btn {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex: 0 0 1.9rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -151,9 +198,11 @@
   border-radius: 50%;
   background: var(--paper);
   color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1;
   cursor: pointer;
 }
-.tread-export:hover {
+.tread-icon-btn:hover {
   background: var(--yellow);
 }
 
@@ -183,10 +232,15 @@
 }
 .tread-bubble {
   max-width: 78%;
+  min-width: 0;
   padding: 0.55rem 0.75rem;
   border-radius: 14px;
   font-size: 0.9rem;
   line-height: 1.45;
+  /* Long unbroken strings — the shop's email address above all — used to
+     push the bubble wider than the panel. Break anywhere instead. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .tread-msg-tread .tread-bubble {
   background: var(--cream);
@@ -201,15 +255,19 @@
 }
 .tread-bubble p {
   margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .tread-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: 0.5rem;
+  max-width: 100%;
 }
 .tread-chip {
   display: inline-block;
+  max-width: 100%;
   padding: 0.3rem 0.6rem;
   border: 2px solid var(--ink);
   border-radius: 999px;
@@ -218,6 +276,8 @@
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .tread-chip:hover {
   background: var(--yellow);
@@ -234,6 +294,32 @@
 .tread-chip-email:hover,
 .tread-chip-download:hover {
   background: var(--red-dark);
+}
+
+/* Copy / read-aloud row under each of Sparky's own bubbles — quiet by
+   default so the reply text stays the focus. */
+.tread-bubble-actions {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+.tread-bubble-btn {
+  width: 1.4rem;
+  height: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.6;
+}
+.tread-bubble-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ink);
 }
 
 .tread-thinking {
@@ -374,10 +460,36 @@
     transform: translateY(-4px);
   }
 }
+@keyframes tread-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes tread-fab-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(246, 189, 56, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(246, 189, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(246, 189, 56, 0);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .tread-fab {
     transition: none;
+  }
+  .tread-fab-face {
+    animation: none;
+  }
+  .tread-fab-nudged::after {
+    animation: none;
   }
   .tread-nudge {
     animation: none;
@@ -417,5 +529,28 @@
   }
   .tread-nudge {
     bottom: calc(150px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Desktop: the mascot gets a roomier stage — phones keep the thumb-sized
+   64px FAB, desktop visitors get a big friendly face (and the panel/nudge
+   lift to clear it). */
+@media (min-width: 701px) {
+  .tread-fab {
+    width: 88px;
+    height: 88px;
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+  .tread-fab-face {
+    width: 64px;
+    height: 64px;
+  }
+  .tread-panel,
+  .tread-nudge {
+    bottom: 7.75rem;
+  }
+  .tread-nudge {
+    max-width: 280px;
   }
 }

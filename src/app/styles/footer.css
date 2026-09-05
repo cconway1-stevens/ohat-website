@@ -279,8 +279,8 @@
    dark ground, with the tinted faces dropped since the footer supplies its
    own surface. */
 .on-dark .shop-hours-status.is-open {
-  color: #5cc98a;
-  background: rgba(92, 201, 138, 0.12);
+  color: #6fc9d6;
+  background: rgba(111, 201, 214, 0.12);
 }
 .on-dark .shop-hours-status.is-opening-soon,
 .on-dark .shop-hours-status.is-closing-soon {

@@ -25,6 +25,78 @@ const mapsQuery = encodeURIComponent(
   `Ocean Heights Auto & Tire, ${street}, ${city}, ${state} ${zip}`,
 );
 
+// --- Hours: the single source of truth -------------------------------------
+// The canonical schedule is the four fields below (`OPEN_DAYS`, `OPENS`,
+// `CLOSES`, `CLOSES_BY_DAY`). Every human-readable hours string on the site —
+// the placard, the footer, the contact page, the chat brain, the vCard — is
+// DERIVED from them here, never written a second time. Change a time in one
+// place and every surface agrees.
+
+/** One name per index of Date.getUTCDay() — the single weekday-name list the
+ *  hours engine and every calendar walk read from. */
+export const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+/** One formatter for every "8:00 AM" string on the site — the single place a
+ *  time is turned into words, so the placard, the footer, the contact page
+ *  and the chat brain can never disagree about how "08:00" reads. */
+export function formatTime(value) {
+  const [hour, minute] = value.split(":").map(Number);
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(2000, 0, 1, hour, minute));
+}
+
+const DAY_ABBR = {
+  Monday: "Mon",
+  Tuesday: "Tue",
+  Wednesday: "Wed",
+  Thursday: "Thu",
+  Friday: "Fri",
+  Saturday: "Sat",
+  Sunday: "Sun",
+};
+
+// The canonical schedule — edit these four and nothing else.
+const OPEN_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const OPENS = "08:00";
+const CLOSES = "17:00";
+const CLOSES_BY_DAY = { Friday: "16:00" };
+
+// Derived labels and strings — do not edit; they follow the four fields above.
+const weekdayDays = OPEN_DAYS.filter((day) => !(day in CLOSES_BY_DAY));
+const fridayDays = Object.keys(CLOSES_BY_DAY);
+// WEEKDAY_NAMES is in getUTCDay order (Sunday first); the label reads
+// chronologically, so sort the closed days Monday-first.
+const CHRONO_INDEX = {
+  Monday: 0,
+  Tuesday: 1,
+  Wednesday: 2,
+  Thursday: 3,
+  Friday: 4,
+  Saturday: 5,
+  Sunday: 6,
+};
+const weekendDays = WEEKDAY_NAMES.filter((day) => !OPEN_DAYS.includes(day)).sort(
+  (a, b) => CHRONO_INDEX[a] - CHRONO_INDEX[b],
+);
+const rangeLabel = (days) => (days.length === 1 ? days[0] : `${days[0]}–${days[days.length - 1]}`);
+const weekdayLabel = rangeLabel(weekdayDays);
+const fridayLabel = rangeLabel(fridayDays);
+const weekendLabel = rangeLabel(weekendDays);
+const weekdayHours = `${formatTime(OPENS)}–${formatTime(CLOSES)}`;
+const fridayHours = `${formatTime(OPENS)}–${formatTime(CLOSES_BY_DAY[fridayDays[0]])}`;
+const display = `${weekdayLabel}, ${weekdayHours}; ${fridayLabel}, ${fridayHours}`;
+const compact = `${DAY_ABBR[weekdayDays[0]]}–${DAY_ABBR[weekdayDays[weekdayDays.length - 1]]} ${weekdayHours} · ${DAY_ABBR[fridayDays[0]]} ${fridayHours}`;
+
 export const shop = {
   name: "Ocean Heights Auto & Tire",
   // Plain-text form for places that cannot render an entity, e.g. the vCard.
@@ -63,12 +135,12 @@ export const shop = {
   timezone: "America/New_York",
 
   hours: {
-    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    opens: "08:00",
-    closes: "17:00",
+    days: OPEN_DAYS,
+    opens: OPENS,
+    closes: CLOSES,
     /** Days whose close time differs from `closes` above. Friday closes an
      *  hour early; every other configured day falls through to `closes`. */
-    closesByDay: { Friday: "16:00" },
+    closesByDay: CLOSES_BY_DAY,
     /**
      * Owner-posted closures — days the shop is shut even though the weekly
      * schedule above says open: a storm day, staff training, a family
@@ -86,14 +158,17 @@ export const shop = {
      * why the doors are shut.
      */
     exceptions: [],
-    weekdayLabel: "Monday-Thursday",
-    weekdayHours: "8:00 AM–5:00 PM",
-    fridayLabel: "Friday",
-    fridayHours: "8:00 AM–4:00 PM",
-    weekendLabel: "Saturday-Sunday",
+    // Derived from OPEN_DAYS / OPENS / CLOSES / CLOSES_BY_DAY above — the
+    // labels and one-line schedules are computed, never hand-written, so a
+    // changed close time can't leave a stale "8:00 AM–5:00 PM" behind.
+    weekdayLabel,
+    weekdayHours,
+    fridayLabel,
+    fridayHours,
+    weekendLabel,
     weekendValue: "Closed",
-    display: "Monday–Thursday, 8:00 AM–5:00 PM; Friday, 8:00 AM–4:00 PM",
-    compact: "Mon–Thu 8:00 AM–5:00 PM · Fri 8:00 AM–4:00 PM",
+    display,
+    compact,
     closedNote: "Closed weekends and major holidays.",
     status: {
       openingSoonMinutes: 30,

@@ -1,5 +1,5 @@
 import { shop } from "./shop.mjs";
-import { holidayFor, localParts } from "./shop-hours.mjs";
+import { exceptionFor, holidayFor, localParts, WEEKDAY_NAMES } from "./shop-hours.mjs";
 
 // ---------------------------------------------------------------------------
 // SHOP NOTICES — the file the owner edits.
@@ -19,7 +19,9 @@ import { holidayFor, localParts } from "./shop-hours.mjs";
 // number is read from shop.mjs and never needs typing here. Entries with a
 // blank message or malformed dates are ignored, so a half-finished draft can
 // never blank the banner. A manual entry always wins over the automatic
-// federal-holiday notices on the same day.
+// federal-holiday notices on the same day. Every banner also carries a
+// standing "Full hours" link to /hours, so a customer reading a closure
+// notice is one click from the whole schedule.
 // ---------------------------------------------------------------------------
 const announcements = [];
 
@@ -48,15 +50,6 @@ const HOLIDAY_LEAD_DAYS = 3;
 //   - localStorage caches the last fetch so repeat visits paint the banner
 //     instantly and refresh silently in the background.
 
-const WEEKDAY_NAMES = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
 // Calendar-day walk window wide enough for any lead window in use.
 const SCAN_HORIZON_DAYS = 14;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -83,7 +76,12 @@ function holidayName(date) {
 }
 
 function isShopBusinessDay(date) {
-  return shop.hours.days.includes(WEEKDAY_NAMES[date.getUTCDay()]) && !holidayName(date);
+  if (!shop.hours.days.includes(WEEKDAY_NAMES[date.getUTCDay()])) return false;
+  // An owner-posted closure hides the day from the lead count exactly like a
+  // holiday does — counting a day the doors won't open would start the
+  // holiday warning too late.
+  if (holidayName(date)) return false;
+  return exceptionFor(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate()) === null;
 }
 
 function manualNotice(entries, key) {
@@ -129,26 +127,56 @@ function holidayAheadNotice(today, holidayNotice) {
   return null;
 }
 
+/* The owner-posted closure for today, worded exactly as the placard words
+   it (both read `hours.exceptions` through the same engine). Fires only on
+   the closure day itself — lead-up copy is what the manual `announcements`
+   list above is for. */
+function exceptionTodayNotice(today, key) {
+  const exception = exceptionFor(
+    today.getUTCFullYear(),
+    today.getUTCMonth() + 1,
+    today.getUTCDate(),
+  );
+  if (!exception) return null;
+  return { id: `exception-${key}`, message: exception.label };
+}
+
 /**
- * The notice the banner should show right now, or null.
+ * Every notice layer evaluated for right now — what the owner dash renders
+ * to explain why the banner reads the way it does.
  *
- * One winner, never a stack: a manual `announcements` entry first, then the
+ * The layers, highest priority first: a manual `announcements` entry, then
+ * today's owner-posted closure from `hours.exceptions`, then the
  * federal-holiday notice for today, then the "holiday ahead" notice once the
- * next federal holiday is within HOLIDAY_LEAD_DAYS shop business days. The
- * federal engine supplies observed dates (a Saturday holiday warns toward its
- * Friday observance) and crosses year boundaries naturally.
+ * next federal holiday is within HOLIDAY_LEAD_DAYS shop business days. One
+ * winner, never a stack: each layer covers the one below it. The federal
+ * engine supplies observed dates (a Saturday holiday warns toward its Friday
+ * observance) and crosses year boundaries naturally.
  *
  * `entries` is injectable so tests can exercise the merge without touching
  * this module's list.
  */
-export function getActiveNotice(now = new Date(), entries = announcements) {
+export function getNoticeChain(now = new Date(), entries = announcements) {
   const parts = localParts(now);
   const key = todayKey(parts);
   const today = utcDate(parts);
   const { holidayNotice } = shop.hours.status;
-  return (
-    manualNotice(entries, key) ??
-    holidayTodayNotice(today, holidayNotice) ??
-    holidayAheadNotice(today, holidayNotice)
-  );
+  const manual = manualNotice(entries, key);
+  const exception = exceptionTodayNotice(today, key);
+  const holidayToday = holidayTodayNotice(today, holidayNotice);
+  const holidayAhead = holidayAheadNotice(today, holidayNotice);
+  return {
+    manual,
+    exception,
+    holidayToday,
+    holidayAhead,
+    winner: manual ?? exception ?? holidayToday ?? holidayAhead,
+  };
+}
+
+/** The notice the banner should show right now, or null — the winner of
+ *  getNoticeChain, kept as its own export because every caller that only
+ *  wants the message should not know the chain exists. */
+export function getActiveNotice(now = new Date(), entries = announcements) {
+  return getNoticeChain(now, entries).winner;
 }
