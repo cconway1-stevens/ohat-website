@@ -4,5 +4,7 @@
 - [x] Give CI jobs short names that identify their stage and framework.
 - [x] Diagnose the failed browser check: React hydration error #418 on `/links`.
 - [x] Keep the initial shop-hours render deterministic during hydration.
-- [ ] Confirm `3A · Browser · Playwright + axe` passes on GitHub.
-- [ ] Remove the obsolete Lighthouse hydration-error exception after the GitHub run is green.
+- [x] Confirm the page, link, and browser-error checks pass on GitHub.
+- [x] Remove the obsolete Lighthouse hydration-error exception after the GitHub run is green.
+- [x] Make skipped-job reasons and each test's purpose clear in its name.
+- [x] Keep the unsupported project-subpath Pages package step manual-only.

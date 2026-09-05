@@ -89,12 +89,6 @@ const METRICS = [
 // analytics and weather services. This mirrors the browser smoke test's
 // hermetic third-party stubs and prevents an external script racing hydration.
 const THIRD_PARTY_PATTERNS = ["https://www.googletagmanager.com/*", "https://api.open-meteo.com/*"];
-// check:pages is the authoritative all-route console/page-error gate and runs
-// immediately before Lighthouse in CI. Under Lighthouse's simulated mobile
-// slowdown, React can emit a timing-only hydration #418 on /links that the
-// normal browser sweep cannot reproduce; counting it again makes BP flaky.
-const SKIPPED_AUDITS = ["errors-in-console"];
-
 if (!existsSync(CLIENT)) {
   console.log("dist/client not found — building the static export first.");
   const build = spawnSync("npm", ["run", "build:static"], {
@@ -253,7 +247,6 @@ async function runAudit(url, categories) {
     logLevel: "error",
     onlyCategories: categories,
     blockedUrlPatterns: THIRD_PARTY_PATTERNS,
-    skipAudits: SKIPPED_AUDITS,
   });
   return JSON.parse(result.report);
 }

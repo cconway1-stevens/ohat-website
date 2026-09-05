@@ -30,7 +30,7 @@ env:
 
 jobs:
   formatting:
-    name: 1A · Format · Biome
+    name: 1A · Formatting (PR/manual) · Biome
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -46,7 +46,7 @@ jobs:
         run: npm run format:check
 
   static-analysis:
-    name: 1B · Code · Biome + TypeScript
+    name: 1B · Lint, types + dead code · Biome/TS
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -72,7 +72,7 @@ jobs:
         run: npm run check:bloat
 
   test-build:
-    name: 2 · Build + Unit · vinext + Node
+    name: 2 · Build + unit tests · vinext/Node
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -95,7 +95,7 @@ jobs:
           retention-days: 3
 
   browser-functional:
-    name: 3A · Browser · Playwright + axe
+    name: 3A · Pages, links + browser errors · Playwright/axe
     if: github.event_name != 'schedule'
     needs: test-build
     runs-on: ubuntu-latest
@@ -135,7 +135,7 @@ jobs:
         run: npm run check:a11y
 
   lighthouse:
-    name: 3B · Performance · Lighthouse (${{ matrix.shard_label }})
+    name: 3B · Speed + search + accessibility · Lighthouse (${{ matrix.shard_label }})
     if: github.event_name != 'schedule'
     needs: test-build
     runs-on: ubuntu-latest
@@ -185,7 +185,7 @@ jobs:
           LH_CONCURRENCY: 2
 
   dependency-security:
-    name: 1C · Dependencies · npm audit
+    name: 1C · Dependency vulnerabilities · npm
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -214,7 +214,7 @@ jobs:
           fail-on-scopes: development, runtime
 
   codeql:
-    name: 1D · Security · CodeQL
+    name: 1D · Code security scan · CodeQL
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -231,7 +231,7 @@ jobs:
         uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
 
   windows:
-    name: 1E · Windows · Node + vinext
+    name: 1E · Windows build (PR/manual) · Node
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     timeout-minutes: 25
@@ -253,7 +253,7 @@ jobs:
         run: npm run typecheck
 
   resilience:
-    name: 4 · Resilience · Playwright + Lighthouse
+    name: 4 · Slow network + memory (weekly/manual)
     # Intentionally scheduled/manual-only, not per-PR: both checks need a full
     # static build plus Chromium and add several minutes to every run. They are
     # deterministic regressions but slow; run them on demand with
@@ -299,10 +299,9 @@ jobs:
           LH_RUNS: 3
 
   package-pages:
-    name: 5 · Package · GitHub Pages
+    name: 5 · Website package (manual) · GitHub Pages
     if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main')
+      github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
     needs: [static-analysis, test-build, browser-functional, lighthouse, dependency-security, codeql]
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -333,10 +332,9 @@ jobs:
           path: dist/client
 
   deploy:
-    name: 6 · Deploy · GitHub Pages
+    name: 6 · Website publish (manual) · GitHub Pages
     if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main')
+      github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
     needs: package-pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
