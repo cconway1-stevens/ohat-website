@@ -172,6 +172,88 @@
   }
 }
 
+/* ---- Chrome De Luxe 3D: the WebGL dash radio ------------------------ */
+/* A dark studio backdrop, like the period dealer photos — the chrome and
+   the amber dial carry the whole scene. */
+.radio-3d-stage {
+  background: radial-gradient(120% 90% at 50% 18%, #3a3d44 0%, #22242a 46%, #101115 100%);
+}
+.radio-3d-stage canvas {
+  aspect-ratio: 16 / 9;
+  touch-action: none;
+}
+.radio-3d-loading {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+}
+.radio-3d-loading p {
+  margin: 0;
+  color: rgba(246, 242, 228, 0.75);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: parts-3d-wait 1.6s ease-in-out infinite;
+}
+.radio-3d-fallback {
+  position: absolute;
+  inset: auto 0 0;
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border-top: 3px solid var(--ink);
+  background: var(--yellow-tint, #fdf1cf);
+  color: var(--ink);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+.radio-3d-controls {
+  display: grid;
+  gap: 0.6rem;
+}
+.radio-3d-readout {
+  align-self: center;
+  margin-left: auto;
+  padding: 0.3rem 0.6rem;
+  border: 2px solid var(--ink);
+  background: #17130c;
+  color: #ffb14e;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.radio-3d-sliders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.2rem;
+}
+.radio-3d-slider {
+  flex: 1 1 200px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.radio-3d-slider span {
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.radio-3d-slider input {
+  flex: 1;
+  accent-color: var(--red);
+}
+@media (prefers-reduced-motion: reduce) {
+  .radio-3d-loading p {
+    animation: none;
+  }
+}
+
 /* ---- Vintage dash radio ------------------------------------------- */
 .car-radio {
   display: grid;

@@ -241,6 +241,14 @@ export const arcadeGames: ArcadeGame[] = [
     category: "cozy",
   },
   {
+    slug: "radio-3d",
+    name: "Chrome De Luxe 3D",
+    tagline: "Turn the knobs, ride the needle through the static.",
+    classic: "3D dash radio",
+    glyph: "◉",
+    category: "cozy",
+  },
+  {
     slug: "garage-radio",
     name: "Garage Radio",
     tagline: "Settle in, turn the dial, and watch the shop go by.",

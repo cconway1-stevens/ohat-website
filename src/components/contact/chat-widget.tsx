@@ -282,6 +282,49 @@ export function ChatWidget() {
     openRef.current = open;
   }, [open]);
 
+  // Per-character typing reveal for mascot replies. Visitors reported the
+  // answer popping in too fast to feel like a real exchange — the thinking
+  // dots alone didn't carry the moment of "the AI is composing". Revealing
+  // the reply one character at a time after the thinking delay fixes that.
+  // `reducedMotion` skips the reveal (the full text lands instantly).
+  const [typingId, setTypingId] = useState<number | null>(null);
+  const [typedLen, setTypedLen] = useState(0);
+  const typingTimerRef = useRef<number | null>(null);
+  function revealText(messageId: number, fullText: string) {
+    if (typingTimerRef.current !== null) {
+      window.clearInterval(typingTimerRef.current);
+      typingTimerRef.current = null;
+    }
+    if (reducedMotion || fullText.length === 0) {
+      setTypingId(null);
+      setTypedLen(fullText.length);
+      return;
+    }
+    setTypingId(messageId);
+    setTypedLen(0);
+    const stepMs = 14;
+    const charsPerTick = fullText.length > 220 ? 3 : 2;
+    typingTimerRef.current = window.setInterval(() => {
+      setTypedLen((current) => {
+        const next = Math.min(fullText.length, current + charsPerTick);
+        if (next >= fullText.length) {
+          if (typingTimerRef.current !== null) {
+            window.clearInterval(typingTimerRef.current);
+            typingTimerRef.current = null;
+          }
+          setTypingId(null);
+        }
+        return next;
+      });
+    }, stepMs);
+  }
+  useEffect(
+    () => () => {
+      if (typingTimerRef.current !== null) window.clearInterval(typingTimerRef.current);
+    },
+    [],
+  );
+
   // Lazy-load the brain (the answers module — 57 KB of TF-IDF matcher,
   // fuzzy fallback, and intents) in the background after mount so it's
   // ready by the time the user opens the panel, without blocking the
@@ -400,7 +443,10 @@ export function ChatWidget() {
       }
       getAnswers()
         .then(({ mascotGreeting }) => {
-          setMessages((m) => [...m, { id: nextId(), role: "mascot", text: mascotGreeting() }]);
+          const text = mascotGreeting();
+          const id = nextId();
+          setMessages((m) => [...m, { id, role: "mascot", text }]);
+          revealText(id, text);
         })
         .catch(() => {
           // Brain failed to load — the send path shows the honest fallback.
@@ -419,7 +465,7 @@ export function ChatWidget() {
     setInput("");
     setThinking(true);
     setEmote(nextEmote("thinking"));
-    const delay = reducedMotion ? 0 : 450;
+    const delay = reducedMotion ? 0 : 600;
     window.setTimeout(() => {
       if (sessionRef.current !== session) return;
       getAnswers()
@@ -438,6 +484,7 @@ export function ChatWidget() {
               suggestions: answer.suggestions,
             },
           ]);
+          revealText(id, answer.text);
           recordEntry(window.localStorage, {
             t: Date.now(),
             role: "mascot",
@@ -455,14 +502,18 @@ export function ChatWidget() {
         .catch(() => {
           // The brain failed to load or run — never leave the visitor
           // staring at a thinking bubble. Be honest and point at the humans.
+          const fallbackText =
+            "My brain hiccuped loading my answers — please try again, or call the shop with the button at the top of the page.";
+          const fid = nextId();
           setMessages((m) => [
             ...m,
             {
-              id: nextId(),
+              id: fid,
               role: "mascot",
-              text: "My brain hiccuped loading my answers — please try again, or call the shop with the button at the top of the page.",
+              text: fallbackText,
             },
           ]);
+          revealText(fid, fallbackText);
           setThinking(false);
           setEmote(nextEmote("sleep"));
         });
@@ -508,7 +559,10 @@ export function ChatWidget() {
     setMessages([]);
     getAnswers()
       .then(({ mascotGreeting }) => {
-        setMessages([{ id: nextId(), role: "mascot", text: mascotGreeting() }]);
+        const text = mascotGreeting();
+        const id = nextId();
+        setMessages([{ id, role: "mascot", text }]);
+        revealText(id, text);
       })
       .catch(() => {
         // Brain failed to load — an empty panel is fine, the input still works.
@@ -597,6 +651,15 @@ export function ChatWidget() {
 
   function onChipClick(chip: ChatChip) {
     if (chip.kind === "download") setEmote(nextEmote("celebrate"));
+  }
+
+  // What to render inside a bubble: the expanded FAQ text when the customer
+  // hit "Read more", the currently-typed prefix while the mascot is still
+  // composing, otherwise the full reply.
+  function displayText(m: Message): string {
+    if (expanded[m.id] && m.fullText) return m.fullText;
+    if (typingId === m.id) return m.text.slice(0, typedLen);
+    return m.text;
   }
 
   return (
@@ -822,7 +885,7 @@ export function ChatWidget() {
               <div key={m.id} className={`chat-msg chat-msg-${m.role}`}>
                 {m.role === "mascot" && <MascotFace className="chat-msg-avatar" />}
                 <div className="chat-bubble">
-                  <p>{expanded[m.id] && m.fullText ? m.fullText : m.text}</p>
+                  <p>{displayText(m)}</p>
                   {m.fullText && m.fullText !== m.text && (
                     <button
                       type="button"

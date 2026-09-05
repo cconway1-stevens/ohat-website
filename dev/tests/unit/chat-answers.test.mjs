@@ -86,7 +86,8 @@ test("identity and fallback auto-fill from a custom persona", () => {
   assert.match(id.text, /I'm Sparky, the shop spark plug/);
   const fb = answerQuestion("zzz qqx blorp", TUESDAY_OPEN, { persona: sparky });
   assert.equal(fb.fallback, true);
-  assert.match(fb.text, /I'm just a spark plug/);
+  // The fallback names the persona ("a spark plug"), never the old "tire".
+  assert.match(fb.text, /spark plug/);
   assert.doesNotMatch(fb.text, /just a tire/);
 });
 
@@ -394,7 +395,10 @@ test("greets 'hi tread' with the identity answer, not a fallback", () => {
 test("tells a joke when asked, and still offers the call chip", () => {
   const answer = answerQuestion("tell me a joke", TUESDAY_OPEN);
   assert.notEqual(answer.fallback, true);
-  assert.match(answer.text, /tread-ucation/i);
+  // The joke stays light, names the production persona (Sparky), and ends
+  // by handing the customer to the humans.
+  assert.match(answer.text, /Sparky/);
+  assert.match(answer.text, /not a comedian/i);
   assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
 });
 
@@ -408,7 +412,9 @@ test("plays marco polo and links the arcade", () => {
 test("answers a love note honestly and routes to the shop", () => {
   const answer = answerQuestion("i love you tread", TUESDAY_OPEN);
   assert.notEqual(answer.fallback, true);
-  assert.match(answer.text, /I'm a tire/i);
+  // The answer is honest and persona-true — Sparky, not a tire.
+  assert.match(answer.text, /spark plug/i);
+  assert.doesNotMatch(answer.text, /I'm a tire/i);
   assert.ok(chipHrefs(answer).some((href) => href.startsWith("tel:")));
 });
 
@@ -484,4 +490,57 @@ test("every intent answer includes a call or email chip", () => {
     const hasLead = answer.chips.some((chip) => chip.kind === "call" || chip.kind === "email");
     assert.ok(hasLead, `"${probe}" should include a call or email chip`);
   }
+});
+
+/* --- New: no-promise / honest copy guarantees ---------------------------- */
+
+test("never promises a specific price or timeline over chat", () => {
+  // The bot is honest: it never quotes a number it can't stand behind, never
+  // promises a same-day timeline, and always routes vehicle-specific facts
+  // to a human at the counter.
+  const probes = [
+    "how much to fix my transmission",
+    "how long will it take",
+    "can you guarantee the repair",
+    "is it safe to drive",
+    "should I keep driving",
+  ];
+  for (const probe of probes) {
+    const answer = answerQuestion(probe, TUESDAY_OPEN);
+    assert.doesNotMatch(answer.text, /\bguarantee\b/i, `${probe} must not guarantee anything`);
+    assert.doesNotMatch(answer.text, /\$\d+/, `${probe} must not quote a price`);
+    // Every probe should land on an answer (intent or service), not a bare shrug.
+    assert.notEqual(answer.fallback, true, `${probe} should not fall back`);
+  }
+});
+
+test("symptom answers hedge the diagnosis and lead with the call", () => {
+  // A symptom description (statement, not a question) gets the mirror +
+  // hedge copy, never a guess at the cause.
+  const answer = answerQuestion("my car is making a weird humming noise", TUESDAY_OPEN);
+  assert.match(answer.text, /could be a few different things/i);
+  assert.match(answer.text, /don't guess over chat/i);
+  assert.equal(answer.chips[0].kind, "call");
+});
+
+test("the fallback lists what the bot CAN help with", () => {
+  // When nothing matches, the shrug names the topics the bot covers so the
+  // customer can self-serve instead of feeling stuck.
+  const answer = answerQuestion("zzz qqx blorp splonketick", TUESDAY_OPEN);
+  assert.equal(answer.fallback, true);
+  assert.match(answer.text, /I can help with/i);
+  assert.match(answer.text, /hours/);
+  assert.match(answer.text, /services/);
+  assert.match(answer.text, /directions/);
+  assert.ok(answer.chips.some((chip) => chip.kind === "call"));
+});
+
+test("fallback never includes the old tire persona copy", () => {
+  // Regression guard: the production persona is Sparky (spark plug), so no
+  // production answer should ever leak Tread/tire persona phrasing.
+  const answer = answerQuestion("zzz qqx blorp", TUESDAY_OPEN);
+  assert.doesNotMatch(answer.text, /tread depth/i);
+  assert.doesNotMatch(answer.text, /tread-ucation/i);
+  assert.doesNotMatch(answer.text, /I'm a tire/i);
+  assert.doesNotMatch(answer.text, /I'm just a tire/i);
 });
