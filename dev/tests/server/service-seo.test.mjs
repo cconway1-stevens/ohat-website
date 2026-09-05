@@ -4,11 +4,11 @@ import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-const root = fileURLToPath(new URL("../..", import.meta.url));
+const root = fileURLToPath(new URL("../../..", import.meta.url));
 const serviceSource = readFileSync(join(root, "src/lib/services.ts"), "utf8");
 const slugs = [...serviceSource.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map((match) => match[1]);
 
-const workerUrl = new URL("../../dist/server/index.js", import.meta.url);
+const workerUrl = new URL("../../../dist/server/index.js", import.meta.url);
 workerUrl.searchParams.set("service-seo", `${process.pid}-${Date.now()}`);
 const { default: worker } = await import(workerUrl.href);
 const workerEnv = {

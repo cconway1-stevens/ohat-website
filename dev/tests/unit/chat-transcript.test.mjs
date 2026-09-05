@@ -8,7 +8,7 @@ import {
   recordEntry,
   serializeTranscript,
   TRANSCRIPT_KEY,
-} from "../../src/lib/chat/transcript.ts";
+} from "../../../src/lib/chat/transcript.ts";
 
 /** In-memory StorageLike stand-in for localStorage. */
 function makeStore(initial = {}) {

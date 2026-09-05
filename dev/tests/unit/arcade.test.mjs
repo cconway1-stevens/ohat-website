@@ -11,10 +11,10 @@ import {
   badGarageGuessWords,
   garageGuessClues,
   garageGuessWords,
-} from "../../src/lib/arcade/arcade.ts";
-import { CLUE_BANK, wordsForLevel } from "../../src/lib/arcade/arcade-words.ts";
-import { createCrossword } from "../../src/lib/arcade/crossword.ts";
-import { createSearch, DIRECTIONS } from "../../src/lib/arcade/word-search.ts";
+} from "../../../src/lib/arcade/arcade.ts";
+import { CLUE_BANK, wordsForLevel } from "../../../src/lib/arcade/arcade-words.ts";
+import { createCrossword } from "../../../src/lib/arcade/crossword.ts";
+import { createSearch, DIRECTIONS } from "../../../src/lib/arcade/word-search.ts";
 
 const ROUNDS = 120;
 const LEVELS = ["kids", "easy", "advanced"];
@@ -223,7 +223,7 @@ test("kids word search never hides a word backwards or diagonally", () => {
 
 /* ------------------------- Tow Chain service calls ---------------------- */
 
-import { freshState, tick } from "../../src/lib/arcade/tow-chain.ts";
+import { freshState, tick } from "../../../src/lib/arcade/tow-chain.ts";
 
 test("Tow Chain: a pickup grows the chain and counts a car", () => {
   const state = freshState();
@@ -333,7 +333,7 @@ import {
   streakAdvance,
   upgradeById,
   upgrades,
-} from "../../src/lib/arcade/parts-orders.ts";
+} from "../../../src/lib/arcade/parts-orders.ts";
 
 test("Parts Counter 3D: every counter order is one part, 1–3 of it", () => {
   const stockIds = new Set(partsStock.map((entry) => entry.id));

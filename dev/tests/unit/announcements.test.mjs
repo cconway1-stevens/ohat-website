@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getActiveNotice, getNoticeChain } from "../../src/lib/shop/announcements.mjs";
-import { shop } from "../../src/lib/shop/shop.mjs";
+import { getActiveNotice, getNoticeChain } from "../../../src/lib/shop/announcements.mjs";
+import { shop } from "../../../src/lib/shop/shop.mjs";
 
 /* All instants are UTC; the notice engine converts them to the shop's
    America/New_York calendar before comparing dates. 2026's observed federal

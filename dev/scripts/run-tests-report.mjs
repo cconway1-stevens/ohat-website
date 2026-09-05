@@ -15,7 +15,7 @@
 // here runs independently and its full output lands in dev/reports/report.md.
 // Steps mirror dev/scripts/pre-push.sh 1:1 so local results match CI.
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -127,19 +127,23 @@ results.push(await step("typecheck", "npm", ["run", "typecheck"]));
 results.push(await step("dead code (knip)", "npm", ["run", "check:deadcode"]));
 results.push(await step("architecture (depcruise)", "npm", ["run", "check:architecture"]));
 
-// 4. Builds. Tests need the artifacts these produce.
+// 4. The unit tier needs no build, so it runs before one — a broken assertion
+//    fails here in seconds rather than after two full builds.
+results.push(await step("tests: unit (no build)", "npm", ["run", "test:unit"]));
+
+// 5. Builds. The remaining tiers read the artifacts these produce.
 if (!NO_BUILD) {
   results.push(await step("build (cloudflare)", "npm", ["run", "build"]));
   results.push(await step("build (static export)", "npm", ["run", "build:static"]));
 }
 
-// 5. Every test file in dev/tests, each in its own process.
-const tests = readdirSync(join(root, "dev", "tests"))
-  .filter((f) => f.endsWith(".test.mjs"))
-  .sort();
-for (const file of tests) {
-  results.push(await step(`test ${file}`, process.execPath, ["--test", `dev/tests/${file}`]));
-}
+// 6. The build-dependent tiers, timed separately so the report shows where the
+//    run time goes. These are the same scripts the gate gets — the report used
+//    to glob dev/tests itself, which made it a second implementation that
+//    disagreed with package.json about which files count (it ran six that the
+//    gate never did). One list, in the tier directories, for both.
+results.push(await step("tests: server (dist/server)", "npm", ["run", "test:server"]));
+results.push(await step("tests: static (dist/client)", "npm", ["run", "test:static"]));
 
 // 6. Real-browser asset check — only meaningful against a fresh static export.
 if (!NO_BUILD) {

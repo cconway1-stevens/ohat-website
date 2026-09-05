@@ -9,9 +9,9 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { classifyPage, discoverRoutes } from "../scripts/lib/routes.mjs";
+import { classifyPage, discoverRoutes } from "../../scripts/lib/routes.mjs";
 
-const root = fileURLToPath(new URL("../..", import.meta.url));
+const root = fileURLToPath(new URL("../../..", import.meta.url));
 const clientDir = join(root, "dist", "client");
 
 test("static export exists for route discovery", () => {

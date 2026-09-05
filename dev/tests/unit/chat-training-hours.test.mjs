@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { debugAnswer } from "../../src/lib/chat/answers.ts";
+import { debugAnswer } from "../../../src/lib/chat/answers.ts";
 
 const TUESDAY_OPEN = new Date("2026-09-01T14:00:00Z");
 const chipHrefs = (answer) => answer.chips.map((chip) => chip.href);

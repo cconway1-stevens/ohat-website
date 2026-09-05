@@ -7,7 +7,7 @@ import {
   quickPrompts,
   STUDIO_CONFIG,
   TREAD_PERSONA,
-} from "../../src/lib/chat/answers.ts";
+} from "../../../src/lib/chat/answers.ts";
 
 // Fixed moments in the shop's America/New_York day: Tuesday 10:00 AM (open)
 // and Sunday 11:00 AM (closed until Monday). Not 2026-09-06: the Monday after

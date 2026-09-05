@@ -4,7 +4,7 @@ import test from "node:test";
 const codexPreviewMeta = /\bname=["']codex-preview["']/i;
 
 test("renders production metadata", async () => {
-  const workerUrl = new URL("../../dist/server/index.js", import.meta.url);
+  const workerUrl = new URL("../../../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
@@ -35,7 +35,7 @@ test("renders production metadata", async () => {
 });
 
 test("renders the shared directions chooser on every location route", async () => {
-  const workerUrl = new URL("../../dist/server/index.js", import.meta.url);
+  const workerUrl = new URL("../../../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("directions-test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
   const routes = ["/", "/contact", "/vehicle-drop-off", "/links"];

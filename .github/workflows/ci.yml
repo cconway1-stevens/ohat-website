@@ -46,7 +46,7 @@ jobs:
         run: npm run format:check
 
   static-analysis:
-    name: 1B · Lint, types + dead code · Biome/TS
+    name: 1B · Lint, types, unit tests · Biome/TS/Node
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -64,6 +64,10 @@ jobs:
         run: npm run lint:next
       - name: Types · TypeScript
         run: npm run typecheck
+      # The unit tier reads no build artifact, so it belongs in the job that
+      # has no build in it: ~2s here, versus waiting on stage 2's two builds.
+      - name: Unit tests · Node
+        run: npm run test:unit
       - name: Dead code · Knip
         run: npm run check:deadcode
       - name: Architecture · dependency-cruiser
@@ -72,7 +76,7 @@ jobs:
         run: npm run check:bloat
 
   test-build:
-    name: 2 · Build + unit tests · vinext/Node
+    name: 2 · Build + artifact tests · vinext/Node
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -83,7 +87,7 @@ jobs:
           cache: npm
       - name: Install · npm
         run: npm ci --prefer-offline
-      - name: Build + Unit · vinext + Node
+      - name: Build + server/static tiers · vinext + Node
         run: npm test
       - name: Artifact · GitHub
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -231,7 +235,7 @@ jobs:
         uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
 
   windows:
-    name: 1E · Windows build (PR/manual) · Node
+    name: 1E · Windows build + tests (PR/manual) · Node
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     timeout-minutes: 25
@@ -243,14 +247,13 @@ jobs:
           cache: npm
       - name: Install · npm
         run: npm ci --prefer-offline
-      - name: Build · vinext
-        run: npm run build
-      - name: Lint · Biome
-        run: npm run lint
-      - name: Next.js · ESLint
-        run: npm run lint:next
-      - name: Types · TypeScript
-        run: npm run typecheck
+      # Biome, ESLint and tsc read the same files to the same verdict on
+      # either OS, so running them here bought a second copy of a Linux
+      # answer. What genuinely differs on Windows is the shell scripts, path
+      # separators, and the tests' own relative-path resolution — which is
+      # exactly what `npm test` (both builds + all three tiers) exercises.
+      - name: Build + all tiers · vinext + Node
+        run: npm test
 
   resilience:
     name: 4 · Slow network + memory (weekly/manual)

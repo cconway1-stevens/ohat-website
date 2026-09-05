@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { allIntentAnswers, debugAnswer } from "../../src/lib/chat/answers.ts";
-import { services } from "../../src/lib/services.ts";
+import { allIntentAnswers, debugAnswer } from "../../../src/lib/chat/answers.ts";
+import { services } from "../../../src/lib/services.ts";
 
 // The legal audit: the widget is a tire/plug, not a mechanic. No canned
 // answer may make a strong claim, and every symptom answer must hedge the

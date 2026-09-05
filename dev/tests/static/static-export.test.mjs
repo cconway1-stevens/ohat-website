@@ -14,9 +14,9 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { discoverRoutes } from "../scripts/lib/routes.mjs";
+import { discoverRoutes } from "../../scripts/lib/routes.mjs";
 
-const root = fileURLToPath(new URL("../..", import.meta.url));
+const root = fileURLToPath(new URL("../../..", import.meta.url));
 const vercel = JSON.parse(readFileSync(join(root, "vercel.json"), "utf8"));
 const outDir = join(root, vercel.outputDirectory);
 
