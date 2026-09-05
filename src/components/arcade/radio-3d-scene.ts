@@ -334,10 +334,10 @@ export function mountRadioScene(
   const dialFace = track(
     new THREE.MeshStandardMaterial({
       map: dialTexture,
-      emissive: 0xffb14e,
+      emissive: 0xffa530,
       emissiveMap: dialTexture,
       emissiveIntensity: 0,
-      roughness: 0.4,
+      roughness: 0.35,
       metalness: 0,
     }),
   );
@@ -391,7 +391,7 @@ export function mountRadioScene(
   const rim = new THREE.DirectionalLight(0xa8c0ff, 0.8);
   rim.position.set(-3, 2, -2.5);
   scene.add(rim);
-  const dialLight = new THREE.PointLight(0xffb14e, 0, 3, 1.8);
+  const dialLight = new THREE.PointLight(0xffa530, 0, 4.5, 2.5);
   dialLight.position.set(0, DIAL_Y, 0.75);
   scene.add(dialLight);
 
@@ -568,35 +568,15 @@ export function mountRadioScene(
     radio3d.add(foot);
   }
 
-  // A real wood shelf under the set — dark walnut, soft grain — so the chrome
-  // sits on something tangible rather than floating over a void.
-  const shelfTexture = (() => {
-    const c = document.createElement("canvas");
-    c.width = 512; c.height = 256;
-    const g = c.getContext("2d");
-    if (!g) return new THREE.CanvasTexture(c);
-    g.fillStyle = "#2a1d14"; g.fillRect(0, 0, 512, 256);
-    for (let y = 0; y < 256; y += 4) {
-      g.fillStyle = `rgba(40,30,20,${0.4 + (y % 8) * 0.05})`;
-      g.fillRect(0, y, 512, 2);
-    }
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace;
-    t.repeat.set(3, 2);
-    return t;
-  })();
-  const shelfMat = new THREE.MeshStandardMaterial({
-    color: 0x2e2015,
-    roughness: 0.85,
-    metalness: 0,
-    bumpMap: shelfTexture,
-    bumpScale: 0.02,
-  });
-  const shelf = new THREE.Mesh(track(new THREE.BoxGeometry(5.8, 0.14, 3.2)), shelfMat);
-  shelf.position.set(0, -FACE_H / 2 - 0.2, 0);
-  shelf.receiveShadow = true;
-  shelf.castShadow = true;
-  scene.add(shelf);
+  // Just the chrome face floating in a dark studio — no shelf, no clutter.
+  const shadow = new THREE.Mesh(
+    new THREE.CircleGeometry(2.8, 32),
+    new THREE.ShadowMaterial({ opacity: 0.55 }),
+  );
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = -FACE_H / 2 - 0.6;
+  shadow.receiveShadow = true;
+  scene.add(shadow);
 
   /* --- state the scene renders --- */
   let band: RadioBand = "FM";
@@ -765,7 +745,7 @@ export function mountRadioScene(
     volumeKnob.group.rotation.z = knobTurn(volume);
 
     // Dial lamp: warm up when powered, breathe faintly, brighten with lock.
-    const lampTarget = power ? 0.55 + lock * 0.55 : 0;
+    const lampTarget = power ? 0.9 + lock * 0.7 : 0;
     lampLevel = reduced ? lampTarget : lerp(lampLevel, lampTarget, Math.min(1, dt * 5));
     const flicker = reduced ? 0 : Math.sin(clock * 47) * 0.012 + Math.sin(clock * 13) * 0.008;
     dialFace.emissiveIntensity = Math.max(0, lampLevel + flicker * lampLevel);
