@@ -747,6 +747,14 @@
     /* Measured masthead on phones: 104px. Flush seat for the photo card. */
     padding-top: calc(104px + var(--notice-h, 0px));
   }
+
+  /* Phone declutter: the 40+ badge covers a third of the small photo and the
+     proof bar repeats the three credential tickets directly below the hero.
+     Both stay on larger screens. */
+  .home-hero-photo-tag,
+  .home-hero-proof {
+    display: none;
+  }
 }
 
 @media (min-width: 1600px) {

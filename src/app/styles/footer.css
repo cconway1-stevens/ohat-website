@@ -861,14 +861,17 @@
     width: min(100% - 28px, 1180px);
   }
   .garage-strip {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     padding-inline: 14px;
   }
   .garage-strip > span {
     display: none;
   }
+  /* Third copy of the number on one phone screen — the fixed dock and the
+     hero call button already carry it, so the strip keeps just the
+     address/directions trigger. */
   .garage-strip-phone {
-    justify-self: end;
+    display: none;
   }
   .directions-menu-trigger {
     max-width: 48vw;
@@ -976,13 +979,11 @@
   .garage-service-promise > p:not(.garage-issue-line) {
     font-size: 0.88rem;
   }
+  /* The fuel-type chips repeat the hero photo caption and the tappable
+     ride-track ovals further down — the same list three times on one phone
+     page. */
   .garage-service-promise ul {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .garage-service-promise li {
-    padding: 0.48rem 0.25rem;
-    text-align: center;
+    display: none;
   }
   .garage-proof-tickets {
     gap: 0.45rem;
@@ -996,17 +997,20 @@
     box-shadow: 3px 3px 0 var(--ink);
     transform: none;
   }
+  /* The dashed inner frame is mush inside a ticket this small. */
   .garage-proof-ticket::before {
-    inset: 4px;
+    display: none;
   }
   .garage-proof-ticket img {
     width: 60px;
     height: 48px;
   }
+  /* Straightened: tilted -6deg the seal's edge pokes past its small ticket. */
   .garage-carfax-seal {
     width: 62px;
     height: 62px;
     border-width: 3px;
+    transform: none;
   }
   .garage-carfax-seal img {
     width: 44px;
@@ -1029,45 +1033,19 @@
     font-size: 2rem;
     -webkit-text-stroke: 0;
   }
+  /* The marquee duplicates the full logo wall one section later; at 36px
+     logos and sub-0.5rem labels it is illegible decoration on a phone. */
   .garage-makes-deck {
-    grid-template-columns: 92px minmax(0, 1fr);
-  }
-  .garage-makes-label {
-    padding: 0.65rem 0.6rem;
-    border-right-width: 3px;
-  }
-  .garage-makes-label strong {
-    font-size: 0.7rem;
-  }
-  .garage-makes-label span {
-    font-size: 0.44rem;
-  }
-  .catalog-make-track {
-    padding-block: 0.55rem;
-    animation-duration: 18s;
-  }
-  .catalog-make-logo {
-    width: 100px;
-    flex-basis: 100px;
-    grid-template-columns: 36px 1fr;
-    gap: 0.4rem;
-    padding-inline: 0.55rem;
-  }
-  .catalog-make-logo img {
-    width: 36px;
-    height: 36px;
-  }
-  .catalog-make-logo strong {
-    font-size: 0.48rem;
+    display: none;
   }
   .section {
-    padding: 5.5rem 0;
+    padding: 4.25rem 0;
   }
   /* These three sections carry no .section class, so without their own rules
      the fluid clamp collapses to ~43px of padding on a 390px phone. */
   .technology-section,
   .visit-section {
-    padding: 5.5rem 0;
+    padding: 4.25rem 0;
   }
   .services-intro::before {
     display: none;
@@ -1106,7 +1084,7 @@
     margin-bottom: 2rem;
   }
   .makes-section {
-    padding: 5.5rem 0 6.5rem;
+    padding: 4.25rem 0 5rem;
   }
   .makes-section::before {
     top: 1.35rem;
@@ -1139,6 +1117,15 @@
     border-width: 3px;
     outline-width: 2px;
   }
+  /* Rotated stickers with a 6px offset shadow pile onto their neighbours in
+     a two-column phone grid — square them up and pull the shadow in. */
+  .ride-track li,
+  .ride-track li:nth-child(even),
+  .ride-track li:nth-child(3),
+  .ride-track li:nth-child(5) {
+    transform: none;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.52);
+  }
   .ride-track strong {
     font-size: 1rem;
   }
@@ -1161,20 +1148,10 @@
     grid-row: 1 / 3;
     margin: 0;
   }
+  /* The callout repeats the caption directly under the logo wall ("we service
+     virtually all makes and models") — one copy is enough on a phone. */
   .driveway-callout {
-    grid-template-columns: 44px 1fr;
-    gap: 0.75rem;
-    padding: 0.85rem;
-  }
-  .driveway-callout > span {
-    width: 40px;
-    height: 40px;
-    border-width: 3px;
-    outline-width: 2px;
-  }
-  .driveway-callout p {
-    grid-column: 1 / -1;
-    justify-self: start;
+    display: none;
   }
   /* Four columns so the 28-tile wall lands in seven complete rows. */
   .make-grid {
@@ -1194,7 +1171,7 @@
     letter-spacing: -0.01em;
   }
   .award-section {
-    padding: 5.5rem 0;
+    padding: 4.25rem 0;
   }
   .award-badge {
     width: 240px;

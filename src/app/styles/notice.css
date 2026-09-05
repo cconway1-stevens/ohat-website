@@ -199,8 +199,10 @@
     font-size: 0.78rem;
   }
 
+  /* The fixed booking dock already pins a call button to every phone screen,
+     so the banner keeps just its message and the hours link. */
   .notice-banner-call {
-    padding: 0.26rem 0.6rem;
+    display: none;
   }
 
   .notice-banner-close {

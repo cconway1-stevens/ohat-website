@@ -1,50 +1,33 @@
 /* ---------------------------------------------------------------------------
-   /contact — a roadside-guide contact page.
+   /contact — a framed, single-overview contact page.
 
-   Mobile-first: one continuous column on the phone, a stacked two-band
-   composition on tablet, and a single structured left panel beside a
-   full-height map on desktop. The road-trip character comes from the route
-   shield, the tri-colour guide-spine band, dashed lane dividers and the
-   pre-trip checklist — never from rotations or heavy shadows.
+   Mobile-first: one column. Desktop: info panel left, full-height map right.
+   Matches the rest of the site's brutalist framing — hard ink borders, offset
+   shadows, squared corners — while keeping the page to one clean overview.
 --------------------------------------------------------------------------- */
 
 .contact-route {
   padding: 116px 0 1.25rem;
-  background: linear-gradient(rgba(168, 22, 28, 0.045) 1px, transparent 1px), var(--cream);
-  background-size: 100% 24px;
+  background: var(--cream);
 }
+/* One shared framed container holds both panels — the info column and the map
+   — so they read as a single unit rather than two separate cards. */
 .contact-route-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-}
-/* `display: contents` drops the wrapper's box so the three groups become
-   direct flex/grid items on phone and tablet; desktop restores it as the
-   single panel. */
-.contact-route-panel {
-  display: contents;
-}
-.contact-route-details,
-.contact-arrival {
-  min-width: 0;
-  padding: 1rem;
+  gap: 1rem;
+  padding: 0.85rem;
   background: var(--paper);
   border: 3px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
+  border-radius: 2px;
+  box-shadow: 8px 8px 0 var(--ink);
 }
-/* The tri-colour guide-spine band rides the top edge of the details group on
-   every viewport — on desktop that group is the head of the single panel. */
-.contact-route-details {
-  background:
-    linear-gradient(90deg, var(--red) 0 34%, var(--yellow) 34% 67%, var(--blue) 67%) top / 100% 6px
-    no-repeat,
-    var(--paper);
-  padding-top: calc(1rem + 6px);
-}
-/* The arrival checklist sits on a warm yellow-tinted paper so the two groups
-   read as distinct cards rather than one long column. */
-.contact-arrival {
-  background: color-mix(in srgb, var(--paper) 80%, var(--yellow) 20%);
+.contact-route-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 0.25rem 0.15rem;
 }
 .contact-map-panel {
   min-width: 0;
@@ -55,55 +38,66 @@
 .contact-section-label {
   margin: 0 0 0.45rem;
   color: var(--red);
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 950;
   letter-spacing: 0.17em;
   text-transform: uppercase;
 }
-.contact-route-marker::before {
-  content: "NJ 152";
-  display: inline-grid;
-  place-items: center;
-  min-width: 3.7rem;
-  min-height: 1.8rem;
-  margin-right: 0.65rem;
-  padding-inline: 0.35rem;
-  background: var(--yellow);
-  border: 2px solid var(--ink);
-  border-radius: 50% 50% 42% 42%;
-  color: var(--ink);
-  letter-spacing: 0.08em;
-}
 .contact-route-intro h1 {
   margin: 0;
-  max-width: 12ch;
+  max-width: 14ch;
   font-family: var(--font-serif);
-  font-size: clamp(2rem, 11vw, 3.1rem);
-  line-height: 0.92;
-  letter-spacing: -0.045em;
+  font-size: clamp(1.8rem, 7vw, 2.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
   text-transform: uppercase;
   text-wrap: balance;
 }
 .contact-route-intro > p:last-child {
   max-width: 42rem;
-  margin: 0.55rem 0 0;
+  margin: 0.45rem 0 0;
   color: var(--muted);
   font-size: 0.82rem;
-  line-height: 1.45;
+  line-height: 1.4;
+}
+/* The open/closed sign leads the info column — it's the first thing a caller
+   checks — so it sits right under the headline, not buried on the map. */
+.contact-status {
+  display: flex;
+  align-items: center;
+}
+.contact-status .shop-hours-status-wrap {
+  width: 100%;
+}
+.contact-status .shop-hours-status {
+  width: 100%;
+  justify-content: center;
+  padding: 0.5rem 0.8rem;
+  border-radius: 2px;
+}
+.contact-status .shop-status-copy > span:first-child {
+  font-size: 0.98rem;
+}
+.contact-status .shop-status-copy > span:not(:first-child) {
+  font-size: 0.68rem;
 }
 .contact-primary-actions {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.5rem;
-  margin-top: 0.9rem;
+}
+.contact-secondary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
 }
 .contact-action {
   min-width: 0;
-  min-height: 60px;
+  min-height: 52px;
   display: grid;
   align-content: center;
-  gap: 0.18rem;
-  padding: 0.65rem 0.75rem;
+  gap: 0.14rem;
+  padding: 0.55rem 0.7rem;
   background: var(--paper);
   border: 2px solid var(--ink);
   border-radius: 2px;
@@ -120,38 +114,40 @@
     box-shadow 0.16s ease;
 }
 .contact-action span {
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .contact-action strong {
   font-family: var(--font-serif);
-  font-size: clamp(0.86rem, 3.6vw, 1.02rem);
-  line-height: 1.18;
+  font-size: clamp(0.85rem, 3.4vw, 1rem);
+  line-height: 1.15;
   overflow-wrap: anywhere;
 }
-.contact-action-call,
+/* The call is the one action that matters most — full width, loud yellow,
+   the phone number front and centre. */
+.contact-action-call {
+  grid-column: 1 / -1;
+  min-height: 58px;
+  background: var(--yellow);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.contact-action-call strong {
+  font-size: clamp(1.05rem, 4.5vw, 1.3rem);
+}
 .contact-action-directions {
-  grid-column: span 2;
+  background: var(--blue);
+  color: #fff;
 }
-/* Email and save-to-phone are real but secondary — full-width rows so the
-   long email address never wraps mid-word, one visual step down from the bold
-   yellow/blue primary pair above them. */
-.contact-action-email,
+.contact-action-email {
+  background: var(--red);
+  color: #fff;
+}
 .contact-action-vcard {
-  grid-column: span 4;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  column-gap: 0.6rem;
+  background: var(--ink);
+  color: var(--yellow-tint);
 }
-.contact-action-email .contact-action-icon,
-.contact-action-vcard .contact-action-icon {
-  grid-row: span 2;
-  margin-bottom: 0;
-}
-/* The email address is a technical string, not a headline — set it in the
-   sans face at a smaller size so it reads as an address and fits one line. */
 .contact-action-email strong {
   font-family: var(--font-geist-sans), Arial, sans-serif;
   font-size: clamp(0.78rem, 3vw, 0.9rem);
@@ -166,126 +162,42 @@
   height: 22px;
   margin-bottom: 0.1rem;
 }
-.contact-action-call {
-  background: var(--yellow);
-}
-.contact-action-directions {
-  background: var(--blue);
-  color: #fff;
-}
-/* The secondary pair carries the two remaining palette colours — red and ink
-   — so all four actions read as one colourful set while the icon + label still
-   carry the meaning for colour-blind visitors. */
-.contact-action-email {
-  background: var(--red);
-  color: #fff;
-}
-.contact-action-vcard {
-  background: var(--ink);
-  color: var(--yellow-tint);
-}
 .contact-action:hover,
 .contact-action:focus-visible {
-  background: var(--red);
-  color: #fff;
   transform: translate(-2px, -2px);
   box-shadow: 6px 6px 0 var(--ink);
 }
-/* The email tile is already red, so its hover darkens instead of recolouring
-   to the same red — the lift and shadow still read as the interaction. */
 .contact-action-email:hover,
 .contact-action-email:focus-visible {
   background: var(--red-dark);
 }
-/* The hours card sits below the four action tiles and picks up their solid
-   border + drop-shadow language instead of a dashed "note" frame, so it
-   reads as one more tile in the set rather than a stray aside. A title
-   banner up top ("Shop hours") gives the block a label the way every other
-   section on the page gets one, and everything below it is left-aligned to
-   match. */
-.contact-hours-card {
-  grid-column: span 4;
-  display: grid;
-  gap: 0.55rem;
-  padding: 0 0.8rem 0.7rem;
-  background: var(--cream);
+/* The hours block is its own framed tile with an ink title banner so the
+   schedule reads at a glance instead of hiding in plain text. */
+.contact-hours-summary {
   border: 2px solid var(--ink);
   border-radius: 2px;
   box-shadow: 4px 4px 0 var(--ink);
-  text-align: left;
+  background: var(--cream);
 }
-.contact-hours-title {
-  margin: 0 -0.8rem 0.15rem;
-  padding: 0.4rem 0.8rem;
+.contact-hours-summary .contact-section-label {
+  margin: 0;
+  padding: 0.4rem 0.7rem;
   background: var(--ink);
   color: var(--yellow-tint);
-  font-size: 0.7rem;
-  font-weight: 950;
+  font-size: 0.66rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-align: left;
-}
-/* The open/closed sign leads the card — it's the first thing a caller
-   checks — pinned to its own content width so it stays a small badge
-   rather than stretching into a banner, then a dashed rule hands off to
-   the schedule below. */
-.contact-hours-card .shop-hours-status-wrap {
-  justify-self: start;
-  justify-content: flex-start;
-  padding-bottom: 0.55rem;
-  border-bottom: 1px dashed rgba(23, 20, 18, 0.28);
-}
-.contact-hours-card .shop-hours-status {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.4rem;
-  max-width: 100%;
-  width: auto;
-  padding: 0.32rem 0.65rem;
-  border-width: 1.5px;
-  border-radius: 6px;
-  box-shadow: none;
-}
-.contact-hours-card .shop-status-copy {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.4rem;
-}
-.contact-hours-card .shop-status-copy > span:first-child {
-  font-size: 0.92rem;
-}
-.contact-hours-card .shop-status-copy > span:not(:first-child) {
-  font-size: 0.78rem;
-}
-.contact-hours-card .shop-hours-holiday {
-  margin-top: 0.3rem;
-}
-.contact-hours-warning {
-  margin: 0;
-  padding: 0.4rem 0.6rem;
-  background: color-mix(in srgb, var(--paper) 80%, var(--yellow) 20%);
-  border: 1.5px solid var(--red);
-  border-radius: 4px;
-  color: var(--red-dark);
-  font-size: 0.8rem;
-  font-weight: 800;
-  line-height: 1.35;
 }
 .contact-hours-list {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.3rem;
   margin: 0;
+  padding: 0.55rem 0.7rem 0.65rem;
 }
-/* Day on the left, hours on the right — the same left-anchored table pattern
-   as the /hours page, so the two places agree instead of one centering its
-   schedule and the other not. */
 .contact-hours-list > div {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.7rem;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
 }
 .contact-hours-list dt {
   font-weight: 900;
@@ -297,53 +209,44 @@
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
-.contact-hours-note {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.4;
-  text-align: left;
-}
-.contact-hours-note a {
-  color: var(--red);
-  font-weight: 900;
-  text-underline-offset: 0.18em;
+.contact-arrival {
+  padding-top: 0.9rem;
+  border-top: 2px dashed rgba(23, 20, 18, 0.22);
 }
 .contact-arrival h2 {
   margin: 0 0 0.55rem;
   font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   line-height: 1;
 }
-/* The pre-trip checklist: every item arrives already checked off. */
 .contact-checklist {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.42rem;
+  gap: 0.45rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .contact-checklist li {
   position: relative;
-  padding-left: 1.35rem;
+  padding-left: 1.4rem;
   color: var(--muted);
-  font-size: 0.76rem;
-  line-height: 1.35;
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 .contact-checklist li::before {
   content: "\2713";
   position: absolute;
   left: 0;
   top: 0.05em;
-  width: 0.95rem;
-  height: 0.95rem;
+  width: 1rem;
+  height: 1rem;
   display: grid;
   place-items: center;
   background: var(--yellow);
   border: 2px solid var(--ink);
   color: var(--ink);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 950;
   line-height: 1;
 }
@@ -351,53 +254,49 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  border-width: 2px;
-  box-shadow: none;
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  overflow: hidden;
 }
 .contact-map-panel .shop-map-frame {
+  position: relative;
   min-height: 300px;
   aspect-ratio: 1 / 1;
-  border-bottom-width: 2px;
+  border-bottom: 2px solid var(--ink);
 }
-/* The open/closed sign (and any active holiday notice) floated in the map's
-   corner — this replaces the full contact-hours-card that used to sit in
-   the action column (commented out in the page). Sized up for legibility
-   and pinned to its own content width so it reads as a card on the map,
-   not a banner stretching edge to edge. */
-.shop-map-hours-badge {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2;
-  display: grid;
-  gap: 0.4rem;
-  justify-items: end;
-  max-width: min(78%, 20rem);
+/* The holiday/closure notice sits above the map in normal flow — a framed
+   banner that pushes the map down instead of overlapping its tiles. */
+.contact-map-panel .contact-hours-warning {
+  margin: 0 0 0.75rem;
+  padding: 0.6rem 1rem;
+  border: 3px solid var(--ink);
+  border-radius: 2px;
+  background: var(--yellow-tint);
+  box-shadow: 5px 5px 0 var(--red);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
 }
-.shop-map-hours-badge .shop-hours-status-wrap {
-  display: inline-flex;
-}
-.shop-map-hours-badge .shop-hours-status {
-  padding: 0.5rem 0.85rem;
-  border-width: 2px;
-  border-radius: 8px;
-  background: var(--paper);
-  box-shadow: 4px 4px 0 var(--ink);
-}
-.shop-map-hours-badge .shop-status-copy > span:first-child {
-  font-size: 0.95rem;
-}
-.shop-map-hours-badge .shop-status-copy > span:not(:first-child) {
-  font-size: 0.76rem;
-}
-.shop-map-hours-badge .contact-hours-warning {
-  text-align: right;
-  font-size: 0.76rem;
+.contact-map-panel .contact-hours-warning::before {
+  content: "Heads up";
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.16rem 0.42rem;
+  vertical-align: 1px;
+  background: var(--red);
+  border-radius: 4px;
+  color: var(--paper);
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 .contact-map-panel .shop-map figcaption {
   flex-wrap: nowrap;
   gap: 0.6rem;
-  padding: 0.7rem 0.9rem;
+  padding: 0.8rem 1rem;
   background: var(--yellow);
 }
 .contact-map-panel .shop-map figcaption > span {
@@ -423,13 +322,13 @@
   text-align: right;
 }
 .contact-map-region {
-  margin: 0.55rem 0 0;
+  margin: 0.6rem 0 0;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   line-height: 1.4;
 }
 
-/* Tablet — stacked two-band composition. */
+/* Tablet — the info card and map sit side by side, arrival notes span below. */
 @media (min-width: 701px) and (max-width: 1024px) {
   .contact-route {
     padding-top: calc(168px + var(--notice-h, 0px));
@@ -438,125 +337,67 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "details details"
-      "map map"
-      "arrival arrival";
+      "panel map"
+      "panel map";
+    align-items: start;
     gap: 1rem;
   }
-  .contact-route-details {
-    grid-area: details;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "intro"
-      "actions";
-    gap: 0.5rem;
-    align-items: start;
-  }
-  .contact-arrival {
-    grid-area: arrival;
+  .contact-route-panel {
+    grid-area: panel;
   }
   .contact-map-panel {
     grid-area: map;
   }
-  .contact-route-intro {
-    grid-area: intro;
-  }
-  .contact-primary-actions {
-    grid-area: actions;
-  }
-  .contact-stop-card {
-    grid-area: stop;
-  }
   .contact-route-intro h1 {
     max-width: none;
   }
-  .contact-primary-actions {
-    margin-top: 0.85rem;
-  }
   .contact-map-panel .shop-map-frame {
     min-height: 360px;
-    aspect-ratio: 16 / 7;
-  }
-  .contact-arrival {
-    border-width: 3px;
+    aspect-ratio: 16 / 9;
   }
 }
 
-/* Desktop — one structured left panel beside a full-height map. */
+/* Desktop — info panel left, full-height map right, both inside the shared
+   framed container which auto-sizes to the viewport height. */
 @media (min-width: 1025px) {
   .contact-route {
+    /* biome-ignore lint/suspicious/noDuplicateProperties: svh is the fallback, dvh the modern value - both intentional. */
     min-height: 100svh;
+    min-height: 100dvh;
     padding: 168px 0 clamp(1.4rem, 3vw, 2.5rem);
-    background-size: 100% 30px;
     display: flex;
     flex-direction: column;
   }
   .contact-route-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: minmax(0, 38fr) minmax(0, 62fr);
+    grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
     align-items: stretch;
-    gap: 1rem;
-    /* The two panels read as one framed object — a postcard, not two cards
-       side by side — so the border and shadow live here, on the pair,
-       rather than on each panel separately. */
-    padding: 0.85rem;
-    background: var(--paper);
-    border: 4px solid var(--ink);
-    box-shadow: 10px 10px 0 var(--yellow);
+    gap: 1.25rem;
   }
   .contact-route-panel {
-    display: flex;
-    flex-direction: column;
-    background: var(--paper);
-    border: 2px solid var(--ink);
-  }
-  .contact-route-details {
-    padding: 0.9rem 1.15rem 0.85rem;
-    border: 0;
-    box-shadow: none;
-  }
-  .contact-arrival {
-    padding: 0.8rem 1.15rem;
-    border: 0;
-    border-top: 2px dashed rgba(23, 20, 18, 0.22);
-    box-shadow: none;
-  }
-  .contact-route-intro {
-    padding-bottom: 0.75rem;
-    border-bottom: 1px dashed rgba(23, 20, 18, 0.22);
+    padding: 0.4rem 0.4rem;
+    gap: 0.8rem;
   }
   .contact-route-intro h1 {
-    max-width: 10ch;
-    font-size: clamp(2.3rem, 2.8vw, 3rem);
+    max-width: 12ch;
+    font-size: clamp(2rem, 2.4vw, 2.6rem);
   }
   .contact-route-intro > p:last-child {
-    margin-top: 0.5rem;
     font-size: 0.8rem;
-    line-height: 1.35;
-  }
-  .contact-primary-actions {
-    margin-top: 0.9rem;
   }
   .contact-action {
     min-height: 48px;
   }
-  .contact-action strong {
-    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
-  }
-  .contact-hours-card {
-    margin-top: 0.75rem;
-  }
-  .contact-arrival h2 {
-    margin-bottom: 0.4rem;
+  .contact-action-call {
+    min-height: 56px;
   }
   .contact-checklist {
     grid-template-columns: 1fr 1fr;
-    gap: 0.35rem 0.9rem;
+    gap: 0.35rem 1rem;
   }
   .contact-checklist li {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
   }
   .contact-map-panel {
     min-height: 0;
@@ -590,16 +431,8 @@
   .contact-route {
     padding-top: calc(112px + var(--notice-h, 0px));
   }
-  .contact-route-details,
-  .contact-arrival {
-    padding: 0.8rem;
-  }
-  .contact-route-details {
-    padding-top: calc(0.8rem + 6px);
-  }
-  .contact-route-marker::before {
-    min-width: 3.2rem;
-    margin-right: 0.4rem;
+  .contact-route-panel {
+    padding: 1.1rem 0.9rem;
   }
   .contact-action span {
     font-size: 0.5rem;

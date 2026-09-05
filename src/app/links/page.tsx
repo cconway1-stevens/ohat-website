@@ -117,7 +117,7 @@ export default function LinksPage() {
         </nav>
 
         <p className="link-hub-hours">
-          {shop.hours.compact} <ShopHoursStatus />
+          {shop.hours.compact} <ShopHoursStatus hideMore />
         </p>
         <p className="link-hub-share">
           <Link href="/hours">Hours &amp; closures — the full schedule →</Link>
