@@ -1,8 +1,6 @@
-import Link from "next/link";
-import { phoneDisplay, phoneHref } from "@/components/layout/site-header";
-import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
-import { DirectionsTrigger } from "@/components/ui/directions-dialog";
-import { SiteImage } from "@/components/ui/site-image";
+/* eslint-disable @next/next/no-html-link-for-pages, @next/next/no-img-element --
+   This route deliberately uses native static elements so vinext has no
+   route-specific client boundary to hydrate. */
 import { pageMetadata } from "@/lib/seo";
 import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/shop/business";
 import { shop } from "@/lib/shop/shop";
@@ -31,17 +29,18 @@ export default function LinksPage() {
     <main className="link-hub">
       <div className="link-hub-checker" aria-hidden="true" />
       <section className="link-hub-card" aria-labelledby="link-hub-title">
-        <Link className="link-hub-logo" href="/" aria-label="Back to Ocean Heights Auto and Tire">
-          <SiteImage
-            // Pre-built AVIF, not the source PNG — matches the header's
-            // BrandMark, which already does this correctly.
+        <a className="link-hub-logo" href="/" aria-label="Back to Ocean Heights Auto and Tire">
+          <img
             src="/media/logo-transparent.avif"
             width={176}
             height={129}
             alt="Ocean Heights Auto and Tire"
-            priority
+            className="site-image"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
-        </Link>
+        </a>
         <p className="link-hub-kicker">The modern family garage</p>
         <h1 id="link-hub-title">Your pit stop for every link.</h1>
         <p className="link-hub-intro">Everything you need to reach the garage, in one place.</p>
@@ -51,20 +50,20 @@ export default function LinksPage() {
             Book a visit
           </h2>
           <div className="link-hub-list">
-            <a className="link-hub-primary" href={phoneHref}>
+            <a className="link-hub-primary" href={shop.phone.href}>
               <span aria-hidden="true">☎︎</span>
               <span>
                 <strong>Call to book a bay</strong>
-                <small>{phoneDisplay}</small>
+                <small>{shop.phone.display}</small>
               </span>
             </a>
-            <DirectionsTrigger className="link-hub-directions">
+            <a className="link-hub-directions" href={shop.links.google}>
               <span aria-hidden="true">↗︎</span>
               <span>
                 <strong>Get directions</strong>
                 <small>{shop.address.street}</small>
               </span>
-            </DirectionsTrigger>
+            </a>
             <a href="/contact-card.vcf" download>
               <span aria-hidden="true">＋</span>
               <span>
@@ -80,20 +79,20 @@ export default function LinksPage() {
             Before you come in
           </h2>
           <div className="link-hub-list">
-            <Link href="/services">
+            <a href="/services">
               <span aria-hidden="true">⚙</span>
               <span>
                 <strong>Browse services</strong>
                 <small>Repairs, tires, maintenance &amp; diagnostics</small>
               </span>
-            </Link>
-            <Link href="/vehicle-drop-off">
+            </a>
+            <a href="/vehicle-drop-off">
               <span aria-hidden="true">⌁</span>
               <span>
                 <strong>Vehicle drop-off</strong>
                 <small>Early-bird &amp; night-owl key drop</small>
               </span>
-            </Link>
+            </a>
           </div>
         </nav>
 
@@ -116,18 +115,16 @@ export default function LinksPage() {
           </div>
         </nav>
 
-        <p className="link-hub-hours">
-          {shop.hours.compact} <ShopHoursStatus hideMore />
+        <p className="link-hub-hours">{shop.hours.compact}</p>
+        <p className="link-hub-share">
+          <a href="/hours">Hours &amp; closures — the full schedule →</a>
         </p>
         <p className="link-hub-share">
-          <Link href="/hours">Hours &amp; closures — the full schedule →</Link>
+          <a href="/links/qr">Share this page — QR code &amp; link →</a>
         </p>
-        <p className="link-hub-share">
-          <Link href="/links/qr">Share this page — QR code &amp; link →</Link>
-        </p>
-        <Link className="link-hub-home" href="/">
+        <a className="link-hub-home" href="/">
           ← Back to the full garage
-        </Link>
+        </a>
       </section>
     </main>
   );
