@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { getActiveNotice } from "@/lib/shop/announcements.mjs";
 import { shop } from "@/lib/shop/shop";
@@ -10,6 +11,11 @@ import { shop } from "@/lib/shop/shop";
  * Mirrors the ShopHoursStatus contract: the server (and the first client
  * paint) render nothing, and the client decides — so a static export never
  * bakes a build-day decision into the HTML and no host can mismatch.
+ *
+ * Every notice carries two standing actions beside the message: the call
+ * button and a quieter "Full hours" link to /hours — a customer reading a
+ * closure notice is one tap from the complete schedule and why it looks the
+ * way it does.
  *
  * When a notice is active it publishes its measured height as the CSS
  * variable `--notice-h`; the masthead and every hero that reserves masthead
@@ -80,6 +86,9 @@ export function NoticeBanner() {
           <a className="notice-banner-call" href={shop.phone.href}>
             <span aria-hidden="true">☎︎</span> Call {shop.phone.display}
           </a>
+          <Link className="notice-banner-hours" href="/hours">
+            Full hours <span aria-hidden="true">&#8594;</span>
+          </Link>
         </div>
         <button
           className="notice-banner-close"

@@ -291,6 +291,13 @@
   color: #f08d84;
   background: rgba(240, 141, 132, 0.12);
 }
+/* The Full-hours pointer under the sign picks up paper tones on ink. */
+.on-dark .shop-hours-more {
+  color: #cdc4ba;
+}
+.on-dark .shop-hours-more:hover {
+  color: var(--yellow);
+}
 /* The bottom padding is deliberate clearance for the fixed call dock, which
    parks bottom-right; it is not dead space. Trimmed from 6rem to 4rem, which
    still clears the dock at its tallest. */

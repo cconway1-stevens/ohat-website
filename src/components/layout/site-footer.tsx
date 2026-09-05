@@ -69,6 +69,7 @@ export function SiteFooter() {
               {shop.address.cityLine}
             </DirectionsTrigger>
             <Link href="/vehicle-drop-off">After-hours drop-off</Link>
+            <Link href="/hours">Hours &amp; closures</Link>
             <Link href="/our-shop">About the shop</Link>
             <Link href="/services">Service catalog</Link>
           </div>

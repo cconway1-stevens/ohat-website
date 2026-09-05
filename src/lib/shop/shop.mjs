@@ -69,6 +69,23 @@ export const shop = {
     /** Days whose close time differs from `closes` above. Friday closes an
      *  hour early; every other configured day falls through to `closes`. */
     closesByDay: { Friday: "16:00" },
+    /**
+     * Owner-posted closures — days the shop is shut even though the weekly
+     * schedule above says open: a storm day, staff training, a family
+     * emergency. One entry per closure:
+     *
+     *   { from: "2026-12-24", to: "2026-12-26", reason: "Holiday break" }
+     *
+     * `to` is optional (a single-day closure when omitted); both ends are
+     * inclusive. `reason` is a short noun phrase with no period — the engine
+     * wraps it in the `reasons.exception` wording, and a period would break
+     * the placard's line splitting. Entries with a blank reason or malformed
+     * dates are ignored, so a half-finished draft can never close the shop.
+     * Every surface — placard, notice banner, chat brain, hours page, dash —
+     * reads this same list, so posting it once makes the whole site agree on
+     * why the doors are shut.
+     */
+    exceptions: [],
     weekdayLabel: "Monday-Thursday",
     weekdayHours: "8:00 AM–5:00 PM",
     fridayLabel: "Friday",
@@ -100,6 +117,20 @@ export const shop = {
         reopens: "Reopens",
         reopensToday: "today",
         at: "at",
+        /**
+         * Why-we're-closed wording, one entry per closure kind. The placard
+         * assembles the closed line as "<reason>. Reopens <day> at <time>",
+         * so a reason phrase ends without a period and never contains one —
+         * a period would break the placard's line splitting. `{name}` is
+         * filled in by the engine: a federal holiday's name, or an entry
+         * from `hours.exceptions`. The ordinary before-open and after-close
+         * leads stay in closedToday / closedForDay above.
+         */
+        reasons: {
+          holiday: "Closed for {name}",
+          weekend: "Closed — we're shut every Saturday and Sunday",
+          exception: "Closed — {name}",
+        },
       },
       holidayNotice: {
         beforeName: "Holiday hours may vary for",

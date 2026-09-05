@@ -120,6 +120,9 @@ export default function LinksPage() {
           {shop.hours.compact} <ShopHoursStatus />
         </p>
         <p className="link-hub-share">
+          <Link href="/hours">Hours &amp; closures — the full schedule →</Link>
+        </p>
+        <p className="link-hub-share">
           <Link href="/links/qr">Share this page — QR code &amp; link →</Link>
         </p>
         <Link className="link-hub-home" href="/">

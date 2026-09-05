@@ -122,7 +122,8 @@ export default function ContactPage() {
                       </div>
                     </dl>
                     <p className="contact-hours-note">
-                      Holiday hours can vary. The{" "}
+                      Holiday hours can vary — every posted closure and the full week are on the{" "}
+                      <Link href="/hours">hours page</Link>. The{" "}
                       <Link href="/vehicle-drop-off">secure night drop</Link> is available around
                       the clock.
                     </p>

@@ -361,6 +361,28 @@
   font-weight: 800;
   line-height: 1.35;
 }
+/* The small pointer under the sign: a customer who just learned the shop is
+   shut for a holiday gets the complete schedule one click away. Quieter than
+   the sign itself — underlined text, not another plate. */
+.shop-hours-more {
+  flex-basis: 100%;
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.shop-hours-more:hover {
+  color: var(--red);
+}
+
+.shop-hours-more:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
 .directions-dialog-options {
   display: grid;
   grid-template-columns: 1fr 1fr;

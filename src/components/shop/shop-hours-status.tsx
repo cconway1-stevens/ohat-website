@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { shop } from "@/lib/shop/shop";
 import { getShopHoursStatus, getShopStatusLabel } from "@/lib/shop/shop-hours.mjs";
@@ -13,7 +14,15 @@ import { getShopHoursStatus, getShopStatusLabel } from "@/lib/shop/shop-hours.mj
  * than paper; it swaps the plate's fill, not its design.
  *
  * The wording all comes from `shop.hours.status.labels`, so the sign can be
- * reworded without touching this file or the scheduling logic.
+ * reworded without touching this file or the scheduling logic. A closed sign
+ * carries its reason (holiday, owner-posted closure, the weekend) in the
+ * same label, so a customer never has to guess why the doors are shut — and
+ * a standing "Full hours" link under the sign leads to the complete
+ * schedule.
+ *
+ * The optional `now` prop pins the sign to an instant instead of the live
+ * clock; the hours dash uses it to render exactly what a customer would see
+ * at a chosen moment.
  */
 
 // Status is read by useSyncExternalStore: the server renders `null` and the
@@ -49,8 +58,17 @@ function subscribe(notify: () => void): () => void {
   };
 }
 
-export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
-  const status = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
+export function ShopHoursStatus({
+  onDark = false,
+  now,
+}: {
+  onDark?: boolean;
+  now?: Date;
+} = {}) {
+  const live = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
+  // A pinned instant is recomputed per render — the function is pure, so the
+  // dash's time-travel scrubber can drive it straight from state.
+  const status = now ? getShopHoursStatus(now) : live;
   const [previewState, setPreviewState] = useState<string | null>(null);
   const holdTimer = useRef<number | null>(null);
   const cycleTimer = useRef<number | null>(null);
@@ -130,6 +148,9 @@ export function ShopHoursStatus({ onDark = false }: { onDark?: boolean } = {}) {
         </span>
       </span>
       {status?.holiday ? <span className="shop-hours-holiday">{status.holidayNotice}</span> : null}
+      <Link className="shop-hours-more" href="/hours">
+        Full hours <span aria-hidden="true">&#8594;</span>
+      </Link>
     </span>
   );
 }

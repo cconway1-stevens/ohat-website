@@ -113,6 +113,29 @@
   box-shadow: 1px 1px 0 var(--red);
 }
 
+/* The quieter sibling of the call button: outlined text rather than a filled
+   plate, so a customer chasing the schedule gets it without the banner
+   reading as two competing calls to action. */
+.notice-banner-hours {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.2rem;
+  color: var(--paper);
+  font-size: clamp(0.74rem, 0.2vw + 0.7rem, 0.88rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.14s ease;
+}
+
+.notice-banner-hours:hover {
+  color: var(--yellow);
+}
+
 /* Outlined rather than filled: a solid white square at this size read as a
    stray element floating over the strip. */
 .notice-banner-close {
@@ -142,7 +165,8 @@
 }
 
 .notice-banner-call:focus-visible,
-.notice-banner-close:focus-visible {
+.notice-banner-close:focus-visible,
+.notice-banner-hours:focus-visible {
   outline: 3px solid var(--yellow);
   outline-offset: 2px;
 }
