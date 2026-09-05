@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages, @next/next/no-img-element --
-   This route deliberately uses native static elements so vinext has no
-   route-specific client boundary to hydrate. */
+   This route uses native static navigation and imagery so its only intentional
+   client boundary is the shared directions chooser. */
+import { DirectionsTrigger } from "@/components/ui/directions-dialog";
 import { pageMetadata } from "@/lib/seo";
 import { carfaxUrl, facebookUrl, googleUrl, yelpUrl } from "@/lib/shop/business";
 import { shop } from "@/lib/shop/shop";
@@ -57,13 +58,13 @@ export default function LinksPage() {
                 <small>{shop.phone.display}</small>
               </span>
             </a>
-            <a className="link-hub-directions" href={shop.links.google}>
+            <DirectionsTrigger className="link-hub-directions">
               <span aria-hidden="true">↗︎</span>
               <span>
                 <strong>Get directions</strong>
                 <small>{shop.address.street}</small>
               </span>
-            </a>
+            </DirectionsTrigger>
             <a href="/contact-card.vcf" download>
               <span aria-hidden="true">＋</span>
               <span>
