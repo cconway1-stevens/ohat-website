@@ -146,7 +146,7 @@ file outside a tier is a file nothing runs.
 <!-- AUTOGEN:tests START -->
 | Tier | Command | Files | Needs a build? | Covers |
 | --- | --- | --- | --- | --- |
-| `unit` | `npm run test:unit` | 14 | **No** — pure logic only | shop hours, notices, chat answers, arcade, transcripts, suite wiring |
+| `unit` | `npm run test:unit` | 10 | **No** — pure logic only | shop hours, notices, chat answers, arcade, transcripts, suite wiring |
 | `server` | `npm run test:server` | 2 | Yes — `npm run build` → `dist/server` | server-rendered HTML, per-service SEO |
 | `static` | `npm run test:static` | 2 | Yes — `npm run build:static` → `dist/client` | static export, route discovery and classification |
 

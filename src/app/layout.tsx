@@ -66,6 +66,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#6f0d12",
+  // The on-screen keyboard shrinks the visual viewport but leaves the layout
+  // viewport alone by default, so a `position: fixed` panel keeps its
+  // full-height box and its bottom row — the chat composer — ends up behind
+  // the keyboard. `resizes-content` shrinks the layout viewport too, so the
+  // panel reflows above the keyboard instead of under it.
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

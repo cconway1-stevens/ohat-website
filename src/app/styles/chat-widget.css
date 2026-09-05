@@ -286,12 +286,30 @@
   flex: 0 0 26px;
   display: block;
 }
+/* The header's "Aa" control cycles three text sizes. It used to do it with
+   `zoom` on the whole panel, declared only inside `@media (min-width: 561px)`
+   — but the class is applied to the panel at every width and the button
+   renders on phones, so on a phone it swapped a class with no rules behind it
+   and visibly did nothing. Un-scoping `zoom` was not the fix either: zooming
+   a fixed panel pinned with `inset: 0.5rem` scales it past the screen edges.
+   A control labelled "Aa" should scale type, not the box, so it now drives
+   this custom property and the panel's own geometry never moves. */
+.chat-panel {
+  --chat-text-scale: 1;
+}
+.chat-zoom-1 {
+  --chat-text-scale: 1.15;
+}
+.chat-zoom-2 {
+  --chat-text-scale: 1.32;
+}
+
 .chat-bubble {
   max-width: 78%;
   min-width: 0;
   padding: 0.55rem 0.75rem;
   border-radius: 14px;
-  font-size: 0.9rem;
+  font-size: calc(0.9rem * var(--chat-text-scale, 1));
   line-height: 1.45;
   /* Long unbroken strings — the shop's email address above all — used to
      push the bubble wider than the panel. Break anywhere instead. */
@@ -436,10 +454,26 @@
   font: inherit;
   font-size: 0.9rem;
 }
+
+/* iOS Safari force-zooms the whole page whenever a focused input sets type
+   below 16px — the page scales up, the layout viewport stops matching the
+   visual one, and the composer's Send button lands off the right edge while
+   the keyboard is open. 0.9rem is 14.4px, so this fired every time someone
+   tapped the field. 16px is the threshold, not a preference: at 16px Safari
+   leaves the page alone. Scoped to coarse pointers so the desktop widget
+   keeps its smaller type. */
+@media (pointer: coarse) {
+  .chat-input-row input {
+    font-size: 16px;
+  }
+}
 .chat-input-row input:focus-visible {
   border-color: var(--blue);
 }
 .chat-send {
+  /* Never let the row's pressure squeeze or clip the one button that sends
+     the message — the input is the flexible element here, not this. */
+  flex: 0 0 auto;
   padding: 0.55rem 0.9rem;
   border: 2px solid var(--ink);
   border-radius: 10px;
@@ -454,6 +488,7 @@
 }
 
 .chat-mic {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -611,17 +646,10 @@
   }
 }
 
-/* Accessibility: the "Aa" button cycles three text sizes and the expand
-   button grows the panel to fill most of the viewport. Both are desktop
-   conveniences — on phones the panel already fills the screen and pinch-zoom
-   is the native way to enlarge, so they're scoped to larger viewports. */
+/* The expand button grows the panel to fill most of the viewport — a desktop
+   convenience, since on phones the panel already fills the screen. The "Aa"
+   text-size control is NOT scoped here; see --chat-text-scale above. */
 @media (min-width: 561px) {
-  .chat-zoom-1 {
-    zoom: 1.15;
-  }
-  .chat-zoom-2 {
-    zoom: 1.3;
-  }
   .chat-panel-max {
     width: min(760px, calc(100vw - 2.5rem));
     height: min(85vh, 900px);
@@ -651,7 +679,7 @@
   }
   .chat-panel-max .chat-bubble {
     max-width: 62%;
-    font-size: 1rem;
+    font-size: calc(1rem * var(--chat-text-scale, 1));
     padding: 0.75rem 1rem;
   }
   .chat-panel-max .chat-msg-avatar {
