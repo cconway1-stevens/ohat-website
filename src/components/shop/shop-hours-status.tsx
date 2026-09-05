@@ -40,6 +40,9 @@ function clientSnapshot(): ReturnType<typeof getShopHoursStatus> | null {
 }
 
 const serverSnapshot = () => null;
+const hydrationServerSnapshot = () => false;
+const hydrationClientSnapshot = () => true;
+const subscribeToHydration = () => () => {};
 
 function subscribe(notify: () => void): () => void {
   listeners.add(notify);
@@ -70,9 +73,19 @@ export function ShopHoursStatus({
   hideMore?: boolean;
 } = {}) {
   const live = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
+  // Keep the first client render byte-for-byte aligned with the static HTML.
+  // vinext can ask the live store for its client snapshot before hydration has
+  // committed, which previously changed "Checking hours" into the live label
+  // and raised React hydration error #418 on /links. This tiny hydration store
+  // guarantees one deterministic server snapshot before revealing `live`.
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    hydrationClientSnapshot,
+    hydrationServerSnapshot,
+  );
   // A pinned instant is recomputed per render — the function is pure, so the
   // dash's time-travel scrubber can drive it straight from state.
-  const status = now ? getShopHoursStatus(now) : live;
+  const status = now ? getShopHoursStatus(now) : hydrated ? live : null;
   const [previewState, setPreviewState] = useState<string | null>(null);
   const holdTimer = useRef<number | null>(null);
   const cycleTimer = useRef<number | null>(null);
