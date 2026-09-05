@@ -71,9 +71,9 @@ export default function HoursPage() {
             </div>
           </div>
           <p className="hours-footnote shell">
-            Holiday hours can vary — please call <a href={phoneHref}>{phoneDisplay}</a> to
-            confirm. The <Link href="/vehicle-drop-off">secure night drop</Link> is available
-            around the clock.
+            Holiday hours can vary — please call <a href={phoneHref}>{phoneDisplay}</a> to confirm.
+            The <Link href="/vehicle-drop-off">secure night drop</Link> is available around the
+            clock.
           </p>
         </section>
       </main>

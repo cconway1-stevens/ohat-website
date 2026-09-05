@@ -22,9 +22,11 @@ step() {
   printf '\n\033[1m▶ %s\033[0m\n' "$name"
   if "$@"; then
     printf '\033[32m  ✓ %s\033[0m\n' "$name"
+    return 0
   else
     printf '\033[31m  ✗ %s\033[0m\n' "$name"
     FAILED+=("$name")
+    return 1
   fi
 }
 
@@ -40,13 +42,17 @@ step "bloat (advisory)" npm run check:bloat
 # 2. Build and tests.
 step "tests (both builds)" npm test
 
-# 3. Browser audits against the static export.
-step "page smoke test" npm run check:pages
+# 3. Browser audits against the static export. Bundle is browser-free, so it
+#    still runs when the preflight fails; the other checks would only repeat
+#    the same missing-browser error.
 step "bundle budget" npm run check:bundle
-step "lighthouse (fast all-indexable-page pass)" npm run check:lighthouse:fast
-step "accessibility" npm run check:a11y
-step "slow bandwidth" npm run check:slow-network
-step "memory" npm run check:memory
+if step "browser preflight" npm run check:browser:preflight; then
+  step "page smoke test" npm run check:pages
+  step "lighthouse (fast all-indexable-page pass)" npm run check:lighthouse:fast
+  step "accessibility" npm run check:a11y
+  step "slow bandwidth" npm run check:slow-network
+  step "memory" npm run check:memory
+fi
 
 printf '\n────────────────────────────────\n'
 if [[ ${#FAILED[@]} -eq 0 ]]; then

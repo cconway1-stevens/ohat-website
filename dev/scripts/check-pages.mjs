@@ -16,6 +16,7 @@ import { cpSync, existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { launchChromium } from "./lib/browser.mjs";
 import { createStaticServer, discoverRoutes } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
@@ -40,11 +41,7 @@ const server = createStaticServer(CLIENT);
 
 await new Promise((resolve) => server.listen(PORT, resolve));
 
-const { chromium } = await import("playwright");
-const executablePath =
-  process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const launchOptions = existsSync(executablePath) ? { executablePath } : {};
-let browser = await chromium.launch(launchOptions);
+let browser = await launchChromium();
 
 const pages = discoverRoutes(CLIENT).filter((p) => p.kind !== "error");
 const allRoutes = pages.map((p) => p.route);
@@ -248,7 +245,7 @@ for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
   await routePage.close();
   if (start + ROUTES_PER_BROWSER < routes.length) {
     await browser.close();
-    browser = await chromium.launch(launchOptions);
+    browser = await launchChromium();
   }
 }
 

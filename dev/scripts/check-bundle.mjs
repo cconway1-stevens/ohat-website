@@ -17,10 +17,11 @@ const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
 // Raised 800 → 1400 for the Parts Counter 3D cabinet, then to 1650 for the
 // vinext 1.0 runtime and Agent studio, then to 1680 to give the nine /agent
-// route files (one per tab) their own metadata and entry chunks. Three.js
-// remains the largest lazy chunk. The ceiling should only move again for a
-// deliberate feature change.
-const BUDGET_KB = Number(process.env.BUDGET_KB ?? 1680);
+// route files (one per tab) their own metadata and entry chunks, then to 1720
+// for the local chat transcript, announcement, and expanded contact/hour UI.
+// Three.js remains the largest lazy chunk. The ceiling should only move again
+// for a deliberate feature change.
+const BUDGET_KB = Number(process.env.BUDGET_KB ?? 1720);
 
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

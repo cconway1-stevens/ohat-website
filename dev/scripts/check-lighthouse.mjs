@@ -25,6 +25,7 @@
  * Thresholds are overridable via env:
  *   LH_PERF, LH_A11Y, LH_BP, LH_SEO  (0-100)
  *   LH_RUNS or --runs=N (default 3), LH_ROUTES (comma-separated debug subset)
+ *   LH_SHARD_INDEX (zero-based) + LH_SHARD_TOTAL (deterministic CI shard)
  *   LH_REPORT_DIR (optional dir for per-page JSON snapshots; gitignored)
  *
  * For local iteration, `--fast` (or LH_FAST=1) runs every page with a single
@@ -42,6 +43,7 @@ import { cpus } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createStaticServer, discoverRoutes } from "./lib/routes.mjs";
+import { launchChromium } from "./lib/browser.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
@@ -113,7 +115,33 @@ const SKIP_NOINDEX = !(
 const pages = discoverRoutes(CLIENT).filter(
   (p) => p.kind !== "error" && p.kind !== "redirect" && !(SKIP_NOINDEX && p.kind === "noindex"),
 );
-const routes = process.env.LH_ROUTES?.split(",").filter(Boolean) ?? pages.map((p) => p.route);
+const candidateRoutes =
+  process.env.LH_ROUTES?.split(",").filter(Boolean) ?? pages.map((p) => p.route);
+const shardTotal = Number(process.env.LH_SHARD_TOTAL ?? 1);
+const shardIndex = Number(process.env.LH_SHARD_INDEX ?? 0);
+if (
+  !Number.isInteger(shardTotal) ||
+  shardTotal < 1 ||
+  !Number.isInteger(shardIndex) ||
+  shardIndex < 0 ||
+  shardIndex >= shardTotal
+) {
+  throw new Error(
+    `Invalid Lighthouse shard ${process.env.LH_SHARD_INDEX ?? 0}/${process.env.LH_SHARD_TOTAL ?? 1}`,
+  );
+}
+// GitHub's matrix splits the route census across independent runners. Worker
+// children already receive an explicit LH_ROUTES slice and must not shard it
+// a second time.
+const routes =
+  shardTotal > 1 && !process.env.LH_WORKER
+    ? candidateRoutes.filter((_route, index) => index % shardTotal === shardIndex)
+    : candidateRoutes;
+if (shardTotal > 1 && !process.env.LH_WORKER) {
+  console.log(
+    `Lighthouse CI shard ${shardIndex + 1}/${shardTotal}: ${routes.length}/${candidateRoutes.length} route(s).`,
+  );
+}
 
 // Orchestrator/worker split for --fast / LH_CONCURRENCY: the parent shards
 // `routes` across N child processes (each its own Chromium + ports) and exits
@@ -193,7 +221,6 @@ const server = createStaticServer(CLIENT);
 await new Promise((resolve) => server.listen(PORT, resolve));
 
 const { default: lighthouse } = await import("lighthouse");
-const { chromium } = await import("playwright");
 
 // Launch Chromium ourselves (Playwright knows where it is on every platform)
 // and point Lighthouse at its debugging port. This avoids chrome-launcher's
@@ -203,7 +230,7 @@ const { chromium } = await import("playwright");
 // check-pages recycles). Relaunch every PAGES_PER_BROWSER pages.
 const PAGES_PER_BROWSER = 8;
 async function launchBrowser() {
-  return chromium.launch({ args: [`--remote-debugging-port=${DEBUG_PORT}`] });
+  return launchChromium({ args: [`--remote-debugging-port=${DEBUG_PORT}`] });
 }
 let browser = await launchBrowser();
 

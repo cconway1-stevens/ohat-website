@@ -13,7 +13,7 @@
 // npx, for the reason pre-push.sh spells out: npx will quietly fetch a
 // different version and report success.
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -27,6 +27,14 @@ if (!existsSync(cli)) {
   console.error(`vinext CLI not found at ${cli} — run 'npm install' first.`);
   process.exit(1);
 }
+
+// `npm test` builds the Worker artifact before the static export. Vinext does
+// not clear dist between those modes, so without this reset the static tree
+// retains duplicate HTML and stale chunks from the Worker build. That makes
+// route discovery double-count pages and makes the bundle budget measure two
+// applications at once instead of the deployable static site.
+const root = fileURLToPath(new URL("../..", import.meta.url));
+rmSync(join(root, "dist"), { recursive: true, force: true });
 
 const { error, status } = spawnSync(process.execPath, [cli, "build"], {
   stdio: "inherit",

@@ -108,7 +108,11 @@ test("routes hint-free Spanish auto vocabulary without a full Spanish sentence",
   ]) {
     const { matched } = debugAnswer(phrase, TUESDAY_OPEN);
     assert.ok(matched, `"${phrase}" fell back`);
-    assert.equal(matched.id, expectedId, `"${phrase}" matched ${matched.id}, expected ${expectedId}`);
+    assert.equal(
+      matched.id,
+      expectedId,
+      `"${phrase}" matched ${matched.id}, expected ${expectedId}`,
+    );
   }
 });
 

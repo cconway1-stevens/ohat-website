@@ -60,10 +60,7 @@ test("keeps ordinary weekends closed without a holiday notice", () => {
   // The sign explains itself: a weekend closure is the standing weekly rule,
   // not a mystery the customer has to call about.
   assert.equal(status.reason.kind, "weekend");
-assert.equal(
-    status.label,
-    "Closed for the weekend. Reopens Monday at 8:00 AM",
-  );
+  assert.equal(status.label, "Closed for the weekend. Reopens Monday at 8:00 AM");
 });
 
 test("names the holiday on the closed sign", () => {

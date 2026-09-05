@@ -14,6 +14,7 @@
  * Run via `npm run check` (cheapest-first step in pre-push.sh).
  */
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { basename, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -44,7 +45,12 @@ function gitFiles(args) {
 
 const tracked = gitFiles(["ls-files"]);
 const untracked = gitFiles(["ls-files", "--others", "--exclude-standard"]);
-const candidates = [...new Set([...tracked, ...untracked])].sort();
+// `git ls-files` includes tracked paths deleted from the working tree. Those
+// paths will not be committed, so do not report already-removed junk as if it
+// were still present.
+const candidates = [...new Set([...tracked, ...untracked])]
+  .filter((file) => existsSync(join(ROOT, file)))
+  .sort();
 
 const offenders = [];
 for (const file of candidates) {

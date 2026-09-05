@@ -143,7 +143,11 @@ for (const file of tests) {
 
 // 6. Real-browser asset check — only meaningful against a fresh static export.
 if (!NO_BUILD) {
-  results.push(await step("asset check (browser)", "npm", ["run", "check:assets"]));
+  const browser = await step("browser preflight", "npm", ["run", "check:browser:preflight"]);
+  results.push(browser);
+  if (browser.ok) {
+    results.push(await step("asset check (browser)", "npm", ["run", "check:assets"]));
+  }
 }
 
 const failed = results.filter((r) => !r.ok);

@@ -37,9 +37,11 @@ step() {
   printf '\n\033[1m▶ %s\033[0m\n' "$name"
   if "$@"; then
     printf '\033[32m  ✓ %s\033[0m\n' "$name"
+    return 0
   else
     printf '\033[31m  ✗ %s\033[0m\n' "$name"
     FAILED+=("$name")
+    return 1
   fi
 }
 
@@ -75,7 +77,9 @@ step "tests" npm test
 #    image still 404s, because next/image recomputes its URL on the client and
 #    points at an optimiser endpoint that does not exist in a static export.
 #    Only a real browser catches it.
-step "asset check (real browser)" node dev/scripts/check-assets.mjs
+if step "browser preflight" node dev/scripts/check-browser.mjs; then
+  step "asset check (real browser)" node dev/scripts/check-assets.mjs
+fi
 
 printf '\n────────────────────────────────\n'
 if [[ ${#FAILED[@]} -eq 0 ]]; then

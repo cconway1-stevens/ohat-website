@@ -170,9 +170,7 @@ test("owner closures hide their days from the holiday lead count", () => {
   // Monday Nov 23 (three business days back). With Tue+Wed posted as owner
   // closures those days stop counting as business days, so the warning
   // switches on earlier — warning early is the safe direction.
-  shop.hours.exceptions = [
-    { from: "2026-11-24", to: "2026-11-25", reason: "Storm cleanup" },
-  ];
+  shop.hours.exceptions = [{ from: "2026-11-24", to: "2026-11-25", reason: "Storm cleanup" }];
   try {
     const chain = getNoticeChain(new Date("2026-11-21T17:00:00Z"));
     assert.equal(chain.holidayAhead?.id, "holiday-ahead-2026-11-26");

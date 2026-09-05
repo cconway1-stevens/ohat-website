@@ -23,6 +23,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { launchChromium } from "./lib/browser.mjs";
 
 const ROOT = fileURLToPath(new URL("../../dist/client", import.meta.url));
 const PORT = Number(process.env.ASSET_CHECK_PORT ?? 8931);
@@ -84,10 +85,7 @@ const server = createServer((req, res) => {
 
 await new Promise((resolve) => server.listen(PORT, resolve));
 
-const { chromium } = await import("playwright");
-const executablePath =
-  process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const browser = await chromium.launch(existsSync(executablePath) ? { executablePath } : {});
+const browser = await launchChromium();
 
 const failures = [];
 for (const route of ROUTES) {

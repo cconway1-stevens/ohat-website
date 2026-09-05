@@ -2,7 +2,16 @@
 // static host (GitHub Pages) can serve, filling the gaps the export leaves:
 // worker-only image URLs, the vCard route handler, sitemap/robots, and the
 // server-side legacy redirects.
-import { mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 import imageManifest from "../../src/lib/image-manifest.json" with { type: "json" };
 import { contactCard } from "../../src/lib/shop/contact-card.mjs";
@@ -43,10 +52,16 @@ function walk(dir) {
 // directory form, which every static host resolves the same way.
 for (const file of walk(OUT_DIR).filter((f) => f.endsWith(".html"))) {
   const route = relative(OUT_DIR, file);
-  if (route === "index.html" || route === "404.html") continue;
+  if (route === "index.html" || route === "404.html" || route.endsWith(`${sep}index.html`)) {
+    continue;
+  }
   const target = join(OUT_DIR, route.replace(/\.html$/, ""), "index.html");
   mkdirSync(dirname(target), { recursive: true });
-  renameSync(file, target);
+  // Newer vinext releases emit both `about.html` and `about/index.html`.
+  // Prefer the already-canonical directory form and remove the duplicate.
+  // This also makes the post-processor safe to run more than once.
+  if (existsSync(target)) unlinkSync(file);
+  else renameSync(file, target);
 }
 
 const htmlFiles = walk(OUT_DIR).filter((file) => file.endsWith(".html"));

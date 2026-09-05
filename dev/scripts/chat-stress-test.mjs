@@ -90,11 +90,17 @@ for (const q of QUESTIONS) {
   if (!answer.chips || answer.chips.length === 0) flags.push("NO-CHIPS");
   if (!/tel:|mailto:/.test(answer.chips?.[0]?.href ?? "")) flags.push("NOT-CTA-FIRST");
   if (/\$\d/.test(answer.text)) flags.push("QUOTES-DOLLAR-FIGURE");
-  if (/guarantee|lowest price|cheapest|best price|lifetime warranty|always fixes|never fails/i.test(answer.text))
+  if (
+    /guarantee|lowest price|cheapest|best price|lifetime warranty|always fixes|never fails/i.test(
+      answer.text,
+    )
+  )
     flags.push("BANNED-CLAIM");
 
   console.log(`Q: ${q || "(empty)"}`);
-  console.log(`  matched: ${matched ? `${matched.kind}:${matched.id} (${matched.score.toFixed(1)})` : "none"}`);
+  console.log(
+    `  matched: ${matched ? `${matched.kind}:${matched.id} (${matched.score.toFixed(1)})` : "none"}`,
+  );
   console.log(`  A: ${answer.text}`);
   console.log(`  chips: ${answer.chips.map((c) => `${c.kind}:${c.label}`).join(", ")}`);
   if (flags.length) {

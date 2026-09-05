@@ -66,6 +66,9 @@ browser asset check). The individual checks are:
 | `npm run check:architecture` | No circular deps, no `src`→`dev` imports, no worker→component imports (`dependency-cruiser`)               |
 | `npm run check:bloat`        | No source file exceeds its role-based line budget (advisory)                                              |
 | `npm run check:pages`        | Every page loads with a title, H1, no errors, and no dead links                                           |
+| `npm run check:browser:preflight` | Finds and launches Playwright, cached, hosted, or system Chromium before browser checks              |
+| `npm run check:browser`      | Runs the browser-quality groups separately and reports every failing category                              |
+| `npm run check:browser:full` | Adds slow-network and memory checks to the grouped browser suite                                           |
 | `npm run check:bundle`       | Shipped JS+CSS stays under the byte budget                                                                |
 | `npm run check:lighthouse:fast` | Single-run, parallel Lighthouse on every indexable page; same page/category coverage as the stable audit |
 | `npm run check:lighthouse`   | Stable serial Lighthouse benchmark: 3 performance runs per indexable page; a11y/BP/SEO run once          |
