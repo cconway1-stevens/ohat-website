@@ -72,18 +72,23 @@ step "architecture (dependency-cruiser)" ./node_modules/.bin/depcruise src dev -
 
 # 5. Tests, which include the static export checks.
 step "tests" npm test
-# `npm test` builds only the static export (which alone satisfies both the
-# server and static tiers). The deployable Cloudflare Worker artifact is a
-# separate concern, so it is gated explicitly rather than as a side effect.
-step "cloudflare worker build" npm run build
 
 # 6. Assets. The one that keeps biting: markup can be perfectly correct and the
 #    image still 404s, because next/image recomputes its URL on the client and
 #    points at an optimiser endpoint that does not exist in a static export.
-#    Only a real browser catches it.
+#    Only a real browser catches it. This must run against the static export
+#    that `npm test` just produced in dist/client — the Cloudflare Worker
+#    build below overwrites dist/client with its own client bundle (JS/assets
+#    only, no prerendered HTML), which would make every route 404 here for a
+#    reason that has nothing to do with a real asset problem.
 if step "browser preflight" node dev/scripts/check-browser.mjs; then
   step "asset check (real browser)" node dev/scripts/check-assets.mjs
 fi
+
+# 7. The deployable Cloudflare Worker artifact is a separate concern from the
+# static export above, so it is gated explicitly rather than as a side
+# effect. Runs last because it overwrites dist/client (see above).
+step "cloudflare worker build" npm run build
 
 printf '\n────────────────────────────────\n'
 if [[ ${#FAILED[@]} -eq 0 ]]; then
