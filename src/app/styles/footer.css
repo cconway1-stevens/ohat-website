@@ -847,12 +847,6 @@
   }
 }
 
-@media (min-width: 721px) and (max-width: 1000px) {
-  .booking-dock {
-    display: none;
-  }
-}
-
 @media (max-width: 720px) {
   body {
     padding-bottom: calc(68px + env(safe-area-inset-bottom));
