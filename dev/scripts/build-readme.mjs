@@ -82,6 +82,21 @@ function parseWorkflow(text) {
   return jobs;
 }
 
+/**
+ * A job name fit for prose. Matrix jobs carry a `${{ … }}` expression in their
+ * name — raw it is noise in the table, and inside a mermaid node label the
+ * braces break the diagram outright. A sharded job is named once and its
+ * fan-out noted instead.
+ */
+function displayName(job) {
+  const sharded = /\$\{\{/.test(job.name);
+  const clean = job.name
+    .replace(/\s*\(\$\{\{[^)]*\}\}\)/g, "")
+    .replace(/\$\{\{[^}]*\}\}/g, "")
+    .trim();
+  return { name: clean, sharded };
+}
+
 /** Plain-English trigger, read off the job's `if:` guard. */
 function triggerOf(job) {
   const cond = job.if;
@@ -105,6 +120,10 @@ const jobs = parseWorkflow(read(".github", "workflows", "ci.yml"));
 function ciBlock() {
   const out = ["```mermaid", "flowchart LR"];
   const nodeId = (id) => id.replace(/-/g, "_");
+  const label = (job) => {
+    const { name, sharded } = displayName(job);
+    return sharded ? `${name} — sharded` : name;
+  };
 
   const gates = jobs.filter((j) => j.needs.length === 0);
   const dependents = jobs.filter((j) => j.needs.length > 0);
@@ -113,10 +132,10 @@ function ciBlock() {
   // these jobs build and some don't; what they share is starting immediately.
   out.push('  subgraph gate["Start immediately, in parallel"]');
   out.push("    direction TB");
-  for (const job of gates) out.push(`    ${nodeId(job.id)}["${job.name}"]`);
+  for (const job of gates) out.push(`    ${nodeId(job.id)}["${label(job)}"]`);
   out.push("  end");
 
-  for (const job of dependents) out.push(`  ${nodeId(job.id)}["${job.name}"]`);
+  for (const job of dependents) out.push(`  ${nodeId(job.id)}["${label(job)}"]`);
   for (const job of dependents) {
     for (const need of job.needs) out.push(`  ${nodeId(need)} --> ${nodeId(job.id)}`);
   }
@@ -126,7 +145,7 @@ function ciBlock() {
   out.push("| --- | --- | --- |");
   for (const job of jobs) {
     const needs = job.needs.length ? job.needs.map((n) => `\`${n}\``).join(", ") : "—";
-    out.push(`| **${job.name}** | ${triggerOf(job)} | ${needs} |`);
+    out.push(`| **${label(job)}** | ${triggerOf(job)} | ${needs} |`);
   }
   return out.join("\n");
 }

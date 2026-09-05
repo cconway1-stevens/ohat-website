@@ -186,22 +186,25 @@ cheapest and most decisive first.
 flowchart LR
   subgraph gate["Start immediately, in parallel"]
     direction TB
-    formatting["Formatting"]
-    static_analysis["Static analysis and unit tests"]
-    test_build["Test and build"]
-    dependency_security["Dependency security"]
-    codeql["CodeQL"]
-    windows["Windows compatibility"]
+    formatting["1A · Formatting (PR/manual) · Biome"]
+    static_analysis["1B · Lint, types, unit tests · Biome/TS/Node"]
+    test_build["2 · Build + artifact tests · vinext/Node"]
+    dependency_security["1C · Dependency vulnerabilities · npm"]
+    codeql["1D · Code security scan · CodeQL"]
+    windows["1E · Windows build + tests (PR/manual) · Node"]
   end
-  browser_quality["Browser quality"]
-  resilience["Resilience and stable performance"]
-  package_pages["Package Pages artifact"]
-  deploy["Deploy GitHub Pages"]
-  test_build --> browser_quality
+  browser_functional["3A · Pages, links + browser errors · Playwright/axe"]
+  lighthouse["3B · Speed + search + accessibility · Lighthouse — sharded"]
+  resilience["4 · Slow network + memory (weekly/manual)"]
+  package_pages["5 · Website package (manual) · GitHub Pages"]
+  deploy["6 · Website publish (manual) · GitHub Pages"]
+  test_build --> browser_functional
+  test_build --> lighthouse
   test_build --> resilience
   static_analysis --> package_pages
   test_build --> package_pages
-  browser_quality --> package_pages
+  browser_functional --> package_pages
+  lighthouse --> package_pages
   dependency_security --> package_pages
   codeql --> package_pages
   package_pages --> deploy
@@ -209,16 +212,17 @@ flowchart LR
 
 | Job | Runs on | Waits for |
 | --- | --- | --- |
-| **Formatting** | PRs + manual | — |
-| **Static analysis and unit tests** | push and PR | — |
-| **Test and build** | every push and PR | — |
-| **Browser quality** | push and PR | `test-build` |
-| **Dependency security** | every push and PR | — |
-| **CodeQL** | every push and PR | — |
-| **Windows compatibility** | PRs + manual | — |
-| **Resilience and stable performance** | weekly + manual | `test-build` |
-| **Package Pages artifact** | main only | `static-analysis`, `test-build`, `browser-quality`, `dependency-security`, `codeql` |
-| **Deploy GitHub Pages** | main only | `package-pages` |
+| **1A · Formatting (PR/manual) · Biome** | PRs + manual | — |
+| **1B · Lint, types, unit tests · Biome/TS/Node** | push and PR | — |
+| **2 · Build + artifact tests · vinext/Node** | every push and PR | — |
+| **3A · Pages, links + browser errors · Playwright/axe** | push and PR | `test-build` |
+| **3B · Speed + search + accessibility · Lighthouse — sharded** | push and PR | `test-build` |
+| **1C · Dependency vulnerabilities · npm** | every push and PR | — |
+| **1D · Code security scan · CodeQL** | every push and PR | — |
+| **1E · Windows build + tests (PR/manual) · Node** | PRs + manual | — |
+| **4 · Slow network + memory (weekly/manual)** | weekly + manual | `test-build` |
+| **5 · Website package (manual) · GitHub Pages** | main only | `static-analysis`, `test-build`, `browser-functional`, `lighthouse`, `dependency-security`, `codeql` |
+| **6 · Website publish (manual) · GitHub Pages** | main only | `package-pages` |
 <!-- AUTOGEN:ci END -->
 
 Two jobs are worth calling out:
@@ -278,6 +282,9 @@ exists.
 | --- | --- |
 | `npm run check:fix` | `bash dev/scripts/pre-push.sh --fix` |
 | `npm run check:assets` | `node dev/scripts/check-assets.mjs` |
+| `npm run check:browser:preflight` | `node dev/scripts/check-browser.mjs` |
+| `npm run check:browser` | `node dev/scripts/check-browser-suite.mjs` |
+| `npm run check:browser:full` | `node dev/scripts/check-browser-suite.mjs --full` |
 | `npm run check:bloat` | `node dev/scripts/check-bloat.mjs` |
 | `npm run check:bundle` | `node dev/scripts/check-bundle.mjs` |
 | `npm run check:lighthouse` | `node dev/scripts/check-lighthouse.mjs` |
