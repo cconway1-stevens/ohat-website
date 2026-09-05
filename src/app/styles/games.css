@@ -1211,11 +1211,20 @@ body.is-play-locked .arcade-lock-bar,
    browser's own pull-to-refresh. */
 /* `top` is set inline to the negative scroll offset, so the view stays put
    instead of snapping to the top of the page. */
+/* iOS Safari treats `html` as the actual scrolling element: locking only
+   `body` still lets the page rubber-band underneath the fixed overlay. Both
+   need `overflow: hidden` and a fixed height for the lock to hold there. */
+html.is-play-locked {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 body.is-play-locked {
   position: fixed;
   left: 0;
   right: 0;
   width: 100%;
+  height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
 }

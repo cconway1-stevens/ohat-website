@@ -34,6 +34,9 @@ export function PlayLock() {
     const y = window.scrollY;
     restoreTo.current = y;
     document.body.style.top = `-${y}px`;
+    // iOS Safari scrolls `html`, not `body` — locking body alone still lets
+    // the page rubber-band underneath the fixed overlay there.
+    document.documentElement.classList.add("is-play-locked");
     document.body.classList.add("is-play-locked");
     pinnedRef.current = true;
     nativeRef.current = false;
@@ -44,6 +47,7 @@ export function PlayLock() {
   const exitFallback = useCallback(() => {
     if (!pinnedRef.current) return;
     pinnedRef.current = false;
+    document.documentElement.classList.remove("is-play-locked");
     document.body.classList.remove("is-play-locked");
     document.body.style.top = "";
     window.scrollTo({ top: restoreTo.current, behavior: "instant" });
@@ -104,6 +108,22 @@ export function PlayLock() {
     return () => surface.removeEventListener("pointerdown", onFirstTouch);
   }, [enterFallback]);
 
+  // Belt-and-suspenders for iOS Safari: `position: fixed` + `overflow: hidden`
+  // on html/body is the standard scroll lock, but iOS still lets a touch that
+  // starts outside any scrollable element bubble into a page scroll/bounce.
+  // While the fallback lock is active, swallow touchmove everywhere except
+  // inside the play surface itself, which keeps its own scroll.
+  useEffect(() => {
+    if (!active || native) return;
+    const surface = barRef.current?.closest(".arcade-stage")?.querySelector(".arcade-play-surface");
+    const onTouchMove = (event: TouchEvent) => {
+      if (surface && event.target instanceof Node && surface.contains(event.target)) return;
+      event.preventDefault();
+    };
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => document.removeEventListener("touchmove", onTouchMove);
+  }, [active, native]);
+
   // Track native fullscreen enter/exit (including the browser's own Esc).
   useEffect(() => {
     const onChange = () => {
@@ -138,6 +158,7 @@ export function PlayLock() {
       window.removeEventListener("keydown", onKeyDown);
       if (pinnedRef.current) {
         pinnedRef.current = false;
+        document.documentElement.classList.remove("is-play-locked");
         document.body.classList.remove("is-play-locked");
         document.body.style.top = "";
         window.scrollTo({ top: restoreTo.current, behavior: "instant" });
