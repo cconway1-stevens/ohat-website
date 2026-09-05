@@ -60,6 +60,15 @@
   font-size: 0.82rem;
   line-height: 1.4;
 }
+/* The street address lives in the intro too, so a caller who skips the map
+   still finds where the shop is without hunting the embed. */
+.contact-route-address {
+  margin: 0.5rem 0 0;
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
 /* The open/closed sign leads the info column — it's the first thing a caller
    checks — so it sits right under the headline, not buried on the map. */
 .contact-status {
@@ -80,6 +89,9 @@
 }
 .contact-status .shop-status-copy > span:not(:first-child) {
   font-size: 0.68rem;
+}
+.contact-status .shop-hours-more {
+  margin-top: 0.15rem;
 }
 .contact-primary-actions {
   display: grid;
@@ -297,7 +309,7 @@
   flex-wrap: nowrap;
   gap: 0.6rem;
   padding: 0.8rem 1rem;
-  background: var(--yellow);
+  background: var(--cream);
 }
 .contact-map-panel .shop-map figcaption > span {
   min-width: 0;
@@ -322,7 +334,7 @@
   text-align: right;
 }
 .contact-map-region {
-  margin: 0.6rem 0 0;
+  margin: 0.6rem 0 0.25rem;
   color: var(--muted);
   font-size: 0.72rem;
   line-height: 1.4;
@@ -361,8 +373,8 @@
    framed container which auto-sizes to the viewport height. */
 @media (min-width: 1025px) {
   .contact-route {
-    /* biome-ignore lint/suspicious/noDuplicateProperties: svh is the fallback, dvh the modern value - both intentional. */
     min-height: 100svh;
+    /* biome-ignore lint/suspicious/noDuplicateProperties: svh is the fallback, dvh the modern value - both intentional. */
     min-height: 100dvh;
     padding: 168px 0 clamp(1.4rem, 3vw, 2.5rem);
     display: flex;

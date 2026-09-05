@@ -59,6 +59,7 @@ export default function ContactPage() {
                 <p>
                   Tell us what the car is doing. We&apos;ll help you choose the right next step.
                 </p>
+                <p className="contact-route-address">{shop.address.full}</p>
               </header>
 
               <div className="contact-status">
@@ -167,9 +168,9 @@ export default function ContactPage() {
             </div>
 
             <aside className="contact-map-panel" aria-labelledby="shop-map-title">
-              <h2 className="sr-only" id="shop-map-title">
-                Map and directions to {shop.name}
-              </h2>
+              <p className="contact-section-label" id="shop-map-title">
+                Find us
+              </p>
               <HoursCardNotice />
               <figure className="shop-map">
                 <div className="shop-map-frame">
