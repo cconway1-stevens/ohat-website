@@ -61,6 +61,18 @@ of one check*.
 
 ## Open
 
+- [ ] **Logo match: brand badges render far too small inside their tiles.**
+      On a phone the flipped tile is a ~130px square but the Hyundai/Mazda mark
+      inside it draws at roughly a fifth of that, marooned in white space,
+      while the face-down tiles fill edge to edge with "OHAT" — so a revealed
+      tile reads as emptier than a hidden one, which is backwards for a
+      matching game. The brand marks are SVGs of differing intrinsic aspect
+      ratios, so the fix is not one width: give the tile face a fixed inner
+      box and let each mark fit it (`max-width`/`max-height` at ~70% with
+      `object-fit: contain`), rather than sizing the images individually.
+      Check `.make-grid`/`make-grid.tsx` and the tile-face rule in `games.css`.
+      Confirm at 3x3, 4x4, 5x5 and Custom, since the tile shrinks with grid
+      size and a percentage that works at 3x3 can overflow at 5x5.
 - [ ] **Watch the first Windows run.** The job now executes both builds on
       `windows-latest` for the first time. `build-verified.sh` is bash — fine
       under Git Bash on the runner, but this path has never been exercised in

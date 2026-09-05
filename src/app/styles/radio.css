@@ -834,6 +834,7 @@
   color: #15120f;
   pointer-events: none;
   transition: left 0.08s linear;
+  -webkit-user-select: none;
   user-select: none;
 }
 .payment-card:active {

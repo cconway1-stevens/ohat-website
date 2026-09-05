@@ -257,6 +257,18 @@
   text-transform: uppercase;
   caret-color: var(--red);
 }
+
+/* The crossword is the only game you type into, and on a phone that clamp
+   resolved to 12.8px — under the 16px threshold at which iOS Safari force-
+   zooms the page around a focused input. Every tap on a square therefore
+   rescaled the whole board and shunted it around under the keyboard, which is
+   what made the grid feel like it was jumping. 16px stops the zoom outright;
+   the squares are ~33px on a phone, so the letter simply reads larger. */
+@media (pointer: coarse) {
+  .crossword-cell input {
+    font-size: max(16px, clamp(0.8rem, 2.4vw, 1.55rem));
+  }
+}
 .crossword-cell:focus-within {
   z-index: 2;
   outline: 3px solid var(--blue);
@@ -882,6 +894,9 @@
   gap: 0.65rem;
 }
 .garage-blackjack-controls button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
   min-width: 100px;
   min-height: 48px;
   padding: 0.55rem 0.9rem;
@@ -1375,6 +1390,9 @@ body.is-play-locked {
   font-weight: 950;
   cursor: pointer;
   touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .tread-stack-controls button:active {
   transform: translate(3px, 3px);
@@ -1437,7 +1455,12 @@ body.is-play-locked {
   font-weight: 950;
   cursor: pointer;
   touch-action: manipulation;
+  /* iOS honours only the prefixed property. Unprefixed, holding the fire
+     button — the normal way to play a shooter — started a text selection and
+     raised the copy/define callout over the board. */
+  -webkit-user-select: none;
   user-select: none;
+  -webkit-touch-callout: none;
 }
 .lot-defender-controls .is-fire {
   background: var(--blue);
