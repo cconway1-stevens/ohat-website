@@ -11,7 +11,7 @@
  * stations from lib/garage-audio (always there, nothing fetched), and a LIVE
  * band that pulls real streams from the public Radio Browser directory.
  */
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ambience,
   BANDS,
@@ -99,6 +99,25 @@ function loadSave(): Save {
   }
 }
 
+/**
+ * Directory names arrive with junk bolted on the front — "# RdMix Classic
+ * Rock", "- 0 N - Classic Rock on Radio" — because stations pad their names to
+ * sort first in other people's lists. Strip the padding and cut on a word
+ * boundary, never mid-word.
+ */
+function cleanName(raw: string): string {
+  const stripped = raw
+    .replace(/^[\s\-–—_*#•|.>~]+/, "")
+    .replace(/[\s\-–—_*#•|~]+$/, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  const name = stripped || raw.trim();
+  if (name.length <= 44) return name;
+  const cut = name.slice(0, 44);
+  const space = cut.lastIndexOf(" ");
+  return `${space > 12 ? cut.slice(0, space) : cut}…`;
+}
+
 /** Radio Browser returns full country names; trim the famous mouthfuls. */
 function shortCountry(country: string): string {
   const trimmed = country.replace(/^The\s+/i, "");
@@ -122,18 +141,43 @@ function MiniKnob({
   value,
   onChange,
   ariaLabel,
+  inert = false,
 }: {
   label: string;
   value: number;
   onChange: (next: number) => void;
   ariaLabel: string;
+  /** True when this knob cannot reach the current source — say so, visibly. */
+  inert?: boolean;
 }) {
   const drag = useRef<{ y: number; start: number } | null>(null);
   return (
     <button
       type="button"
-      className="chevy-subknob"
+      className={`chevy-subknob${inert ? " is-inert" : ""}`}
+      title={inert ? "This station plays direct — tone and balance cannot reach it." : undefined}
+      role="slider"
       aria-label={ariaLabel}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(value * 100)}
+      // A knob you can only drag is a knob half the visitors cannot turn.
+      onKeyDown={(event) => {
+        const step = event.shiftKey ? 0.2 : 0.05;
+        if (event.key === "ArrowUp" || event.key === "ArrowRight") {
+          event.preventDefault();
+          onChange(clamp(value + step, 0, 1));
+        } else if (event.key === "ArrowDown" || event.key === "ArrowLeft") {
+          event.preventDefault();
+          onChange(clamp(value - step, 0, 1));
+        } else if (event.key === "Home") {
+          event.preventDefault();
+          onChange(0);
+        } else if (event.key === "End") {
+          event.preventDefault();
+          onChange(1);
+        }
+      }}
       onPointerDown={(event) => {
         event.currentTarget.setPointerCapture(event.pointerId);
         drag.current = { y: event.clientY, start: value };
@@ -196,6 +240,9 @@ export default function Radio3DGame() {
   const [liveList, setLiveList] = useState<LiveStation[]>([]);
   const [livePlaying, setLivePlaying] = useState(false);
   const [liveLoading, setLiveLoading] = useState(false);
+  // True while the current live stream is playing through the ungraphed
+  // element, which means the tone and balance knobs cannot reach it.
+  const [direct, setDirect] = useState(false);
   const [genre, setGenre] = useState<(typeof GENRES)[number]["id"]>("oldies");
   const [status, setStatus] = useState("Off. Push the left knob, or press Power below.");
   const [scanning, setScanning] = useState(false);
@@ -207,7 +254,19 @@ export default function Radio3DGame() {
   const [isFs, setIsFs] = useState(false);
 
   const dashRef = useRef<HTMLDivElement>(null);
+  // Two elements, one dial. The first is wired into the Web Audio graph, which
+  // is what makes the tone and balance knobs bite — but a graph can only read a
+  // stream whose server sends CORS headers, and most Icecast servers send none,
+  // so those streams are blocked outright rather than played flat. The second
+  // element is never wired, so it plays anything; stations that fail the first
+  // are remembered and go straight to it.
   const audioRef = useRef<HTMLAudioElement>(null);
+  const plainRef = useRef<HTMLAudioElement>(null);
+  const directRef = useRef<Set<string>>(new Set());
+  // A CORS refusal arrives twice — once as a rejected play(), once as an error
+  // event — and each wants to retry. Only the newest attempt may touch the
+  // status line, or the successful retry gets narrated as a failure.
+  const tuneSeqRef = useRef(0);
   const graphRef = useRef<{
     bass: BiquadFilterNode;
     treble: BiquadFilterNode;
@@ -226,9 +285,9 @@ export default function Radio3DGame() {
   });
 
   // The render loop and the audio graph read the freshest state through refs.
-  const stateRef = useRef({ power, band, dial, volume, tone, liveList, livePlaying });
+  const stateRef = useRef({ power, band, dial, volume, tone, liveList, livePlaying, muted });
   useEffect(() => {
-    stateRef.current = { power, band, dial, volume, tone, liveList, livePlaying };
+    stateRef.current = { power, band, dial, volume, tone, liveList, livePlaying, muted };
   });
 
   // Keep the per-band memory fresh as the dial moves.
@@ -282,23 +341,54 @@ export default function Radio3DGame() {
 
   const playLive = useCallback(
     async (entry?: LiveStation) => {
-      const element = audioRef.current;
+      const graph = audioRef.current;
+      const plain = plainRef.current;
       const target = entry ?? liveStation;
-      if (!element || !target) return;
-      wireLiveGraph();
-      element.src = target.url;
-      element.volume = stateRef.current.volume;
+      if (!graph || !plain || !target) return;
+      const seq = ++tuneSeqRef.current;
+      const stale = () => tuneSeqRef.current !== seq;
+      graph.pause();
+      plain.pause();
       setLiveLoading(true);
       setStatus(`Tuning in ${target.name}…`);
-      try {
+
+      const start = async (element: HTMLAudioElement) => {
+        element.src = target.url;
+        element.volume = stateRef.current.muted ? 0 : stateRef.current.volume;
         await element.play();
+      };
+      const onAirNow = (viaGraph: boolean) => {
+        setDirect(!viaGraph);
         setLivePlaying(true);
-        setStatus(`On air: ${target.name} — ${target.country}`);
-      } catch {
-        setLivePlaying(false);
-        setStatus("That stream would not start here. Turn the dial for the next one.");
-      } finally {
         setLiveLoading(false);
+        setStatus(`On air: ${target.name} — ${target.country}`);
+      };
+
+      // The graph first, for tone and balance. If the station's server blocks
+      // it, remember that and drop to the plain element rather than telling the
+      // listener the stream is broken — it plays fine, just without the EQ.
+      if (!directRef.current.has(target.id)) {
+        wireLiveGraph();
+        try {
+          await start(graph);
+          if (stale()) return;
+          onAirNow(true);
+          return;
+        } catch {
+          if (stale()) return;
+          directRef.current.add(target.id);
+          graph.pause();
+        }
+      }
+      try {
+        await start(plain);
+        if (stale()) return;
+        onAirNow(false);
+      } catch {
+        if (stale()) return;
+        setLivePlaying(false);
+        setLiveLoading(false);
+        setStatus("That stream would not start here. Turn the dial for the next one.");
       }
     },
     [liveStation, wireLiveGraph],
@@ -335,7 +425,7 @@ export default function Radio3DGame() {
               codec?: string;
             }) => ({
               id: row.stationuuid,
-              name: row.name.trim().slice(0, 42),
+              name: cleanName(row.name),
               url: row.url_resolved,
               country: row.country || "—",
               bitrate: row.bitrate || 0,
@@ -483,12 +573,11 @@ export default function Radio3DGame() {
 
   // Power gating for the live stream.
   useEffect(() => {
-    const element = audioRef.current;
-    if (!element) return;
     if (power && warmed && band === "LIVE" && liveList.length > 0) {
       void playLive();
     } else {
-      element.pause();
+      audioRef.current?.pause();
+      plainRef.current?.pause();
       setLivePlaying(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -497,6 +586,7 @@ export default function Radio3DGame() {
   // Live tone, balance + volume.
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = effectiveVolume;
+    if (plainRef.current) plainRef.current.volume = effectiveVolume;
     const graph = graphRef.current;
     if (graph) {
       graph.bass.gain.value = (tone - 0.5) * 16;
@@ -516,6 +606,7 @@ export default function Radio3DGame() {
     () => () => {
       radio.off();
       audioRef.current?.pause();
+      plainRef.current?.pause();
       ambience.set("static", 0, 0.1);
       if (holdTimerRef.current !== null) window.clearTimeout(holdTimerRef.current);
       if (warmTimerRef.current !== null) window.clearTimeout(warmTimerRef.current);
@@ -544,8 +635,14 @@ export default function Radio3DGame() {
   const bandStations = stations.filter((s) => s.band === band).sort((a, b) => a.dial - b.dial);
   const freqNumber = band === "AM" ? String(Math.round(dial)) : dial.toFixed(1);
   const freqBand = band === "AM" ? "AM · kHz" : band === "LIVE" ? "LIVE" : "FM · MHz";
-  const onAir = power && (band === "LIVE" ? livePlaying : (tuned?.lock ?? 0) > 0.45);
-  const lit = !power
+  // Nothing on the face may claim a station before the valves are warm: the set
+  // is silent for that second, and a lit ON AIR lamp over five signal bars with
+  // no sound coming out is the readout lying about what the radio is doing.
+  const live = power && warmed;
+  // A stream on the fallback element bypasses the filter graph entirely.
+  const eqInert = band === "LIVE" && livePlaying && direct;
+  const onAir = live && (band === "LIVE" ? livePlaying : (tuned?.lock ?? 0) > 0.45);
+  const lit = !live
     ? 0
     : band === "LIVE"
       ? livePlaying
@@ -556,21 +653,29 @@ export default function Radio3DGame() {
       : Math.max(1, Math.round((tuned?.lock ?? 0) * 5));
   const nowName = !power
     ? "The set is off"
+    : !warmed
+      ? "Warming up…"
+      : band === "LIVE"
+        ? (liveStation?.name ?? (liveLoading ? "Scanning the dial…" : "No station"))
+        : (tuned?.lock ?? 0) > 0.45
+          ? (tuned?.station.name ?? "Between stations")
+          : "Between stations";
+  const nowMeta = !live
+    ? ""
     : band === "LIVE"
-      ? (liveStation?.name ?? (liveLoading ? "Scanning the dial…" : "No station"))
+      ? liveStation
+        ? `${shortCountry(liveStation.country)} · ${liveStation.bitrate || "?"} kbps`
+        : ""
       : (tuned?.lock ?? 0) > 0.45
-        ? (tuned?.station.name ?? "Between stations")
-        : "Between stations";
-  const nowMeta =
-    band === "LIVE" && liveStation
-      ? `${shortCountry(liveStation.country)} · ${liveStation.bitrate || "?"} kbps`
-      : (tuned?.station.genre ?? "");
+        ? (tuned?.station.genre ?? "")
+        : "";
 
   function presetLabel(saved: number): string {
     if (band === "AM") return String(Math.round(saved));
     if (band === "FM") return saved.toFixed(1);
-    const entry = liveList[saved];
-    return entry ? entry.name.slice(0, 12) : `#${saved + 1}`;
+    // A live preset holds a slot in a list that may not have arrived yet. An
+    // empty slot says so; "#4" reads like a station and is not one.
+    return liveList[saved]?.name ?? "—";
   }
   function isPresetTuned(saved: number): boolean {
     if (band === "LIVE") return saved === liveIndex;
@@ -665,6 +770,80 @@ export default function Radio3DGame() {
   const volumeAngle = -135 + volume * 270;
   const tuneAngle = -135 + dialT * 270;
 
+  /**
+   * What the dial glass actually says. A real set prints the frequencies along
+   * the scale and marks where the stations sit — without them the needle is a
+   * slider with no units, and you cannot see where you are heading before you
+   * get there.
+   */
+  const dialScale = useMemo(() => {
+    const span = bandRange.max - bandRange.min;
+    const at = (value: number) => ((value - bandRange.min) / span) * 100;
+    if (band === "LIVE") {
+      return {
+        numbers: [] as { key: string; label: string; at: number }[],
+        marks: liveList.map((entry, index) => ({
+          key: entry.id,
+          at: at(indexToDial(index, liveList.length)),
+        })),
+      };
+    }
+    const numbers = (
+      band === "AM" ? [600, 800, 1000, 1200, 1400, 1600] : [88, 92, 96, 100, 104, 108]
+    )
+      .filter((value) => value >= bandRange.min && value <= bandRange.max)
+      .map((value) => ({ key: String(value), label: String(value), at: at(value) }));
+    const marks = stations
+      .filter((entry) => entry.band === band)
+      .map((entry) => ({ key: entry.id, at: at(entry.dial) }));
+    return { numbers, marks };
+  }, [band, bandRange.min, bandRange.max, liveList]);
+
+  /**
+   * The dial is the primary control, so it has to work from the keyboard as
+   * well as the hand: arrows nudge it, page keys jump station to station, home
+   * and end run it to the ends of the band.
+   */
+  function onDialKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    const fine = band === "AM" ? BANDS.AM.step : BANDS.FM.step;
+    const coarse = fine * 10;
+    const span = bandRange.max - bandRange.min;
+    const nudge = (delta: number) => {
+      event.preventDefault();
+      tuneTo(clamp(dial + delta, bandRange.min, bandRange.max));
+    };
+    switch (event.key) {
+      case "ArrowRight":
+      case "ArrowUp":
+        return nudge(event.shiftKey ? coarse : fine);
+      case "ArrowLeft":
+      case "ArrowDown":
+        return nudge(event.shiftKey ? -coarse : -fine);
+      case "PageUp":
+        event.preventDefault();
+        return seek(1);
+      case "PageDown":
+        event.preventDefault();
+        return seek(-1);
+      case "Home":
+        event.preventDefault();
+        return tuneTo(bandRange.min);
+      case "End":
+        event.preventDefault();
+        return tuneTo(bandRange.max);
+      default:
+        if (event.key === " " || event.key === "Enter") {
+          event.preventDefault();
+          togglePower();
+        }
+        // A percentage jump, the way a real slider answers a number key.
+        if (/^[0-9]$/.test(event.key)) {
+          event.preventDefault();
+          tuneTo(bandRange.min + (Number(event.key) / 9) * span);
+        }
+    }
+  }
+
   /* --- fullscreen: native API where it exists, CSS pinning where not --- */
   useEffect(() => {
     const onChange = () => {
@@ -700,11 +879,29 @@ export default function Radio3DGame() {
       soundOn={sound}
       onSoundChange={setSound}
     >
-      {/* The live stream element. Nothing plays until the LIVE band is on. */}
+      {/* The live stream elements. Nothing plays until the LIVE band is on. */}
       <audio
         ref={audioRef}
         preload="none"
         crossOrigin="anonymous"
+        onWaiting={() => setLiveLoading(true)}
+        onPlaying={() => setLiveLoading(false)}
+        onError={() => {
+          // A CORS refusal surfaces here rather than as a rejected play(), so
+          // this is the other door into the plain-element fallback.
+          const target = liveStation;
+          if (target && band === "LIVE" && !directRef.current.has(target.id)) {
+            directRef.current.add(target.id);
+            void playLive(target);
+            return;
+          }
+          setLivePlaying(false);
+          setStatus("Signal lost. Turn the dial for the next station.");
+        }}
+      />
+      <audio
+        ref={plainRef}
+        preload="none"
         onWaiting={() => setLiveLoading(true)}
         onPlaying={() => setLiveLoading(false)}
         onError={() => {
@@ -725,10 +922,17 @@ export default function Radio3DGame() {
             ref={dialTrackRef}
             className="chevy-dial"
             role="slider"
-            aria-label="Tuning dial"
+            tabIndex={0}
+            aria-label={`Tuning dial, ${band} band`}
             aria-valuemin={bandRange.min}
             aria-valuemax={bandRange.max}
             aria-valuenow={Math.round(dial * 10) / 10}
+            aria-valuetext={
+              band === "LIVE"
+                ? `Station ${liveIndex + 1} of ${liveList.length || 0}`
+                : `${freqNumber} ${band === "AM" ? "kilohertz" : "megahertz"}`
+            }
+            onKeyDown={onDialKeyDown}
             onPointerDown={onFacePointerDown("dial")}
             {...faceDragHandlers}
           >
@@ -738,9 +942,19 @@ export default function Radio3DGame() {
               <span className={`chevy-dial-lamp${onAir ? " is-lit" : ""}`} />
             </div>
             <div className="chevy-dial-ticks" aria-hidden="true">
-              {Array.from({ length: 21 }, (_, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: static decorative tick marks
-                <i key={i} className={i % 5 === 0 ? "is-major" : ""} />
+              {dialScale.numbers.map((entry) => (
+                <span
+                  key={entry.key}
+                  className="chevy-dial-number"
+                  // Held off both ends so the first and last readings do not
+                  // run under the band label or the tuned lamp.
+                  style={{ left: `clamp(1.4rem, ${entry.at}%, calc(100% - 1.4rem))` }}
+                >
+                  {entry.label}
+                </span>
+              ))}
+              {dialScale.marks.map((entry) => (
+                <i key={entry.key} className="chevy-dial-mark" style={{ left: `${entry.at}%` }} />
               ))}
             </div>
             <span className="chevy-needle" style={{ left: `${dialT * 100}%` }} aria-hidden="true" />
@@ -777,8 +991,25 @@ export default function Radio3DGame() {
           <div className="chevy-knob-row">
             <button
               type="button"
-              className="chevy-knob"
+              className="chevy-knob chevy-knob--vol"
+              role="slider"
               aria-label="Volume knob. Drag to adjust, push for power."
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(volume * 100)}
+              onKeyDown={(event) => {
+                const step = event.shiftKey ? 0.2 : 0.05;
+                if (event.key === "ArrowUp" || event.key === "ArrowRight") {
+                  event.preventDefault();
+                  setVolume((v) => clamp(v + step, 0, 1));
+                } else if (event.key === "ArrowDown" || event.key === "ArrowLeft") {
+                  event.preventDefault();
+                  setVolume((v) => clamp(v - step, 0, 1));
+                } else if (event.key === " " || event.key === "Enter") {
+                  event.preventDefault();
+                  togglePower();
+                }
+              }}
               onPointerDown={onFacePointerDown("volume")}
               {...faceDragHandlers}
             >
@@ -849,8 +1080,26 @@ export default function Radio3DGame() {
 
             <button
               type="button"
-              className="chevy-knob"
+              className="chevy-knob chevy-knob--tune"
+              role="slider"
               aria-label="Tuning knob. Drag to tune, push to change band."
+              aria-valuemin={bandRange.min}
+              aria-valuemax={bandRange.max}
+              aria-valuenow={Math.round(dial * 10) / 10}
+              onKeyDown={(event) => {
+                const fine = band === "AM" ? BANDS.AM.step : BANDS.FM.step;
+                const step = event.shiftKey ? fine * 10 : fine;
+                if (event.key === "ArrowUp" || event.key === "ArrowRight") {
+                  event.preventDefault();
+                  tuneTo(clamp(dial + step, bandRange.min, bandRange.max));
+                } else if (event.key === "ArrowDown" || event.key === "ArrowLeft") {
+                  event.preventDefault();
+                  tuneTo(clamp(dial - step, bandRange.min, bandRange.max));
+                } else if (event.key === " " || event.key === "Enter") {
+                  event.preventDefault();
+                  cycleBand();
+                }
+              }}
               onPointerDown={onFacePointerDown("tune")}
               {...faceDragHandlers}
             >
@@ -863,43 +1112,47 @@ export default function Radio3DGame() {
             <MiniKnob
               label="Tone"
               value={tone}
-              ariaLabel="Tone. Drag to adjust."
+              ariaLabel="Tone. Drag or use the arrow keys."
               onChange={setTone}
+              inert={eqInert}
             />
             <MiniKnob
               label="Bal"
               value={balance}
-              ariaLabel="Balance. Drag to pan left or right."
+              ariaLabel="Balance. Drag or use the arrow keys to pan left or right."
               onChange={setBalance}
+              inert={eqInert}
             />
             <MiniKnob
               label="Dim"
               value={dim}
-              ariaLabel="Dial lamp dimmer. Drag to adjust the dial brightness."
+              ariaLabel="Dial lamp dimmer. Drag or use the arrow keys."
               onChange={setDim}
             />
           </div>
         </div>
 
-        {/* the station guide, sliding out of the same dash */}
-        <div className="chevy-guide">
-          <div className="chevy-readout">
-            <p className="chevy-freq">
-              <b>{freqNumber}</b>
-              <span>{freqBand}</span>
-              <em className={`chevy-onair${onAir ? " is-lit" : ""}`}>ON AIR</em>
-            </p>
-            <p className="chevy-now">
-              <b className="chevy-now-name">{nowName}</b>
-              {nowMeta ? <small>{nowMeta}</small> : null}
-            </p>
-            <div className="chevy-meter" role="img" aria-label={`Signal strength ${lit} of 5 bars`}>
-              {[1, 2, 3, 4, 5].map((bar) => (
-                <i key={bar} className={bar <= lit ? "is-lit" : ""} />
-              ))}
-            </div>
+        {/* The screen sits under the radio it belongs to, spanning that half of
+            the dash — not over the station guide, which is its own column. */}
+        <div className="chevy-readout">
+          <p className="chevy-freq">
+            <b>{freqNumber}</b>
+            <span>{freqBand}</span>
+            <em className={`chevy-onair${onAir ? " is-lit" : ""}`}>ON AIR</em>
+          </p>
+          <p className="chevy-now">
+            <b className="chevy-now-name">{nowName}</b>
+            {nowMeta ? <small>{nowMeta}</small> : null}
+          </p>
+          <div className="chevy-meter" role="img" aria-label={`Signal strength ${lit} of 5 bars`}>
+            {[1, 2, 3, 4, 5].map((bar) => (
+              <i key={bar} className={bar <= lit ? "is-lit" : ""} />
+            ))}
           </div>
+        </div>
 
+        {/* the station guide, alongside the radio */}
+        <div className="chevy-guide">
           {band === "LIVE" ? (
             <div className="chevy-genres" role="group" aria-label="Live station genre">
               {GENRES.map((entry) => (
@@ -922,6 +1175,20 @@ export default function Radio3DGame() {
           ) : null}
 
           <div className="chevy-list" role="group" aria-label="Station directory">
+            {/* The directory is someone else's server and can take seconds.
+                Holding the shape of the list is calmer than an empty card. */}
+            {band === "LIVE" && liveList.length === 0 && liveLoading
+              ? Array.from({ length: 6 }, (_, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: identical placeholder rows
+                  <p key={index} className="chevy-station is-waiting" aria-hidden="true">
+                    <span className="chevy-station-dial">{index + 1}</span>
+                    <span className="chevy-station-who">
+                      <b />
+                      <small />
+                    </span>
+                  </p>
+                ))
+              : null}
             {band === "LIVE"
               ? liveList.map((entry, index) => (
                   <button
