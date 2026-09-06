@@ -96,6 +96,21 @@ function loadSave(): Save {
   }
 }
 
+/** Radio Browser returns full country names; trim the famous mouthfuls. */
+function shortCountry(country: string): string {
+  const trimmed = country.replace(/^The\s+/i, "");
+  const known: Record<string, string> = {
+    "United Kingdom Of Great Britain And Northern Ireland": "UK",
+    "United States Of America": "USA",
+    "United States": "USA",
+    "Democratic Republic Of The Congo": "DR Congo",
+  };
+  if (known[trimmed]) return known[trimmed];
+  if (trimmed.length <= 16) return trimmed;
+  const cut = trimmed.slice(0, 15);
+  return `${cut.slice(0, cut.lastIndexOf(" ") > 0 ? cut.lastIndexOf(" ") : 15)}…`;
+}
+
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
 /** In LIVE mode the FM scale is borrowed as a station-index sweep. */
@@ -464,7 +479,7 @@ export default function Radio3DGame() {
         : "Between stations";
   const nowMeta =
     band === "LIVE" && liveStation
-      ? `${liveStation.country} · ${liveStation.bitrate || "?"} kbps`
+      ? `${shortCountry(liveStation.country)} · ${liveStation.bitrate || "?"} kbps`
       : (tuned?.station.genre ?? "");
 
   function presetLabel(saved: number): string {
@@ -714,7 +729,7 @@ export default function Radio3DGame() {
               <em className={`chevy-onair${onAir ? " is-lit" : ""}`}>ON AIR</em>
             </p>
             <p className="chevy-now">
-              {nowName}
+              <b className="chevy-now-name">{nowName}</b>
               {nowMeta ? <small>{nowMeta}</small> : null}
             </p>
             <div className="chevy-meter" role="img" aria-label={`Signal strength ${lit} of 5 bars`}>
@@ -763,7 +778,7 @@ export default function Radio3DGame() {
                     <span className="chevy-station-who">
                       <b>{entry.name}</b>
                       <small>
-                        {entry.country} · {entry.codec} · {entry.bitrate || "?"} kbps
+                        {shortCountry(entry.country)} · {entry.codec} · {entry.bitrate || "?"} kbps
                       </small>
                     </span>
                   </button>
