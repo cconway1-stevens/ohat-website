@@ -81,7 +81,7 @@ against; GitHub Pages is an optional mirror of the same static artifact.
 | **Build command** | `npm run build:static` | `npm run build` | `npm run build:static` |
 | **Serves** | `dist/client` — pre-rendered HTML | Worker + Cloudflare Images | `dist/client` |
 | **Framework preset** | `none` — this repo owns its build | vinext (Vite + Workers) | none |
-| **Config** | [`vercel.json`](vercel.json) | [`src/worker/index.ts`](src/worker/index.ts) | `package-pages` + `deploy` jobs |
+| **Config** | [`vercel.json`](vercel.json) | [`src/worker/index.ts`](src/worker/index.ts) | `pages-package` + `pages-publish` jobs |
 <!-- AUTOGEN:hosting END -->
 
 Vercel needs no framework preset (`"framework": null`) because this repo owns its
@@ -186,48 +186,54 @@ cheapest and most decisive first.
 flowchart LR
   subgraph gate["Start immediately, in parallel"]
     direction TB
-    formatting["1A · Formatting (PR/manual) · Biome"]
-    static_analysis["1B · Lint, types, unit tests · Biome/TS/Node"]
-    build_worker["2A · Worker artifact · vinext"]
-    test_build["2B · Static export + artifact tests · vinext/Node"]
-    dependency_security["1C · Dependency vulnerabilities · npm"]
-    codeql["1D · Code security scan · CodeQL"]
-    windows["1E · Windows build + tests (PR/manual) · Node"]
-    package_pages["5 · Website package (manual) · GitHub Pages"]
+    source["Source · format, lint, types, unit tests"]
+    dependencies["Supply chain · dependency vulnerabilities"]
+    code_scan["Security · CodeQL scan"]
+    windows["Windows · build + all test tiers (PR/manual)"]
+    build_worker["Build · Cloudflare Worker artifact"]
+    build_site["Build · static site + export tests"]
   end
-  browser_functional["3A · Pages, links + browser errors · Playwright/axe"]
-  lighthouse["3B · Speed + search + accessibility · Lighthouse — sharded"]
-  resilience["4 · Slow network + memory (weekly/manual)"]
-  deploy["6 · Website publish (manual) · GitHub Pages"]
-  test_build --> browser_functional
-  test_build --> lighthouse
-  test_build --> resilience
-  package_pages --> deploy
+  browser["Browser · pages, assets, bundle, accessibility"]
+  lighthouse["Lighthouse · speed, SEO, accessibility — sharded"]
+  resilience["Resilience · slow network, memory, stable Lighthouse (weekly/manual)"]
+  pages_package["Release · package the tested site (manual)"]
+  pages_publish["Release · publish to GitHub Pages (manual)"]
+  build_site --> browser
+  build_site --> lighthouse
+  build_site --> resilience
+  source --> pages_package
+  build_worker --> pages_package
+  build_site --> pages_package
+  browser --> pages_package
+  lighthouse --> pages_package
+  dependencies --> pages_package
+  code_scan --> pages_package
+  pages_package --> pages_publish
 ```
 
 | Job | Runs on | Waits for |
 | --- | --- | --- |
-| **1A · Formatting (PR/manual) · Biome** | PRs + manual | — |
-| **1B · Lint, types, unit tests · Biome/TS/Node** | push and PR | — |
-| **2A · Worker artifact · vinext** | every push and PR | — |
-| **2B · Static export + artifact tests · vinext/Node** | every push and PR | — |
-| **3A · Pages, links + browser errors · Playwright/axe** | push and PR | `test-build` |
-| **3B · Speed + search + accessibility · Lighthouse — sharded** | push and PR | `test-build` |
-| **1C · Dependency vulnerabilities · npm** | every push and PR | — |
-| **1D · Code security scan · CodeQL** | every push and PR | — |
-| **1E · Windows build + tests (PR/manual) · Node** | PRs + manual | — |
-| **4 · Slow network + memory (weekly/manual)** | weekly + manual | `test-build` |
-| **5 · Website package (manual) · GitHub Pages** | main only | — |
-| **6 · Website publish (manual) · GitHub Pages** | main only | `package-pages` |
+| **Source · format, lint, types, unit tests** | push and PR | — |
+| **Supply chain · dependency vulnerabilities** | every push and PR | — |
+| **Security · CodeQL scan** | every push and PR | — |
+| **Windows · build + all test tiers (PR/manual)** | PRs + manual | — |
+| **Build · Cloudflare Worker artifact** | every push and PR | — |
+| **Build · static site + export tests** | every push and PR | — |
+| **Browser · pages, assets, bundle, accessibility** | push and PR | `build-site` |
+| **Lighthouse · speed, SEO, accessibility — sharded** | push and PR | `build-site` |
+| **Resilience · slow network, memory, stable Lighthouse (weekly/manual)** | weekly + manual | `build-site` |
+| **Release · package the tested site (manual)** | main only | `source`, `build-worker`, `build-site`, `browser`, `lighthouse`, `dependencies`, `code-scan` |
+| **Release · publish to GitHub Pages (manual)** | main only | `pages-package` |
 <!-- AUTOGEN:ci END -->
 
 Two jobs are worth calling out:
 
-- **Static analysis and unit tests** carries the unit tier because that tier
-  needs no build — the whole tier costs about two seconds inside a job that was
-  already installing dependencies.
-- **Windows compatibility** runs the builds and all three test tiers rather than
-  lint and typecheck. Biome, ESLint and `tsc` reach the same verdict on either
+- **Source** carries the unit tier because that tier needs no build — the whole
+  tier costs about two seconds inside a job that was already installing
+  dependencies. It gates the same list, in the same order, as `npm run check`
+  locally; a check in only one of the two is a check that gets discovered late.
+- **Windows** runs the builds and all three test tiers rather than lint and
+  typecheck. Biome, ESLint and `tsc` reach the same verdict on either
   OS; what genuinely differs on Windows is shell scripts, path separators, and
   the tests' own path resolution.
 

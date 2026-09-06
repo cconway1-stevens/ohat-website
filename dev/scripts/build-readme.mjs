@@ -222,7 +222,7 @@ function hostingBlock() {
     `| **Build command** | \`${vercel.buildCommand}\` | \`npm run build\` | \`${vercel.buildCommand}\` |`,
     `| **Serves** | \`${vercel.outputDirectory}\` — pre-rendered HTML | Worker + Cloudflare Images | \`${vercel.outputDirectory}\` |`,
     `| **Framework preset** | \`${vercel.framework ?? "none"}\` — this repo owns its build | vinext (Vite + Workers) | none |`,
-    "| **Config** | [`vercel.json`](vercel.json) | [`src/worker/index.ts`](src/worker/index.ts) | `package-pages` + `deploy` jobs |",
+    "| **Config** | [`vercel.json`](vercel.json) | [`src/worker/index.ts`](src/worker/index.ts) | `pages-package` + `pages-publish` jobs |",
   ].join("\n");
 }
 

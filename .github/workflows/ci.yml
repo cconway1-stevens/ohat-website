@@ -28,25 +28,18 @@ concurrency:
 env:
   NODE_VERSION: 24
 
+# Job names read "<stage> · <what it proves>", so the run summary groups by the
+# stage of the pipeline a failure belongs to rather than by an opaque code.
+# Step names read "<what is checked> · <tool that checks it>", so a red step
+# says both what broke and where to run it locally.
 jobs:
-  formatting:
-    name: 1A · Formatting (PR/manual) · Biome
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - name: Install · npm
-        run: npm ci --prefer-offline
-      - name: Format · Biome
-        run: npm run format:check
-
-  static-analysis:
-    name: 1B · Lint, types, unit tests · Biome/TS/Node
+  # Everything that reads source files and nothing else — no build, no browser.
+  # Ordered cheapest-first so an obvious mistake fails in seconds, matching
+  # `npm run check` (dev/scripts/pre-push.sh), which gates the same list
+  # locally. Keep the two in step: a check that runs in only one of them is a
+  # check that gets discovered by whichever gate the author did not run.
+  source:
+    name: Source · format, lint, types, unit tests
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -58,157 +51,32 @@ jobs:
           cache: npm
       - name: Install · npm
         run: npm ci --prefer-offline
+      - name: Repo junk · Node
+        run: node dev/scripts/check-junk.mjs
+      # Formatting runs on every event, not just PRs. The build fails outright
+      # on an unformatted file, so gating this on PRs only let a direct push to
+      # main break the build with no check pointing at the cause.
+      - name: Format · Biome
+        run: npm run format:check
       - name: Lint · Biome
         run: npm run lint
-      - name: Next.js · ESLint
+      - name: Lint · ESLint
         run: npm run lint:next
       - name: Types · TypeScript
         run: npm run typecheck
       # The unit tier reads no build artifact, so it belongs in the job that
-      # has no build in it: ~2s here, versus waiting on stage 2's two builds.
+      # has no build in it: ~2s here, versus waiting on the build stage.
       - name: Unit tests · Node
         run: npm run test:unit
       - name: Dead code · Knip
         run: npm run check:deadcode
       - name: Architecture · dependency-cruiser
         run: npm run check:architecture
-      - name: File size · Node
+      - name: File sizes · Node
         run: npm run check:bloat
 
-  # The Cloudflare Worker artifact is not a prerequisite for any test — the
-  # static export alone produces the dist/server the server tier reads — so it
-  # builds in parallel here instead of sitting on the critical path to the
-  # browser jobs, which only ever needed dist/client.
-  build-worker:
-    name: 2A · Worker artifact · vinext
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - name: Install · npm
-        run: npm ci --prefer-offline
-      - name: Build · vinext (verified Sites artifact)
-        run: npm run build
-
-  test-build:
-    name: 2B · Static export + artifact tests · vinext/Node
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - name: Install · npm
-        run: npm ci --prefer-offline
-      - name: Static export + server/static tiers · vinext + Node
-        run: npm test
-      - name: Artifact · GitHub
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: static-site-${{ github.run_id }}
-          path: dist/client
-          if-no-files-found: error
-          include-hidden-files: true
-          retention-days: 3
-
-  browser-functional:
-    name: 3A · Pages, links + browser errors · Playwright/axe
-    if: github.event_name != 'schedule'
-    needs: test-build
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - name: Install · npm
-        run: npm ci --prefer-offline
-      - name: Browser setup · Playwright
-        run: |
-          if npm run check:browser:preflight; then
-            exit 0
-          fi
-          for attempt in 1 2 3; do
-            echo "Installing Playwright Chromium (attempt $attempt/3)"
-            if ./node_modules/.bin/playwright install --with-deps chromium && npm run check:browser:preflight; then
-              exit 0
-            fi
-          done
-          exit 1
-      - name: Artifact · GitHub
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: static-site-${{ github.run_id }}
-          path: dist/client
-      - name: Pages + links · Playwright
-        run: npm run check:pages
-      - name: Assets · Playwright
-        run: npm run check:assets
-      - name: Bundle size · Node
-        run: npm run check:bundle
-      - name: Accessibility · axe
-        run: npm run check:a11y
-
-  lighthouse:
-    name: 3B · Speed + search + accessibility · Lighthouse (${{ matrix.shard_label }})
-    if: github.event_name != 'schedule'
-    needs: test-build
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - shard_index: 0
-            shard_label: 1/4
-          - shard_index: 1
-            shard_label: 2/4
-          - shard_index: 2
-            shard_label: 3/4
-          - shard_index: 3
-            shard_label: 4/4
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - name: Install · npm
-        run: npm ci --prefer-offline
-      - name: Browser setup · Playwright
-        run: |
-          if npm run check:browser:preflight; then
-            exit 0
-          fi
-          for attempt in 1 2 3; do
-            echo "Installing Playwright Chromium (attempt $attempt/3)"
-            if ./node_modules/.bin/playwright install --with-deps chromium && npm run check:browser:preflight; then
-              exit 0
-            fi
-          done
-          exit 1
-      - name: Artifact · GitHub
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: static-site-${{ github.run_id }}
-          path: dist/client
-      - name: Audit routes · Lighthouse
-        run: npm run check:lighthouse:fast
-        env:
-          LH_SHARD_INDEX: ${{ matrix.shard_index }}
-          LH_SHARD_TOTAL: 4
-          LH_CONCURRENCY: 2
-
-  dependency-security:
-    name: 1C · Dependency vulnerabilities · npm
+  dependencies:
+    name: Supply chain · dependency vulnerabilities
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -229,15 +97,15 @@ jobs:
             sleep 15
           done
           exit 1
-      - name: Dependency diff · GitHub
+      - name: New dependencies · GitHub review
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           fail-on-severity: high
           fail-on-scopes: development, runtime
 
-  codeql:
-    name: 1D · Code security scan · CodeQL
+  code-scan:
+    name: Security · CodeQL scan
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -254,7 +122,7 @@ jobs:
         uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
 
   windows:
-    name: 1E · Windows build + tests (PR/manual) · Node
+    name: Windows · build + all test tiers (PR/manual)
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     timeout-minutes: 25
@@ -274,16 +142,30 @@ jobs:
       - name: Build + all tiers · vinext + Node
         run: npm test
 
-  resilience:
-    name: 4 · Slow network + memory (weekly/manual)
-    # Intentionally scheduled/manual-only, not per-PR: both checks need a full
-    # static build plus Chromium and add several minutes to every run. They are
-    # deterministic regressions but slow; run them on demand with
-    # `workflow_dispatch` (run_resilience) or on the weekly schedule.
-    if: >-
-      github.event_name == 'schedule' ||
-      (github.event_name == 'workflow_dispatch' && inputs.run_resilience)
-    needs: test-build
+  # The Cloudflare Worker artifact is not a prerequisite for any test — the
+  # static export alone produces the dist/server the server tier reads — so it
+  # builds in parallel here instead of sitting on the critical path to the
+  # browser jobs, which only ever needed dist/client.
+  build-worker:
+    name: Build · Cloudflare Worker artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install · npm
+        run: npm ci --prefer-offline
+      - name: Build · vinext (verified Sites artifact)
+        run: npm run build
+
+  # The one build every browser job below consumes. It uploads dist/client so
+  # the rest of the pipeline downloads that exact tree instead of rebuilding
+  # it — same bytes tested everywhere, and one build instead of six.
+  build-site:
+    name: Build · static site + export tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -294,7 +176,32 @@ jobs:
           cache: npm
       - name: Install · npm
         run: npm ci --prefer-offline
-      - name: Browser setup · Playwright
+      - name: Static export + server/static tiers · vinext + Node
+        run: npm test
+      - name: Upload site · GitHub
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: static-site-${{ github.run_id }}
+          path: dist/client
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 3
+
+  browser:
+    name: Browser · pages, assets, bundle, accessibility
+    if: github.event_name != 'schedule'
+    needs: build-site
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install · npm
+        run: npm ci --prefer-offline
+      - name: Chromium · Playwright
         run: |
           if npm run check:browser:preflight; then
             exit 0
@@ -306,7 +213,103 @@ jobs:
             fi
           done
           exit 1
-      - name: Artifact · GitHub
+      - name: Download site · GitHub
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: static-site-${{ github.run_id }}
+          path: dist/client
+      - name: Pages + links · Playwright
+        run: npm run check:pages
+      - name: Assets · Playwright
+        run: npm run check:assets
+      - name: Bundle size · Node
+        run: npm run check:bundle
+      - name: Accessibility · axe
+        run: npm run check:a11y
+
+  lighthouse:
+    name: Lighthouse · speed, SEO, accessibility (${{ matrix.shard_label }})
+    if: github.event_name != 'schedule'
+    needs: build-site
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard_index: 0
+            shard_label: shard 1/4
+          - shard_index: 1
+            shard_label: shard 2/4
+          - shard_index: 2
+            shard_label: shard 3/4
+          - shard_index: 3
+            shard_label: shard 4/4
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install · npm
+        run: npm ci --prefer-offline
+      - name: Chromium · Playwright
+        run: |
+          if npm run check:browser:preflight; then
+            exit 0
+          fi
+          for attempt in 1 2 3; do
+            echo "Installing Playwright Chromium (attempt $attempt/3)"
+            if ./node_modules/.bin/playwright install --with-deps chromium && npm run check:browser:preflight; then
+              exit 0
+            fi
+          done
+          exit 1
+      - name: Download site · GitHub
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: static-site-${{ github.run_id }}
+          path: dist/client
+      - name: Audit routes · Lighthouse
+        run: npm run check:lighthouse:fast
+        env:
+          LH_SHARD_INDEX: ${{ matrix.shard_index }}
+          LH_SHARD_TOTAL: 4
+          LH_CONCURRENCY: 2
+
+  resilience:
+    name: Resilience · slow network, memory, stable Lighthouse (weekly/manual)
+    # Intentionally scheduled/manual-only, not per-PR: both checks need a full
+    # static build plus Chromium and add several minutes to every run. They are
+    # deterministic regressions but slow; run them on demand with
+    # `workflow_dispatch` (run_resilience) or on the weekly schedule.
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_resilience)
+    needs: build-site
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install · npm
+        run: npm ci --prefer-offline
+      - name: Chromium · Playwright
+        run: |
+          if npm run check:browser:preflight; then
+            exit 0
+          fi
+          for attempt in 1 2 3; do
+            echo "Installing Playwright Chromium (attempt $attempt/3)"
+            if ./node_modules/.bin/playwright install --with-deps chromium && npm run check:browser:preflight; then
+              exit 0
+            fi
+          done
+          exit 1
+      - name: Download site · GitHub
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: static-site-${{ github.run_id }}
@@ -320,20 +323,14 @@ jobs:
         env:
           LH_RUNS: 3
 
-  package-pages:
-    name: 5 · Website package (manual) · GitHub Pages
+  pages-package:
+    name: Release · package the tested site (manual)
     if: >-
       github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
-    needs:
-      [
-        static-analysis,
-        build-worker,
-        test-build,
-        browser-functional,
-        lighthouse,
-        dependency-security,
-        codeql,
-      ]
+    # One line on purpose: dev/scripts/build-readme.mjs reads `needs` as a
+    # single-line flow list, and a wrapped one made the README diagram claim
+    # this job starts immediately, with no gates in front of the deploy.
+    needs: [source, build-worker, build-site, browser, lighthouse, dependencies, code-scan]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -352,7 +349,7 @@ jobs:
           echo "::error::GitHub Pages resolved a non-root base path: $PAGES_BASE_PATH"
           echo "Configure a custom domain or an owner.github.io repository before deploying."
           exit 1
-      - name: Artifact · GitHub
+      - name: Download site · GitHub
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: static-site-${{ github.run_id }}
@@ -362,11 +359,11 @@ jobs:
         with:
           path: dist/client
 
-  deploy:
-    name: 6 · Website publish (manual) · GitHub Pages
+  pages-publish:
+    name: Release · publish to GitHub Pages (manual)
     if: >-
       github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
-    needs: package-pages
+    needs: pages-package
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
