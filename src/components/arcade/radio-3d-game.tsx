@@ -61,6 +61,7 @@ function defaultPresets(): Presets {
 type Save = {
   volume: number;
   tone: number;
+  balance: number;
   band: RadioBand;
   dial: number;
   presets: Presets;
@@ -70,6 +71,7 @@ function loadSave(): Save {
   const fallback: Save = {
     volume: 0.65,
     tone: 0.6,
+    balance: 0.5,
     band: "FM",
     dial: 95.5,
     presets: defaultPresets(),
@@ -81,6 +83,7 @@ function loadSave(): Save {
     return {
       volume: typeof parsed.volume === "number" ? parsed.volume : fallback.volume,
       tone: typeof parsed.tone === "number" ? parsed.tone : fallback.tone,
+      balance: typeof parsed.balance === "number" ? parsed.balance : fallback.balance,
       band:
         parsed.band === "AM" || parsed.band === "FM" || parsed.band === "LIVE"
           ? parsed.band
@@ -112,6 +115,49 @@ function shortCountry(country: string): string {
 }
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+
+/** A small chrome trim knob: drag vertically, like a real pot. */
+function MiniKnob({
+  label,
+  value,
+  onChange,
+  ariaLabel,
+}: {
+  label: string;
+  value: number;
+  onChange: (next: number) => void;
+  ariaLabel: string;
+}) {
+  const drag = useRef<{ y: number; start: number } | null>(null);
+  return (
+    <button
+      type="button"
+      className="chevy-subknob"
+      aria-label={ariaLabel}
+      onPointerDown={(event) => {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        drag.current = { y: event.clientY, start: value };
+      }}
+      onPointerMove={(event) => {
+        const state = drag.current;
+        if (!state) return;
+        onChange(clamp(state.start - (event.clientY - state.y) * 0.006, 0, 1));
+      }}
+      onPointerUp={(event) => {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+        drag.current = null;
+      }}
+    >
+      <span
+        className="chevy-subknob-cap"
+        style={{ transform: `rotate(${-135 + value * 270}deg)` }}
+      />
+      <small>{label}</small>
+    </button>
+  );
+}
 
 /** In LIVE mode the FM scale is borrowed as a station-index sweep. */
 function indexToDial(index: number, count: number): number {
@@ -154,10 +200,21 @@ export default function Radio3DGame() {
   const [status, setStatus] = useState("Off. Push the left knob, or press Power below.");
   const [scanning, setScanning] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [balance, setBalance] = useState(save.balance);
+  const [dim, setDim] = useState(0.7);
+  const [night, setNight] = useState(false);
+  const [warmed, setWarmed] = useState(false);
+  const [isFs, setIsFs] = useState(false);
 
+  const dashRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const graphRef = useRef<{ bass: BiquadFilterNode; treble: BiquadFilterNode } | null>(null);
+  const graphRef = useRef<{
+    bass: BiquadFilterNode;
+    treble: BiquadFilterNode;
+    panner: StereoPannerNode | null;
+  } | null>(null);
   const holdTimerRef = useRef<number | null>(null);
+  const warmTimerRef = useRef<number | null>(null);
 
   // A real car radio remembers where each band was left tuned. This is what
   // stops the needle from hopping when the band changes: every band restores
@@ -186,12 +243,12 @@ export default function Radio3DGame() {
     try {
       window.localStorage.setItem(
         SAVE_KEY,
-        JSON.stringify({ volume, tone, band, dial, presets } satisfies Save),
+        JSON.stringify({ volume, tone, balance, band, dial, presets } satisfies Save),
       );
     } catch {
       /* storage blocked — the radio just won't remember */
     }
-  }, [volume, tone, band, dial, presets]);
+  }, [volume, tone, balance, band, dial, presets]);
 
   /* --- the live band --- */
   const liveIndex = band === "LIVE" ? dialToIndex(dial, liveList.length) : 0;
@@ -209,8 +266,15 @@ export default function Radio3DGame() {
       const treble = audio.createBiquadFilter();
       treble.type = "highshelf";
       treble.frequency.value = 4200;
-      source.connect(bass).connect(treble).connect(audio.destination);
-      graphRef.current = { bass, treble };
+      // The balance knob pans the stream where the panner is supported.
+      const panner =
+        typeof audio.createStereoPanner === "function" ? audio.createStereoPanner() : null;
+      if (panner) {
+        source.connect(bass).connect(treble).connect(panner).connect(audio.destination);
+      } else {
+        source.connect(bass).connect(treble).connect(audio.destination);
+      }
+      graphRef.current = { bass, treble, panner };
     } catch {
       // Without the graph the stream still plays; the tone knob just does nothing.
     }
@@ -323,7 +387,19 @@ export default function Radio3DGame() {
 
   function togglePower() {
     cozyAudio.click();
-    setPower((on) => !on);
+    setPower((on) => {
+      const next = !on;
+      if (next) {
+        // Tube warm-up: the dial stays dark and silent for a moment.
+        setWarmed(false);
+        setStatus("Warming the valves…");
+        if (warmTimerRef.current !== null) window.clearTimeout(warmTimerRef.current);
+        warmTimerRef.current = window.setTimeout(() => setWarmed(true), 1100);
+      } else {
+        setWarmed(false);
+      }
+      return next;
+    });
   }
 
   // The scan loop steps through stations on a timer, so it reads the freshest
@@ -380,12 +456,17 @@ export default function Radio3DGame() {
   /* --- the synthesised bands --- */
   const effectiveVolume = muted ? 0 : volume;
   useEffect(() => {
-    if (power && band !== "LIVE") {
-      radio.tune(dial, { volume: effectiveVolume, tone, balance: 0, band });
+    if (power && warmed && band !== "LIVE") {
+      radio.tune(dial, {
+        volume: effectiveVolume,
+        tone,
+        balance: balance * 2 - 1,
+        band,
+      });
     } else {
       radio.off();
     }
-  }, [power, band, dial, effectiveVolume, tone]);
+  }, [power, warmed, band, dial, effectiveVolume, tone, balance]);
 
   /* --- the live band --- */
   useEffect(() => {
@@ -395,7 +476,7 @@ export default function Radio3DGame() {
 
   // A live station change (needle moved) retunes the stream.
   useEffect(() => {
-    if (band !== "LIVE" || !power || liveList.length === 0) return;
+    if (band !== "LIVE" || !power || !warmed || liveList.length === 0) return;
     void playLive();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liveIndex]);
@@ -404,24 +485,25 @@ export default function Radio3DGame() {
   useEffect(() => {
     const element = audioRef.current;
     if (!element) return;
-    if (power && band === "LIVE" && liveList.length > 0) {
+    if (power && warmed && band === "LIVE" && liveList.length > 0) {
       void playLive();
     } else {
       element.pause();
       setLivePlaying(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [power, band]);
+  }, [power, warmed, band]);
 
-  // Live tone + volume.
+  // Live tone, balance + volume.
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = effectiveVolume;
     const graph = graphRef.current;
     if (graph) {
       graph.bass.gain.value = (tone - 0.5) * 16;
       graph.treble.gain.value = (tone - 0.5) * 14;
+      if (graph.panner) graph.panner.pan.value = balance * 2 - 1;
     }
-  }, [effectiveVolume, tone]);
+  }, [effectiveVolume, tone, balance]);
 
   // Static while a live stream buffers.
   useEffect(() => {
@@ -436,6 +518,7 @@ export default function Radio3DGame() {
       audioRef.current?.pause();
       ambience.set("static", 0, 0.1);
       if (holdTimerRef.current !== null) window.clearTimeout(holdTimerRef.current);
+      if (warmTimerRef.current !== null) window.clearTimeout(warmTimerRef.current);
     },
     [],
   );
@@ -446,6 +529,7 @@ export default function Radio3DGame() {
       setStatus("Off. Push the left knob, or press Power below.");
       return;
     }
+    if (!warmed) return; // keep the warm-up message on the line
     if (band === "LIVE") return; // live status is set by the stream handlers
     const { station, lock: stationLockValue } = stationLock(dial, band);
     setStatus(
@@ -453,7 +537,7 @@ export default function Radio3DGame() {
         ? `On air: ${station.name} — ${station.genre}`
         : "Between stations — just static.",
     );
-  }, [power, band, dial]);
+  }, [power, warmed, band, dial]);
 
   /* --- derived readout + directory values --- */
   const tuned = band === "LIVE" ? null : stationLock(dial, band);
@@ -507,12 +591,27 @@ export default function Radio3DGame() {
   // Needle / tune-knob position as a 0..1 sweep across the current band.
   const dialT = clamp((dial - bandRange.min) / (bandRange.max - bandRange.min), 0, 1);
 
+  // Mechanical detents: a tiny click every half-megahertz (or 10 kHz on AM).
+  const lastDetentRef = useRef(0);
+  function tuneTo(value: number) {
+    const step = band === "AM" ? 10 : 0.5;
+    const now = performance.now();
+    if (
+      Math.floor(value / step) !== Math.floor(stateRef.current.dial / step) &&
+      now - lastDetentRef.current > 70
+    ) {
+      cozyAudio.click();
+      lastDetentRef.current = now;
+    }
+    setDial(value);
+  }
+
   function tuneFromClientX(clientX: number) {
     const track = dialTrackRef.current;
     if (!track) return;
     const rect = track.getBoundingClientRect();
     const t = clamp((clientX - rect.left) / rect.width, 0, 1);
-    setDial(bandRange.min + t * (bandRange.max - bandRange.min));
+    tuneTo(bandRange.min + t * (bandRange.max - bandRange.min));
   }
 
   function onFacePointerDown(kind: "dial" | "volume" | "tune") {
@@ -542,7 +641,7 @@ export default function Radio3DGame() {
       const span = bandRange.max - bandRange.min;
       const track = dialTrackRef.current;
       const width = track?.getBoundingClientRect().width ?? 300;
-      setDial(clamp(drag.startValue + (dx / width) * span, bandRange.min, bandRange.max));
+      tuneTo(clamp(drag.startValue + (dx / width) * span, bandRange.min, bandRange.max));
     }
   }
   function onFacePointerUp(event: React.PointerEvent<HTMLElement>) {
@@ -566,11 +665,38 @@ export default function Radio3DGame() {
   const volumeAngle = -135 + volume * 270;
   const tuneAngle = -135 + dialT * 270;
 
+  /* --- fullscreen: native API where it exists, CSS pinning where not --- */
+  useEffect(() => {
+    const onChange = () => {
+      if (!document.fullscreenElement) setIsFs(false);
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  function toggleFullscreen() {
+    cozyAudio.click();
+    const element = dashRef.current;
+    if (!element) return;
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+      return;
+    }
+    if (typeof element.requestFullscreen === "function") {
+      element
+        .requestFullscreen()
+        .then(() => setIsFs(true))
+        .catch(() => setIsFs(true));
+    } else {
+      // iPhone Safari cannot fullscreen an element — pin it with CSS instead.
+      setIsFs(true);
+    }
+  }
+
   return (
     <CozyShell
       edition="Ocean Heights · the '57 De Luxe"
       title="Chrome De Luxe"
-      note="A 1957 Chevy dash radio. Drag the needle across the dial — or the right knob — to tune, drag the left knob for volume, push the left knob for power, push the right to change bands. Hold a piano key to save a preset."
+      note="A cherry-red '57 Chevy pushbutton radio. Drag the dial or the tuning knob, push PWR, change bands, and hold a piano key to save a preset. Trim knobs set tone, balance and dial brightness; NGT dims the dash for night driving; FULL takes over the screen. Local stations plus a live band of real streams."
       soundOn={sound}
       onSoundChange={setSound}
     >
@@ -588,7 +714,11 @@ export default function Radio3DGame() {
       />
 
       {/* One integrated dash: the radio face and the guide in a single red card. */}
-      <div className={`chevy-dash${power ? " is-on" : ""}`}>
+      <div
+        ref={dashRef}
+        className={`chevy-dash${power ? " is-on" : ""}${night ? " is-night" : ""}${isFs ? " is-fs" : ""}`}
+        style={{ "--chevy-dim": 0.35 + dim * 0.65 } as React.CSSProperties}
+      >
         {/* the radio itself */}
         <div className="chevy-radio">
           <div
@@ -615,6 +745,10 @@ export default function Radio3DGame() {
             </div>
             <span className="chevy-needle" style={{ left: `${dialT * 100}%` }} aria-hidden="true" />
           </div>
+
+          <p className="chevy-badge" aria-hidden="true">
+            De Luxe <span>pushbutton radio</span>
+          </p>
 
           <p className="chevy-legend">Push button · hold to set</p>
           <div className="chevy-keys" role="group" aria-label="Presets">
@@ -692,6 +826,25 @@ export default function Radio3DGame() {
               >
                 MUT
               </button>
+              <button
+                type="button"
+                className={night ? "is-on" : ""}
+                aria-pressed={night}
+                onClick={() => {
+                  cozyAudio.click();
+                  setNight((on) => !on);
+                }}
+              >
+                NGT
+              </button>
+              <button
+                type="button"
+                className={isFs ? "is-on" : ""}
+                aria-pressed={isFs}
+                onClick={toggleFullscreen}
+              >
+                {isFs ? "EXIT" : "FULL"}
+              </button>
             </div>
 
             <button
@@ -706,18 +859,26 @@ export default function Radio3DGame() {
             </button>
           </div>
 
-          <label className="chevy-tone">
-            <span>Tone</span>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.02}
+          <div className="chevy-subknobs">
+            <MiniKnob
+              label="Tone"
               value={tone}
-              aria-label="Tone"
-              onChange={(event) => setTone(Number(event.target.value))}
+              ariaLabel="Tone. Drag to adjust."
+              onChange={setTone}
             />
-          </label>
+            <MiniKnob
+              label="Bal"
+              value={balance}
+              ariaLabel="Balance. Drag to pan left or right."
+              onChange={setBalance}
+            />
+            <MiniKnob
+              label="Dim"
+              value={dim}
+              ariaLabel="Dial lamp dimmer. Drag to adjust the dial brightness."
+              onChange={setDim}
+            />
+          </div>
         </div>
 
         {/* the station guide, sliding out of the same dash */}
