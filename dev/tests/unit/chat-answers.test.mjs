@@ -230,7 +230,18 @@ test("routes wifi / amenity questions to the wifi intent", () => {
 test("routes tow questions to the tow intent", () => {
   const answer = answerQuestion("do you do towing?", TUESDAY_OPEN);
   assert.notEqual(answer.fallback, true);
-  assert.match(answer.text, /tow truck/i);
+  assert.match(answer.text, /do not offer towing/i);
+  assert.match(answer.text, /City Wide Towing/i);
+  assert.match(answer.text, /\(609\) 428-7071/i);
+  assert.ok(chipHrefs(answer).includes("https://www.actow.com/"));
+});
+
+test("understands stranded and broken-down towing requests", () => {
+  for (const question of ["I am stranded and need a tow", "my car broke down, need a flatbed"]) {
+    const answer = answerQuestion(question, TUESDAY_OPEN);
+    assert.notEqual(answer.fallback, true);
+    assert.match(answer.text, /City Wide Towing/i);
+  }
 });
 
 test("routes service-area makes questions to the service-area intent", () => {

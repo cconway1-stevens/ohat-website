@@ -124,6 +124,51 @@ export default function ServicesPage() {
             </div>
           </div>
         </section>
+        <section className="service-referrals" aria-labelledby="service-referrals-title">
+          <div className="shell">
+            <div className="service-referrals-heading">
+              <p className="eyebrow">Helpful local referrals</p>
+              <h2 id="service-referrals-title">Two services we do not provide.</h2>
+              <p>Here is exactly where we recommend going instead.</p>
+            </div>
+            <div className="service-referral-grid">
+              <article>
+                <span aria-hidden="true">01</span>
+                <p className="service-referral-kicker">Towing &amp; roadside help</p>
+                <h3>We do not offer towing.</h3>
+                <p>
+                  We recommend City Wide Towing for service in Atlantic County. Contact them
+                  directly to confirm availability, timing, and price.
+                </p>
+                <div className="service-referral-actions">
+                  <a className="button button-primary" href="tel:+16094287071">
+                    Call (609) 428-7071
+                  </a>
+                  <a href="https://www.actow.com/">Visit City Wide Towing →</a>
+                </div>
+              </article>
+              <article>
+                <span aria-hidden="true">02</span>
+                <p className="service-referral-kicker">NJ state inspection</p>
+                <h3>We do not issue inspection stickers.</h3>
+                <p>
+                  The NJ MVC inspection is free. The closest state inspection center is at 1477 19th
+                  St, Mays Landing, NJ 08330. We can diagnose and repair emissions problems before
+                  you go; normal diagnostic charges apply.
+                </p>
+                <div className="service-referral-actions">
+                  <a
+                    className="button button-primary"
+                    href="https://www.nj.gov/mvc/locations/inspection.htm"
+                  >
+                    NJ MVC locations
+                  </a>
+                  <Link href="/services/exhaust-emissions">Inspection prep details →</Link>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
         <section className="inner-cta">
           <div className="shell">
             <div>
