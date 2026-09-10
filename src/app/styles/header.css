@@ -451,18 +451,32 @@
 .nav-band {
   background: linear-gradient(90deg, rgba(23, 20, 18, 0.98), rgba(105, 12, 17, 0.96));
 }
+/* Three columns rather than a flex row: the outer two are equal `1fr` tracks,
+   so the link row is centred on the band itself. Under flex the nav was
+   centred in the space *left over* between the badge (125px) and the call card
+   (236px), which pushed it ~55px left of true centre. The gutter is its own
+   padding — the old `calc(100% - 32px)` left 16px a side and pinned the badge
+   and the call card to the viewport edges. */
 .nav-wrap {
-  width: min(1680px, calc(100% - 32px));
+  width: min(1680px, 100%);
+  padding-inline: clamp(22px, 3.4vw, 72px);
   min-height: 112px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 1.5rem;
   padding-block: 0.65rem;
 }
 .brand {
   display: inline-flex;
   align-items: center;
+  justify-self: start;
+}
+.desktop-nav {
+  justify-self: center;
+}
+.nav-wrap > .button-small {
+  justify-self: end;
 }
 /* Sized off the artwork's own 315x231 ratio rather than a fixed 176x92 box:
    `contain` inside a wider box painted the badge at 125px and left ~25px of

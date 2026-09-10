@@ -632,6 +632,13 @@
   .desktop-nav {
     display: none;
   }
+  /* With the link row gone the masthead's three-column grid has nothing to
+     centre, so it goes back to a flex row: badge left, call card and menu
+     pushed right by the auto margin below. */
+  .nav-wrap {
+    display: flex;
+    justify-content: space-between;
+  }
   .nav-wrap > .button-small {
     margin-left: auto;
   }
