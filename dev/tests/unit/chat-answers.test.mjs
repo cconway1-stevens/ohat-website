@@ -544,3 +544,72 @@ test("fallback never includes the old tire persona copy", () => {
   assert.doesNotMatch(answer.text, /I'm a tire/i);
   assert.doesNotMatch(answer.text, /I'm just a tire/i);
 });
+
+test("service availability questions do not pretend to diagnose symptoms", () => {
+  const answer = answerQuestion("Do you replace brakes?", TUESDAY_OPEN);
+  assert.equal(answer.serviceSlug, "brake-repair");
+  assert.match(answer.text, /We offer brake repair/);
+  assert.doesNotMatch(answer.text, /don't guess over chat/);
+});
+
+test("a price follow-up uses only the supplied previous service", () => {
+  const answer = answerQuestion("How much is that?", TUESDAY_OPEN, {
+    previousServiceSlug: "brake-repair",
+  });
+  assert.equal(answer.serviceSlug, "brake-repair");
+  assert.match(answer.text, /Brake Repair/i);
+  const unknown = answerQuestion("How much is that?", TUESDAY_OPEN);
+  assert.match(unknown.text, /Which service/);
+  const changed = answerQuestion("How much is an oil change?", TUESDAY_OPEN, {
+    previousServiceSlug: "brake-repair",
+  });
+  assert.equal(changed.serviceSlug, "oil-maintenance");
+});
+
+test("thanks does not swallow a substantive pricing question", () => {
+  assert.equal(
+    answerQuestion("thanks but how much is an oil change", TUESDAY_OPEN).serviceSlug,
+    "oil-maintenance",
+  );
+});
+
+test("accented service names survive normalization", () => {
+  assert.equal(answerQuestion("necesito alineación", TUESDAY_OPEN).serviceSlug, "wheel-alignment");
+});
+
+test("tomorrow hours use the shop calendar including weekends and holidays", () => {
+  assert.match(
+    answerQuestion("Are you open tomorrow?", new Date("2026-09-04T14:00:00Z")).text,
+    /Saturday.*Closed/,
+  );
+  assert.match(
+    answerQuestion("Are you open tomorrow?", new Date("2026-09-06T14:00:00Z")).text,
+    /Labor Day/,
+  );
+  assert.match(answerQuestion("Are you open tomorrow?", TUESDAY_OPEN).text, /Wednesday.*8:00/);
+});
+
+test("repair status is an honest handoff, not an estimated completion", () => {
+  const answer = answerQuestion("Is my car ready?", TUESDAY_OPEN);
+  assert.match(answer.text, /cannot see repair orders/);
+  assert.equal(answer.chips[0].kind, "call");
+});
+
+test("fault codes route to testing without declaring a failed part", () => {
+  const answer = answerQuestion("P0496", TUESDAY_OPEN);
+  assert.equal(answer.serviceSlug, "advanced-diagnostics");
+  assert.match(answer.text, /not proof/);
+});
+
+test("explicit brake failure takes precedence over service marketing", () => {
+  for (const question of ["Can I drive with no brakes?", "brake pedal goes to the floor"]) {
+    const result = debugAnswer(question, TUESDAY_OPEN);
+    assert.equal(result.matched.id, "urgent");
+    assert.match(result.answer.text, /Do not drive/);
+    assert.equal(result.answer.chips[0].kind, "call");
+  }
+});
+
+test("booking responses state that chat cannot confirm appointments", () => {
+  assert.match(answerQuestion("Book an appointment", TUESDAY_OPEN).text, /cannot book or confirm/);
+});

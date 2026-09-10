@@ -14,7 +14,7 @@
 import { makes } from "../makes.ts";
 import { services } from "../services.ts";
 import { formatTime, shop } from "../shop/shop.mjs";
-import { getShopHoursStatus } from "../shop/shop-hours.mjs";
+import { getHoursForecast, getShopHoursStatus } from "../shop/shop-hours.mjs";
 import { PRODUCTION_PERSONA } from "./mascot.ts";
 
 export type ChatChip = {
@@ -334,6 +334,8 @@ function tokenize(
   const merged = pickSynonyms(text, synonyms);
   const rawTokens = text
     .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, " ")
     .split(" ")
     .filter(Boolean);
@@ -478,7 +480,7 @@ const INTENTS: {
     id: "identity",
     triggers: ["name", "bot", "robot", "mascot", "ai", "assistant", "tread"],
     build: (_now, persona = PRODUCTION_PERSONA) => ({
-      text: `I'm ${persona.name}, ${persona.kind} — the mascot with actual shop answers. Hours, services, directions, pricing: ask away. Anything deeper, the counter crew is one call away and much better with a wrench.`,
+      text: `I'm ${persona.name}, ${persona.kind} — a local website assistant using the shop’s published information. I can explain services, hours, directions, and how to request a quote. I cannot see repair orders, confirm appointments, diagnose a vehicle, or access live prices.`,
       chips: [callChip, { label: "All services", href: "/services", kind: "link" }],
     }),
   },
@@ -689,7 +691,7 @@ const INTENTS: {
       "appt",
     ],
     build: () => ({
-      text: "The fastest way to grab a bay is a quick call — we'll tell you the next opening and what to bring.",
+      text: "I can help you request an appointment, but cannot book or confirm one here. Call with the year, make, model, and the work you need; the shop will confirm availability and what to bring.",
       chips: [callChip, emailChip],
     }),
   },
@@ -752,7 +754,7 @@ const INTENTS: {
       "safety inspection",
     ],
     build: () => ({
-      text: "The MVC inspection is free, and the closest station is right in Mays Landing — 1477 19th St. We're not a licensed state-inspection station, so we can't issue the sticker, but bring the car in and we can test it before you go: check-engine lights, exhaust leaks, and readiness monitors are what usually fail, and we'll get you ready to pass the first time. No inspection fee here — just our normal diagnostic time, and the sticker itself costs you nothing at the MVC.",
+      text: "The MVC inspection is free, and the closest station is right in Mays Landing — 1477 19th St. We're not a licensed state-inspection station, so we can't issue the sticker, but bring the car in and we can test it before you go: check-engine lights, exhaust leaks, and readiness monitors are what usually fail, and we can help address issues before your inspection. No inspection fee here — just our normal diagnostic time, and the sticker itself costs you nothing at the MVC.",
       chips: [
         { label: "Exhaust & emissions details", href: "/services/exhaust-emissions", kind: "link" },
         {
@@ -1185,6 +1187,8 @@ type Resolved = {
 
 /** Studio-only tuning knobs — never used by the production widget. */
 export type MatcherConfig = {
+  /** Only the previous service topic; no customer details or server storage. */
+  previousServiceSlug?: string;
   threshold?: number;
   extraSynonyms?: Record<string, string>;
   /** Mascot metadata the copy templates auto-fill from. Defaults to Tread. */
@@ -1196,7 +1200,7 @@ export type MatcherConfig = {
  * survives tokenizing, so the matcher never sees them. Catch them up front
  * and route to the identity intent.
  */
-const IDENTITY_RE = /\b(who|what)('s| are| is)?\s+(you|this)\b|\byour name\b/i;
+const IDENTITY_RE = /^(?:who|what)(?:[’']s| are| is)?\s+(?:you|this)[?! .]*$|\byour name\b/i;
 
 /**
  * A bare noise complaint ("car makes sounds", "my car is making a noise")
@@ -1232,7 +1236,7 @@ const STOPWORD_ROUTE_RES: { re: RegExp; id: string }[] = [
   { re: /\b(get|squeeze)\s+me\s+in\b/i, id: "booking" },
   { re: /^how (do|can) i (get|drive|go) (there|to the shop|to you)[\s?!.]*$/i, id: "location" },
   {
-    re: /^\s*(ok|okay)?\s*(thank(s| you)?|thx|ty|much appreciated|appreciate it)\b/i,
+    re: /^\s*(ok|okay)?\s*(thank(s| you)?|thx|ty|much appreciated|appreciate it)(\s+(so much|very much|a lot|again))?[\s!.,?]*$/i,
     id: "thanks",
   },
   // "Where are you?" is pure stopwords once tokenized — catch it up front.
@@ -1260,6 +1264,66 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
   const persona = config.persona ?? PRODUCTION_PERSONA;
   const synonyms = { ...SYNONYMS, ...config.extraSynonyms };
   const threshold = config.threshold ?? THRESHOLD;
+  // Explicit requests outrank incidental words such as "ready", "today", or "thanks".
+  const direct = (id: string, answer: ChatAnswer): Resolved => ({
+    answer,
+    matched: { kind: "intent", id, score: 99, label: id },
+    tokens: [],
+  });
+  if (
+    /\b(my|our) (car|truck|vehicle|repair|order)\b.*\b(ready|done|finished|status)\b|\b(repair status|status of my|pick up my)\b/i.test(
+      input,
+    )
+  ) {
+    return direct("repair-status", {
+      text: "I cannot see repair orders or whether your vehicle is ready. Call or email the shop for an update; the team can check your job and confirm pickup. Please give customer details directly to the shop, not in this chat.",
+      chips: [callChip, emailChip],
+    });
+  }
+  if (
+    /\b(no brakes|brakes? (failed|not working)|cannot stop|can[’']?t stop|pedal (goes |went )?to the floor)\b/i.test(
+      input,
+    )
+  ) {
+    return direct("urgent", {
+      text: `"${echoIssue(input)}" — ${ISSUE_HEDGE}. Do not drive a vehicle that cannot stop safely. If you are in immediate danger, call emergency services. Once safe, arrange roadside assistance and ${ISSUE_CALL(shop.phone.display).toLowerCase()}`,
+      chips: [callChip],
+    });
+  }
+  if (/\b[PBCU][0-3][0-9A-F]{3}\b/i.test(input)) {
+    return direct("fault-code", {
+      text: "A fault code is a starting point for testing, not proof that a particular part needs replacing. I cannot read your vehicle or diagnose the code here. Tell the shop the exact codes, year, make, model, and symptoms so they can plan diagnostic testing.",
+      chips: [callChip, serviceChip("advanced-diagnostics", "Diagnostic services")],
+      serviceSlug: "advanced-diagnostics",
+    });
+  }
+  if (/\b(open|closed|hours|close|closing)\b/i.test(input) && /\btomorrow\b/i.test(input)) {
+    const day = getHoursForecast(now, 2)[1];
+    return direct("hours", {
+      text: `Tomorrow (${day.weekday}, ${day.dateLabel}): ${day.hours}.${day.why ? ` ${day.why.label}.` : ""} Times are local to the New Jersey shop. Call to confirm appointment availability.`,
+      chips: [hoursChip, callChip],
+    });
+  }
+  const previous = services.find((service) => service.slug === config.previousServiceSlug);
+  if (
+    /^(?:(?:and|ok|okay)[, ]+)?(?:how much(?: is (?:it|that))?|what (?:does (?:it|that) cost|about (?:the )?(?:cost|price))|(?:what is|what's) the price)[?! .]*$/i.test(
+      input.trim(),
+    )
+  ) {
+    return direct(
+      "cost",
+      previous
+        ? {
+            text: `${previous.name}: ${trimForBubble(previous.cost)} Call with your year, make, and model for a quote.`,
+            chips: [callChip, serviceChip(previous.slug, previous.name)],
+            serviceSlug: previous.slug,
+          }
+        : {
+            text: "Which service do you need a price for—for example, an oil change, tires, or brakes? A quote also depends on your year, make, and model. The shop can confirm pricing by phone.",
+            chips: [callChip],
+          },
+    );
+  }
   if (IDENTITY_RE.test(input)) {
     const identity = INTENTS.find((i) => i.id === "identity")!;
     return {
@@ -1410,6 +1474,26 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
   }
 
   const service = services.find((s) => s.slug === top.entry.serviceSlug)!;
+  if (
+    /^(?:hi[, ]+|hello[, ]+)?(?:do|can) you (?:do|offer|replace|repair|fix|service|work on|install)\b/i.test(
+      input.trim(),
+    )
+  ) {
+    return {
+      answer: {
+        text: `We offer ${service.name.toLowerCase()}. ${service.short} Call with your year, make, model, and what you need so the team can confirm the work and availability.`,
+        chips: [serviceChip(service.slug, service.name), callChip],
+        serviceSlug: service.slug,
+      },
+      matched: {
+        kind: "service",
+        id: `service:${service.slug}`,
+        score: top.score,
+        label: service.name,
+      },
+      tokens,
+    };
+  }
   return {
     answer: {
       // A symptom description is never a diagnosis: mirror what the customer
@@ -1457,6 +1541,8 @@ type FuzzyHit = { slug: string; service: string; answer: string; distance: numbe
 function fuzzyFaqLookup(input: string): FuzzyHit | null {
   const normalized = input
     .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
   if (!normalized) return null;
