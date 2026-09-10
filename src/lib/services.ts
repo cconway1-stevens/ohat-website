@@ -198,10 +198,11 @@ export const services: Service[] = [
       "Balancing and rotation",
       "TPMS diagnosis and service",
       "Valve stem and TPMS sensor service",
+      "Tire pressure sensor replacement and programming",
       "Tread depth and safety checks",
     ],
     diagnosis:
-      "Before recommending tires, we look at how the old set wore: even wear says the tires simply aged out, while edge wear, center wear, cupping, or one-sided wear point at inflation, alignment, or suspension causes that would destroy a new set just as fast. Every installation includes balancing, new valve hardware where appropriate, and a TPMS relearn so the pressure warning system works the way it should.",
+      "Before recommending tires, we look at how the old set wore: even wear says the tires simply aged out, while edge wear, center wear, cupping, or one-sided wear point at inflation, alignment, or suspension causes that would destroy a new set just as fast. Every installation includes balancing, new valve hardware where appropriate, and a TPMS relearn so the pressure warning system works the way it should. Plenty of customers come in just to get a bad tire-pressure sensor replaced—we diagnose which wheel it is, install the new sensor, and program it to the vehicle on the spot.",
     whyUs:
       "Because we are a full repair shop and not just a tire store, we fix the reason tires wore out—alignment, suspension, or inflation—rather than only replacing them. We can match tires to how you actually drive, including the heavier weight and instant torque of hybrids and EVs that wear ordinary tires quickly.",
     cost: "Tire pricing depends on size, speed and load rating, brand, and category (all-season, touring, performance, truck, or EV-specific). Installation, balancing, and TPMS service are quoted with the tires so there are no surprise line items. Flat repairs are inexpensive when the puncture is in the repairable tread area—sidewall and shoulder damage cannot be safely repaired.",
