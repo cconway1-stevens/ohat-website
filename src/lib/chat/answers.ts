@@ -910,7 +910,7 @@ const INTENTS: {
       "flatbed",
     ],
     build: () => ({
-      text: "We do not offer towing. For towing or roadside assistance in Atlantic County, we recommend City Wide Towing at (609) 428-7071. Contact them directly to confirm availability, timing, and price. Once the vehicle is headed here, call us so we can plan for its arrival.",
+      text: "For towing or roadside assistance in Atlantic County, City Wide Towing is the provider we recommend at (609) 428-7071. Our shop focuses on in-house diagnosis and repair rather than dispatching tow trucks, so we do not offer towing directly. Contact City Wide to confirm availability, timing, and price; once the vehicle is headed here, call us so we can plan for its arrival.",
       chips: [cityWideTowingChip, callChip, saveChip],
     }),
   },
