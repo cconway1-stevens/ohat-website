@@ -79,9 +79,9 @@ export function BrandMark({
       onPointerUp={clearLogoHold}
     >
       <SiteImage
-        src="/media/logo-transparent.avif"
-        width={176}
-        height={129}
+        src="/media/logo-transparent.png"
+        width={315}
+        height={231}
         alt="Ocean Heights Auto and Tire"
         priority={priority}
       />
@@ -136,8 +136,7 @@ export function SiteHeader() {
       </div>
       <div className="nav-band">
         <div className="shell nav-wrap">
-          {/* Temporarily hidden at the owner's request. Keep BrandMark exported for the footer. */}
-          {/* <BrandMark priority /> */}
+          <BrandMark priority />
           <nav className="desktop-nav" aria-label="Primary navigation">
             {primaryLinks.map((item) => (
               <Link
