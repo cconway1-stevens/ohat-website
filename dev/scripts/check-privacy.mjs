@@ -113,28 +113,32 @@ async function auditChoice(label, gpc = false) {
   });
   await page.route(optional, (route) => route.abort());
   await page.goto(base, { waitUntil: "networkidle" });
-  for (const choice of ["Accept all", "Essential only", "Choose services"]) {
+  for (const choice of [
+    "Allow all optional services",
+    "Use essential services only",
+    "Choose my services",
+  ]) {
     await page.getByRole("button", { name: choice, exact: true }).waitFor();
   }
   if (requests.length) failures.push(`Optional request before consent: ${requests[0]}`);
   await page.getByRole("button", { name: label, exact: true }).click();
-  await page.waitForTimeout(label === "Accept all" ? 3400 : 400);
+  await page.waitForTimeout(label === "Allow all optional services" ? 3400 : 400);
   const ga = requests.some((url) => url.includes("googletagmanager.com"));
   const weather = requests.some((url) => url.includes("api.open-meteo.com"));
-  if (label === "Essential only" && requests.length) {
-    failures.push(`Optional request after Essential only: ${requests[0]}`);
+  if (label === "Use essential services only" && requests.length) {
+    failures.push(`Optional request after essential-only choice: ${requests[0]}`);
   }
-  if (label === "Accept all" && !gpc && (!ga || !weather)) {
-    failures.push("Accept all did not activate both Google Analytics and shop weather");
+  if (label === "Allow all optional services" && !gpc && (!ga || !weather)) {
+    failures.push("Allow all did not activate both Google Analytics and shop weather");
   }
   if (gpc && ga) failures.push("Google Analytics loaded despite Global Privacy Control");
   await context.close();
 }
 
 try {
-  await auditChoice("Essential only");
-  await auditChoice("Accept all");
-  await auditChoice("Accept all", true);
+  await auditChoice("Use essential services only");
+  await auditChoice("Allow all optional services");
+  await auditChoice("Allow all optional services", true);
 
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -144,7 +148,7 @@ try {
     return route.abort();
   });
   await page.goto(`${base}/contact/`, { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "Essential only", exact: true }).click();
+  await page.getByRole("button", { name: "Use essential services only", exact: true }).click();
   if (mapRequests.length) failures.push("Google Map loaded before its user action");
   await page.getByRole("button", { name: "Load Google Map", exact: true }).click();
   await page.waitForTimeout(250);

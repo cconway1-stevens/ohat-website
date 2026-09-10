@@ -156,14 +156,14 @@ export default function PrivacyPage() {
                 and we do not ask you to reconsider that choice.
               </li>
               <li>
-                <strong>Privacy settings.</strong> The first-visit prompt offers Accept all,
-                Essential only, or Choose services. The detailed settings let you choose Google
-                Analytics, Vercel Web Analytics, and shop weather separately. The same settings link
-                appears in the footer on every page, so you can withdraw consent later. When Google
-                Analytics is turned off, this site deletes the Google Analytics cookies it can
-                access and stops future analytics collection. These choices are managed locally in
-                your browser by the self-hosted, open-source Klaro consent manager; Klaro itself
-                does not receive your information.
+                <strong>Privacy settings.</strong> The first-visit prompt offers Allow all optional
+                services, Use essential services only, or Choose my services. The detailed settings
+                let you choose Google Analytics, Vercel Web Analytics, and shop weather separately.
+                The same settings link appears in the footer on every page, so you can withdraw
+                consent later. When Google Analytics is turned off, this site deletes the Google
+                Analytics cookies it can access and stops future analytics collection. These choices
+                are managed locally in your browser by the self-hosted, open-source Klaro consent
+                manager; Klaro itself does not receive your information.
               </li>
               <li>
                 <strong>Browser settings.</strong> You can block or delete cookies for this site at

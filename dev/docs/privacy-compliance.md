@@ -162,9 +162,10 @@ straightforward.
    under "Keep the policy true": an inaccurate privacy policy is a worse
    position than none, because it is a representation to consumers.
 
-4. **Klaro consent controls** — the self-hosted, open-source Klaro CMP gives the first visit
-   equally prominent Accept all, Essential only, and Choose services actions. Google Analytics,
-   Vercel Web Analytics and Open-Meteo weather can be selected separately. A sitewide footer button
+4. **Klaro consent controls** — the self-hosted, open-source Klaro CMP gives the first visit equally
+   prominent Allow all optional services and Use essential services only actions, plus granular
+   choices. Google Analytics, Vercel Web Analytics and Open-Meteo weather can be selected separately.
+   A sitewide footer button
    reopens the choices. Withdrawing Google consent stops future collection and
    removes accessible `_ga` cookies.
 5. **Google Maps click-to-load** — merely opening `/contact` no longer contacts

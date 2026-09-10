@@ -96,36 +96,39 @@ function createConfig() {
       en: {
         privacyPolicyUrl: "/privacy",
         consentNotice: {
-          title: "Your privacy choices",
+          title: "Your privacy, your choice",
           description:
-            "Optional analytics and shop weather stay off until you choose them. The site works without them.",
-          learnMore: "Choose services",
+            "We use optional analytics to improve this website and an external service to show shop weather. Nothing optional loads until you choose, and the website works either way. Read our {privacyPolicy} for the full details.",
+          learnMore: "Choose my services",
         },
         consentModal: {
-          title: "Privacy settings",
+          title: "Choose your privacy settings",
           description:
-            "Choose optional services individually. Essential site functions are always available.",
+            "Optional services are off by default. Turn on only the services you are comfortable using. You can change these choices anytime.",
         },
-        ok: "Accept all",
-        decline: "Essential only",
-        acceptAll: "Accept all",
-        acceptSelected: "Accept selected",
-        save: "Save choices",
+        ok: "Allow all optional services",
+        decline: "Use essential services only",
+        acceptAll: "Allow all optional services",
+        acceptSelected: "Allow selected services",
+        save: "Save my choices",
         purposes: {
-          analytics: { title: "Visitor analytics" },
-          externalServices: { title: "Optional external services" },
+          analytics: { title: "Website insights" },
+          externalServices: { title: "Shop information" },
         },
         googleAnalytics: {
           title: "Google Analytics 4",
-          description: "Measures page views and phone-link clicks using analytics cookies.",
+          description:
+            "Helps us understand which pages are useful and when someone taps a phone link. Google Analytics uses analytics cookies; advertising features stay disabled.",
         },
         vercelAnalytics: {
           title: "Vercel Web Analytics",
-          description: "Provides cookieless, aggregate page-view counts on the Vercel site.",
+          description:
+            "Gives us simple, cookieless page-view totals when this website is served by Vercel.",
         },
         shopWeather: {
-          title: "Shop weather from Open-Meteo",
-          description: "Loads weather for the shop; Open-Meteo receives your IP address.",
+          title: "Local shop weather",
+          description:
+            "Shows current weather at our shop using Open-Meteo. The request uses the shop's location, but Open-Meteo receives your IP address when it loads.",
         },
       },
     },
