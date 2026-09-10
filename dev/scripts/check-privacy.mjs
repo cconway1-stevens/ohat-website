@@ -9,7 +9,6 @@ const PROJECT = fileURLToPath(new URL("../..", import.meta.url));
 const ROOT = join(PROJECT, "dist/client");
 const PORT = Number(process.env.PRIVACY_CHECK_PORT ?? 8937);
 const registry = JSON.parse(readFileSync(join(PROJECT, "dev/privacy-services.json"), "utf8"));
-const policy = readFileSync(join(PROJECT, "src/app/privacy/page.tsx"), "utf8");
 
 function sourceFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -21,6 +20,13 @@ function sourceFiles(dir) {
         : [];
   });
 }
+
+const policy = [
+  join(PROJECT, "src/app/privacy/page.tsx"),
+  ...sourceFiles(join(PROJECT, "src/components/privacy")),
+]
+  .map((file) => readFileSync(file, "utf8"))
+  .join("\n");
 
 const source = sourceFiles(join(PROJECT, "src"))
   .map((file) => readFileSync(file, "utf8"))
@@ -60,7 +66,6 @@ for (const match of executableSource.matchAll(/https:\/\/([\w.-]+)/g)) {
   }
 }
 
-if (!existsSync(ROOT)) failures.push("dist/client not found — run `npm run build:static` first");
 if (failures.length) {
   console.error(failures.map((failure) => `  - ${failure}`).join("\n"));
   process.exit(1);
@@ -68,6 +73,10 @@ if (failures.length) {
 if (process.argv.includes("--inventory-only")) {
   console.log(`Privacy inventory passed: ${registry.length} executable services documented.`);
   process.exit(0);
+}
+if (!existsSync(ROOT)) {
+  console.error("  - dist/client not found — run `npm run build:static` first");
+  process.exit(1);
 }
 
 const types = {

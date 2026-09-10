@@ -2,10 +2,22 @@
 
 import { openPrivacySettings } from "./privacy-controls";
 
-export function PrivacySettingsButton() {
+type PrivacySettingsButtonProps = {
+  placement?: "footer" | "page";
+};
+
+export function PrivacySettingsButton({ placement = "footer" }: PrivacySettingsButtonProps) {
   return (
-    <button type="button" className="footer-privacy-button" onClick={openPrivacySettings}>
-      Privacy settings
+    <button
+      type="button"
+      className={
+        placement === "page"
+          ? "button button-primary privacy-settings-cta"
+          : "footer-privacy-button"
+      }
+      onClick={openPrivacySettings}
+    >
+      {placement === "page" ? "Review privacy choices" : "Privacy settings"}
     </button>
   );
 }

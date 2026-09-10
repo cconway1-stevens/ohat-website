@@ -162,25 +162,33 @@ straightforward.
    under "Keep the policy true": an inaccurate privacy policy is a worse
    position than none, because it is a representation to consumers.
 
-4. **Klaro consent controls** — the self-hosted, open-source Klaro CMP gives the first visit equally
+6. **Klaro consent controls** — the self-hosted, open-source Klaro CMP gives the first visit equally
    prominent Allow all optional services and Use essential services only actions, plus granular
    choices. Google Analytics, Vercel Web Analytics and Open-Meteo weather can be selected separately.
    A sitewide footer button
    reopens the choices. Withdrawing Google consent stops future collection and
    removes accessible `_ga` cookies.
-5. **Google Maps click-to-load** — merely opening `/contact` no longer contacts
+7. **Google Maps click-to-load** — merely opening `/contact` no longer contacts
    Google. Radio APIs remain action-triggered because choosing a live station is
    the user's explicit request for that service.
-6. **Automated privacy inventory** — `dev/privacy-services.json` records every executable
+8. **Automated privacy inventory** — `dev/privacy-services.json` records every executable
    third-party service, its activation rule, its Klaro service where applicable, and the policy
    language that covers it. `npm run check:privacy` fails when those links drift, detects
    unregistered executable third-party URLs, and uses Playwright to verify the real consent gates,
    GPC behavior, and click-to-load map. GitHub Actions runs it for every change.
+9. **Termly policy and request workflow** — the owner-supplied Termly draft was treated as source
+   material, not pasted as executable generator markup. Its incomplete placeholders and inaccurate
+   advertising, precise-location, and account claims were removed. The useful rights, verification,
+   appeal, security, transfer, and request language was adapted to the site's real practices, and
+   Termly's hosted data-subject request form is linked as an optional, user-initiated destination.
 
 ## Deliberately not done
 
-- **No paid consent management platform.** Klaro is open source and self-hosted, with no CMP vendor
-  receiving visitor data. Reassess if ad technology, forms, or additional trackers are added.
+- **No second consent management platform.** Klaro remains the one consent source of truth. The
+  Termly website UUID is deliberately not loaded: running Termly CMP and Klaro together could show
+  duplicate banners, store conflicting choices, and make service activation harder to audit. Termly
+  is used only for policy source material and its user-initiated request form. Reassess the CMP if ad
+  technology, forms, or additional trackers are added.
 
 ## On buying a compliance tool
 
