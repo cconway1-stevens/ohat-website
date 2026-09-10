@@ -57,6 +57,9 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   // Keep structured FAQs aligned with the visible, expandable answers.
   const faqs = faqSchema(service.faqs, { url });
 
+  const serviceNumber = String(
+    services.findIndex((item) => item.slug === service.slug) + 1,
+  ).padStart(2, "0");
   const relatedServices = service.related
     .map((relatedSlug) => serviceBySlug(relatedSlug))
     .filter((related) => related !== undefined);
@@ -84,9 +87,13 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqs) }}
         />
-        <section className="inner-hero privacy-hero service-detail-hero">
-          <div className="shell privacy-hero-grid">
-            <div className="privacy-hero-copy">
+        <section className={`repair-ticket repair-ticket-${Number(serviceNumber) % 4}`}>
+          <div className="shell repair-ticket-grid">
+            <div className="ticket-number" aria-hidden="true">
+              <span>Bay</span>
+              <strong>{serviceNumber}</strong>
+            </div>
+            <div className="ticket-copy">
               <nav className="service-breadcrumbs" aria-label="Breadcrumb">
                 <ol>
                   <li>
@@ -98,40 +105,32 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                   <li aria-current="page">{service.name}</li>
                 </ol>
               </nav>
+              <p className="ticket-status">Now writing repair orders</p>
               <h1>
-                {service.name}
-                <span className="service-detail-location">
+                {service.name}{" "}
+                <span className="ticket-locale">
                   in {shop.address.city}, {shop.address.state}
                 </span>
               </h1>
               <p>{service.short}</p>
-              <div className="privacy-hero-actions">
+              <div className="ticket-actions">
                 <a className="button button-primary" href={phoneHref}>
-                  Call about this service
+                  Call {phoneDisplay}
                 </a>
                 <a className="button button-ghost" href="#service-includes">
-                  See what we handle
+                  See what we handle <span aria-hidden="true">↓</span>
                 </a>
               </div>
             </div>
-            <aside className="service-detail-summary" aria-label="Service at a glance">
-              <h2>Plan your visit</h2>
-              <dl>
-                <div>
-                  <dt>Service</dt>
-                  <dd>{service.name}</dd>
-                </div>
-                <div>
-                  <dt>Have ready</dt>
-                  <dd>Your year, make, model, and what needs attention</dd>
-                </div>
-                <div>
-                  <dt>Pricing</dt>
-                  <dd>Based on your vehicle and the work needed</dd>
-                </div>
-              </dl>
-              <p>Not sure what you need? Tell us what your vehicle is doing when you call.</p>
-            </aside>
+            <div className="part-stamp" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <span>OHAT</span>
+            </div>
           </div>
         </section>
         <section className="section service-detail-section">
@@ -143,6 +142,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                 <a href="#service-signs">When to call</a>
                 <a href="#service-includes">What we handle</a>
                 <a href="#service-process">What to expect</a>
+                <a href="#service-approach">Our approach</a>
                 <a href="#service-cost">Pricing</a>
                 <a href="#service-questions">Common questions</a>
                 {service.resources?.length ? (
@@ -152,30 +152,54 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               <DirectionsTrigger className="service-detail-directions">
                 Get directions to the shop
               </DirectionsTrigger>
+              <aside className="service-detail-summary" aria-label="Service at a glance">
+                <h2>Plan your visit</h2>
+                <dl>
+                  <div>
+                    <dt>Service</dt>
+                    <dd>{service.name}</dd>
+                  </div>
+                  <div>
+                    <dt>Have ready</dt>
+                    <dd>Your year, make, model, and what needs attention</dd>
+                  </div>
+                  <div>
+                    <dt>Pricing</dt>
+                    <dd>Based on your vehicle and the work needed</dd>
+                  </div>
+                </dl>
+                <p>Not sure what you need? Tell us what your vehicle is doing when you call.</p>
+              </aside>
             </aside>
             <div className="service-detail-content">
-              <section id="service-overview">
+              <section id="service-overview" className="service-panel service-panel-overview">
                 <p className="eyebrow dark">About this service</p>
                 <h2>Care that starts with understanding your vehicle</h2>
                 <p>{service.intro}</p>
               </section>
-              <section id="service-signs">
-                <h2>When to contact us</h2>
-                <ul className="service-detail-list">
+              <section id="service-signs" className="service-panel service-panel-signs">
+                <p className="eyebrow dark">When to call us</p>
+                <h2>Signs your vehicle needs attention</h2>
+                <ul>
                   {service.signs.map((sign) => (
                     <li key={sign}>{sign}</li>
                   ))}
                 </ul>
               </section>
-              <section id="service-includes">
-                <h2>What we handle</h2>
-                <ul className="service-detail-list">
+              <section id="service-includes" className="service-panel service-panel-includes">
+                <p className="eyebrow dark">What we handle</p>
+                <h2>Complete, evidence-led service</h2>
+                <ul>
                   {service.includes.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
               </section>
-              <section id="service-process">
+              <section id="service-process" className="service-panel service-panel-diagnosis">
+                <span className="service-panel-index" aria-hidden="true">
+                  01 / inspect
+                </span>
+                <p className="eyebrow dark">How the work starts</p>
                 <h2>What to expect</h2>
                 <ol className="service-detail-steps">
                   <li>
@@ -197,36 +221,49 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                     </p>
                   </li>
                 </ol>
-                <h3>Our approach</h3>
+              </section>
+              <section id="service-approach" className="service-panel service-panel-why-us">
+                <span className="service-panel-index" aria-hidden="true">
+                  02 / explain
+                </span>
+                <p className="eyebrow dark">The family-shop difference</p>
+                <h2>Why Egg Harbor Township drivers choose us</h2>
                 <p>{service.whyUs}</p>
               </section>
-              <section id="service-cost" className="service-detail-cost">
+              <section id="service-cost" className="service-panel service-panel-cost">
+                <span className="service-panel-index" aria-hidden="true">
+                  03 / approve
+                </span>
+                <p className="eyebrow">Straight talk on pricing</p>
                 <h2>What affects the cost</h2>
-                <p>{service.cost}</p>
-                <p>
+                <p className="service-cost-copy">{service.cost}</p>
+                <p className="service-cost-copy">
                   For a quote, call <a href={phoneHref}>{phoneDisplay}</a> with your vehicle details
                   and the service you need.
                 </p>
               </section>
-              <section id="service-questions">
-                <h2>Common questions</h2>
-                <div className="service-detail-faqs">
-                  {service.faqs.map((faq) => (
-                    <details key={faq.question}>
-                      <summary>{faq.question}</summary>
+              <section id="service-questions" className="service-panel service-panel-faqs">
+                <p className="eyebrow dark">From the service counter</p>
+                <h2>{service.name} questions we hear most</h2>
+                <div className="theme-grid">
+                  {service.faqs.map((faq, index) => (
+                    <article key={faq.question}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <h3>{faq.question}</h3>
                       <p>{faq.answer}</p>
-                    </details>
+                    </article>
                   ))}
                 </div>
               </section>
               {service.resources?.length ? (
-                <section id="service-resources">
-                  <h2>Official resources</h2>
-                  <ul className="service-detail-resources">
+                <section id="service-resources" className="service-panel service-panel-resources">
+                  <p className="eyebrow dark">Official resources</p>
+                  <h2>Check for yourself, free</h2>
+                  <ul className="service-resource-list">
                     {service.resources.map((resource) => (
                       <li key={resource.href}>
                         <a href={resource.href} target="_blank" rel="noreferrer">
-                          {resource.label}
+                          {resource.label} ↗︎
                           <span className="sr-only"> (opens in a new tab)</span>
                         </a>
                         <p>{resource.note}</p>
@@ -236,16 +273,19 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                 </section>
               ) : null}
               {relatedServices.length ? (
-                <section aria-labelledby="related-heading">
-                  <h2 id="related-heading">Related services</h2>
-                  <div className="service-detail-related">
+                <section
+                  className="service-panel service-panel-related"
+                  aria-labelledby="related-heading"
+                >
+                  <p className="eyebrow dark">Related services</p>
+                  <h2 id="related-heading">Often serviced together</h2>
+                  <ul className="service-related-list">
                     {relatedServices.map((related) => (
-                      <Link key={related.slug} href={`/services/${related.slug}`}>
-                        {related.name}
-                        <span aria-hidden="true"> →</span>
-                      </Link>
+                      <li key={related.slug}>
+                        <Link href={`/services/${related.slug}`}>{related.name} →</Link>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </section>
               ) : null}
             </div>
