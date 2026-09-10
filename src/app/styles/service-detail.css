@@ -1,0 +1,217 @@
+/* Shared service guide: clear reading order and the policy pages' visual language. */
+.service-detail-hero {
+  padding-bottom: 4rem;
+}
+.service-detail-hero .service-breadcrumbs {
+  margin-bottom: 1.5rem;
+}
+.service-detail-hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+}
+.service-detail-location {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+.service-detail-summary {
+  padding: clamp(1.5rem, 3vw, 2rem);
+  border-top: 6px solid var(--yellow);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 6px 6px 0 var(--red-dark);
+}
+.service-detail-summary h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+}
+.service-detail-summary dl {
+  margin: 1.25rem 0;
+}
+.service-detail-summary dl > div {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.service-detail-summary dt {
+  margin-bottom: 0.3rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.service-detail-summary dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.service-detail-summary p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.service-detail-section {
+  background: var(--cream);
+}
+.service-detail-layout {
+  display: grid;
+  grid-template-columns: 225px minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+.service-detail-nav {
+  position: sticky;
+  top: 2rem;
+}
+.service-detail-nav nav {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+.service-detail-nav nav p {
+  margin: 0 0 0.7rem;
+  font-weight: 800;
+  color: var(--red-dark);
+}
+.service-detail-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.service-detail-nav a:hover {
+  color: var(--red-dark);
+  text-decoration: underline;
+}
+.service-detail-directions {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  width: 100%;
+  border: 1px solid var(--ink);
+  background: var(--yellow);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.service-detail-content {
+  min-width: 0;
+  max-width: 850px;
+}
+.service-detail-content > section {
+  scroll-margin-top: 2rem;
+  padding-bottom: 2.5rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.service-detail-content h2 {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  line-height: 1.15;
+}
+.service-detail-content h3 {
+  font-size: 1.125rem;
+  margin: 0 0 0.5rem;
+}
+.service-detail-content p,
+.service-detail-content li {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.service-detail-content p {
+  margin: 0 0 1rem;
+}
+.service-detail-list {
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 1.35rem;
+  list-style: disc;
+}
+.service-detail-list li::marker {
+  color: var(--red-dark);
+}
+.service-detail-steps {
+  padding: 0 0 0 1.5rem;
+  list-style: decimal;
+}
+.service-detail-steps li {
+  padding-left: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.service-detail-steps li::marker {
+  color: var(--red-dark);
+  font-weight: 800;
+}
+.service-detail-cost {
+  padding: 1.5rem;
+  background: var(--paper);
+  border-left: 4px solid var(--yellow);
+}
+.service-detail-content a {
+  color: var(--red-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  font-weight: 700;
+}
+.service-detail-faqs details {
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 0;
+}
+.service-detail-faqs summary {
+  padding: 0.5rem 0;
+  min-height: 44px;
+  font-size: 1.0625rem;
+  font-weight: 750;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.service-detail-faqs details[open] summary {
+  color: var(--red-dark);
+  margin-bottom: 0.6rem;
+}
+.service-detail-resources {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.service-detail-related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+}
+.service-detail-related a {
+  padding-block: 0.75rem;
+}
+.service-detail-layout :is(a, button, summary):focus-visible {
+  outline: 3px solid var(--red-dark);
+  outline-offset: 4px;
+}
+@media (max-width: 900px) {
+  .service-detail-hero .privacy-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .service-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .service-detail-nav {
+    position: static;
+  }
+  .service-detail-nav nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.25rem;
+  }
+  .service-detail-nav nav p {
+    width: 100%;
+  }
+  .service-detail-nav a {
+    padding-block: 0.5rem;
+  }
+}
