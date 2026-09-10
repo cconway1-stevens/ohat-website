@@ -37,6 +37,17 @@ export function PrivacyServicesSection() {
         </article>
         <article>
           <div>
+            <h3>Vercel Speed Insights</h3>
+            <span className="privacy-service-state">Consent required</span>
+          </div>
+          <p>
+            Vercel measures how quickly pages load so slow pages can be found and fixed. It sets no
+            cookie and carries no tracking identifier, but Vercel still receives your IP address
+            when it loads, so it is blocked until you choose to allow it.
+          </p>
+        </article>
+        <article>
+          <div>
             <h3>Open-Meteo shop weather</h3>
             <span className="privacy-service-state">Consent required</span>
           </div>
@@ -49,23 +60,29 @@ export function PrivacyServicesSection() {
         <article>
           <div>
             <h3>Google Maps</h3>
-            <span className="privacy-service-state">Click to load</span>
+            <span className="privacy-service-state">Consent required</span>
           </div>
           <p>
-            The map stays blocked on our <Link href="/contact">contact page</Link> until you press
-            &ldquo;Load Google Map.&rdquo; Google then receives the network request and may use its
-            own cookies. Ordinary directions links do nothing until you choose them.
+            The map stays blocked on our <Link href="/contact">contact page</Link> behind two
+            separate steps: it is blocked until you choose to allow Google Maps in Privacy settings,
+            and even then it loads only when you press &ldquo;Load Google Map.&rdquo; Google then
+            receives the network request and may use its own cookies. Ordinary directions links do
+            nothing until you choose them.
           </p>
         </article>
         <article>
           <div>
             <h3>Radio-Browser &amp; station streams</h3>
-            <span className="privacy-service-state">User initiated</span>
+            <span className="privacy-service-state">Consent required</span>
           </div>
           <p>
-            These are contacted only inside the garage arcade after you{" "}
+            These are contacted only inside the garage arcade, and only after you allow arcade
+            internet radio in Privacy settings and then{" "}
             {"actively choose a station category or stream."} The selected station&rsquo;s server
-            receives the request needed to play it.
+            receives the request needed to play it, and because stations are listed by a public
+            directory that server is not one we vetted. Station artwork is never loaded, so no
+            station host sees you before you press play. Turning the choice back off stops any
+            stream already playing.
           </p>
         </article>
         <article>

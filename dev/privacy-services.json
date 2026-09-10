@@ -16,6 +16,14 @@
     "policyMarkers": ["Vercel Web Analytics", "blocked until you choose"]
   },
   {
+    "service": "Vercel Speed Insights",
+    "domains": ["/_vercel/speed-insights"],
+    "activation": "klaro",
+    "klaroService": "vercelSpeedInsights",
+    "sourceMarkers": ["@vercel/speed-insights/react", "VercelSpeedInsights"],
+    "policyMarkers": ["Vercel Speed Insights", "blocked until you choose to allow it"]
+  },
+  {
     "service": "Open-Meteo shop weather",
     "domains": ["api.open-meteo.com"],
     "activation": "klaro",
@@ -26,15 +34,25 @@
   {
     "service": "Google Maps embed",
     "domains": ["maps.google.com"],
-    "activation": "user-action",
-    "sourceMarkers": ["maps.google.com/maps", "Load Google Map"],
-    "policyMarkers": ["Load Google Map", "map stays blocked"]
+    "activation": "klaro",
+    "klaroService": "googleMaps",
+    "sourceMarkers": [
+      "maps.google.com/maps",
+      "Load Google Map",
+      "useServiceConsent(\"googleMaps\")"
+    ],
+    "policyMarkers": ["Load Google Map", "allow Google Maps in Privacy settings"]
   },
   {
     "service": "Radio Browser and station streams",
     "domains": ["de1.api.radio-browser.info", "dynamic radio stream host"],
-    "activation": "user-action",
-    "sourceMarkers": ["api.radio-browser.info/json/stations/search", "url_resolved"],
+    "activation": "klaro",
+    "klaroService": "radioBrowser",
+    "sourceMarkers": [
+      "api.radio-browser.info/json/stations/search",
+      "url_resolved",
+      "useServiceConsent(\"radioBrowser\")"
+    ],
     "policyMarkers": ["Radio-Browser", "actively choose a station"]
   }
 ]

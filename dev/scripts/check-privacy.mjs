@@ -106,7 +106,7 @@ await new Promise((resolve) => server.listen(PORT, "127.0.0.1", resolve));
 const browser = await launchChromium();
 const base = `http://127.0.0.1:${PORT}`;
 const optional =
-  /googletagmanager\.com|google-analytics\.com|api\.open-meteo\.com|\/_vercel\/insights/;
+  /googletagmanager\.com|google-analytics\.com|api\.open-meteo\.com|\/_vercel\/insights|\/_vercel\/speed-insights|maps\.google\.com|api\.radio-browser\.info/;
 
 async function auditChoice(label, gpc = false) {
   const context = await browser.newContext();
@@ -149,6 +149,9 @@ try {
   await auditChoice("Allow all optional services");
   await auditChoice("Allow all optional services", true);
 
+  // The map has two independent gates: the stored Klaro choice, and the click.
+  // Declining consent must leave no way to reach Google at all; consenting must
+  // still hold the iframe back until the visitor presses the button.
   const context = await browser.newContext();
   const page = await context.newPage();
   const mapRequests = [];
@@ -158,10 +161,22 @@ try {
   });
   await page.goto(`${base}/contact/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Use essential services only", exact: true }).click();
-  if (mapRequests.length) failures.push("Google Map loaded before its user action");
+  await page.waitForTimeout(250);
+  if (mapRequests.length) failures.push("Google Map loaded before consent");
+  if (await page.getByRole("button", { name: "Load Google Map", exact: true }).count()) {
+    failures.push("Google Map offered a load button without consent");
+  }
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      "ohat-klaro-consent-v1",
+      JSON.stringify({ googleMaps: true, radioBrowser: true }),
+    );
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  if (mapRequests.length) failures.push("Google Map loaded on consent alone, without the click");
   await page.getByRole("button", { name: "Load Google Map", exact: true }).click();
   await page.waitForTimeout(250);
-  if (!mapRequests.length) failures.push("Google Map did not load after its user action");
+  if (!mapRequests.length) failures.push("Google Map did not load after consent and its click");
   await context.close();
 } finally {
   await browser.close();

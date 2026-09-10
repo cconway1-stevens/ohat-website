@@ -3,12 +3,29 @@
 import { useEffect, useState } from "react";
 import { gaMeasurementId } from "@/lib/analytics";
 import { VercelAnalytics } from "./vercel-analytics";
+import { VercelSpeedInsights } from "./vercel-speed-insights";
 
 const KLARO_STORAGE_KEY = "ohat-klaro-consent-v1";
 const settingsEvent = "ohat-open-privacy-settings";
 const consentEvent = "ohat-klaro-consent";
 
-type ServiceName = "googleAnalytics" | "vercelAnalytics" | "shopWeather";
+export type ServiceName =
+  | "googleAnalytics"
+  | "vercelAnalytics"
+  | "vercelSpeedInsights"
+  | "shopWeather"
+  | "googleMaps"
+  | "radioBrowser";
+
+// Global Privacy Control is an opt-out of selling/sharing, so it overrides the
+// measurement services. It does not override content the visitor explicitly
+// asks us to load (weather, the map, a radio station) — those stay off until
+// the visitor turns them on anyway.
+const GPC_EXEMPT: ReadonlySet<ServiceName> = new Set<ServiceName>([
+  "shopWeather",
+  "googleMaps",
+  "radioBrowser",
+]);
 type KlaroApi = typeof import("klaro/dist/klaro-no-css");
 let klaroApi: KlaroApi | null = null;
 let klaroConfig: Record<string, unknown> | null = null;
@@ -60,7 +77,40 @@ function disableGoogleAnalytics() {
 }
 
 function effectiveConsent(service: ServiceName, consent: boolean) {
-  return consent && !(navigator.globalPrivacyControl === true && service !== "shopWeather");
+  return consent && !(navigator.globalPrivacyControl === true && !GPC_EXEMPT.has(service));
+}
+
+/**
+ * Reads a stored Klaro choice without waiting for the Klaro bundle to load, so
+ * a component can decide whether it is allowed to reach a third party on its
+ * very first render.
+ */
+export function serviceAllowed(service: ServiceName) {
+  try {
+    const raw = window.localStorage.getItem(KLARO_STORAGE_KEY);
+    if (!raw) return false;
+    const consent = JSON.parse(decodeURIComponent(raw)) as Partial<Record<ServiceName, boolean>>;
+    return effectiveConsent(service, consent[service] === true);
+  } catch {
+    return false;
+  }
+}
+
+/** Live consent for one service: the stored choice, then every later change. */
+export function useServiceConsent(service: ServiceName) {
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    setAllowed(serviceAllowed(service));
+    const onConsent = (event: Event) => {
+      const detail = (event as CustomEvent<{ service: ServiceName; allowed: boolean }>).detail;
+      if (detail?.service === service) setAllowed(detail.allowed);
+    };
+    window.addEventListener(consentEvent, onConsent);
+    return () => window.removeEventListener(consentEvent, onConsent);
+  }, [service]);
+
+  return allowed;
 }
 
 function publishConsent(service: ServiceName, consent: boolean) {
@@ -98,7 +148,7 @@ function createConfig() {
         consentNotice: {
           title: "Your privacy, your choice",
           description:
-            "We use optional analytics to improve this website and an external service to show shop weather. Nothing optional loads until you choose, and the website works either way. Read our {privacyPolicy} for the full details.",
+            "We use optional analytics to improve this website, plus external services for shop weather, the map, and the arcade radio. Nothing optional loads until you choose, and the website works either way. Read our {privacyPolicy} for the full details.",
           learnMore: "Choose my services",
         },
         consentModal: {
@@ -114,6 +164,7 @@ function createConfig() {
         purposes: {
           analytics: { title: "Website insights" },
           externalServices: { title: "Shop information" },
+          arcade: { title: "Arcade extras" },
         },
         googleAnalytics: {
           title: "Google Analytics 4",
@@ -124,6 +175,21 @@ function createConfig() {
           title: "Vercel Web Analytics",
           description:
             "Gives us simple, cookieless page-view totals when this website is served by Vercel.",
+        },
+        vercelSpeedInsights: {
+          title: "Vercel Speed Insights",
+          description:
+            "Measures how quickly pages load for you so we can fix slow pages. It sets no cookies, but Vercel receives your IP address when it loads.",
+        },
+        googleMaps: {
+          title: "Google Maps",
+          description:
+            "Shows the shop on an embedded Google map. Google receives your IP address and browser information whenever the map loads.",
+        },
+        radioBrowser: {
+          title: "Arcade internet radio",
+          description:
+            "Lets the arcade radio look up stations through Radio-Browser and play them. Radio-Browser and whichever station you pick both receive your IP address.",
         },
         shopWeather: {
           title: "Local shop weather",
@@ -145,27 +211,38 @@ function createConfig() {
         callback: (consent: boolean) => publishConsent("vercelAnalytics", consent),
       },
       {
+        name: "vercelSpeedInsights",
+        purposes: ["analytics"],
+        callback: (consent: boolean) => publishConsent("vercelSpeedInsights", consent),
+      },
+      {
         name: "shopWeather",
         purposes: ["externalServices"],
         callback: (consent: boolean) => publishConsent("shopWeather", consent),
+      },
+      {
+        name: "googleMaps",
+        purposes: ["externalServices"],
+        callback: (consent: boolean) => publishConsent("googleMaps", consent),
+      },
+      {
+        name: "radioBrowser",
+        purposes: ["arcade"],
+        callback: (consent: boolean) => publishConsent("radioBrowser", consent),
       },
     ],
   };
 }
 
 export function PrivacyControls() {
-  const [vercelAllowed, setVercelAllowed] = useState(false);
+  const vercelAllowed = useServiceConsent("vercelAnalytics");
+  const speedInsightsAllowed = useServiceConsent("vercelSpeedInsights");
 
   useEffect(() => {
     let active = true;
-    const onConsent = (event: Event) => {
-      const detail = (event as CustomEvent<{ service: ServiceName; allowed: boolean }>).detail;
-      if (detail?.service === "vercelAnalytics") setVercelAllowed(detail.allowed);
-    };
     const openSettings = () => {
       if (klaroApi && klaroConfig) klaroApi.show(klaroConfig, true);
     };
-    window.addEventListener(consentEvent, onConsent);
     window.addEventListener(settingsEvent, openSettings);
 
     void import("klaro/dist/klaro-no-css").then((api) => {
@@ -179,12 +256,16 @@ export function PrivacyControls() {
 
     return () => {
       active = false;
-      window.removeEventListener(consentEvent, onConsent);
       window.removeEventListener(settingsEvent, openSettings);
     };
   }, []);
 
-  return vercelAllowed ? <VercelAnalytics /> : null;
+  return (
+    <>
+      {vercelAllowed ? <VercelAnalytics /> : null}
+      {speedInsightsAllowed ? <VercelSpeedInsights /> : null}
+    </>
+  );
 }
 
 export function openPrivacySettings() {

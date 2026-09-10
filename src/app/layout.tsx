@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist } from "next/font/google";
 import { CallTracking } from "@/components/analytics/analytics";
 import { PrivacyControls } from "@/components/analytics/privacy-controls";
-import { VercelSpeedInsights } from "@/components/analytics/vercel-speed-insights";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { shop } from "@/lib/shop/shop";
 import "./globals.css";
@@ -95,7 +94,6 @@ export default function RootLayout({
         <ScrollReveal />
         <CallTracking />
         <PrivacyControls />
-        <VercelSpeedInsights />
       </body>
     </html>
   );

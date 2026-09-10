@@ -86,7 +86,10 @@ export default function PrivacyPage() {
               <article>
                 <span aria-hidden="true">02</span>
                 <h2>Choice comes first</h2>
-                <p>Analytics and shop weather are blocked until you choose to allow them.</p>
+                <p>
+                  Analytics, shop weather, the Google map, and the arcade radio are blocked until
+                  you choose to allow them.
+                </p>
               </article>
               <article>
                 <span aria-hidden="true">03</span>

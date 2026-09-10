@@ -12,6 +12,7 @@
  * band that pulls real streams from the public Radio Browser directory.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { openPrivacySettings, useServiceConsent } from "@/components/analytics/privacy-controls";
 import {
   ambience,
   BANDS,
@@ -252,6 +253,7 @@ export default function Radio3DGame() {
   const [night, setNight] = useState(false);
   const [warmed, setWarmed] = useState(false);
   const [isFs, setIsFs] = useState(false);
+  const radioAllowed = useServiceConsent("radioBrowser");
 
   const dashRef = useRef<HTMLDivElement>(null);
   // Two elements, one dial. The first is wired into the Web Audio graph, which
@@ -396,6 +398,11 @@ export default function Radio3DGame() {
 
   const fetchLive = useCallback(
     async (genreId: (typeof GENRES)[number]["id"]) => {
+      if (!radioAllowed) {
+        setStatus("Turn on arcade internet radio in your privacy settings to reach the LIVE band.");
+        openPrivacySettings();
+        return;
+      }
       const entry = GENRES.find((g) => g.id === genreId) ?? GENRES[0];
       setLiveLoading(true);
       setStatus(`Scanning the airwaves for ${entry.label.toLowerCase()}…`);
@@ -451,8 +458,18 @@ export default function Radio3DGame() {
         );
       }
     },
-    [playLive],
+    [playLive, radioAllowed],
   );
+
+  // Withdrawing consent mid-song has to actually stop the stream, otherwise the
+  // station host keeps seeing this listener after they said no.
+  useEffect(() => {
+    if (radioAllowed) return;
+    audioRef.current?.pause();
+    plainRef.current?.pause();
+    setLivePlaying(false);
+    setLiveList([]);
+  }, [radioAllowed]);
 
   /* --- gestures from the scene and the buttons --- */
   function seek(step: number) {

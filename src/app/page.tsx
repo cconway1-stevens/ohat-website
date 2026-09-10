@@ -101,7 +101,12 @@ export default function Home() {
                   <small>Local &amp; proud</small>
                 </span>
               </div>
-              <a className="garage-proof-ticket garage-proof-carfax" href={carfaxUrl}>
+              <a
+                className="garage-proof-ticket garage-proof-carfax"
+                href={carfaxUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <span className="garage-carfax-seal" aria-hidden="true">
                   <SiteImage src="/media/carfax-logo.svg" alt="" width={62} height={12} />
                   <b>★★★★★</b>
@@ -313,7 +318,7 @@ export default function Home() {
                 {shop.rating.observed}. That recognition reflects what our regulars already know:
                 honest advice, fair rates, and repairs done with care.
               </p>
-              <a className="button button-ghost" href={carfaxUrl}>
+              <a className="button button-ghost" href={carfaxUrl} target="_blank" rel="noreferrer">
                 Read verified CARFAX reviews <span aria-hidden="true">↗︎</span>
               </a>
             </div>
@@ -324,7 +329,7 @@ export default function Home() {
                 <p className="eyebrow">Community trusted</p>
                 <h2>People remember how you treat them.</h2>
               </div>
-              <a className="text-link" href={carfaxUrl}>
+              <a className="text-link" href={carfaxUrl} target="_blank" rel="noreferrer">
                 See CARFAX reviews →
               </a>
             </div>

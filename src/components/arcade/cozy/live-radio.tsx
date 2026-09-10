@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { openPrivacySettings, useServiceConsent } from "@/components/analytics/privacy-controls";
 import { cozyAudio } from "@/lib/arcade/garage-audio";
 
 /**
@@ -36,7 +37,6 @@ type Station = {
   country: string;
   bitrate: number;
   codec: string;
-  favicon: string;
 };
 
 const DECADES = [
@@ -69,6 +69,7 @@ export function LiveRadio() {
   const [dragging, setDragging] = useState<"volume" | null>(null);
   const [decade, setDecade] = useState<Decade>("fifties");
   const [signal, setSignal] = useState(0);
+  const radioAllowed = useServiceConsent("radioBrowser");
 
   const station = list[index];
 
@@ -130,6 +131,11 @@ export function LiveRadio() {
 
   async function loadStations(label: string, tag: string, nextGenre?: Genre, nextDecade?: Decade) {
     cozyAudio.click();
+    if (!radioAllowed) {
+      setStatus("Turn on arcade internet radio in your privacy settings to pull in stations.");
+      openPrivacySettings();
+      return;
+    }
     if (nextGenre) setGenre(nextGenre);
     if (nextDecade) setDecade(nextDecade);
     pause(false);
@@ -163,7 +169,6 @@ export function LiveRadio() {
             country: string;
             bitrate: number;
             codec?: string;
-            favicon?: string;
           }) => ({
             id: entry.stationuuid,
             name: entry.name.trim().slice(0, 42),
@@ -171,7 +176,6 @@ export function LiveRadio() {
             country: entry.country || "—",
             bitrate: entry.bitrate || 0,
             codec: entry.codec || "stream",
-            favicon: entry.favicon?.startsWith("https://") ? entry.favicon : "",
           }),
         );
       setList(usable);
@@ -215,6 +219,16 @@ export function LiveRadio() {
       setStatus("That stream would not start here. Press SEEK for the next one.");
     }
   }
+
+  // Withdrawing consent mid-song has to actually stop the stream, otherwise the
+  // station host keeps seeing this listener after they said no.
+  useEffect(() => {
+    if (radioAllowed) return;
+    audioRef.current?.pause();
+    setPlaying(false);
+    setList([]);
+    setSignal(0);
+  }, [radioAllowed]);
 
   function pause(withMessage = true) {
     audioRef.current?.pause();
@@ -272,13 +286,10 @@ export function LiveRadio() {
           </p>
           <div className="silver-window">
             <div className="silver-station-line">
-              {station?.favicon ? (
-                // Station favicons come from arbitrary radio directory hosts.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={station.favicon} alt="" />
-              ) : (
-                <span aria-hidden="true">OH</span>
-              )}
+              {/* Station artwork is deliberately not rendered: the directory
+                  hands back favicon URLs on arbitrary hosts, and loading one
+                  would leak the listener's IP to a domain we never vetted. */}
+              <span aria-hidden="true">OH</span>
               <p className="silver-station">{station ? station.name : "— — —"}</p>
             </div>
             <p className="silver-meta">

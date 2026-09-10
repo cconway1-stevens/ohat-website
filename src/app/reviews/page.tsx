@@ -156,7 +156,7 @@ export default function ReviewsPage() {
                     : "Hundreds of reviews, none of them ours to edit."}
                 </h2>
               </div>
-              <a className="text-link" href={carfaxUrl}>
+              <a className="text-link" href={carfaxUrl} target="_blank" rel="noreferrer">
                 Read the originals on CARFAX →
               </a>
             </div>
@@ -177,7 +177,9 @@ export default function ReviewsPage() {
                             fill="currentColor"
                           />
                         </svg>
-                        <a href={carfaxUrl}>{excerpt.context}</a>
+                        <a href={carfaxUrl} target="_blank" rel="noreferrer">
+                          {excerpt.context}
+                        </a>
                       </span>
                       <span className="review-confirmed">Confirmed {excerpt.verifiedOn}</span>
                     </cite>
@@ -193,7 +195,12 @@ export default function ReviewsPage() {
                   review dated, attributed, and outside our control. That is worth more than a quote
                   on our own website.
                 </p>
-                <a className="button button-primary" href={carfaxUrl}>
+                <a
+                  className="button button-primary"
+                  href={carfaxUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Read the reviews on CARFAX <span aria-hidden="true">↗︎</span>
                 </a>
               </div>

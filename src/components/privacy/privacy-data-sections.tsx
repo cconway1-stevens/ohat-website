@@ -83,6 +83,30 @@ export function PrivacyDataSections() {
                 <td>Only after consent</td>
               </tr>
               <tr>
+                <th scope="row">Vercel Speed Insights</th>
+                <td>
+                  Page path plus anonymous load-time and Core Web Vitals measurements, with no
+                  cookie or identifier
+                </td>
+                <td>Find and fix slow pages</td>
+                <td>Only after consent</td>
+              </tr>
+              <tr>
+                <th scope="row">Google Maps embed</th>
+                <td>IP address and browser details sent to Google when the map loads</td>
+                <td>Show the shop&rsquo;s location on a map</td>
+                <td>Only after consent</td>
+              </tr>
+              <tr>
+                <th scope="row">Radio-Browser &amp; station streams</th>
+                <td>
+                  IP address and browser details sent to the station directory and to whichever
+                  station you play
+                </td>
+                <td>Look up and play internet radio in the arcade</td>
+                <td>Only after consent</td>
+              </tr>
+              <tr>
                 <th scope="row">Local browser storage</th>
                 <td>
                   Privacy choices, arcade scores and settings, chat history, display preferences,
