@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { TirePal } from "@/components/contact/tire-pal";
+import { ChatWidget } from "@/components/contact/chat-widget";
+import { ConsentMap } from "@/components/contact/consent-map";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
+import { HoursCardNotice } from "@/components/shop/hours-card-notice";
 import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
 import { EmailCopyAction } from "@/components/ui/copy-field";
 import { DirectionsTrigger } from "@/components/ui/directions-dialog";
@@ -53,67 +54,106 @@ export default function ContactPage() {
         <section className="contact-route" aria-labelledby="contact-title">
           <div className="shell contact-route-grid">
             <div className="contact-route-panel">
-              <div className="contact-route-details">
-                <header className="contact-route-intro">
-                  <p className="contact-route-marker">Your next stop</p>
-                  <h1 id="contact-title">Contact the garage</h1>
-                  <p>
-                    Tell us what the car is doing. We&apos;ll help you choose the right next step.
-                  </p>
-                </header>
+              <header className="contact-route-intro">
+                <p className="contact-route-marker">Contact</p>
+                <h1 id="contact-title">Contact the garage</h1>
+                <p>
+                  Tell us what the car is doing. We&apos;ll help you choose the right next step.
+                </p>
+                <p className="contact-route-address">{shop.address.full}</p>
+              </header>
 
-                <div className="contact-primary-actions" aria-label="Primary contact actions">
-                  <a className="contact-action contact-action-call" href={phoneHref}>
-                    <span>Call the shop</span>
-                    <strong>{phoneDisplay}</strong>
-                  </a>
-                  <DirectionsTrigger className="contact-action contact-action-directions">
-                    <span>Plan your route</span>
-                    <strong>Get directions</strong>
-                  </DirectionsTrigger>
-                  <EmailCopyAction
-                    email={contactEmail}
-                    className="contact-action contact-action-email"
-                  />
-                  <a
-                    className="contact-action contact-action-vcard"
-                    href="/contact-card.vcf"
-                    download
+              <div className="contact-status">
+                <ShopHoursStatus />
+              </div>
+
+              <div className="contact-primary-actions" aria-label="Primary contact actions">
+                <a className="contact-action contact-action-call" href={phoneHref}>
+                  <svg
+                    className="contact-action-icon"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
                   >
-                    <span>Add to contacts</span>
-                    <strong>Save</strong>
-                  </a>
-                  <div className="contact-primary-status">
-                    <ShopHoursStatus />
-                  </div>
-                </div>
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  <span>Call the shop</span>
+                  <strong>{phoneDisplay}</strong>
+                </a>
+                <DirectionsTrigger className="contact-action contact-action-directions">
+                  <svg
+                    className="contact-action-icon"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                  </svg>
+                  <span>Plan your route</span>
+                  <strong>Get directions</strong>
+                </DirectionsTrigger>
+              </div>
 
-                <div className="contact-stop-card">
-                  <div className="contact-hours-block">
-                    <dl className="contact-hours-list">
-                      <div>
-                        <dt>{shop.hours.weekdayLabel}</dt>
-                        <dd>{shop.hours.display.split(", ")[1]}</dd>
-                      </div>
-                      <div>
-                        <dt>{shop.hours.weekendLabel}</dt>
-                        <dd>{shop.hours.weekendValue}</dd>
-                      </div>
-                    </dl>
-                    <p className="contact-hours-note">
-                      Holiday hours can vary. The{" "}
-                      <Link href="/vehicle-drop-off">secure night drop</Link> is available around
-                      the clock.
-                    </p>
+              <section className="contact-hours-summary" aria-label="Shop hours">
+                <p className="contact-section-label">Shop hours</p>
+                <dl className="contact-hours-list">
+                  <div>
+                    <dt>{shop.hours.weekdayLabel}</dt>
+                    <dd>{shop.hours.weekdayHours}</dd>
                   </div>
-                  <div className="contact-address-line">
-                    <address>
-                      <span>Ocean Heights Auto &amp; Tire</span>
-                      <strong>{shop.address.street}</strong>
-                      <span>{shop.address.cityLine}</span>
-                    </address>
+                  <div>
+                    <dt>{shop.hours.fridayLabel}</dt>
+                    <dd>{shop.hours.fridayHours}</dd>
                   </div>
-                </div>
+                  <div>
+                    <dt>{shop.hours.weekendLabel}</dt>
+                    <dd>{shop.hours.weekendValue}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <div className="contact-secondary-actions" aria-label="Secondary contact actions">
+                <EmailCopyAction
+                  email={contactEmail}
+                  className="contact-action contact-action-email"
+                />
+                <a
+                  className="contact-action contact-action-vcard"
+                  href="/contact-card.vcf"
+                  download
+                >
+                  <svg
+                    className="contact-action-icon"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="6" y="2.5" width="12" height="20" rx="2.5" />
+                    <line x1="10" y1="5.5" x2="14" y2="5.5" />
+                    <line x1="12" y1="1" x2="12" y2="12.5" />
+                    <polyline points="9.5,10 12,12.5 14.5,10" />
+                  </svg>
+                  <span>Save to phone</span>
+                  <strong>Add contact</strong>
+                </a>
               </div>
 
               <section className="contact-arrival" aria-labelledby="arrival-title">
@@ -129,17 +169,15 @@ export default function ContactPage() {
             </div>
 
             <aside className="contact-map-panel" aria-labelledby="shop-map-title">
-              <h2 className="sr-only" id="shop-map-title">
-                Map and directions to {shop.name}
-              </h2>
+              <p className="contact-section-label" id="shop-map-title">
+                Find us
+              </p>
+              <HoursCardNotice />
               <figure className="shop-map">
                 <div className="shop-map-frame">
-                  <iframe
+                  <ConsentMap
+                    address={shop.address.full}
                     title={`Map showing ${shop.name} at ${shop.address.full}`}
-                    src={`https://maps.google.com/maps?q=${encodeURIComponent(shop.address.full)}&z=15&output=embed`}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
                   />
                 </div>
                 <figcaption>
@@ -160,7 +198,7 @@ export default function ContactPage() {
           </div>
         </section>
       </main>
-      <TirePal />
+      <ChatWidget />
       <SiteFooter />
     </>
   );

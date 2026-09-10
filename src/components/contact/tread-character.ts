@@ -25,6 +25,7 @@ export type TreadVariant = {
   cap?: boolean;
   blush?: boolean;
   grooves?: boolean;
+  whitewall?: boolean;
   faceColor?: number;
 };
 
@@ -130,6 +131,7 @@ export function buildPal(options: Partial<TreadVariant> = {}): PalParts {
     cap = true,
     blush = true,
     grooves = false,
+    whitewall = true,
     faceColor = 0xf7efd9,
   } = options;
 
@@ -153,6 +155,36 @@ export function buildPal(options: Partial<TreadVariant> = {}): PalParts {
       }),
     );
     group.add(wire);
+  }
+
+  // Classic whitewall: a pale band hugging the front sidewall, tucked under
+  // the face edge and stopping short of the tread so the outer ring stays
+  // black rubber. A lathe shell follows the torus surface (lifted a hair so
+  // it never z-fights), which a flat ring can't do without clipping.
+  if (whitewall) {
+    const lift = 0.005;
+    const tube = tireTube + lift;
+    const inner = tireRadius - tireTube + lift; // behind the face plate
+    const outer = tireRadius + tireTube - 0.05; // clear of the tread edge
+    const steps = 24;
+    const points: THREE.Vector2[] = [];
+    for (let i = 0; i <= steps; i++) {
+      const rho = inner + ((outer - inner) * i) / steps;
+      const s = Math.min(1, Math.max(-1, (rho - tireRadius) / tube));
+      points.push(new THREE.Vector2(rho, tube * Math.cos(Math.asin(s))));
+    }
+    const band = new THREE.Mesh(
+      new THREE.LatheGeometry(points, 48),
+      new THREE.MeshStandardMaterial({
+        color: 0xf5f1e8,
+        roughness: 0.65,
+        // Visible from behind too, so the celebrate spin reads as a
+        // whitewall on both sidewalls.
+        side: THREE.DoubleSide,
+      }),
+    );
+    band.rotation.x = Math.PI / 2;
+    group.add(band);
   }
 
   // Big cream face filling the hole — the face dominates instead of peeking

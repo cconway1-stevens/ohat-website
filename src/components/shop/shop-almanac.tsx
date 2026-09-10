@@ -17,6 +17,17 @@ const SOURCE_URL = "https://open-meteo.com/";
 // don't change faster than that, and neither should our API traffic.
 const CACHE_KEY = "ohat-almanac";
 const CACHE_TTL_MS = 30 * 60 * 1000;
+const PRIVACY_KEY = "ohat-klaro-consent-v1";
+
+function weatherAllowed() {
+  try {
+    const raw = window.localStorage.getItem(PRIVACY_KEY);
+    const consent = raw ? (JSON.parse(decodeURIComponent(raw)) as { shopWeather?: boolean }) : null;
+    return consent?.shopWeather === true;
+  } catch {
+    return false;
+  }
+}
 
 // WMO weather codes, condensed to masthead-length words.
 function describe(code: number): string {
@@ -87,26 +98,46 @@ export function ShopAlmanac() {
     if (!initial || initial.reading) return;
     const controller = new AbortController();
     let cancelled = false;
+    let delayTimer: ReturnType<typeof setTimeout> | undefined;
 
-    fetch(FORECAST_URL, { signal: controller.signal })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (cancelled) return;
-        const temperature = data?.current?.temperature_2m;
-        const code = data?.current?.weather_code;
-        if (typeof temperature === "number" && typeof code === "number") {
-          const result = `${Math.round(temperature)}° ${describe(code)}`;
-          writeCache(result);
-          setFetched(result);
-        }
-      })
-      .catch(() => {
-        // The weather is an embellishment, never a dependency — the dateline
-        // stands complete without it.
-      });
+    function fetchForecast() {
+      fetch(FORECAST_URL, { signal: controller.signal })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (cancelled) return;
+          const temperature = data?.current?.temperature_2m;
+          const code = data?.current?.weather_code;
+          if (typeof temperature === "number" && typeof code === "number") {
+            const result = `${Math.round(temperature)}° ${describe(code)}`;
+            writeCache(result);
+            setFetched(result);
+          }
+        })
+        .catch(() => {
+          // The weather is an embellishment, never a dependency — the dateline
+          // stands complete without it.
+        });
+    }
+
+    function scheduleForecast() {
+      // Keep this decorative request out of the hero's critical window. The
+      // masthead remains complete with its location and date in the meantime.
+      delayTimer = setTimeout(fetchForecast, 3000);
+    }
+
+    function beginIfAllowed() {
+      if (weatherAllowed()) scheduleForecast();
+    }
+
+    if (document.readyState === "complete") beginIfAllowed();
+    else window.addEventListener("load", beginIfAllowed, { once: true });
+    window.addEventListener("ohat-privacy-changed", beginIfAllowed);
 
     return () => {
       cancelled = true;
+      window.removeEventListener("load", beginIfAllowed);
+      window.removeEventListener("ohat-privacy-changed", beginIfAllowed);
+      if (delayTimer) clearTimeout(delayTimer);
       controller.abort();
     };
   }, [initial]);

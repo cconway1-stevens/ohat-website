@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PrivacySettingsButton } from "@/components/analytics/privacy-settings-button";
 import { profileLinks } from "@/lib/shop/business";
 import { shop } from "@/lib/shop/shop";
 import { MakerRibbon } from "../arcade/maker-ribbon";
@@ -69,6 +70,7 @@ export function SiteFooter() {
               {shop.address.cityLine}
             </DirectionsTrigger>
             <Link href="/vehicle-drop-off">After-hours drop-off</Link>
+            <Link href="/hours">Hours &amp; closures</Link>
             <Link href="/our-shop">About the shop</Link>
             <Link href="/services">Service catalog</Link>
           </div>
@@ -111,6 +113,7 @@ export function SiteFooter() {
           {/* Sitewide footer link because a privacy notice has to be
               "reasonably accessible" from anywhere on the site to count. */}
           <Link href="/privacy">Privacy</Link>
+          <PrivacySettingsButton />
         </div>
         {/* Watched by DockVisibility so the floating call dock steps aside
             once the bottom of the footer is on screen. */}

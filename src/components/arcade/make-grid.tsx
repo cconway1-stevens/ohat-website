@@ -1,9 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { brandSrc, makes, shuffle, WALL_SIZE } from "@/lib/makes";
 import { SiteImage } from "../ui/site-image";
-import { MakeMatchGame } from "./make-match-game";
+
+const MakeMatchGame = dynamic(() =>
+  import("./make-match-game").then((module) => module.MakeMatchGame),
+);
 
 type Order = "shuffled" | "alphabetical";
 

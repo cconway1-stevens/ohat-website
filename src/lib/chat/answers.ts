@@ -13,8 +13,9 @@
 
 import { makes } from "../makes.ts";
 import { services } from "../services.ts";
-import { shop } from "../shop/shop.mjs";
+import { formatTime, shop } from "../shop/shop.mjs";
 import { getShopHoursStatus } from "../shop/shop-hours.mjs";
+import { PRODUCTION_PERSONA } from "./mascot.ts";
 
 export type ChatChip = {
   label: string;
@@ -61,6 +62,11 @@ type HoursStatus = {
   status: "open" | "opening-soon" | "closing-soon" | "closed";
   holiday: string | null;
   holidayNotice: string | null;
+  /** Why the shop is closed, when there is something to explain — a federal
+   *  holiday, an owner-posted closure, the weekend. The label already
+   *  carries the reason; this names its kind. */
+  reason: { kind: "holiday" | "weekend" | "exception" | "after-hours"; label: string } | null;
+  exceptionReason: string | null;
 };
 const hoursStatus = getShopHoursStatus as (now?: Date) => HoursStatus;
 
@@ -86,6 +92,11 @@ const emailChip: ChatChip = {
   href: `mailto:${shop.email.service}`,
   kind: "email",
 };
+const hoursChip: ChatChip = {
+  label: "Full hours",
+  href: "/hours",
+  kind: "link",
+};
 const serviceChip = (slug: string, name: string): ChatChip => ({
   label: name,
   href: `/services/${slug}`,
@@ -107,17 +118,31 @@ const STOPWORDS = new Set(
 
 /** Variant → the form the site's own copy uses, so slang lands on real words. */
 const SYNONYMS: Record<string, string> = {
+  // Flat tires
   puncture: "flat",
   punctured: "flat",
   blowout: "flat",
+  // Tires
   tyre: "tire",
   tpms: "tire",
+  // Repair
   patch: "repair",
   plug: "repair",
   fix: "repair",
   fixes: "repair",
+  // Brakes
   squeak: "squeal",
   squeaking: "squeal",
+  squealing: "squeal",
+  braking: "brake",
+  brakes: "brake",
+  pad: "brake",
+  pads: "brake",
+  rotor: "brake",
+  rotors: "brake",
+  caliper: "brake",
+  calipers: "brake",
+  // Vibration / pull
   wobble: "vibration",
   wobbling: "vibration",
   shimmy: "vibration",
@@ -126,23 +151,77 @@ const SYNONYMS: Record<string, string> = {
   drifting: "pull",
   veer: "pull",
   veers: "pull",
+  // Starting
   jump: "start",
   jumps: "start",
   jumped: "start",
   crank: "start",
   cranking: "start",
+  // Cooling
   overheat: "temperature",
   overheating: "temperature",
   overheats: "temperature",
+  coolant: "cooling",
+  antifreeze: "cooling",
+  radiator: "cooling",
+  thermostat: "cooling",
+  // A/C and climate
   ac: "air",
   aircon: "air",
+  heater: "air",
+  // Oil
   oilchange: "oil",
+  // Hybrid / EV
   tesla: "ev",
   prius: "hybrid",
+  priuses: "hybrid",
+  hybrids: "hybrid",
+  electric: "ev",
+  electrified: "ev",
+  // Diagnostics
+  diagnose: "diagnostic",
+  diagnosing: "diagnostic",
+  diagnosis: "diagnostic",
+  // Alignment
+  align: "alignment",
+  aligned: "alignment",
+  // Transmission
+  trans: "transmission",
+  tranny: "transmission",
+  gearbox: "transmission",
+  // Electrical
+  alternator: "electrical",
+  starter: "electrical",
+  wiring: "electrical",
+  ecu: "electrical",
+  ecm: "electrical",
+  electricals: "electrical",
+  // Suspension
+  shock: "suspension",
+  shocks: "suspension",
+  strut: "suspension",
+  struts: "suspension",
+  // Exhaust
   muffler: "exhaust",
+  catalytic: "exhaust",
+  // Emissions / inspection
   inspection: "emissions",
   inspections: "emissions",
   inspect: "emissions",
+  inspected: "emissions",
+  inspecting: "emissions",
+  // Breakdown — the urgent intent's canonical token.
+  broke: "breakdown",
+  broken: "breakdown",
+  stranded: "breakdown",
+  stuck: "breakdown",
+  died: "breakdown",
+  dead: "breakdown",
+  undrivable: "breakdown",
+  // Overheating drivers say "steam", not "coolant".
+  steam: "cooling",
+  // Reviews family
+  rated: "rating",
   // Tire brands → routed to the tires service via the matcher; the synonym
   // folds the brand into a generic "tire" so brand-specific queries land on
   // the tires vocabulary instead of failing.
@@ -160,14 +239,10 @@ const SYNONYMS: Record<string, string> = {
   kumho: "tire",
   falken: "tire",
   general: "tire",
-};
-
-/**
- * Spanish-language synonyms for the same slang. Merged with SYNONYMS only
- * when the input contains Spanish-language signals (accented chars or a
- * Spanish stopword), so a stray "ó" doesn't accidentally rewrite English.
- */
-const SYNONYMS_ES: Record<string, string> = {
+  // Spanish auto vocabulary that can't be mistaken for English — kept here
+  // (not in SYNONYMS_ES) so a short, hint-free phrase like "hacen frenos"
+  // still resolves instead of needing an accent or a Spanish stopword
+  // elsewhere in the sentence to switch dictionaries.
   frenos: "brake",
   freno: "brake",
   llanta: "tire",
@@ -176,17 +251,30 @@ const SYNONYMS_ES: Record<string, string> = {
   neumaticos: "tire",
   pinchazo: "flat",
   pinchados: "flat",
-  aire: "air",
   bateria: "battery",
   baterias: "battery",
   aceite: "oil",
-  escape: "exhaust",
   alineacion: "alignment",
   alineamiento: "alignment",
-  suspension: "suspension",
+  diagnostico: "diagnostic",
+  ubicados: "located",
+  ubicacion: "location",
+};
+
+/**
+ * Spanish-language synonyms for the same slang. Merged with SYNONYMS only
+ * when the input contains Spanish-language signals (accented chars or a
+ * Spanish stopword), so a stray "ó" doesn't accidentally rewrite English.
+ */
+const SYNONYMS_ES: Record<string, string> = {
+  // "aire" and "escape" collide with English words ("air" already reads
+  // fine unmapped; "escape" is an English word in its own right), and
+  // "direccion" is ambiguous between steering and address — all three stay
+  // gated behind Spanish-language detection instead of living in the base
+  // SYNONYMS table above.
+  aire: "air",
+  escape: "exhaust",
   direccion: "steering",
-  motor: "engine",
-  diagnostico: "diagnostics",
 };
 
 /** Spanish stopwords — if any appear, the input is treated as Spanish. */
@@ -267,11 +355,12 @@ function tokenize(
 
 /** One-edit-distance neighbors of a token, checked against the global vocab.
  *  Catches "teir→tire", "braks→brakes", "alignmnet→alignment", etc.
- *  Both the input token and the candidate must be at least four characters —
- *  three-letter tokens have too many false-positive neighbors (e.g. "est"
- *  matching "eht"). */
+ *  The input token must be at least five characters: four-letter words have
+ *  too many false-positive neighbors — "shot" was being rewritten to "slot"
+ *  (a booking trigger), hijacking "my shocks are shot" into an appointment
+ *  answer. Candidates may be four letters so "tired" still lands on "tire". */
 function nearestVocabNeighbor(token: string, vocab: Set<string>): string | undefined {
-  if (token.length < 4) return undefined;
+  if (token.length < 5) return undefined;
   let best: { token: string; dist: number } | null = null;
   for (const candidate of vocab) {
     if (candidate.length < 4) continue;
@@ -367,14 +456,17 @@ function hoursAnswer(now: Date): ChatAnswer {
       "We're open but closing soon today — if it's urgent, call now and we'll say what's doable.",
     );
   } else if (status.status === "opening-soon") {
-    lines.push(`Almost — we open at ${shop.hours.opens.replace("08", "8")} AM today.`);
+    lines.push(`Almost — we open at ${formatTime(shop.hours.opens)} today.`);
   } else {
+    // status.label carries the reason when there is one ("Closed for Labor
+    // Day…", "Closed for the weekend") — the same words the placard shows,
+    // never a second copy of the logic.
     lines.push(`${status.label}.`);
   }
   if (status.holidayNotice) lines.push(status.holidayNotice);
   if (status.status !== "open")
     lines.push(`Regular hours: ${shop.hours.display}. ${shop.hours.closedNote}`);
-  return { text: lines.join(" "), chips: [callChip, directionsChip] };
+  return { text: lines.join(" "), chips: [callChip, directionsChip, hoursChip] };
 }
 
 const INTENTS: {
@@ -385,8 +477,8 @@ const INTENTS: {
   {
     id: "identity",
     triggers: ["name", "bot", "robot", "mascot", "ai", "assistant", "tread"],
-    build: (_now, persona = TREAD_PERSONA) => ({
-      text: `I'm ${persona.name}, ${persona.kind} — here for quick questions about hours, services and directions. For anything car-specific, the humans at the counter know best.`,
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `I'm ${persona.name}, ${persona.kind} — the mascot with actual shop answers. Hours, services, directions, pricing: ask away. Anything deeper, the counter crew is one call away and much better with a wrench.`,
       chips: [callChip, { label: "All services", href: "/services", kind: "link" }],
     }),
   },
@@ -409,6 +501,22 @@ const INTENTS: {
       "late",
       "early",
       "tonight",
+      "morning",
+      "afternoon",
+      "evening",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "time",
+      "reopen",
+      "reopens",
+      "reopening",
+      "holiday",
+      "holidays",
+      "closure",
+      "closures",
     ],
     build: hoursAnswer,
   },
@@ -446,20 +554,91 @@ const INTENTS: {
       "dial",
       "ring",
       "telephone",
-      "reach",
       "talk",
       "speak",
       "human",
       "person",
+      "representative",
+      "agent",
+      "operator",
+      "manager",
+      "owner",
+      "receptionist",
+      "counter",
+      "front desk",
     ],
     build: (now) => ({
-      text: `The shop line is ${shop.phone.display}. ${hoursStatus(now).label}.`,
-      chips: [callChip, saveChip],
+      text: `The shop line is ${shop.phone.display} — a person at the counter picks up, not a phone tree. ${hoursStatus(now).label}.`,
+      chips: [callChip, saveChip, emailChip],
     }),
   },
   {
+    id: "contact",
+    triggers: [
+      "contact",
+      "contacts",
+      "touch",
+      "reach",
+      "get ahold",
+      "get hold",
+      "get in touch",
+      "contact info",
+      "contact information",
+      "reach out",
+    ],
+    build: () => ({
+      text: `Everything in one place — call ${shop.phone.display}, email ${shop.email.service}, or stop by ${shop.address.full}. Save the card and it's all in your phone for the day you need it.`,
+      chips: [callChip, emailChip, directionsChip, saveChip],
+    }),
+  },
+  {
+    id: "urgent",
+    triggers: [
+      "emergency",
+      "urgent",
+      "asap",
+      "breakdown",
+      "accident",
+      "unsafe",
+      "dangerous",
+      "danger",
+      "fire",
+      "immediately",
+    ],
+    build: (now) => {
+      const status = hoursStatus(now);
+      // Only "open" and "closing-soon" mean a person is actually at the
+      // counter right now — "opening-soon" is still closed at this exact
+      // moment, so it gets the same honest closed-hours answer as "closed"
+      // instead of a "call right now, someone picks up" line that would be
+      // false for the next several minutes.
+      const reachableNow = status.status === "open" || status.status === "closing-soon";
+      // A stranded customer gets the full playbook, not a one-liner: 911
+      // first for true emergencies, then the straight path to a human. When
+      // the doors are shut the answer says so and pivots to roadside, the
+      // night drop and the morning queue — "call right now" would be a lie.
+      // Neither branch tells anyone to keep driving a car that might not be
+      // safe to drive — that call belongs to the driver and, if in doubt,
+      // to roadside/911, never to a chat widget.
+      if (reachableNow) {
+        return {
+          text: `Okay — first things first: if you're in live traffic, or anything is smoking or on fire, call 911 before anything else. If you're safe: call the shop right now at ${shop.phone.display} — a person picks up, not a phone tree — and tell us where you are and what happened, and we'll tell you what's doable today. We don't run our own tow truck, but we work with local roadside partners and can point you to one. If — and only if — the vehicle is safe to drive, you're welcome to bring it to us at ${shop.address.full}; customer parking is right out front.`,
+          chips: [callChip, directionsChip, saveChip],
+        };
+      }
+      return {
+        text: `Okay — first things first: if you're in live traffic, or anything is smoking or on fire, call 911 before anything else. If you're safe: the shop is closed right now (${status.label}), so the phone may not be answered immediately. Line up a roadside or flatbed partner for the tow — we don't run a truck ourselves. Save our number below so the details are one tap away, and if — and only if — the vehicle is safe to drive, the secure night drop is available around the clock, so the car is here when doors open. Call the shop line and leave the details and we'll call you back first thing.`,
+        chips: [
+          callChip,
+          saveChip,
+          { label: "Night drop details", href: "/vehicle-drop-off", kind: "link" },
+        ],
+      };
+    },
+  },
+  {
     id: "save-contact",
-    triggers: ["save", "saved", "contact", "contacts", "vcard", "add", "download", "keep", "handy"],
+    triggers: ["save", "saved", "vcard", "add", "download", "keep", "handy"],
     build: () => ({
       text: "Nice — tap below to save the shop card: phone, email, address and hours in one tap. We're in your phone before you ever need a tow.",
       chips: [saveChip, callChip],
@@ -506,6 +685,8 @@ const INTENTS: {
       "walkin",
       "availability",
       "available",
+      "apt",
+      "appt",
     ],
     build: () => ({
       text: "The fastest way to grab a bay is a quick call — we'll tell you the next opening and what to bring.",
@@ -571,9 +752,14 @@ const INTENTS: {
       "safety inspection",
     ],
     build: () => ({
-      text: "We're not a licensed state-inspection station, so we cannot issue the sticker. What we do is fix the things that commonly fail inspection — check-engine lights, exhaust leaks, monitors that haven't reset — and drive the vehicle enough to confirm readiness. Call for the nearest licensed station if you just need the sticker.",
+      text: "The MVC inspection is free, and the closest station is right in Mays Landing — 1477 19th St. We're not a licensed state-inspection station, so we can't issue the sticker, but bring the car in and we can test it before you go: check-engine lights, exhaust leaks, and readiness monitors are what usually fail, and we'll get you ready to pass the first time. No inspection fee here — just our normal diagnostic time, and the sticker itself costs you nothing at the MVC.",
       chips: [
         { label: "Exhaust & emissions details", href: "/services/exhaust-emissions", kind: "link" },
+        {
+          label: "NJ MVC inspection locations",
+          href: "https://www.nj.gov/mvc/locations/inspection.htm",
+          kind: "link",
+        },
         callChip,
       ],
     }),
@@ -631,13 +817,40 @@ const INTENTS: {
       "trustworthy",
       "any good",
       "good shop",
+      "trust you",
+      "should i trust",
+      "what do people say",
     ],
     build: () => ({
       text: `We're a CARFAX Top-Rated Service Center (${shop.rating.value} / ${shop.rating.scale} as of ${shop.rating.observed}) — third-party verified, not self-reported. Recent reviews live on the reviews page and on our CARFAX, Yelp, and Google profiles.`,
       chips: [
+        callChip,
         { label: "Read reviews", href: "/reviews", kind: "link" },
         { label: "CARFAX profile", href: shop.profiles.carfax, kind: "link" },
       ],
+    }),
+  },
+  {
+    id: "credentials",
+    triggers: [
+      "licensed",
+      "license",
+      "licence",
+      "insured",
+      "insurance",
+      "certified",
+      "certification",
+      "certifications",
+      "ase",
+      "bonded",
+      "accredited",
+      "accreditation",
+      "credentials",
+      "qualified",
+    ],
+    build: () => ({
+      text: "Our technicians are ASE-certified and we're a CARFAX Top-Rated Service Center — third-party verified, not self-reported. For specific licensing or insurance documentation, call the shop and the counter crew will get you what you need.",
+      chips: [callChip, { label: "Read reviews", href: "/reviews", kind: "link" }],
     }),
   },
   {
@@ -683,6 +896,138 @@ const INTENTS: {
       chips: [saveChip, callChip],
     }),
   },
+  {
+    id: "help",
+    triggers: ["help", "assist", "assistance", "support", "guide", "options", "mechanic"],
+    build: () => ({
+      text: `I can answer questions about hours, services, directions and pricing — or cut to the chase and talk to a human: ${shop.phone.display}.`,
+      chips: [callChip, { label: "All services", href: "/services", kind: "link" }],
+    }),
+  },
+  {
+    id: "noises",
+    // No triggers on purpose: the matcher's "makes/making" tokens are claimed
+    // by the service-area intent ("make, makes" = car brands), so a real
+    // noise complaint like "car makes sounds" scored 44 for makes-lists and
+    // lost the lead. A stopword-route regex claims it up front instead.
+    triggers: [],
+    build: () => ({
+      text: "Weird sounds are the shop's favorite puzzle — grinding, squealing, clunking, humming, all of it. Call and describe when it happens (speed, braking, turning) and we'll point the right bay at it.",
+      chips: [
+        { label: "Diagnostics", href: "/services/advanced-diagnostics", kind: "link" },
+        callChip,
+      ],
+    }),
+  },
+  {
+    id: "timeline",
+    triggers: [
+      "how long",
+      "long does",
+      "turnaround",
+      "same day",
+      "same-day",
+      "quick fix",
+      "fast",
+      "duration",
+      "time it takes",
+      "how soon",
+      "when ready",
+      "pickup",
+    ],
+    build: () => ({
+      text: "It depends on the job and what we find — we don't guess timelines over chat. Call with the vehicle and the symptom and we'll give you a straight answer on what's doable today and what needs a bay slot.",
+      chips: [callChip],
+    }),
+  },
+  /* --- Small talk: casual greetings and chit-chat, always ending in a next
+       step. Routed up front by STOPWORD_ROUTE_RES (most of these are pure
+       stopwords the matcher can never see), so this intent carries no
+       triggers — it exists so the studio lists it and the answer is defined
+       once. */
+  {
+    id: "smalltalk",
+    triggers: [],
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Hey, good to see you! I'm ${persona.name}, ${persona.kind} — I run on shop trivia and honest answers, no fluff. Ask me about hours, services, directions or pricing, or skip the small talk and ring the counter at ${shop.phone.display}. What's on your mind?`,
+      chips: [callChip, { label: "All services", href: "/services", kind: "link" }],
+    }),
+  },
+  /* --- Easter eggs: silly, honest, and always ending in a next step ------- */
+  {
+    id: "joke",
+    triggers: ["joke", "jokes", "funny", "laugh", "humor", "humour", "comedian", "silly"],
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Knock knock. Who's there? ...Honestly, ${persona.name} here. I'm ${persona.self}, not a comedian — the humans at the counter have better material. If the car needs work, that's the real joke worth telling.`,
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "love",
+    triggers: ["love", "marry", "date", "girlfriend", "boyfriend", "valentine", "kiss", "cute"],
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `I'm flattered, but I'm ${persona.self} — my one true love is a well-tuned engine. If your car needs some love, the shop is one call away.`,
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "creator",
+    triggers: [
+      "made you",
+      "built you",
+      "created you",
+      "programmed you",
+      "wrote you",
+      "your maker",
+      "your creator",
+      "who made",
+      "who built",
+    ],
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Some very patient humans at the shop built me out of JavaScript and shop trivia. I run entirely on your device — no cloud, no servers, just ${persona.self}.`,
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "philosophy",
+    triggers: ["alive", "sentient", "conscious", "real", "philosophy", "meaning of life"],
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Am I alive? I'm ${persona.self} with good PR — I think, therefore I ${persona.name === "Sparky" ? "spark" : "am"}. For the deeper questions, the humans at the counter are wiser than me.`,
+      chips: [callChip],
+    }),
+  },
+  {
+    id: "games",
+    triggers: ["marco", "ping", "pong", "play", "game", "games", "bored", "boring"],
+    build: () => ({
+      text: "Marco? Polo! Ping? Pong! I roll with it. If you're killing time, the shop arcade has real games — and if the car needs work, you know the number.",
+      chips: [{ label: "Play the arcade", href: "/arcade", kind: "link" }, callChip],
+    }),
+  },
+  {
+    id: "thanks",
+    triggers: ["thanks", "thank", "thx", "ty", "appreciated", "appreciate"],
+    build: () => ({
+      text: "You're welcome — that's what I'm here for. If the car still needs work, you know the number; if I helped, tell a friend.",
+      chips: [callChip, saveChip],
+    }),
+  },
+  {
+    id: "goodbye",
+    triggers: ["bye", "goodbye", "later", "see ya", "seeya", "farewell", "gtg", "cya"],
+    build: () => ({
+      text: "See you on the road! Grab the number before you go — future-you, stranded with a flat on the parkway at 9 PM, will wish you had: it's one tap below.",
+      chips: [saveChip, callChip],
+    }),
+  },
+  {
+    id: "insult",
+    triggers: ["stupid", "dumb", "useless", "suck", "sucks", "terrible", "awful", "idiot", "hate"],
+    build: (_now, persona = PRODUCTION_PERSONA) => ({
+      text: `Ouch — fair. I'm ${persona.self} with feelings. The humans at the counter are nicer than me and way better at this: ${shop.phone.display}.`,
+      chips: [callChip],
+    }),
+  },
 ];
 
 function buildIndex(): Entry[] {
@@ -697,6 +1042,16 @@ function buildIndex(): Entry[] {
       for (const token of tokenize(trigger)) {
         vocab.set(token, (vocab.get(token) ?? 0) + 6);
       }
+    }
+    // The hours intent also indexes the real federal holiday names ("Labor
+    // Day", "Thanksgiving Day", …) — without this, "day" only ever appears
+    // in the timeline intent's tokenized "same day" trigger, so a plain
+    // "are you open on Labor Day" loses "day" to timeline's stronger,
+    // rarer-token score and answers a turnaround question instead of a
+    // holiday-hours one.
+    if (intent.id === "hours") {
+      const { fixed, floating } = shop.hours.federalHolidays;
+      addWords(vocab, [...fixed, ...floating].map((h) => h.name).join(" "), 6);
     }
     // The location intent also indexes the shop's actual service area — the
     // SEO audit added these towns for search, but the chat brain should share
@@ -795,6 +1150,24 @@ function trimForBubble(text: string): string {
   return lastSentence > FAQ_BUBBLE / 2 ? cut.slice(0, lastSentence + 1) : cut.trimEnd() + "…";
 }
 
+/**
+ * Mirror the customer's own words back so they sound heard — trimmed, quoted,
+ * never rewritten into a diagnosis. Long rants get clipped at the bubble.
+ */
+function echoIssue(input: string): string {
+  const cleaned = input
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[?!.]+$/, "");
+  return cleaned.length > 110 ? `${cleaned.slice(0, 107).trimEnd()}…` : cleaned;
+}
+
+/** The legal-safe hedge every symptom answer leans on: the shop never lets a
+ *  chat widget sound like a diagnosis, and every path ends in a call. */
+const ISSUE_HEDGE = "that could be a few different things, and I don't guess over chat";
+const ISSUE_CALL = (phone: string) =>
+  `For issues like this we recommend a call so a live agent can look into it with you: ${phone}.`;
+
 /** Why a question matched — surfaced by the /agent studio's brain lab. */
 type DebugMatch = {
   kind: "intent" | "faq" | "service";
@@ -825,8 +1198,66 @@ export type MatcherConfig = {
  */
 const IDENTITY_RE = /\b(who|what)('s| are| is)?\s+(you|this)\b|\byour name\b/i;
 
+/**
+ * A bare noise complaint ("car makes sounds", "my car is making a noise")
+ * tokenizes to "makes" + little else — and "makes" is the service-area
+ * intent's trigger, so the reply became a Toyota list and the lead walked.
+ * This regex only acts as a tie-breaker in resolve(): when scoring produced
+ * nothing useful (or produced the makes-list) and the input is a noise
+ * complaint, the noises intent takes it. Concrete symptom phrases like
+ * "brakes making noise" score high on their real service and are untouched.
+ */
+const NOISE_RE = /\b(making|makes)\s+(a\s+)?(\w+\s+){0,2}(sound|noise)s?\b/i;
+
+/** Statement-shaped input ("my car is overheating") vs a real question ("how
+ *  often should I change my oil?"). Statements that land on an FAQ get the
+ *  same mirror-and-hedge a service answer gets; questions keep the clean FAQ
+ *  copy, because the customer asked for facts, not a diagnosis. */
+const QUESTIONISH_RE =
+  /\?\s*$|^(how|what|when|where|which|who|why|do|does|did|can|could|should|is|are|will|would)\b/i;
+
+/**
+ * More pure-stopword phrases the matcher can never see: "what can you do"
+ * tokenizes to nothing, and "thank you" loses both words to the stopword
+ * list (leaving a stray "much" that would otherwise land on the cost
+ * intent). Catch them up front like IDENTITY_RE and route by intent id.
+ */
+const STOPWORD_ROUTE_RES: { re: RegExp; id: string }[] = [
+  { re: /\bwhat (can|do) (you|u) do\b/i, id: "help" },
+  { re: /\b(know|check|look at|look over)\s+my\s+car\b/i, id: "help" },
+  // Breakdown idioms that tokenize to almost nothing — route them straight
+  // to the urgent intent so a stranded driver never meets the shrug. Both
+  // straight and curly apostrophes (mobile keyboards send ’).
+  { re: /\b(car|it|vehicle)\s+(won[’']?t|doesn[’']?t|would not)\s+(move|go)\b/i, id: "urgent" },
+  { re: /\b(get|squeeze)\s+me\s+in\b/i, id: "booking" },
+  { re: /^how (do|can) i (get|drive|go) (there|to the shop|to you)[\s?!.]*$/i, id: "location" },
+  {
+    re: /^\s*(ok|okay)?\s*(thank(s| you)?|thx|ty|much appreciated|appreciate it)\b/i,
+    id: "thanks",
+  },
+  // "Where are you?" is pure stopwords once tokenized — catch it up front.
+  { re: /^(where\s+(are|r)\s+(you|u)|where\s+you\s+at)[\s?!.]*$/i, id: "location" },
+  // Casual greetings and small talk — most are pure stopwords the matcher
+  // can never see. Anchored to the whole input so "hey, are you open?" still
+  // falls through to the hours intent instead of being swallowed as chit-chat.
+  {
+    re: /^(hi|hey|hello|howdy|yo|sup|hiya|heya)(\s+(there|buddy|friend|everyone|guys)){0,2}(?!\s*tread)[\s!.,?]*$/i,
+    id: "smalltalk",
+  },
+  {
+    re: /^(whats up|what's up|what up|how are you|how are you doing|how you doing|how's it going|how is it going|nice to meet you|you there|anyone there|can you hear me|are you busy|awesome|nice|perfect|cool|great|sounds good|have a good day|have a nice day|take care|good morning|good afternoon|good evening)[\s!.,?]*$/i,
+    id: "smalltalk",
+  },
+  // Short conversational acks — "yes", "ok", "sure", "got it". A customer
+  // mid-conversation should get a warm "what else?" instead of the shrug.
+  {
+    re: /^(yes|yeah|yep|ya|ok|okay|sure|hmm|i see|got it|makes sense|same|true|no|nope|maybe)[\s!.,?]*$/i,
+    id: "smalltalk",
+  },
+];
+
 function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved {
-  const persona = config.persona ?? TREAD_PERSONA;
+  const persona = config.persona ?? PRODUCTION_PERSONA;
   const synonyms = { ...SYNONYMS, ...config.extraSynonyms };
   const threshold = config.threshold ?? THRESHOLD;
   if (IDENTITY_RE.test(input)) {
@@ -836,6 +1267,16 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
       matched: { kind: "intent", id: "identity", score: 99, label: "identity" },
       tokens: [],
     };
+  }
+  for (const { re, id } of STOPWORD_ROUTE_RES) {
+    if (re.test(input)) {
+      const intent = INTENTS.find((i) => i.id === id)!;
+      return {
+        answer: intent.build(now, persona),
+        matched: { kind: "intent", id, score: 99, label: id },
+        tokens: [],
+      };
+    }
   }
   const tokens = tokenize(input, synonyms, VOCAB);
   if (tokens.length === 0)
@@ -870,7 +1311,7 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
     return {
       answer: {
         text: trimForBubble(service.cost),
-        chips: [serviceChip(service.slug, service.name), callChip],
+        chips: [callChip, serviceChip(service.slug, service.name)],
         serviceSlug: service.slug,
       },
       matched: {
@@ -886,6 +1327,21 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
   const top = [bestIntent, bestFaq, bestService]
     .filter(Boolean)
     .sort((a, b) => b!.score - a!.score)[0];
+  if ((!top || top.entry.id === "service-area" || top.score < 12) && NOISE_RE.test(input)) {
+    const noises = INTENTS.find((i) => i.id === "noises")!;
+    const answer = noises.build(now, persona);
+    return {
+      answer: {
+        ...answer,
+        // Mirror the sound complaint, hedge the cause, lead with the call.
+        text: `"${echoIssue(input)}" — ${ISSUE_HEDGE}. Describe when it happens (speed, braking, turning) and ${ISSUE_CALL(shop.phone.display).toLowerCase()}`,
+        chips: [callChip, ...answer.chips.filter((chip) => chip.kind !== "call")],
+      },
+      matched: { kind: "intent", id: "noises", score: 99, label: "noises" },
+      tokens,
+    };
+  }
+
   if (!top) {
     // Nothing crossed threshold — try Fuse.js as a soft second pass so a
     // close miss (typo, near-synonym) still lands on a real answer instead
@@ -929,10 +1385,17 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
     const full = top.entry.faqAnswer!;
     const trimmed = trimForBubble(full);
     const wasTrimmed = full.length > FAQ_BUBBLE;
+    // Statement-shaped symptoms get the mirror + hedge; questions keep the
+    // FAQ's own factual copy.
+    const isStatement = !QUESTIONISH_RE.test(input);
     return {
       answer: {
-        text: trimmed,
-        chips: [serviceChip(top.entry.serviceSlug!, `${top.entry.serviceName} details`), callChip],
+        text: isStatement
+          ? `"${echoIssue(input)}" — ${ISSUE_HEDGE}. ${trimmed} ${ISSUE_CALL(shop.phone.display)}`
+          : trimmed,
+        chips: isStatement
+          ? [callChip, serviceChip(top.entry.serviceSlug!, `${top.entry.serviceName} details`)]
+          : [serviceChip(top.entry.serviceSlug!, `${top.entry.serviceName} details`), callChip],
         serviceSlug: top.entry.serviceSlug,
         ...(wasTrimmed ? { trimmed: true, fullText: full } : {}),
       },
@@ -949,8 +1412,11 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
   const service = services.find((s) => s.slug === top.entry.serviceSlug)!;
   return {
     answer: {
-      text: `${service.short} ${trimForBubble(service.intro)}`,
-      chips: [serviceChip(service.slug, service.name), callChip],
+      // A symptom description is never a diagnosis: mirror what the customer
+      // typed, hedge the cause, hand them to a live agent by phone — call
+      // first, service page second.
+      text: `"${echoIssue(input)}" — ${ISSUE_HEDGE}. ${service.short} ${ISSUE_CALL(shop.phone.display)}`,
+      chips: [callChip, serviceChip(service.slug, service.name)],
       serviceSlug: service.slug,
     },
     matched: {
@@ -1059,12 +1525,15 @@ export function debugAnswer(
 }
 
 function fallbackAnswer(
-  persona: ChatPersona = TREAD_PERSONA,
+  persona: ChatPersona = PRODUCTION_PERSONA,
   suggestions: string[] = [],
 ): ChatAnswer {
+  // Honest about what the bot can and can't do, lists the topics it covers
+  // so the customer can self-serve, and always ends at the phone. Never
+  // pretends to know — never guesses at a diagnosis.
   return {
-    text: `I'm just ${persona.self} — that one's beyond me. A human at the counter can help${
-      suggestions.length > 0 ? ", or try one of these:" : ""
+    text: `That's outside what I can answer — I'm ${persona.self}, not a mechanic. I can help with hours, services, directions, pricing, payment, towing, reviews, walk-ins and the night drop. For anything vehicle-specific, the crew at the counter is one tap away: ${shop.phone.display}.${
+      suggestions.length > 0 ? " You might have meant:" : ""
     }`,
     chips: [callChip, emailChip, ...suggestionChips(suggestions)],
     fallback: true,
@@ -1081,9 +1550,9 @@ function suggestionChips(suggestions: string[]): ChatChip[] {
 }
 
 /** The opening line, aware of whether the shop is open right now. */
-export function treadGreeting(
+export function mascotGreeting(
   now: Date = new Date(),
-  persona: ChatPersona = TREAD_PERSONA,
+  persona: ChatPersona = PRODUCTION_PERSONA,
 ): string {
   const status = hoursStatus(now);
   const intro = `${persona.name}, ${persona.kind}`;
@@ -1098,9 +1567,10 @@ export const quickPrompts = [
   "Are you open?",
   "Can you fix a flat?",
   "Book an appointment",
-  "Save your number",
+  "Talk to a person",
   "Do you do NJ inspection?",
   "Do you take cards?",
+  "Tell me a joke",
 ];
 
 /** Read-only config snapshot for the /agent studio's knowledge-base viewer. */
@@ -1114,3 +1584,9 @@ export const STUDIO_CONFIG = {
   })),
   intents: INTENTS.map((i) => ({ id: i.id, triggers: i.triggers })),
 };
+
+/** Legal audit: every canned intent answer in one list, no input needed — the
+ *  claims test walks this instead of hoping its phrase corpus hits them all. */
+export function allIntentAnswers(now: Date = new Date()): { id: string; text: string }[] {
+  return INTENTS.map((intent) => ({ id: intent.id, text: intent.build(now).text }));
+}

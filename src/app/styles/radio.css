@@ -172,6 +172,953 @@
   }
 }
 
+/* ---- Chrome De Luxe 3D: the WebGL dash radio ------------------------ */
+/* A dark studio backdrop, like the period dealer photos — the chrome and
+   the amber dial carry the whole scene. */
+.radio-3d-stage {
+  background: radial-gradient(120% 90% at 50% 18%, #3a3d44 0%, #22242a 46%, #101115 100%);
+}
+.radio-3d-loading {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+}
+.radio-3d-loading p {
+  margin: 0;
+  color: rgba(246, 242, 228, 0.75);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: parts-3d-wait 1.6s ease-in-out infinite;
+}
+
+/* ---- The '57 De Luxe — a cherry-red Chevy dash radio --------------------
+   One integrated unit: a chrome faceplate (amber dial, piano keys, two knobs)
+   and the station guide sliding out of the same painted-steel card below. */
+.chevy-dash {
+  --chevy-red: #9c1a1c;
+  --chevy-red-hi: #c0282b;
+  --chevy-red-lo: #5e0f12;
+  --chevy-chrome: #e8eaee;
+  --chevy-amber: #ffb14e;
+  display: grid;
+  gap: 0.9rem;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.1rem;
+  border: 2px solid #4a0c0e;
+  border-radius: 14px;
+  overflow: hidden;
+  /* The radio and its screen stack in the left column; the station guide runs
+     the full height of the right one. The screen spans only the radio's width
+     because it reads out the radio — sitting over the guide as well would make
+     it look like a caption for the list. */
+  /* Sized to roughly what the faceplate needs, so `space-between` below has
+     only a little slack to share out rather than a gap the size of a control. */
+  min-height: min(68vh, 660px);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  /* The faceplate takes the slack, the screen only what it needs — the other
+     way round left the radio floating in a tall empty red field. */
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "radio guide"
+    "screen guide";
+  column-gap: 1rem;
+  row-gap: 0;
+  background: linear-gradient(
+    180deg,
+    var(--chevy-red-hi),
+    var(--chevy-red) 30%,
+    var(--chevy-red-lo)
+  );
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.4),
+    0 18px 40px rgba(0, 0, 0, 0.55);
+}
+/* CSS-pinned fullscreen for browsers without the element API (iPhone). */
+.chevy-dash.is-fs {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  max-width: none;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+/* The chrome faceplate — polished silver with a slow specular sweep. */
+.chevy-radio {
+  grid-area: radio;
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  /* The faceplate fills the column, but the slack is spread between the rows
+     rather than poured into the dial — a dial given every spare pixel becomes
+     a tall empty pane with the scale stranded at the bottom. */
+  align-content: space-between;
+  padding: 0.9rem;
+  /* Square at the bottom: the station guide continues this same panel. */
+  border-radius: 10px 10px 0 0;
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 42%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 12%),
+    linear-gradient(180deg, #f4f5f8, #ccd0d6 42%, #a7acb4 55%, #7d828b 88%, #62676f);
+  border: 1px solid #565b63;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.35),
+    inset 2px 0 3px rgba(255, 255, 255, 0.25),
+    inset -2px 0 3px rgba(0, 0, 0, 0.2),
+    0 5px 12px rgba(0, 0, 0, 0.5);
+}
+/* Ribbed speaker wings flanking the dial, like the real deck. */
+.chevy-radio::before,
+.chevy-radio::after {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  width: 0.55rem;
+  border-radius: 3px;
+  background: repeating-linear-gradient(180deg, #b9bec5 0 2px, #6f747c 2px 4px);
+  box-shadow:
+    inset 0 0 3px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.chevy-radio::before {
+  left: 0.3rem;
+}
+.chevy-radio::after {
+  right: 0.3rem;
+}
+/* Four chrome screws pinning the faceplate down. */
+.chevy-radio {
+  background-image:
+    radial-gradient(circle 3px at 8px 8px, #dfe2e7 0 1.5px, #55595f 1.6px 2.6px, transparent 3px),
+    radial-gradient(
+      circle 3px at calc(100% - 8px) 8px,
+      #dfe2e7 0 1.5px,
+      #55595f 1.6px 2.6px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle 3px at 8px calc(100% - 8px),
+      #dfe2e7 0 1.5px,
+      #55595f 1.6px 2.6px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle 3px at calc(100% - 8px) calc(100% - 8px),
+      #dfe2e7 0 1.5px,
+      #55595f 1.6px 2.6px,
+      transparent 3px
+    ),
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 42%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 58%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 12%),
+    linear-gradient(180deg, #f4f5f8, #ccd0d6 42%, #a7acb4 55%, #7d828b 88%, #62676f);
+}
+/* The amber dial window — drag across it to tune. */
+.chevy-dial {
+  position: relative;
+  /* Two lanes: the marque along the top, the printed scale underneath. Held
+     between bounds so it reads as a dial window, not an empty pane. */
+  height: clamp(96px, 17vh, 168px);
+  border-radius: 6px;
+  border: 2px solid #1a1206;
+  background: linear-gradient(180deg, #241304, #120a02);
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.chevy-dial:active {
+  cursor: grabbing;
+}
+/* The dial only lights when the set is powered — dark glass until then. */
+.chevy-dial-scale,
+.chevy-dial-ticks i {
+  opacity: 0.3;
+  filter: saturate(0.4);
+  transition:
+    opacity 0.35s ease,
+    filter 0.35s ease;
+}
+.chevy-dash.is-on .chevy-dial-scale,
+.chevy-dash.is-on .chevy-dial-ticks i {
+  opacity: var(--chevy-dim, 1);
+  filter: none;
+  text-shadow: 0 0 8px rgba(255, 177, 78, 0.55);
+}
+/* A warm tube glow breathing under the glass when powered, dimmed by knob. */
+.chevy-dial::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    90% 120% at 50% 110%,
+    rgba(255, 155, 40, 0.4),
+    rgba(255, 155, 40, 0) 60%
+  );
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.chevy-dash.is-on .chevy-dial::after {
+  opacity: var(--chevy-dim, 1);
+}
+/* Aged glass: fine scratches and a corner vignette over the dial. */
+.chevy-dial::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.028) 0 1px,
+      rgba(255, 255, 255, 0) 1px 9px
+    ),
+    radial-gradient(130% 120% at 50% 40%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.42));
+}
+/* The chrome badge under the dial. */
+.chevy-badge {
+  /* Clear of the ribbed speaker wing on the right, which was slicing the last
+     letters off "PUSHBUTTON RADIO". */
+  margin: -0.3rem 0.75rem 0 0;
+  text-align: right;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: #6d727b;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+.chevy-badge span {
+  font-size: 0.44rem;
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8b6a2f;
+}
+/* The band, the marque and the tuned lamp ride in their own lane along the
+   top, leaving the lower half of the glass to the printed scale. */
+.chevy-dial-scale {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.6rem 0;
+  color: var(--chevy-amber);
+}
+.chevy-dial-band {
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 8px rgba(255, 177, 78, 0.6);
+}
+.chevy-dial-brand {
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(255, 177, 78, 0.55);
+}
+.chevy-dial-lamp {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #223024;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.chevy-dial-lamp.is-lit {
+  background: #57d96b;
+  box-shadow: 0 0 10px rgba(87, 217, 107, 0.9);
+}
+/* The printed scale: a fine ruler, the frequency numbers, and a mark over
+   every station on the band. Without these the needle is a slider with no
+   units — you cannot see where you are heading before you get there. */
+/* Full width, not inset: the marks have to share the needle's coordinate
+   space or they point at the wrong frequency. The numbers keep themselves off
+   the edges with a clamp instead (see the inline `left` in the component). */
+.chevy-dial-ticks {
+  position: absolute;
+  inset: auto 0 6px;
+  height: 26px;
+}
+.chevy-dial-ticks::before {
+  content: "";
+  position: absolute;
+  inset: auto 0.6rem 0;
+  height: 7px;
+  background: repeating-linear-gradient(90deg, rgba(255, 177, 78, 0.5) 0 1px, transparent 1px 5%);
+}
+.chevy-dial-number {
+  position: absolute;
+  bottom: 9px;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--chevy-amber);
+  text-shadow: 0 0 8px rgba(255, 177, 78, 0.5);
+}
+/* A station sits under a taller mark, so the needle has somewhere to land. */
+.chevy-dial-mark {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 14px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: #ffe0ac;
+  box-shadow: 0 0 6px rgba(255, 208, 138, 0.8);
+}
+.chevy-needle {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  margin-left: -1.5px;
+  background: #ff3b1f;
+  box-shadow: 0 0 8px rgba(255, 59, 31, 0.8);
+  pointer-events: none;
+  /* A slight mechanical lag, like a real needle riding the string. */
+  transition: left 80ms linear;
+}
+/* Night driving: the whole dash drops away and only the lit glass survives.
+   Dimming the chrome alone left the cream guide card glaring, which is the one
+   thing a night setting exists to stop. */
+.chevy-dash.is-night {
+  --chevy-red: #4d0e10;
+  --chevy-red-hi: #631316;
+  --chevy-red-lo: #2a0709;
+}
+.chevy-dash.is-night .chevy-radio {
+  filter: brightness(0.5) saturate(0.75) contrast(1.05);
+}
+.chevy-dash.is-night .chevy-guide {
+  filter: brightness(0.42) saturate(0.8);
+}
+/* Both of these sit inside a dimmed parent, and nested filters multiply — so
+   the numbers below are chosen to land just above 1 once that is applied. */
+.chevy-dash.is-night .chevy-readout {
+  filter: brightness(2.6);
+}
+/* The dial is the exception: it stays lit, and burns a little warmer. */
+.chevy-dash.is-night .chevy-dial {
+  filter: brightness(2.3) saturate(1.15);
+}
+.chevy-dash.is-night .chevy-dial::after {
+  background: radial-gradient(
+    110% 140% at 50% 115%,
+    rgba(255, 150, 30, 0.6),
+    rgba(255, 150, 30, 0) 65%
+  );
+}
+/* Piano-key presets. */
+.chevy-legend {
+  margin: 0;
+  text-align: center;
+  font-size: 0.52rem;
+  font-weight: 950;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #4d5158;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.chevy-keys {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+}
+.chevy-key {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.2rem 0.4rem;
+  display: grid;
+  gap: 0.1rem;
+  justify-items: center;
+  border: 1px solid #050506;
+  border-top: 3px solid #e2e5ea;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #3a3c42, #17181c 55%, #0b0c0f);
+  color: #f4f1e6;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 3px 0 #050506;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.chevy-key b {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1;
+}
+.chevy-key small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.48rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #9a9587;
+}
+.chevy-key:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 1px 0 #050506;
+}
+.chevy-key.is-lit {
+  border-top-color: var(--chevy-amber);
+  background: linear-gradient(180deg, #4a3312, #241203 60%);
+  color: #ffcf8a;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 10px rgba(255, 177, 78, 0.45),
+    0 3px 0 #050506;
+}
+/* The knobs and the little chrome buttons between them. */
+.chevy-knob-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+.chevy-knob {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid #050506;
+  background: radial-gradient(circle at 34% 30%, #5a5d63, #232529 62%, #101214);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.25),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.5);
+  cursor: grab;
+  touch-action: none;
+  font: inherit;
+}
+.chevy-knob:active {
+  cursor: grabbing;
+}
+.chevy-knob-cap {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, #787b81, #2a2c30 65%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+.chevy-knob-cap::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  width: 3px;
+  height: 14px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: #f2efe4;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
+}
+.chevy-knob small {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.46rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  color: #f2efe4;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+/* Four across, two down, always. As a wrapping flex row the split changed with
+   the column width and left odd rows of five and three. */
+.chevy-mini {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+  align-content: center;
+}
+.chevy-mini button {
+  /* 44px is the smallest target a thumb hits reliably; these were 34. */
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid #0a0a0c;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #f4f5f7, #c6c9ce 48%, #8f939b 52%, #6f737b);
+  color: #17181c;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 2px 0 #050506;
+  font: inherit;
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.chevy-mini button:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 1px 0 #050506;
+}
+.chevy-mini button.is-on {
+  background: linear-gradient(180deg, #ffd08a, #f5a93c 55%, #c97a14);
+  color: #2a1503;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 10px rgba(255, 177, 78, 0.5),
+    0 2px 0 #050506;
+}
+/* The trim knobs: tone, balance, dimmer. */
+.chevy-subknobs {
+  display: flex;
+  justify-content: center;
+  gap: 1.6rem;
+  padding: 0.1rem 0 0.2rem;
+}
+.chevy-subknob {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid #050506;
+  background: radial-gradient(circle at 34% 30%, #5a5d63, #232529 62%, #101214);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.25),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.6),
+    0 3px 6px rgba(0, 0, 0, 0.45);
+  cursor: grab;
+  touch-action: none;
+  font: inherit;
+}
+.chevy-subknob:active {
+  cursor: grabbing;
+}
+.chevy-subknob-cap {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, #7d8087, #2a2c30 65%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+.chevy-subknob-cap::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  width: 2px;
+  height: 10px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: #f2efe4;
+}
+.chevy-subknob small {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.42rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #3a3d43;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+/* The station guide. It is not a second card sitting under the radio — it is
+   the lower half of the same unit, so it shares the faceplate's edge, loses
+   its own top border, and tucks under the chrome rather than floating below
+   it. The gap between the two was what made the dash read as two objects. */
+.chevy-guide {
+  grid-area: guide;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0.8rem;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #e6dcc4, #efe8d6 12%, #e0d7bf);
+  border: 1px solid #565b63;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.22),
+    0 5px 12px rgba(0, 0, 0, 0.45);
+}
+.chevy-genres,
+.chevy-guide-note {
+  flex: 0 0 auto;
+}
+.chevy-readout {
+  grid-area: screen;
+  align-self: start;
+  /* Joined to the underside of the faceplate: same panel, one unit. */
+  margin: 0 0.55rem;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 0 0 6px 6px;
+  border: 2px solid #0a0a0c;
+  background: linear-gradient(180deg, #2a1608, #150a03);
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.85),
+    0 0 0 3px #c7ccd4,
+    0 0 0 4px #6a6f78;
+  color: var(--chevy-amber);
+}
+.chevy-freq {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0;
+}
+.chevy-freq b {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  line-height: 1;
+  /* Room for the widest dial reading so digits never shift the row. */
+  min-width: 4.2ch;
+  font-variant-numeric: tabular-nums;
+  /* No chromatic glitch here. It fired every five seconds and read as a broken
+     font rather than a tube warming, which is the opposite of the intent. */
+  text-shadow: 0 0 14px rgba(255, 177, 78, 0.5);
+}
+.chevy-freq span {
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.chevy-onair {
+  margin-left: auto;
+  padding: 0.12rem 0.4rem;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+  font-size: 0.5rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  font-style: normal;
+  color: #ff5a3c;
+  opacity: 0.35;
+}
+.chevy-onair.is-lit {
+  opacity: 1;
+  text-shadow: 0 0 10px rgba(255, 90, 60, 0.7);
+}
+.chevy-now {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  /* One line, always — a long station name must not reflow the readout. */
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
+  color: #ffcf8a;
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+}
+.chevy-now-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: inherit;
+}
+.chevy-now small {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(255, 207, 138, 0.62);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+}
+.chevy-meter {
+  display: flex;
+  gap: 0.26rem;
+}
+.chevy-meter i {
+  width: 1.4rem;
+  height: 0.3rem;
+  background: #3a2a12;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+}
+.chevy-meter i.is-lit {
+  background: var(--chevy-amber);
+  box-shadow: 0 0 8px rgba(255, 177, 78, 0.55);
+}
+/* Equal chips on a tidy grid: as a wrapping flex row the last one stranded
+   itself on a line of its own, which read as a mistake rather than a filter. */
+.chevy-genres {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+.chevy-genres button {
+  padding: 0.5rem 0.4rem;
+  min-height: 40px;
+  text-align: center;
+  border: 1px solid #0a0a0c;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #3a3c42, #17181c 60%);
+  color: #f2efe4;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 2px 0 #050506;
+  font: inherit;
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.chevy-genres button.is-lit {
+  background: linear-gradient(180deg, #ffd08a, #f5a93c 55%, #c97a14);
+  color: #2a1503;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 10px rgba(255, 177, 78, 0.5),
+    0 2px 0 #050506;
+}
+.chevy-list {
+  display: grid;
+  gap: 0.2rem;
+  align-content: start;
+  flex: 1 1 auto;
+  min-height: 160px;
+  /* No ceiling: the list runs the height of its column rather than stopping
+     partway down and leaving the card empty underneath. */
+  /* Fixed height and a permanent scrollbar: refilling the directory on a
+     genre change must never resize the card or jiggle the radio. */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+.chevy-station {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.5rem 0.55rem;
+  border: none;
+  border-bottom: 1px dashed rgba(90, 26, 28, 0.18);
+  background: transparent;
+  color: #4a3324;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.chevy-station:hover {
+  background: rgba(156, 26, 28, 0.08);
+}
+.chevy-station.is-tuned {
+  background: linear-gradient(90deg, rgba(156, 26, 28, 0.14), rgba(156, 26, 28, 0.03));
+  border-left: 3px solid var(--chevy-red);
+  color: var(--chevy-red);
+}
+.chevy-station-dial {
+  min-width: 3rem;
+  text-align: right;
+  font-size: 0.82rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: #9c8871;
+  flex-shrink: 0;
+}
+.chevy-station.is-tuned .chevy-station-dial {
+  color: var(--chevy-red);
+}
+.chevy-station-who {
+  min-width: 0;
+  display: grid;
+  gap: 0.05rem;
+  overflow: hidden;
+}
+.chevy-station-who b {
+  font-family: var(--font-serif);
+  font-size: 0.86rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.chevy-station-who small {
+  color: rgba(74, 51, 36, 0.6);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chevy-guide-note {
+  margin: 0;
+  min-height: 1.1rem;
+  color: #7a6a54;
+  font-size: 0.66rem;
+}
+/* Placeholder rows while the directory answers, so the card keeps its shape
+   instead of collapsing to an empty panel for several seconds. */
+.chevy-station.is-waiting {
+  cursor: default;
+}
+.chevy-station.is-waiting .chevy-station-dial {
+  opacity: 0.35;
+}
+.chevy-station.is-waiting b,
+.chevy-station.is-waiting small {
+  display: block;
+  height: 0.62rem;
+  border-radius: 2px;
+  background: rgba(90, 26, 28, 0.22);
+  animation: chevy-wait 1.4s ease-in-out infinite;
+}
+.chevy-station.is-waiting b {
+  width: 62%;
+  height: 0.8rem;
+}
+.chevy-station.is-waiting small {
+  width: 38%;
+  margin-top: 0.2rem;
+}
+/* A trim knob that cannot reach the current source says so rather than
+   pretending to work: this station plays past the filter graph. */
+.chevy-subknob.is-inert {
+  opacity: 0.45;
+}
+.chevy-subknob.is-inert .chevy-subknob-cap::before {
+  background: #9a958a;
+}
+/* Every control is reachable by keyboard, so every control shows focus. */
+.chevy-dial:focus-visible,
+.chevy-key:focus-visible,
+.chevy-knob:focus-visible,
+.chevy-subknob:focus-visible,
+.chevy-mini button:focus-visible,
+.chevy-genres button:focus-visible,
+.chevy-station:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+.chevy-knob:focus-visible,
+.chevy-subknob:focus-visible {
+  outline-offset: 3px;
+}
+@keyframes chevy-wait {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Phones: the dash condenses so everything sits on one screen. The control
+   bar gets the full width of the faceplate instead of being squeezed into the
+   gap between two knobs, where it wrapped into three ragged rows. */
+@media (max-width: 860px) {
+  /* Too narrow for two columns: the radio, its screen, then the guide. */
+  .chevy-dash {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "radio"
+      "screen"
+      "guide";
+    row-gap: 0.9rem;
+  }
+  .chevy-readout {
+    margin: 0 0.55rem 0.3rem;
+  }
+}
+@media (max-width: 560px) {
+  .chevy-dash {
+    padding: 0.7rem;
+  }
+  .chevy-list {
+    height: 180px;
+  }
+  .chevy-freq b {
+    font-size: 1.6rem;
+  }
+  .chevy-knob {
+    width: 58px;
+    height: 58px;
+  }
+  .chevy-knob-row {
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "vol tune"
+      "mini mini";
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+  .chevy-knob--vol {
+    grid-area: vol;
+  }
+  .chevy-knob--tune {
+    grid-area: tune;
+  }
+  .chevy-mini {
+    grid-area: mini;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+  }
+  .chevy-mini button {
+    padding: 0.3rem 0.2rem;
+  }
+  .chevy-subknobs {
+    gap: 2.2rem;
+  }
+  /* Half the readings on a narrow dial: six of them crowd into each other,
+     and the ruler still says where the gaps are. */
+  .chevy-dial-number:nth-of-type(even) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .radio-3d-loading p {
+    animation: none;
+  }
+  .chevy-station.is-waiting b,
+  .chevy-station.is-waiting small {
+    animation: none;
+  }
+}
+
 /* ---- Vintage dash radio ------------------------------------------- */
 .car-radio {
   display: grid;
@@ -834,6 +1781,7 @@
   color: #15120f;
   pointer-events: none;
   transition: left 0.08s linear;
+  -webkit-user-select: none;
   user-select: none;
 }
 .payment-card:active {

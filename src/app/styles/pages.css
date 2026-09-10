@@ -195,7 +195,7 @@
 .dropoff-arrival {
   position: relative;
   min-height: 0;
-  padding: 196px 0 96px;
+  padding: calc(196px + var(--notice-h, 0px)) 0 96px;
   overflow: hidden;
   color: #fff;
   background:
@@ -733,7 +733,16 @@
   place-items: center;
   border: 18px solid var(--yellow);
   border-radius: 50%;
-  animation: slow-spin 14s linear infinite;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .part-stamp {
+    animation: slow-spin 14s linear infinite;
+  }
+  /* The ring spins under the mark, so the mark counter-rotates in sync —
+     same duration, timing and start — and "OHAT" reads upright forever. */
+  .part-stamp span {
+    animation: slow-spin 14s linear infinite reverse;
+  }
 }
 .part-stamp::before {
   content: "";
@@ -747,83 +756,34 @@
   font-size: 1.45rem;
   font-weight: 900;
 }
+/* The stamp is fluid (an fr column, aspect-ratio 1), so the lug spokes must
+   not pivot on a hardcoded offset — the old calc(50% + 92px) origin only
+   lined up at one size and scattered the lugs inside the ring. Each <i> now
+   spans the stamp plus a symmetric overhang, which puts its own center on
+   the stamp's center (the default transform-origin), and paints only its
+   top 38px: the lug crosses the rim exactly as before, at every size. */
 .part-stamp i {
   position: absolute;
-  width: 18px;
-  height: 38px;
   top: -28px;
-  background: var(--yellow);
+  left: calc(50% - 9px);
+  width: 18px;
+  height: calc(100% + 56px);
+  background: linear-gradient(to bottom, var(--yellow) 38px, transparent 38px);
 }
 .part-stamp i:nth-child(2) {
   transform: rotate(60deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(3) {
   transform: rotate(120deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(4) {
   transform: rotate(180deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(5) {
   transform: rotate(240deg);
-  transform-origin: 9px calc(50% + 92px);
 }
 .part-stamp i:nth-child(6) {
   transform: rotate(300deg);
-  transform-origin: 9px calc(50% + 92px);
-}
-.service-detail {
-  background: var(--cream);
-}
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 7vw, 7rem);
-  align-items: start;
-}
-.detail-grid > div:first-child {
-  padding: 1rem 0;
-}
-.detail-grid h2 {
-  margin: 0 0 2rem;
-  font-family: var(--font-serif);
-  font-size: clamp(2.4rem, 5vw, 4.4rem);
-  line-height: 0.95;
-}
-.detail-grid ul {
-  display: grid;
-  gap: 0.8rem;
-  padding: 0;
-  list-style: none;
-}
-.detail-grid li {
-  position: relative;
-  padding: 1rem 1rem 1rem 3.2rem;
-  background: rgba(255, 255, 255, 0.5);
-  border-bottom: 2px solid var(--ink);
-  font-weight: 750;
-}
-.detail-grid li::before {
-  content: "✓";
-  position: absolute;
-  left: 0.9rem;
-  top: 0.65rem;
-  display: grid;
-  place-items: center;
-  width: 27px;
-  height: 27px;
-  background: var(--yellow);
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-}
-.includes-card {
-  padding: clamp(2rem, 5vw, 4rem);
-  background: var(--paper);
-  border: 4px solid var(--ink);
-  box-shadow: 12px 12px 0 var(--red);
-  transform: rotate(1deg);
 }
 .ticket-locale {
   display: block;
@@ -840,11 +800,6 @@
   flex-wrap: wrap;
   gap: 0.8rem;
   margin-top: 1.5rem;
-}
-.detail-grid > div > p:not(.eyebrow),
-.includes-card > p:not(.eyebrow) {
-  margin: 0;
-  line-height: 1.75;
 }
 .service-cost-copy {
   max-width: 760px;
@@ -1006,6 +961,9 @@
   background: var(--yellow);
   box-shadow: 8px 8px 0 var(--blue);
   transform: rotate(-0.35deg);
+}
+.service-panel-why-us .eyebrow.dark {
+  color: var(--red-dark);
 }
 .service-panel-cost {
   grid-column: span 7;
@@ -1459,6 +1417,44 @@
   /* Warm the stock map tiles toward the catalog palette. */
   filter: sepia(0.28) saturate(0.92) contrast(1.04);
 }
+.map-consent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+.map-consent strong {
+  max-width: 28ch;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+}
+.map-consent p {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.map-consent-settings {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.7rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.map-consent-settings:hover,
+.map-consent-settings:focus-visible {
+  color: var(--red-dark);
+}
 .shop-map figcaption {
   display: flex;
   flex-wrap: wrap;
@@ -1680,4 +1676,159 @@
   padding-top: 0.7rem;
   color: var(--muted);
   font-size: 0.75rem;
+}
+
+.award-section {
+  position: relative;
+  padding: clamp(6rem, 11vw, 10rem) 0;
+  background: var(--red);
+  color: #fff;
+}
+.award-grid {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: center;
+}
+.award-badge {
+  width: min(100%, 360px);
+  aspect-ratio: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border: 12px double var(--yellow);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 14px 14px 0 var(--ink);
+  transform: rotate(-4deg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.award-badge:hover {
+  transform: rotate(-2deg) scale(1.04);
+  box-shadow: 18px 18px 0 var(--ink);
+}
+.award-badge img {
+  display: block;
+  width: 110px;
+  height: auto;
+  margin: 0 auto 0.35rem;
+}
+.award-badge small {
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.15em;
+}
+.award-badge strong {
+  color: var(--red);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 0.9;
+}
+.award-badge b {
+  color: var(--red);
+  letter-spacing: 0.13em;
+}
+.award-grid > div:last-child > p:not(.eyebrow) {
+  max-width: 650px;
+  color: #f2dcdc;
+  line-height: 1.7;
+}
+
+.reviews-section {
+  padding-top: clamp(6rem, 11vw, 9rem);
+}
+
+/* ---------------------------------------------------------------------------
+   Long-form legal copy: /privacy. Narrower than the marketing sections
+   because unbroken prose gets hard to track past about 70 characters. */
+.legal-doc {
+  max-width: 68ch;
+}
+.legal-doc h2 {
+  margin: 2.75rem 0 0.85rem;
+  font-size: clamp(1.15rem, 2.1vw, 1.5rem);
+  line-height: 1.25;
+}
+.legal-doc > h2:first-child {
+  margin-top: 0;
+}
+.legal-doc p,
+.legal-doc li {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.legal-doc p {
+  margin: 0 0 1rem;
+}
+.legal-doc ul {
+  margin: 0 0 1.35rem;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.7rem;
+}
+.legal-doc strong {
+  color: var(--ink);
+}
+.legal-doc a {
+  color: inherit;
+  text-underline-offset: 0.18em;
+}
+
+/* Shown on /reviews when no quote has been verified against its source — see
+   the note on `reviewExcerpts`. Styled as a confident destination rather than
+   an empty state, because pointing at the real profiles is a stronger claim
+   than reprinting a quote on our own website. */
+.review-source-invite {
+  max-width: 46rem;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  box-shadow: 9px 9px 0 var(--yellow);
+}
+.review-source-invite h3 {
+  margin: 0.3rem 0 0.7rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.1;
+}
+.review-source-invite p {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.review-source-invite .button {
+  margin-top: 0.2rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Loading placeholder — see components/site-image.tsx.
+
+   Painted as the image's own `background`, not a wrapper element. An image's
+   background shows through only while it has no pixels, and is covered the
+   moment they arrive, which gives a placeholder that costs the surrounding
+   layout absolutely nothing. The wrapper this replaces became the flex/grid
+   item in place of the image and broke centred cards, a stacking context and
+   a blend mode across the site.
+
+   Two layers: the shop's diagonal hatch, and a tyre with air going into the
+   tread, pulsing as if being pumped.
+--------------------------------------------------------------------------- */
+.site-image {
+  background-color: var(--cream);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='%23a8161c' stroke-width='5'%3E%3Ccircle cx='24' cy='24' r='15' stroke='%23171412' stroke-opacity='.16'/%3E%3Ccircle cx='24' cy='24' r='5.5' stroke-width='3' stroke='%23171412' stroke-opacity='.22'/%3E%3Cpath d='M24 9a15 15 0 0 1 13 7.5' stroke-linecap='round'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(-45deg, rgba(23, 20, 18, 0.05) 0 10px, transparent 10px 20px);
+  background-repeat: no-repeat, repeat;
+  background-position:
+    center,
+    0 0;
+  background-size: clamp(28px, 22%, 64px), auto;
+}
+/* Real pixels have arrived: drop the placeholder. Kept keyed off the load
+   event rather than a timer, so it always tells the truth about the image. */
+.site-image.is-loaded {
+  background: none;
 }

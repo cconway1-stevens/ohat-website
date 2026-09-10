@@ -1,6 +1,6 @@
 # Privacy compliance record — Ocean Heights Auto & Tire
 
-Prepared 2026-08-01, after adding Google Analytics 4 to the site. This is the
+Prepared 2026-08-01 and re-audited 2026-09-10. This is the
 working record of what the site collects, which laws reach it, and what was
 done about them.
 
@@ -17,11 +17,12 @@ business: it is roughly two orders of magnitude below the volume thresholds
 that make an entity a covered controller. The new NJ data broker law does not
 apply either — the shop neither sells nor licenses personal data.
 
-The obligation that _does_ bind, regardless of size, is contractual: Google's
-Analytics Terms of Service require any site running the tag to publish a
-privacy policy disclosing the use of analytics and cookies. The site had no
-privacy policy at all, so adding GA4 put it out of compliance with Google's
-terms the moment the tag shipped. That is now fixed.
+Google's Analytics Terms require a public privacy policy disclosing Analytics
+and its cookies. EU/UK rules can also require prior, affirmative consent for
+non-essential analytics regardless of the business's size or US location. The
+site now takes the conservative global approach: no optional analytics or
+weather request loads until the visitor chooses it, refusal is as easy as
+acceptance, choices are granular and can be withdrawn from every page.
 
 ## Does the NJDPA apply?
 
@@ -76,7 +77,7 @@ The tag is therefore configured to stay strictly on the measurement side:
 | `allow_google_signals`             | false       | No cross-device tracking from signed-in Google users |
 | `allow_ad_personalization_signals` | false       | Belt and braces on the above                         |
 | `anonymize_ip`                     | true        | Truncates the visitor's IP                           |
-| `analytics_storage`                | follows GPC | Cookieless when the visitor signals opt-out          |
+| `analytics_storage`                | opt-in only | Google does not load or receive a ping before consent |
 
 With advertising off across the board, this is first-party measurement, and the
 "no sale" position is a straightforward one to defend. **If anyone later
@@ -138,8 +139,9 @@ Audited by reading the source, not by assumption:
 - **Local storage** — arcade high scores, game settings, and a 30-minute
   weather cache. Never transmitted; lives on the visitor's device.
 - **Third-party requests that necessarily expose the visitor's IP:** Google
-  (analytics script, webfont), Open-Meteo (header weather), Radio-Browser
-  (arcade radio game only).
+  Analytics (only after consent), Open-Meteo (only after weather consent),
+  Google Maps (only after pressing Load Google Map), and Radio-Browser plus a
+  selected stream host (only after using the arcade radio).
 - **Open-Meteo is queried with the shop's own coordinates**, never the
   visitor's. No geolocation is requested from the browser anywhere on the site.
 
@@ -152,11 +154,9 @@ straightforward.
    third-party requests, local storage, choices, NJ residents, children,
    retention and contact details. Linked from the sitewide footer and listed in
    both sitemaps, since a notice has to be reasonably accessible to count.
-2. **Global Privacy Control honoured** — `analytics_storage` is set to `denied`
-   when `navigator.globalPrivacyControl` is true, via Google Consent Mode. A
-   visitor with GPC set is measured without cookies, with no banner to dismiss.
-   Not legally required of this shop; implemented because it is the right
-   default and it costs nothing.
+2. **Global Privacy Control honoured** — both visitor-analytics services remain
+   off when `navigator.globalPrivacyControl` is true. Google is completely
+   blocked, so it receives no cookieless consent-mode ping.
 3. **Advertising disabled** in the Google tag, per the table above.
 4. **Stale comment corrected** in `app/layout.tsx`, which claimed no consent
    banner was needed — true of Vercel's cookieless analytics, not of GA4.
@@ -165,17 +165,33 @@ straightforward.
    under "Keep the policy true": an inaccurate privacy policy is a worse
    position than none, because it is a representation to consumers.
 
+6. **Klaro consent controls** — the self-hosted, open-source Klaro CMP gives the first visit equally
+   prominent Allow all optional services and Use essential services only actions, plus granular
+   choices. Google Analytics, Vercel Web Analytics and Open-Meteo weather can be selected separately.
+   A sitewide footer button
+   reopens the choices. Withdrawing Google consent stops future collection and
+   removes accessible `_ga` cookies.
+7. **Google Maps click-to-load** — merely opening `/contact` no longer contacts
+   Google. Radio APIs remain action-triggered because choosing a live station is
+   the user's explicit request for that service.
+8. **Automated privacy inventory** — `dev/privacy-services.json` records every executable
+   third-party service, its activation rule, its Klaro service where applicable, and the policy
+   language that covers it. `npm run check:privacy` fails when those links drift, detects
+   unregistered executable third-party URLs, and uses Playwright to verify the real consent gates,
+   GPC behavior, and click-to-load map. GitHub Actions runs it for every change.
+9. **Termly policy and request workflow** — the owner-supplied Termly draft was treated as source
+   material, not pasted as executable generator markup. Its incomplete placeholders and inaccurate
+   advertising, precise-location, and account claims were removed. The useful rights, verification,
+   appeal, security, transfer, and request language was adapted to the site's real practices, and
+   Termly's hosted data-subject request form is linked as an optional, user-initiated destination.
+
 ## Deliberately not done
 
-- **No cookie consent banner.** Under current US state law, banners are not
-  required for first-party analytics with advertising disabled, and the NJDPA
-  does not reach this business at all. A banner would add friction for every
-  visitor — on a site whose entire goal is getting someone to tap a phone
-  number — in exchange for no compliance benefit. The GPC signal is honoured
-  instead, which serves the same purpose without the interruption. Revisit if
-  the shop ever advertises to EU/UK visitors, where consent rules are stricter
-  and genuinely do require a prompt.
-- **No consent management platform.** See below.
+- **No second consent management platform.** Klaro remains the one consent source of truth. The
+  Termly website UUID is deliberately not loaded: running Termly CMP and Klaro together could show
+  duplicate banners, store conflicting choices, and make service activation harder to audit. Termly
+  is used only for policy source material and its user-initiated request form. Reassess the CMP if ad
+  technology, forms, or additional trackers are added.
 
 ## On buying a compliance tool
 

@@ -10,7 +10,7 @@
 #   1. Static (no build): format, lint, next lint, typecheck, dead code,
 #      architecture, bloat.
 #   2. Build + tests: both production builds and the route/SEO/hours tests.
-#   3. Browser audits (need dist/client + Chromium): bundle, Lighthouse,
+#   3. Browser audits (need dist/client + Chromium): bundle, fast Lighthouse,
 #      accessibility, slow-bandwidth, memory.
 set -uo pipefail
 
@@ -22,9 +22,11 @@ step() {
   printf '\n\033[1m▶ %s\033[0m\n' "$name"
   if "$@"; then
     printf '\033[32m  ✓ %s\033[0m\n' "$name"
+    return 0
   else
     printf '\033[31m  ✗ %s\033[0m\n' "$name"
     FAILED+=("$name")
+    return 1
   fi
 }
 
@@ -38,15 +40,20 @@ step "architecture" npm run check:architecture
 step "bloat (advisory)" npm run check:bloat
 
 # 2. Build and tests.
-step "tests (both builds)" npm test
+step "tests (static export + all tiers)" npm test
+step "cloudflare worker build" npm run build
 
-# 3. Browser audits against the static export.
-step "page smoke test" npm run check:pages
+# 3. Browser audits against the static export. Bundle is browser-free, so it
+#    still runs when the preflight fails; the other checks would only repeat
+#    the same missing-browser error.
 step "bundle budget" npm run check:bundle
-step "lighthouse" npm run check:lighthouse
-step "accessibility" npm run check:a11y
-step "slow bandwidth" npm run check:slow-network
-step "memory" npm run check:memory
+if step "browser preflight" npm run check:browser:preflight; then
+  step "page smoke test" npm run check:pages
+  step "lighthouse (fast all-indexable-page pass)" npm run check:lighthouse:fast
+  step "accessibility" npm run check:a11y
+  step "slow bandwidth" npm run check:slow-network
+  step "memory" npm run check:memory
+fi
 
 printf '\n────────────────────────────────\n'
 if [[ ${#FAILED[@]} -eq 0 ]]; then

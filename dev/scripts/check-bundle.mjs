@@ -16,9 +16,17 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const CLIENT = join(ROOT, "dist", "client");
 // Raised 800 → 1400 for the Parts Counter 3D cabinet, then to 1650 for the
-// vinext 1.0 runtime and Agent studio. Three.js remains the largest lazy
-// chunk. The ceiling should only move again for a deliberate feature change.
-const BUDGET_KB = Number(process.env.BUDGET_KB ?? 1650);
+// vinext 1.0 runtime and Agent studio, then to 1680 to give the nine /agent
+// route files (one per tab) their own metadata and entry chunks, then to 1720
+// for the local chat transcript, announcement, and expanded contact/hour UI,
+// then to 1760 for the 2D '57 Chevy radio dash — that rebuild deleted the
+// Three.js radio scene outright, but the hand-built chrome faceplate, dial,
+// and station guide cost more CSS than the scene it replaced saved here.
+// Three.js remains the largest lazy chunk. Raised to 1980 for the deliberate
+// addition of the self-hosted Klaro consent-management UI (173 KB unminified
+// lazy chunk plus integration code). The ceiling should only move again for a
+// deliberate feature change.
+const BUDGET_KB = Number(process.env.BUDGET_KB ?? 1980);
 
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

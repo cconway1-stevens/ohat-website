@@ -6,6 +6,7 @@ declare global {
   interface Window {
     va?: (event: string, properties?: Record<string, unknown>) => void;
     gtag?: (...args: unknown[]) => void;
+    dataLayer?: unknown[][];
   }
 }
 

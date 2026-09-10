@@ -257,6 +257,18 @@
   text-transform: uppercase;
   caret-color: var(--red);
 }
+
+/* The crossword is the only game you type into, and on a phone that clamp
+   resolved to 12.8px — under the 16px threshold at which iOS Safari force-
+   zooms the page around a focused input. Every tap on a square therefore
+   rescaled the whole board and shunted it around under the keyboard, which is
+   what made the grid feel like it was jumping. 16px stops the zoom outright;
+   the squares are ~33px on a phone, so the letter simply reads larger. */
+@media (pointer: coarse) {
+  .crossword-cell input {
+    font-size: max(16px, clamp(0.8rem, 2.4vw, 1.55rem));
+  }
+}
 .crossword-cell:focus-within {
   z-index: 2;
   outline: 3px solid var(--blue);
@@ -615,7 +627,6 @@
 .garage-blackjack-game.is-terms-pending .garage-blackjack-keys,
 .garage-blackjack-game.is-terms-pending .garage-blackjack-audio-credit {
   filter: grayscale(1);
-  opacity: 0.38;
   pointer-events: none;
 }
 .garage-blackjack-score {
@@ -883,6 +894,9 @@
   gap: 0.65rem;
 }
 .garage-blackjack-controls button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
   min-width: 100px;
   min-height: 48px;
   padding: 0.55rem 0.9rem;
@@ -1197,11 +1211,20 @@ body.is-play-locked .arcade-lock-bar,
    browser's own pull-to-refresh. */
 /* `top` is set inline to the negative scroll offset, so the view stays put
    instead of snapping to the top of the page. */
+/* iOS Safari treats `html` as the actual scrolling element: locking only
+   `body` still lets the page rubber-band underneath the fixed overlay. Both
+   need `overflow: hidden` and a fixed height for the lock to hold there. */
+html.is-play-locked {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 body.is-play-locked {
   position: fixed;
   left: 0;
   right: 0;
   width: 100%;
+  height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
 }
@@ -1376,6 +1399,9 @@ body.is-play-locked {
   font-weight: 950;
   cursor: pointer;
   touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .tread-stack-controls button:active {
   transform: translate(3px, 3px);
@@ -1438,7 +1464,12 @@ body.is-play-locked {
   font-weight: 950;
   cursor: pointer;
   touch-action: manipulation;
+  /* iOS honours only the prefixed property. Unprefixed, holding the fire
+     button — the normal way to play a shooter — started a text selection and
+     raised the copy/define callout over the board. */
+  -webkit-user-select: none;
   user-select: none;
+  -webkit-touch-callout: none;
 }
 .lot-defender-controls .is-fire {
   background: var(--blue);
@@ -1715,7 +1746,7 @@ body.is-play-locked {
   /* The arcade hero gives up some height on phones so the board starts
      nearer the top of the screen. */
   .game-hero {
-    padding: 120px 0 38px;
+    padding: 120px 0 90px;
   }
   .game-hero h1 {
     font-size: clamp(2.6rem, 14vw, 4rem);
@@ -1730,10 +1761,6 @@ body.is-play-locked {
   .match-tile-back,
   .match-tile-face {
     box-shadow: 3px 3px 0 var(--ink);
-  }
-  .match-tile-face img {
-    width: 26px;
-    height: 26px;
   }
   .match-tile-face small {
     font-size: 0.44rem;
@@ -1804,67 +1831,4 @@ body.is-play-locked {
   .arcade-cabinet {
     box-shadow: 6px 6px 0 var(--ink);
   }
-}
-
-.award-section {
-  position: relative;
-  padding: clamp(6rem, 11vw, 10rem) 0;
-  background: var(--red);
-  color: #fff;
-}
-.award-grid {
-  display: grid;
-  grid-template-columns: 0.7fr 1.3fr;
-  gap: clamp(3rem, 8vw, 8rem);
-  align-items: center;
-}
-.award-badge {
-  width: min(100%, 360px);
-  aspect-ratio: 1;
-  display: grid;
-  place-content: center;
-  text-align: center;
-  border: 12px double var(--yellow);
-  border-radius: 50%;
-  background: var(--paper);
-  color: var(--ink);
-  box-shadow: 14px 14px 0 var(--ink);
-  transform: rotate(-4deg);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-}
-.award-badge:hover {
-  transform: rotate(-2deg) scale(1.04);
-  box-shadow: 18px 18px 0 var(--ink);
-}
-.award-badge img {
-  display: block;
-  width: 110px;
-  height: auto;
-  margin: 0 auto 0.35rem;
-}
-.award-badge small {
-  font-size: 0.72rem;
-  font-weight: 950;
-  letter-spacing: 0.15em;
-}
-.award-badge strong {
-  color: var(--red);
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 0.9;
-}
-.award-badge b {
-  color: var(--red);
-  letter-spacing: 0.13em;
-}
-.award-grid > div:last-child > p:not(.eyebrow) {
-  max-width: 650px;
-  color: #f2dcdc;
-  line-height: 1.7;
-}
-
-.reviews-section {
-  padding-top: clamp(6rem, 11vw, 9rem);
 }

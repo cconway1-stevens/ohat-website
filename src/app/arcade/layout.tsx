@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import "@/app/styles/arcade.css";
+import "@/app/styles/games.css";
+import "@/app/styles/radio.css";
 
 // The arcade is an easter egg — a reward for the curious, not a landing page.
 // Indexing it would put pages with no service intent into results for a shop

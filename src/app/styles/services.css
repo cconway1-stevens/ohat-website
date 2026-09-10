@@ -281,6 +281,66 @@
   color: var(--muted);
   line-height: 1.65;
 }
+
+@media (min-width: 1600px) {
+  .services-intro {
+    padding-block: clamp(10rem, 8vw, 18rem);
+  }
+
+  .services-intro::before {
+    top: clamp(4rem, 3vw, 7rem);
+    right: 4vw;
+    font-size: clamp(0.7rem, 0.5vw, 1.05rem);
+  }
+
+  .section-heading-row {
+    gap: clamp(3rem, 5vw, 12rem);
+    margin-bottom: clamp(3rem, 3vw, 7rem);
+  }
+
+  .section-heading-row > p,
+  .services-intro .section-heading-row > p {
+    max-width: 32em;
+    font-size: clamp(1.05rem, 0.78vw, 1.65rem);
+  }
+
+  .service-preview {
+    gap: clamp(1.2rem, 1.5vw, 3.5rem);
+    margin: clamp(3.5rem, 3vw, 7rem) 0 clamp(2.25rem, 2vw, 5rem);
+  }
+
+  .service-preview article {
+    min-height: clamp(310px, 16vw, 640px);
+    padding: clamp(2rem, 2vw, 4.5rem);
+    border-width: clamp(3px, 0.16vw, 6px);
+    box-shadow: clamp(8px, 0.48vw, 18px) clamp(8px, 0.48vw, 18px) 0 var(--ink);
+  }
+
+  .service-preview article:nth-child(2) {
+    margin-top: clamp(2.5rem, 2.2vw, 5rem);
+  }
+
+  .service-preview article:nth-child(3) {
+    margin-top: clamp(5rem, 4.4vw, 10rem);
+  }
+
+  .service-preview article > span {
+    font-size: clamp(3.7rem, 3.2vw, 7rem);
+  }
+
+  .service-preview h3 {
+    font-size: clamp(2.5rem, 2vw, 4.5rem);
+  }
+
+  .service-preview p {
+    font-size: clamp(1rem, 0.72vw, 1.5rem);
+  }
+
+  .service-preview a,
+  .text-link {
+    font-size: clamp(1rem, 0.68vw, 1.4rem);
+  }
+}
 .ride-track {
   position: relative;
   display: grid;
@@ -300,7 +360,6 @@
     ),
     var(--red);
   background-position: 0 50%;
-  animation: ride-lanes 8s linear infinite;
   box-shadow: 8px 8px 0 var(--yellow);
 }
 .ride-track::before {
@@ -450,6 +509,58 @@
   list-style: none;
   background: var(--ink);
   border: 3px solid var(--ink);
+}
+
+/* The compact controls belong to the homepage logo wall. The full matching
+   game stylesheet is loaded with the game only after a visitor opens it. */
+.make-game-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--red);
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.make-game-toggle:hover {
+  color: var(--red-dark);
+}
+.make-grid-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.2rem;
+  margin-bottom: 0.55rem;
+}
+.make-order {
+  display: inline-flex;
+  gap: 1rem;
+}
+.make-order .make-game-toggle[aria-pressed="true"] {
+  color: var(--ink);
+  text-decoration-color: var(--yellow);
+}
+@keyframes tile-deal {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.make-grid li {
+  animation: tile-deal 0.34s ease-out both;
+  animation-delay: var(--tile-delay, 0ms);
 }
 .make-grid li {
   min-height: 118px;

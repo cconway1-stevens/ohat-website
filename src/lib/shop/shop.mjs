@@ -25,6 +25,78 @@ const mapsQuery = encodeURIComponent(
   `Ocean Heights Auto & Tire, ${street}, ${city}, ${state} ${zip}`,
 );
 
+// --- Hours: the single source of truth -------------------------------------
+// The canonical schedule is the four fields below (`OPEN_DAYS`, `OPENS`,
+// `CLOSES`, `CLOSES_BY_DAY`). Every human-readable hours string on the site —
+// the placard, the footer, the contact page, the chat brain, the vCard — is
+// DERIVED from them here, never written a second time. Change a time in one
+// place and every surface agrees.
+
+/** One name per index of Date.getUTCDay() — the single weekday-name list the
+ *  hours engine and every calendar walk read from. */
+export const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+/** One formatter for every "8:00 AM" string on the site — the single place a
+ *  time is turned into words, so the placard, the footer, the contact page
+ *  and the chat brain can never disagree about how "08:00" reads. */
+export function formatTime(value) {
+  const [hour, minute] = value.split(":").map(Number);
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(2000, 0, 1, hour, minute));
+}
+
+const DAY_ABBR = {
+  Monday: "Mon",
+  Tuesday: "Tue",
+  Wednesday: "Wed",
+  Thursday: "Thu",
+  Friday: "Fri",
+  Saturday: "Sat",
+  Sunday: "Sun",
+};
+
+// The canonical schedule — edit these four and nothing else.
+const OPEN_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const OPENS = "08:00";
+const CLOSES = "17:00";
+const CLOSES_BY_DAY = { Friday: "16:00" };
+
+// Derived labels and strings — do not edit; they follow the four fields above.
+const weekdayDays = OPEN_DAYS.filter((day) => !(day in CLOSES_BY_DAY));
+const fridayDays = Object.keys(CLOSES_BY_DAY);
+// WEEKDAY_NAMES is in getUTCDay order (Sunday first); the label reads
+// chronologically, so sort the closed days Monday-first.
+const CHRONO_INDEX = {
+  Monday: 0,
+  Tuesday: 1,
+  Wednesday: 2,
+  Thursday: 3,
+  Friday: 4,
+  Saturday: 5,
+  Sunday: 6,
+};
+const weekendDays = WEEKDAY_NAMES.filter((day) => !OPEN_DAYS.includes(day)).sort(
+  (a, b) => CHRONO_INDEX[a] - CHRONO_INDEX[b],
+);
+const rangeLabel = (days) => (days.length === 1 ? days[0] : `${days[0]}–${days[days.length - 1]}`);
+const weekdayLabel = rangeLabel(weekdayDays);
+const fridayLabel = rangeLabel(fridayDays);
+const weekendLabel = rangeLabel(weekendDays);
+const weekdayHours = `${formatTime(OPENS)}–${formatTime(CLOSES)}`;
+const fridayHours = `${formatTime(OPENS)}–${formatTime(CLOSES_BY_DAY[fridayDays[0]])}`;
+const display = `${weekdayLabel}, ${weekdayHours}; ${fridayLabel}, ${fridayHours}`;
+const compact = `${DAY_ABBR[weekdayDays[0]]}–${DAY_ABBR[weekdayDays[weekdayDays.length - 1]]} ${weekdayHours} · ${DAY_ABBR[fridayDays[0]]} ${fridayHours}`;
+
 export const shop = {
   name: "Ocean Heights Auto & Tire",
   // Plain-text form for places that cannot render an entity, e.g. the vCard.
@@ -63,14 +135,40 @@ export const shop = {
   timezone: "America/New_York",
 
   hours: {
-    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    opens: "08:00",
-    closes: "17:00",
-    weekdayLabel: "Monday-Friday",
-    weekendLabel: "Saturday-Sunday",
+    days: OPEN_DAYS,
+    opens: OPENS,
+    closes: CLOSES,
+    /** Days whose close time differs from `closes` above. Friday closes an
+     *  hour early; every other configured day falls through to `closes`. */
+    closesByDay: CLOSES_BY_DAY,
+    /**
+     * Owner-posted closures — days the shop is shut even though the weekly
+     * schedule above says open: a storm day, staff training, a family
+     * emergency. One entry per closure:
+     *
+     *   { from: "2026-12-24", to: "2026-12-26", reason: "Holiday break" }
+     *
+     * `to` is optional (a single-day closure when omitted); both ends are
+     * inclusive. `reason` is a short noun phrase with no period — the engine
+     * wraps it in the `reasons.exception` wording, and a period would break
+     * the placard's line splitting. Entries with a blank reason or malformed
+     * dates are ignored, so a half-finished draft can never close the shop.
+     * Every surface — placard, notice banner, chat brain, hours page, dash —
+     * reads this same list, so posting it once makes the whole site agree on
+     * why the doors are shut.
+     */
+    exceptions: [],
+    // Derived from OPEN_DAYS / OPENS / CLOSES / CLOSES_BY_DAY above — the
+    // labels and one-line schedules are computed, never hand-written, so a
+    // changed close time can't leave a stale "8:00 AM–5:00 PM" behind.
+    weekdayLabel,
+    weekdayHours,
+    fridayLabel,
+    fridayHours,
+    weekendLabel,
     weekendValue: "Closed",
-    display: "Monday–Friday, 8:00 AM–5:00 PM",
-    compact: "Monday–Friday · 8:00 AM–5:00 PM",
+    display,
+    compact,
     closedNote: "Closed weekends and major holidays.",
     status: {
       openingSoonMinutes: 30,
@@ -94,10 +192,29 @@ export const shop = {
         reopens: "Reopens",
         reopensToday: "today",
         at: "at",
+        /**
+         * Why-we're-closed wording, one entry per closure kind. The placard
+         * assembles the closed line as "<reason>. Reopens <day> at <time>",
+         * so a reason phrase ends without a period and never contains one —
+         * a period would break the placard's line splitting. `{name}` is
+         * filled in by the engine: a federal holiday's name, or an entry
+         * from `hours.exceptions`. The ordinary before-open and after-close
+         * leads stay in closedToday / closedForDay above.
+         */
+        reasons: {
+          holiday: "Closed for {name}",
+          weekend: "Closed for the weekend",
+          exception: "Closed — {name}",
+        },
       },
       holidayNotice: {
         beforeName: "Holiday hours may vary for",
         afterName: "Please give us a call before stopping by.",
+        /** Wording for the days leading up to a federal holiday — the banner
+         *  shows it once fewer than `HOLIDAY_LEAD_DAYS` shop business days
+         *  remain before the next one. Same rewordable-data rule as above. */
+        upcomingKicker: "Coming up:",
+        upcomingNote: "Hours may vary around the holiday.",
       },
       signPreview: {
         holdMs: 5_000,
@@ -228,12 +345,21 @@ export function autoRepairSchema(extra = {}) {
       longitude: shop.geo.longitude,
     },
     openingHoursSpecification: [
+      // Built from `shop.hours.closesByDay` rather than a second hardcoded day
+      // list, so a day added there picks up its own OpeningHoursSpecification
+      // automatically instead of silently keeping the default close time.
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: shop.hours.days,
+        dayOfWeek: shop.hours.days.filter((day) => !(day in shop.hours.closesByDay)),
         opens: shop.hours.opens,
         closes: shop.hours.closes,
       },
+      ...Object.entries(shop.hours.closesByDay).map(([day, closes]) => ({
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [day],
+        opens: shop.hours.opens,
+        closes,
+      })),
       {
         // Saying "closed" explicitly rather than by omission: an equal
         // opens/closes time is schema.org's documented way to mark a day

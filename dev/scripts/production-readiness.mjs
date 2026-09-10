@@ -3,9 +3,10 @@ import { spawn } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { join, relative, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
-const root = new URL("../..", import.meta.url).pathname;
+const root = fileURLToPath(new URL("../..", import.meta.url));
 const artifactRoot = join(root, "artifacts", "production-readiness");
 const stamp = new Date()
   .toISOString()

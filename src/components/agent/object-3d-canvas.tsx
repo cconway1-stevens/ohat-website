@@ -4,7 +4,7 @@
  * Object3DCanvas — a tiny transparent Three.js stage for one faceless part
  * object from part-objects-3d.ts. Loaded through next/dynamic so the Three.js
  * chunk only downloads when the studio's 3D Objects set is on screen, exactly
- * like the contact-page tire-pal scene.
+ * like the contact-page chat-widget scene.
  *
  * `animated` splits the two use cases: the Character-mode stage spins on a
  * turntable with a gentle bob, while crew-select cards render a single still

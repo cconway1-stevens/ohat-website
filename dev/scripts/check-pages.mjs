@@ -16,6 +16,7 @@ import { cpSync, existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { launchChromium } from "./lib/browser.mjs";
 import { createStaticServer, discoverRoutes } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
@@ -40,11 +41,7 @@ const server = createStaticServer(CLIENT);
 
 await new Promise((resolve) => server.listen(PORT, resolve));
 
-const { chromium } = await import("playwright");
-const executablePath =
-  process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const launchOptions = existsSync(executablePath) ? { executablePath } : {};
-let browser = await chromium.launch(launchOptions);
+let browser = await launchChromium();
 
 const pages = discoverRoutes(CLIENT).filter((p) => p.kind !== "error");
 const allRoutes = pages.map((p) => p.route);
@@ -75,16 +72,78 @@ async function checkRoute(page, route) {
   page.on("pageerror", onPageError);
   page.on("response", onResponse);
 
-  const response = await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
-  // Scroll so lazy images actually load before we check them.
-  await page.evaluate(async () => {
-    for (let y = 0; y < document.body.scrollHeight; y += 700) {
-      window.scrollTo(0, y);
-      await new Promise((r) => setTimeout(r, 60));
-    }
-    window.scrollTo(0, 0);
+  // Redirect stubs carry a `content="0"` meta-refresh that navigates away
+  // immediately — sometimes before "domcontentloaded" even returns control
+  // here. Waiting for "networkidle" races that navigation and can hang
+  // Chromium indefinitely; evaluating the DOM afterward races it too
+  // ("Execution context was destroyed"). A stub has nothing worth inspecting
+  // beyond its own HTTP status anyway, so skip straight past both.
+  const isRedirect = kindByRoute.get(route) === "redirect";
+  // The same immediate-navigation race can make `goto` itself resolve with a
+  // null response (Playwright loses track of which document to report on),
+  // even though the request plainly succeeded. `onResponse` above observed
+  // the real response independently, so redirects are judged by the absence
+  // of a failure there rather than by this return value.
+  const response = await page.goto(`${base}${route}`, {
+    waitUntil: isRedirect ? "domcontentloaded" : "load",
   });
-  await page.waitForTimeout(500);
+
+  // "networkidle" as a hard `goto` condition has hung the full 30s timeout
+  // three times in CI, always on the first real navigation of a fresh page,
+  // never twice for the same reason — it is an environment flake, not a page
+  // defect, and it took the whole sweep down via the thrown TimeoutError.
+  // Settling is still useful (deferred chunks, lazy fonts), so wait for it
+  // bounded and best-effort: genuine failures are caught independently by
+  // the response listener (status >= 400), the console/pageerror listeners,
+  // and the post-scroll broken-image check below, none of which depend on
+  // network quiescence.
+  if (!isRedirect) {
+    await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
+  }
+
+  if (isRedirect) {
+    if (failedResponses.length) fail("Route requested missing assets", { route, failedResponses });
+    if (consoleErrors.length) fail("Route emitted console errors", { route, consoleErrors });
+    if (pageErrors.length) fail("Route emitted page errors", { route, pageErrors });
+    page.off("console", onConsole);
+    page.off("pageerror", onPageError);
+    page.off("response", onResponse);
+    // The meta-refresh is still in flight (or about to be) on this page even
+    // though we've stopped waiting on it. Left alone, that in-flight
+    // navigation lands on whatever route the next iteration checks — and
+    // when a redirect's own target is the very next route in the list (as
+    // /tire-rotation's is /services/tires), it collides with that route's
+    // own `goto`, reproducing the same hang one route later. Drain it with
+    // bounded waits (never the unbounded "networkidle" that started this)
+    // so the next route starts from a settled page. Forcing it off with a
+    // hard navigation to about:blank was tried and rejected: Chromium's
+    // favicon fetch for the page being left can outlive the navigation and
+    // then gets blocked by Private Network Access from the "null" origin,
+    // adding a spurious console error to whichever route is checking next.
+    await page
+      .waitForURL((url) => url.href !== `${base}${route}`, { timeout: 3000 })
+      .catch(() => {});
+    await page.waitForLoadState("networkidle", { timeout: 3000 }).catch(() => {});
+    return;
+  }
+
+  if (!response || response.status() !== 200) {
+    fail("Route returned non-200", { route, status: response?.status() ?? null });
+  }
+
+  // `loading="lazy"` only starts a fetch once the browser judges an image
+  // close enough to the viewport, and that judgment is re-evaluated as
+  // scroll position changes — scrolling through the page and back to the
+  // top, as this used to, could leave an image that had only just come into
+  // range deprioritized again before its fetch ever started, reporting it
+  // broken when it had simply never been asked to load. Forcing every image
+  // eager and waiting for each to decode checks what this route actually
+  // ships, not how quickly a real visitor's scroll would have seen it.
+  await page.evaluate(async () => {
+    const images = Array.from(document.images);
+    for (const img of images) img.loading = "eager";
+    await Promise.all(images.map((img) => (img.complete ? null : img.decode().catch(() => {}))));
+  });
   const state = await page.evaluate(() => ({
     title: document.title,
     h1: document.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() ?? null,
@@ -94,13 +153,8 @@ async function checkRoute(page, route) {
       .map((img) => img.currentSrc || img.src),
   }));
 
-  if (response.status() !== 200) {
-    fail("Route returned non-200", { route, status: response.status() });
-  }
   if (!state.title) fail("Route has no document title", { route });
-  // Redirect stubs are meta-refresh placeholders, not content pages — they
-  // carry a title and a canonical target but no H1. Only content pages need one.
-  if (!state.h1 && kindByRoute.get(route) !== "redirect") fail("Route has no H1", { route });
+  if (!state.h1) fail("Route has no H1", { route });
   if (consoleErrors.length) fail("Route emitted console errors", { route, consoleErrors });
   if (pageErrors.length) fail("Route emitted page errors", { route, pageErrors });
   if (failedResponses.length) fail("Route requested missing assets", { route, failedResponses });
@@ -109,6 +163,33 @@ async function checkRoute(page, route) {
   page.off("console", onConsole);
   page.off("pageerror", onPageError);
   page.off("response", onResponse);
+}
+
+// Every page fires live third-party requests — Google's gtag.js and, on
+// pages with the weather reading, Open-Meteo's forecast API — that this
+// smoke test has no business depending on. Left alone, an ordinary network
+// hiccup out to the real internet from the CI runner either hangs
+// "networkidle" for the full 30s on whatever page happens to load next, or
+// surfaces as an unattributable "Failed to load resource" console error:
+// two failure shapes that each showed up on a different, unrelated route in
+// consecutive CI runs. Stubbing every non-base request with an empty,
+// always-successful response makes the whole run hermetic: it verifies this
+// export renders correctly, not whether Google's or Open-Meteo's servers
+// answered a request from this runner today. Both call sites already treat
+// a failed or absent reading as a normal, silent case, so an empty stub
+// changes nothing they render.
+async function stubThirdPartyRequests(page) {
+  await page.route(
+    (url) => !url.href.startsWith(base),
+    (route) => {
+      const isScript = route.request().resourceType() === "script";
+      route.fulfill({
+        status: 200,
+        contentType: isScript ? "application/javascript" : "application/json",
+        body: isScript ? "" : "{}",
+      });
+    },
+  );
 }
 
 async function checkLinks(page, route) {
@@ -137,21 +218,44 @@ async function checkLinks(page, route) {
 const ROUTES_PER_BROWSER = 8;
 for (let start = 0; start < routes.length; start += ROUTES_PER_BROWSER) {
   const routePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await stubThirdPartyRequests(routePage);
+  // A brand-new page's very first navigation is the flaky one in this CI
+  // environment (see the bounded-networkidle note in checkRoute). A
+  // throwaway navigation first gives the page's navigation/network tracking
+  // a chance to settle before anything timed depends on it.
+  await routePage.goto("about:blank").catch(() => {});
   for (const route of routes.slice(start, start + ROUTES_PER_BROWSER)) {
-    await checkRoute(routePage, route);
-    await checkLinks(routePage, route);
+    try {
+      await checkRoute(routePage, route);
+      // A redirect stub's own frame is gone by now (its meta-refresh already
+      // navigated it away) — its one link is the canonical target, already
+      // covered by kind classification, and the target page gets checked in
+      // its own right when its turn in `routes` comes up.
+      if (kindByRoute.get(route) !== "redirect") await checkLinks(routePage, route);
+    } catch (err) {
+      // A single route timing out (this environment's "networkidle" has
+      // hung on a first-of-batch navigation in CI three times now, never
+      // twice for the same reason) used to take the whole 50-route sweep
+      // down with it via an uncaught exception. One bad route is a real
+      // failure worth reporting; it should not hide the other 49 results.
+      fail("Route check threw", { route, error: err.message });
+    }
     process.stdout.write(`  ${route}\n`);
   }
   await routePage.close();
   if (start + ROUTES_PER_BROWSER < routes.length) {
     await browser.close();
-    browser = await chromium.launch(launchOptions);
+    browser = await launchChromium();
   }
 }
 
 // The primary conversion: the call button must point at the shop's number.
 const homePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-await homePage.goto(`${base}/`, { waitUntil: "networkidle" });
+await stubThirdPartyRequests(homePage);
+// Same bounded settle as checkRoute — this is a fresh page's first
+// navigation, the exact case where a hard "networkidle" has hung in CI.
+await homePage.goto(`${base}/`, { waitUntil: "load" });
+await homePage.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
 const callHref = await homePage.evaluate(() => {
   const el = document.querySelector('a[href^="tel:"]');
   return el?.getAttribute("href") ?? null;

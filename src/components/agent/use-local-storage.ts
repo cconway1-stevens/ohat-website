@@ -30,7 +30,13 @@ function merge<T>(fallback: T, raw: string | null): T {
   try {
     const parsed = JSON.parse(raw);
     if (Array.isArray(fallback)) return (Array.isArray(parsed) ? parsed : fallback) as T;
-    return { ...fallback, ...parsed } as T;
+    if (typeof fallback === "object" && fallback !== null) {
+      return { ...fallback, ...parsed } as T;
+    }
+    // Primitive fallback (number/string/boolean): keep the parsed value only
+    // when it matches the fallback's type — otherwise the stored value was
+    // written by an older schema and the fallback wins.
+    return (typeof parsed === typeof fallback ? parsed : fallback) as T;
   } catch {
     return fallback;
   }

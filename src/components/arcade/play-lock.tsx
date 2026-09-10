@@ -20,6 +20,10 @@ export function PlayLock() {
   const restoreTo = useRef(0);
   const pinnedRef = useRef(false);
   const nativeRef = useRef(false);
+  // Set the moment the player leaves the lock themselves. The auto-arm below
+  // checks it, so exiting stays possible — otherwise the next touch on the
+  // board would immediately re-lock and there would be no way out.
+  const dismissedRef = useRef(false);
 
   const stage = () => barRef.current?.closest<HTMLElement>(".arcade-stage") ?? null;
 
@@ -30,6 +34,9 @@ export function PlayLock() {
     const y = window.scrollY;
     restoreTo.current = y;
     document.body.style.top = `-${y}px`;
+    // iOS Safari scrolls `html`, not `body` — locking body alone still lets
+    // the page rubber-band underneath the fixed overlay there.
+    document.documentElement.classList.add("is-play-locked");
     document.body.classList.add("is-play-locked");
     pinnedRef.current = true;
     nativeRef.current = false;
@@ -40,6 +47,7 @@ export function PlayLock() {
   const exitFallback = useCallback(() => {
     if (!pinnedRef.current) return;
     pinnedRef.current = false;
+    document.documentElement.classList.remove("is-play-locked");
     document.body.classList.remove("is-play-locked");
     document.body.style.top = "";
     window.scrollTo({ top: restoreTo.current, behavior: "instant" });
@@ -62,6 +70,7 @@ export function PlayLock() {
   }, [enterFallback]);
 
   const deactivate = useCallback(() => {
+    dismissedRef.current = true;
     if (nativeRef.current) {
       if (document.fullscreenElement) void document.exitFullscreen();
       // fullscreenchange updates the state when the browser actually exits.
@@ -74,6 +83,46 @@ export function PlayLock() {
     if (active) deactivate();
     else activate();
   }, [active, activate, deactivate]);
+
+  // Touching a board used to drag the page with it, so the game slid out from
+  // under your thumb mid-move. The lock always fixed that, but only if you
+  // noticed the button first — so on touch devices the first contact with the
+  // board arms it for you.
+  //
+  // Two deliberate limits. It only applies to coarse pointers: a mouse cannot
+  // drag the page by accident, and freezing a desktop page nobody asked to
+  // freeze is rude. And it never re-arms after a manual exit — without that,
+  // leaving would be impossible, because the next touch would lock it again.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia?.("(pointer: coarse)").matches) return;
+
+    const surface = barRef.current?.closest(".arcade-stage")?.querySelector(".arcade-play-surface");
+    if (!surface) return;
+
+    const onFirstTouch = () => {
+      if (pinnedRef.current || nativeRef.current || dismissedRef.current) return;
+      enterFallback();
+    };
+    surface.addEventListener("pointerdown", onFirstTouch);
+    return () => surface.removeEventListener("pointerdown", onFirstTouch);
+  }, [enterFallback]);
+
+  // Belt-and-suspenders for iOS Safari: `position: fixed` + `overflow: hidden`
+  // on html/body is the standard scroll lock, but iOS still lets a touch that
+  // starts outside any scrollable element bubble into a page scroll/bounce.
+  // While the fallback lock is active, swallow touchmove everywhere except
+  // inside the play surface itself, which keeps its own scroll.
+  useEffect(() => {
+    if (!active || native) return;
+    const surface = barRef.current?.closest(".arcade-stage")?.querySelector(".arcade-play-surface");
+    const onTouchMove = (event: TouchEvent) => {
+      if (surface && event.target instanceof Node && surface.contains(event.target)) return;
+      event.preventDefault();
+    };
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => document.removeEventListener("touchmove", onTouchMove);
+  }, [active, native]);
 
   // Track native fullscreen enter/exit (including the browser's own Esc).
   useEffect(() => {
@@ -97,6 +146,7 @@ export function PlayLock() {
     if (!active) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      dismissedRef.current = true;
       if (nativeRef.current) {
         if (document.fullscreenElement) void document.exitFullscreen();
       } else {
@@ -108,6 +158,7 @@ export function PlayLock() {
       window.removeEventListener("keydown", onKeyDown);
       if (pinnedRef.current) {
         pinnedRef.current = false;
+        document.documentElement.classList.remove("is-play-locked");
         document.body.classList.remove("is-play-locked");
         document.body.style.top = "";
         window.scrollTo({ top: restoreTo.current, behavior: "instant" });

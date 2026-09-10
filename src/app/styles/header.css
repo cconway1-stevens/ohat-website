@@ -2,7 +2,9 @@
 .site-header {
   position: absolute;
   z-index: 50;
-  top: 0;
+  /* Sits below the notice banner when one is active — the banner publishes
+     its height as --notice-h (0px on notice-free days). */
+  top: var(--notice-h, 0px);
   left: 0;
   width: 100%;
   color: #fff;
@@ -269,21 +271,26 @@
   text-wrap: balance;
 }
 .shop-hours-status.is-open {
-  color: #146b3a;
-  background: linear-gradient(0deg, rgba(20, 107, 58, 0.09), rgba(20, 107, 58, 0.09)), var(--paper);
+  color: #0f5b6b;
+  background:
+    linear-gradient(0deg, rgba(26, 113, 131, 0.09), rgba(26, 113, 131, 0.09)), var(--paper);
 }
 .shop-hours-status.is-open .shop-status-dot {
-  background: #1f9150;
+  background: #1f7f9e;
   /* A lit bulb glows a little into its surround. */
-  box-shadow: 0 0 0 3px rgba(31, 145, 80, 0.24);
+  box-shadow: 0 0 0 3px rgba(31, 127, 158, 0.24);
 }
 .shop-hours-status.is-opening-soon .shop-status-dot,
 .shop-hours-status.is-closing-soon .shop-status-dot {
   background: #e08c1a;
   box-shadow: 0 0 0 3px rgba(224, 140, 26, 0.24);
 }
+/* Closed is a hollow ring, not a solid lamp: the shape (solid vs hollow) and
+   the colour (blue vs red) both carry the state, so the sign stays legible to
+   red-green colour-blind visitors who can't tell the two lamps apart. */
 .shop-hours-status.is-closed .shop-status-dot {
-  background: var(--red);
+  background: transparent;
+  border-color: var(--red);
 }
 .shop-hours-status.is-opening-soon,
 .shop-hours-status.is-closing-soon {
@@ -359,6 +366,28 @@
   font-weight: 800;
   line-height: 1.35;
 }
+/* The small pointer under the sign: a customer who just learned the shop is
+   shut for a holiday gets the complete schedule one click away. Quieter than
+   the sign itself — underlined text, not another plate. */
+.shop-hours-more {
+  flex-basis: 100%;
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.shop-hours-more:hover {
+  color: var(--red);
+}
+
+.shop-hours-more:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
 .directions-dialog-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -421,9 +450,9 @@
    so a background set on it stops short of the viewport edges. */
 .nav-band {
   background: linear-gradient(90deg, rgba(23, 20, 18, 0.98), rgba(105, 12, 17, 0.96));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
 }
 .nav-wrap {
+  width: min(1680px, calc(100% - 32px));
   min-height: 112px;
   display: flex;
   align-items: center;
@@ -441,6 +470,24 @@
   object-fit: contain;
   filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.34));
   transform: rotate(-1deg);
+  transform-origin: 50% 0%;
+}
+/* A faint hanging-sign sway — the same idea as the OPEN/CLOSED plate's
+   door-sign-sway, just for the badge over the door. Idle motion only, no
+   layout effect, so it can't disturb the masthead height. */
+@media (prefers-reduced-motion: no-preference) {
+  .brand img {
+    animation: brand-sway 4.2s ease-in-out infinite;
+  }
+}
+@keyframes brand-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
 }
 .desktop-nav {
   flex: 1;
@@ -742,5 +789,46 @@
 @media (prefers-reduced-motion: no-preference) {
   .booking-phone .retro-phone-mark {
     animation: phone-idle-ring 12s ease-in-out infinite;
+  }
+}
+
+@media (min-width: 1600px) {
+  .garage-strip {
+    min-height: clamp(30px, 1.8vw, 64px);
+    padding-inline: 7vw;
+    font-size: clamp(0.64rem, 0.5vw, 1rem);
+  }
+
+  .garage-strip > span {
+    font-size: clamp(0.68rem, 0.52vw, 1.05rem);
+  }
+
+  .nav-wrap {
+    width: 92vw;
+    min-height: clamp(112px, 6.5vw, 220px);
+  }
+
+  .brand img {
+    width: clamp(176px, 9vw, 320px);
+    height: auto;
+    max-height: clamp(92px, 5.2vw, 184px);
+  }
+
+  .desktop-nav {
+    gap: clamp(1.5rem, 1.7vw, 4rem);
+  }
+
+  .desktop-nav a {
+    font-size: clamp(0.74rem, 0.62vw, 1.25rem);
+  }
+
+  .desktop-nav small {
+    font-size: clamp(0.56rem, 0.46vw, 0.95rem);
+  }
+
+  .nav-wrap > .button-small {
+    min-height: clamp(54px, 3.2vw, 96px);
+    padding-inline: clamp(1.1rem, 1.4vw, 2.8rem);
+    font-size: clamp(0.78rem, 0.64vw, 1.3rem);
   }
 }

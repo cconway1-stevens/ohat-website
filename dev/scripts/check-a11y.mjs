@@ -16,6 +16,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { launchChromium } from "./lib/browser.mjs";
 import { auditableRoutes, createStaticServer } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
@@ -30,11 +31,8 @@ if (!existsSync(CLIENT)) {
 const server = createStaticServer(CLIENT);
 await new Promise((resolve) => server.listen(PORT, resolve));
 
-const { chromium } = await import("playwright");
 const axeSource = readFileSync(join(ROOT, "node_modules", "axe-core", "axe.min.js"), "utf8");
-const executablePath =
-  process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const browser = await chromium.launch(existsSync(executablePath) ? { executablePath } : {});
+const browser = await launchChromium();
 
 const routes = process.env.A11Y_ROUTES?.split(",").filter(Boolean) ?? auditableRoutes(CLIENT);
 

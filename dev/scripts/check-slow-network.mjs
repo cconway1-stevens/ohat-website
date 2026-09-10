@@ -14,6 +14,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { launchChromium } from "./lib/browser.mjs";
 import { auditableRoutes, createStaticServer } from "./lib/routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
@@ -40,10 +41,7 @@ const server = createStaticServer(CLIENT);
 
 await new Promise((resolve) => server.listen(PORT, resolve));
 
-const { chromium } = await import("playwright");
-const executablePath =
-  process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const browser = await chromium.launch(existsSync(executablePath) ? { executablePath } : {});
+const browser = await launchChromium();
 
 let failed = false;
 const routes = process.env.SLOW_ROUTES?.split(",").filter(Boolean) ?? auditableRoutes(CLIENT);

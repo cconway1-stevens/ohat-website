@@ -1,15 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { type JSX, useEffect, useRef, useState } from "react";
 import {
   answerQuestion,
   type ChatChip,
   debugAnswer,
   type MatcherConfig,
+  mascotGreeting,
   quickPrompts,
   STUDIO_CONFIG,
-  treadGreeting,
 } from "@/lib/chat/answers";
 import { services } from "@/lib/services";
 import { shop } from "@/lib/shop/shop";
@@ -32,11 +33,11 @@ const Object3DCanvas = dynamic(() => import("./object-3d-canvas"), { ssr: false 
 /**
  * Agent Studio — a noindex dev playground for the pixel crew and Tread's
  * chat brain, styled like a retro game menu: framed panels, a character
- * dossier with stat bars, and feature call-out badges. A left control panel
- * switches between nine modes.
+ * dossier with stat bars, and feature call-out badges. A left nav links to
+ * each of the nine modes as its own route.
  */
 
-type Mode =
+export type Mode =
   | "character"
   | "motion"
   | "testdrive"
@@ -906,6 +907,8 @@ function BrainsMode() {
               <div className="agent-lab-input">
                 <input
                   type="text"
+                  spellCheck={false}
+                  aria-label="Ask the brain a question"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask the brain a question…"
@@ -990,12 +993,16 @@ function BrainsMode() {
             <div className="agent-synonym-add">
               <input
                 type="text"
+                spellCheck={false}
+                aria-label="Synonym alias"
                 placeholder="alias (rim)"
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}
               />
               <input
                 type="text"
+                spellCheck={false}
+                aria-label="Synonym canonical"
                 placeholder="canonical (tire)"
                 value={canonical}
                 onChange={(e) => setCanonical(e.target.value)}
@@ -1035,6 +1042,8 @@ function BrainsMode() {
         <Frame title={`KNOWLEDGE BASE · ${filteredFaqs.length}`} className="agent-fill agent-kb">
           <input
             type="text"
+            spellCheck={false}
+            aria-label="Filter knowledge base"
             className="agent-filter"
             placeholder="Filter FAQs…"
             value={filter}
@@ -1109,6 +1118,8 @@ function SourcesMode() {
           <div className="agent-lab-input">
             <input
               type="text"
+              spellCheck={false}
+              aria-label="Compare backends on a question"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Compare backends on a question…"
@@ -1526,7 +1537,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
   // and fallback copy from it.
   const persona = { name: character.name, ...character.persona };
   const [messages, setMessages] = useState<DemoMessage[]>([
-    { id: nextDemoId(), role: "tread", text: treadGreeting(new Date(), persona) },
+    { id: nextDemoId(), role: "tread", text: mascotGreeting(new Date(), persona) },
   ]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -1544,7 +1555,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
   const [greetedId, setGreetedId] = useState(character.id);
   if (greetedId !== character.id) {
     setGreetedId(character.id);
-    setMessages([{ id: nextDemoId(), role: "tread", text: treadGreeting(new Date(), persona) }]);
+    setMessages([{ id: nextDemoId(), role: "tread", text: mascotGreeting(new Date(), persona) }]);
   }
 
   function send(text: string) {
@@ -1678,6 +1689,7 @@ function DemoMode({ characterId, settings }: { characterId: string; settings: Se
           >
             <input
               type="text"
+              spellCheck={false}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question…"
@@ -1939,6 +1951,8 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
 
           <textarea
             value={text}
+            spellCheck={false}
+            aria-label="Research note"
             onChange={(e) => setText(e.target.value)}
             placeholder="What do you like or hate here?"
             rows={3}
@@ -1954,8 +1968,7 @@ function NotePad({ mode, characterId }: { mode: Mode; characterId: string }) {
 
 /* --- Shell ---------------------------------------------------------------- */
 
-export function AgentStudio(): JSX.Element {
-  const [mode, setMode] = useState<Mode>("character");
+export function AgentStudio({ mode }: { mode: Mode }): JSX.Element {
   // Persisted state flows through useSyncExternalStore (see use-local-storage.ts):
   // SSR-safe, no hydration mismatch, and stays in sync across components.
   const [settings, setSettings] = useLocalStorage("agent-settings", DEFAULT_SETTINGS);
@@ -2001,14 +2014,13 @@ export function AgentStudio(): JSX.Element {
         <h1 className="agent-logo">AGENT STUDIO</h1>
         <nav className="agent-nav">
           {MODES.map((m) => (
-            <button
+            <Link
               key={m.id}
-              type="button"
+              href={m.id === "character" ? "/agent" : `/agent/${m.id}`}
               className={m.id === mode ? "is-active" : ""}
-              onClick={() => setMode(m.id)}
             >
               {m.id === mode ? "▸" : " "} {m.label}
-            </button>
+            </Link>
           ))}
         </nav>
 

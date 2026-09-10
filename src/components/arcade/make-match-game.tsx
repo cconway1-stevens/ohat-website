@@ -1,5 +1,6 @@
 "use client";
 
+import "@/app/styles/arcade.css";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { arcadePresets } from "@/lib/arcade/arcade";
 import { garageAudio } from "@/lib/arcade/garage-audio";

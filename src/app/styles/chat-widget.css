@@ -1,0 +1,700 @@
+/* The contact-page chat widget. Fixed bottom-right FAB + panel. */
+
+.chat-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 150;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--cream);
+  box-shadow: var(--hard-shadow);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.chat-fab:hover {
+  transform: translateY(-3px);
+  box-shadow: 10px 10px 0 var(--ink);
+}
+.chat-fab:active {
+  transform: translateY(0);
+}
+.chat-fab-face {
+  width: 46px;
+  height: 46px;
+  display: block;
+  /* A gentle idle float — the mascot drifts in place so the corner feels
+     alive without ever leaving its button. */
+  animation: chat-float 2.8s ease-in-out infinite;
+}
+/* While the greeting nudge is up, a soft ring pulses out from the FAB —
+   "over here!" without shaking the whole button. */
+.chat-fab-nudged::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: chat-fab-pulse 1.8s ease-out infinite;
+}
+
+.chat-nudge {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 5.5rem;
+  z-index: 150;
+  max-width: 260px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: var(--hard-shadow);
+  padding: 0.7rem 0.9rem;
+  animation: chat-nudge-in 0.3s ease;
+}
+.chat-nudge p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.chat-nudge-dismiss {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.chat-nudge-dismiss:hover {
+  color: var(--ink);
+}
+
+.chat-panel {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 5.5rem;
+  z-index: 150;
+  width: 360px;
+  max-width: calc(100vw - 2.5rem);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: var(--hard-shadow);
+  overflow: hidden;
+}
+
+.chat-panel-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--cream);
+  border-bottom: 3px solid var(--ink);
+}
+.chat-scene {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.chat-scene-canvas {
+  width: 100%;
+  height: 100%;
+}
+.chat-scene-fallback {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.chat-panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.chat-panel-title strong {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.chat-panel-title span {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.chat-disclaimer {
+  display: inline-flex;
+}
+.chat-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-family: var(--font-sans, inherit);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 0.25rem 0.4rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  color: var(--muted);
+  background: var(--paper);
+  cursor: pointer;
+  opacity: 0.8;
+}
+.chat-ai-badge:hover {
+  opacity: 1;
+  background: var(--yellow);
+}
+/* Anchored to the header (not the tiny badge) and right-aligned, so the
+   warning clause always stays inside the panel instead of clipping at the
+   rounded corner. */
+.chat-disclaimer-popover {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0.5rem;
+  z-index: 5;
+  width: min(280px, calc(100vw - 3rem));
+  padding: 0.6rem 0.7rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+/* Header actions — clear, download, close — grouped as one quiet cluster so
+   they read as a single control row instead of three separate circles. */
+.chat-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+}
+.chat-icon-btn {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex: 0 0 1.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.chat-icon-btn:hover {
+  background: var(--yellow);
+}
+/* The "Aa" text-size button shows its current level as a short label. */
+.chat-text-btn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* The "more options" (⋯) dropdown — expand, clear, download live here so the
+   header only ever shows three buttons (Aa, more, close) no matter how many
+   options the panel grows to have. */
+.chat-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.chat-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 6;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.35rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--hard-shadow);
+}
+.chat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chat-menu-item:hover {
+  background: var(--cream);
+}
+
+.chat-log {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 0;
+}
+.chat-msg {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  animation: chat-msg-in 0.2s ease;
+}
+.chat-msg-user {
+  justify-content: flex-end;
+}
+.chat-msg-avatar {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  display: block;
+}
+/* The header's "Aa" control cycles three text sizes. It used to do it with
+   `zoom` on the whole panel, declared only inside `@media (min-width: 561px)`
+   — but the class is applied to the panel at every width and the button
+   renders on phones, so on a phone it swapped a class with no rules behind it
+   and visibly did nothing. Un-scoping `zoom` was not the fix either: zooming
+   a fixed panel pinned with `inset: 0.5rem` scales it past the screen edges.
+   A control labelled "Aa" should scale type, not the box, so it now drives
+   this custom property and the panel's own geometry never moves. */
+.chat-panel {
+  --chat-text-scale: 1;
+}
+.chat-zoom-1 {
+  --chat-text-scale: 1.15;
+}
+.chat-zoom-2 {
+  --chat-text-scale: 1.32;
+}
+
+.chat-bubble {
+  max-width: 78%;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: 14px;
+  font-size: calc(0.9rem * var(--chat-text-scale, 1));
+  line-height: 1.45;
+  /* Long unbroken strings — the shop's email address above all — used to
+     push the bubble wider than the panel. Break anywhere instead. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.chat-msg-mascot .chat-bubble {
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-bottom-left-radius: 4px;
+}
+.chat-msg-user .chat-bubble {
+  background: var(--red);
+  color: #fff;
+  border: 2px solid var(--ink);
+  border-bottom-right-radius: 4px;
+}
+.chat-bubble p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.chat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  max-width: 100%;
+}
+.chat-chip {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.3rem 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.chat-chip:hover {
+  background: var(--yellow);
+}
+/* Lead chips — call, email and the save-contact card are the widget's whole
+   job, so they get the shop red instead of blending in with the link chips. */
+.chat-chip-call,
+.chat-chip-email,
+.chat-chip-download {
+  background: var(--red);
+  color: #fff;
+}
+.chat-chip-call:hover,
+.chat-chip-email:hover,
+.chat-chip-download:hover {
+  background: var(--red-dark);
+}
+
+/* Copy / read-aloud row under each of Sparky's own bubbles — quiet by
+   default so the reply text stays the focus. */
+.chat-bubble-actions {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+.chat-bubble-btn {
+  width: 1.4rem;
+  height: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.6;
+}
+.chat-bubble-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ink);
+}
+
+.chat-thinking {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  padding: 0.7rem 0.85rem;
+}
+.chat-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: chat-bounce 1s infinite ease-in-out;
+}
+.chat-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.chat-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.chat-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0 0.9rem 0.6rem;
+}
+.chat-prompt {
+  padding: 0.3rem 0.6rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.chat-prompt:hover {
+  border-color: var(--ink);
+  background: var(--cream);
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  border-top: 3px solid var(--ink);
+  background: var(--cream);
+}
+.chat-input-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+/* iOS Safari force-zooms the whole page whenever a focused input sets type
+   below 16px — the page scales up, the layout viewport stops matching the
+   visual one, and the composer's Send button lands off the right edge while
+   the keyboard is open. 0.9rem is 14.4px, so this fired every time someone
+   tapped the field. 16px is the threshold, not a preference: at 16px Safari
+   leaves the page alone. Scoped to coarse pointers so the desktop widget
+   keeps its smaller type. */
+@media (pointer: coarse) {
+  .chat-input-row input {
+    font-size: 16px;
+  }
+}
+.chat-input-row input:focus-visible {
+  border-color: var(--blue);
+}
+.chat-send {
+  /* Never let the row's pressure squeeze or clip the one button that sends
+     the message — the input is the flexible element here, not this. */
+  flex: 0 0 auto;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--red);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.chat-send:hover {
+  background: var(--red-dark);
+}
+
+.chat-mic {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+.chat-mic:hover {
+  background: var(--yellow);
+}
+.chat-mic:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.chat-readmore {
+  margin-top: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.chat-readmore:hover {
+  color: var(--ink);
+}
+
+@keyframes chat-nudge-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes chat-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes chat-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes chat-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes chat-fab-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(246, 189, 56, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(246, 189, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(246, 189, 56, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-fab {
+    transition: none;
+  }
+  .chat-fab-face {
+    animation: none;
+  }
+  .chat-fab-nudged::after {
+    animation: none;
+  }
+  .chat-nudge {
+    animation: none;
+  }
+  .chat-msg {
+    animation: none;
+  }
+  .chat-dot {
+    animation: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .chat-panel {
+    inset: 0.5rem;
+    width: auto;
+    max-width: none;
+    max-height: none;
+  }
+  .chat-fab {
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+  .chat-nudge {
+    right: 0.75rem;
+    bottom: 5rem;
+  }
+}
+
+/* The contact booking dock is visible up to 700px and fills the viewport
+   bottom (see map.css), so the FAB and its nudge must ride above it or they
+   cover the dock's DIRECTIONS panel. Declared after the 560px block so the
+   clearance wins at every dock width. */
+@media (max-width: 700px) {
+  .chat-fab {
+    bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+  .chat-nudge {
+    bottom: calc(150px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Desktop: the mascot gets a roomier stage — phones keep the thumb-sized
+   64px FAB, desktop visitors get a big friendly face (and the panel/nudge
+   lift to clear it). */
+@media (min-width: 701px) {
+  .chat-fab {
+    width: 88px;
+    height: 88px;
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+  .chat-fab-face {
+    width: 64px;
+    height: 64px;
+  }
+  .chat-panel,
+  .chat-nudge {
+    bottom: 7.75rem;
+  }
+  .chat-nudge {
+    max-width: 280px;
+  }
+}
+
+/* The expand button grows the panel to fill most of the viewport — a desktop
+   convenience, since on phones the panel already fills the screen. The "Aa"
+   text-size control is NOT scoped here; see --chat-text-scale above. */
+@media (min-width: 561px) {
+  .chat-panel-max {
+    width: min(760px, calc(100vw - 2.5rem));
+    height: min(85vh, 900px);
+    max-height: 85vh;
+  }
+  /* Maximized proportions: everything grows with the panel instead of
+     staying pinned to the compact widget's small header and bubbles, which
+     otherwise reads as the same little chat stretched over a huge canvas. */
+  .chat-panel-max .chat-panel-head {
+    padding: 1.1rem 1.5rem;
+    gap: 1.1rem;
+  }
+  .chat-panel-max .chat-scene {
+    width: 110px;
+    height: 110px;
+    flex-basis: 110px;
+  }
+  .chat-panel-max .chat-panel-title strong {
+    font-size: 1.8rem;
+  }
+  .chat-panel-max .chat-panel-title span {
+    font-size: 0.85rem;
+  }
+  .chat-panel-max .chat-log {
+    padding: 1.5rem 2rem;
+    gap: 0.9rem;
+  }
+  .chat-panel-max .chat-bubble {
+    max-width: 62%;
+    font-size: calc(1rem * var(--chat-text-scale, 1));
+    padding: 0.75rem 1rem;
+  }
+  .chat-panel-max .chat-msg-avatar {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+  .chat-panel-max .chat-prompts {
+    padding: 0 2rem 0.9rem;
+  }
+  .chat-panel-max .chat-input-row {
+    padding: 1rem 2rem;
+  }
+  .chat-panel-max .chat-input-row input {
+    font-size: 1rem;
+    padding: 0.7rem 0.9rem;
+  }
+}

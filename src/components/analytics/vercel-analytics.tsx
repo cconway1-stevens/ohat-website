@@ -27,7 +27,8 @@ import { isVercelHost } from "@/lib/analytics";
  * and tracks navigation through the History API, which is what this mostly
  * static site needs.
  *
- * Cookieless and collects no personal data — see dev/docs/privacy-compliance.md.
+ * Cookieless and aggregate-only, but still optional and loaded only after the visitor chooses it.
+ * See dev/docs/privacy-compliance.md.
  */
 export function VercelAnalytics() {
   const enabled = typeof window !== "undefined" && isVercelHost(window.location.hostname);

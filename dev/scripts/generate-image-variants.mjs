@@ -20,6 +20,7 @@ const RESPONSIVE_EXTENSION = "avif";
 // Small brand assets are used at fixed sizes, so a responsive ladder would be
 // needless markup. Generate compact modern-format copies at build time.
 await sharp(join(SOURCE_DIR, "logo-transparent.png"))
+  .resize(176, 129, { fit: "contain" })
   .avif({ quality: 60, effort: 6 })
   .toFile(join(SOURCE_DIR, "logo-transparent.avif"));
 
@@ -41,7 +42,9 @@ for (const name of sources) {
   } catch {
     continue;
   }
-  const stem = name.replace(/\.[^.]+$/, "");
+  // URL-safe output names keep srcset candidates valid when an original file
+  // (such as a photographer export) contains spaces.
+  const stem = name.replace(/\.[^.]+$/, "").replace(/\s+/g, "-");
   const available = [];
   for (const w of WIDTHS) {
     if (w >= width) continue;

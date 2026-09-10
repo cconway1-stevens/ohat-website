@@ -1,7 +1,6 @@
 "use client";
 
 import Image, { type ImageProps } from "next/image";
-import { useState } from "react";
 
 /**
  * Every photograph on the site goes through here.
@@ -31,16 +30,16 @@ import { useState } from "react";
  * and costs the surrounding CSS nothing.
  */
 export function SiteImage({ alt, className, onLoad, ...props }: ImageProps) {
-  const [loaded, setLoaded] = useState(false);
-
   return (
     <Image
       {...props}
       alt={alt}
-      className={`site-image${loaded ? " is-loaded" : ""}${className ? ` ${className}` : ""}`}
+      className={`site-image${className ? ` ${className}` : ""}`}
       unoptimized
       onLoad={(event) => {
-        setLoaded(true);
+        // Avoid a React re-render for every image that finishes loading.
+        // Large logo grids used to trigger dozens during the LCP window.
+        event.currentTarget.classList.add("is-loaded");
         onLoad?.(event);
       }}
     />

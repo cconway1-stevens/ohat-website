@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MakeGrid } from "@/components/arcade/make-grid";
+import { MainHero } from "@/components/hero/main-hero";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
 import { ShopHoursStatus } from "@/components/shop/shop-hours-status";
@@ -56,90 +57,11 @@ export default function Home() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(homeSchema) }}
         />
-        <section className="hero" id="top">
-          <div className="shell hero-grid">
-            <div className="hero-copy">
-              <p className="hero-badge">
-                <span>Family owned &amp; operated</span>
-                <span aria-hidden="true">·</span>
-                <span>Egg Harbor Township, NJ</span>
-              </p>
-              <h1>
-                Ocean Heights <em>Auto &amp; Tire</em>
-              </h1>
-              <p className="hero-tagline">Dealer-level diagnostics. Family-garage honesty.</p>
-              <p className="hero-lede">
-                From carbureted classics to brand-new EVs, every car in your driveway is welcome
-                here.
-              </p>
-              <div className="hero-cta">
-                <a className="button button-primary" href={phoneHref}>
-                  Call {phoneDisplay}
-                </a>
-                <DirectionsTrigger className="button button-ghost">
-                  Get directions <span aria-hidden="true">↗︎</span>
-                </DirectionsTrigger>
-              </div>
-              {/* Live open/closed sign right beside the call button, so
-                  "are they open?" is answered before it becomes a reason
-                  not to dial. */}
-              <p className="hero-status">
-                <ShopHoursStatus />
-              </p>
-              <ul className="hero-trust" aria-label="Shop credentials">
-                <li>
-                  <strong>ASE</strong> Certified techs
-                </li>
-                <li>
-                  <strong>40+</strong> years family run
-                </li>
-                <li>
-                  <strong>5.0★</strong> CARFAX rated
-                </li>
-              </ul>
-            </div>
-
-            <figure className="hero-photo">
-              <div className="hero-photo-frame">
-                <SiteImage
-                  // The pre-built AVIF, not the 2.7 MB source PNG: `priority`
-                  // makes next/image preload whatever `src` is verbatim (it
-                  // does not know about the responsive rewrite build-static.mjs
-                  // applies to the rendered <img> below), so pointing it at
-                  // the original had the browser fetching the full-size PNG
-                  // *and* the correctly-sized AVIF on every load. See
-                  // build-static.mjs's `resolveManifestEntry` — it maps this
-                  // path back to the same manifest entry so the rendered tag
-                  // still gets the full responsive ladder.
-                  src="/media/rs/cecf1b30-365d-430d-b925-1fd22429c9e1-1200.avif"
-                  alt="Ocean Heights Auto and Tire with an electric car, classic car, and work truck outside the Egg Harbor Township shop"
-                  fill
-                  priority
-                  sizes="(max-width: 860px) 100vw, 520px"
-                />
-              </div>
-              {/* Bay signal: the light over a service bay door. Green means
-                  the bay is open — it idles on green and only cycles through
-                  yellow/red every so often, like a real traffic signal. */}
-              <span className="bay-signal" aria-hidden="true">
-                <span className="bay-signal-housing">
-                  <span className="bay-signal-light bay-signal-red" />
-                  <span className="bay-signal-light bay-signal-yellow" />
-                  <span className="bay-signal-light bay-signal-green" />
-                </span>
-                <span className="bay-signal-tag">Bay 1</span>
-              </span>
-              <figcaption>Classics, dailies &amp; EVs — one driveway</figcaption>
-            </figure>
-          </div>
-        </section>
+        <MainHero />
 
         <section className="garage-credentials" aria-labelledby="garage-credentials-title">
           <div className="garage-locator">
-            <DirectionsTrigger
-              className="garage-locator-address"
-              label={`Choose a directions app for ${shop.address.street}`}
-            >
+            <DirectionsTrigger className="garage-locator-address">
               <span>Find us down the Shore</span>
               <strong>{shop.address.street}</strong>
               <em>{shop.address.region}</em>
@@ -151,7 +73,7 @@ export default function Home() {
 
           <div className="garage-credentials-grid">
             <div className="garage-service-promise">
-              <p className="garage-issue-line">Service counter · all makes desk</p>
+              <p className="garage-issue-line">Service log · credentials page</p>
               <h2 id="garage-credentials-title">Every car in the driveway. One family garage.</h2>
               <p>
                 New commuter, old favorite, work truck, or weekend classic—we have the tools and
@@ -471,7 +393,9 @@ export default function Home() {
               <div>
                 <small>Shop hours</small>
                 <strong>{shop.hours.weekdayLabel}</strong>
-                <span>{shop.hours.display.split(", ")[1]}</span>
+                <span>{shop.hours.weekdayHours}</span>
+                <strong>{shop.hours.fridayLabel}</strong>
+                <span>{shop.hours.fridayHours}</span>
                 <ShopHoursStatus />
               </div>
               <div>
