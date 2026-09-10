@@ -464,30 +464,14 @@
   display: inline-flex;
   align-items: center;
 }
+/* Sized off the artwork's own 315x231 ratio rather than a fixed 176x92 box:
+   `contain` inside a wider box painted the badge at 125px and left ~25px of
+   dead space either side, so it floated away from the shell's gutter. */
 .brand img {
-  width: 176px;
+  width: auto;
   height: 92px;
   object-fit: contain;
-  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.34));
-  transform: rotate(-1deg);
-  transform-origin: 50% 0%;
-}
-/* A faint hanging-sign sway — the same idea as the OPEN/CLOSED plate's
-   door-sign-sway, just for the badge over the door. Idle motion only, no
-   layout effect, so it can't disturb the masthead height. */
-@media (prefers-reduced-motion: no-preference) {
-  .brand img {
-    animation: brand-sway 4.2s ease-in-out infinite;
-  }
-}
-@keyframes brand-sway {
-  0%,
-  100% {
-    transform: rotate(-2deg);
-  }
-  50% {
-    transform: rotate(0deg);
-  }
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
 }
 .desktop-nav {
   flex: 1;
@@ -809,9 +793,8 @@
   }
 
   .brand img {
-    width: clamp(176px, 9vw, 320px);
-    height: auto;
-    max-height: clamp(92px, 5.2vw, 184px);
+    width: auto;
+    height: clamp(92px, 5.2vw, 184px);
   }
 
   .desktop-nav {
