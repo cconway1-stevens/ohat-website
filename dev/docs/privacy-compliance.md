@@ -101,3 +101,9 @@ The final verification results are recorded below after the source and browser c
 [^13]: Vercel, [Web Analytics Privacy and Compliance](https://vercel.com/docs/analytics/privacy-policy), updated June 26, 2026; accessed September 9, 2026.
 [^14]: Vercel, [Speed Insights Privacy and Compliance](https://vercel.com/docs/speed-insights/privacy-policy), updated March 18, 2026; accessed September 9, 2026.
 [^15]: Open-Meteo, [Terms and Privacy](https://open-meteo.com/en/terms), accessed September 9, 2026.
+
+## September 10 follow-up
+
+Rechecked the enacted [NJ privacy statute](https://pub.njleg.gov/Bills/2022/PL23/266_.HTM), [DOJ business web accessibility guidance](https://www.ada.gov/resources/web-guidance/), and [W3C statement guidance](https://www.w3.org/WAI/planning/statements/). The statements retain conditional statutory applicability and disclose incomplete conformance evaluation. Account settings and business operations are still not verified by source review.
+
+Restored the shared navbar logo, bundled the existing Klaro stylesheet into application CSS, corrected modal centering and text contrast, clarified service group descriptions, and replaced the inaccurate “Forms & accounts: None” summary with “Customer accounts: None.” Privacy URLs remain host-relative. TypeScript, lint, architecture, dead-code checks, 162 unit tests, and the accessibility statement consistency check passed. Browser verification remains outstanding because this environment has no installed Chromium and the download timed out. See TODO.md for remaining operational and verification work.

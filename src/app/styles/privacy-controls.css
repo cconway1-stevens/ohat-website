@@ -7,6 +7,7 @@
   --blue2: #570a0e;
   --dark1: #211c19;
   --light1: #fffdf7;
+  color: var(--ink);
   font-family: var(--font-geist-sans), sans-serif;
 }
 
@@ -188,7 +189,12 @@
   flex-direction: column;
   width: min(760px, calc(100vw - 2rem));
   max-width: 760px;
-  max-height: calc(100dvh - 3rem);
+  max-height: calc(100dvh - 2rem);
+  left: 50%;
+  top: 50%;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  color: var(--ink);
   margin-inline: auto;
 }
 
@@ -343,7 +349,7 @@
 @media (max-width: 600px) {
   #ohat-klaro .cookie-modal .cm-modal.cm-klaro {
     width: calc(100vw - 1.5rem);
-    left: 0.75rem;
+    left: 50%;
     max-height: calc(100dvh - 2rem);
   }
 
@@ -358,7 +364,7 @@
   #ohat-klaro .cm-footer .cm-btn {
     min-height: 44px;
     padding: 0.65rem;
-    font-size: 0.82rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -368,4 +374,29 @@
     transition: none;
     animation: none;
   }
+}
+
+/* Keep preference controls readable independently of the provider theme. */
+#ohat-klaro .cm-body .cm-toggle-all {
+  padding: 1rem 1rem 1rem 76px;
+  border: 2px dashed var(--ink);
+  background: #fff3cf;
+}
+
+#ohat-klaro .cm-body .cm-content .cm-service {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+#ohat-klaro .cm-list-input:checked + .cm-list-label .slider {
+  background: #6f0d12;
+}
+
+#ohat-klaro .cm-footer .cm-btn {
+  font-size: 1rem;
+}
+
+#ohat-klaro .cm-header p,
+#ohat-klaro .cm-body .cm-list-description {
+  font-size: 1rem;
 }

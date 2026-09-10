@@ -14,7 +14,7 @@ export const metadata = pageMetadata({
   ogTitle: "Privacy Policy",
 });
 
-const lastUpdated = "September 9, 2026";
+const lastUpdated = "September 10, 2026";
 const policyLinks = [
   ["scope", "Scope"],
   ["information", "Information"],
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
                   <dd>None</dd>
                 </div>
                 <div>
-                  <dt>Forms &amp; accounts</dt>
+                  <dt>Customer accounts</dt>
                   <dd>None</dd>
                 </div>
                 <div>

@@ -166,10 +166,28 @@ function createConfig() {
         acceptAll: "Allow all optional services",
         acceptSelected: "Allow selected services",
         save: "Save my choices",
+        service: {
+          disableAll: {
+            title: "All optional services",
+            description:
+              "Turn all optional services on or off, then save your choices. Essential website features remain available.",
+          },
+        },
         purposes: {
-          analytics: { title: "Website insights" },
-          externalServices: { title: "Shop information" },
-          arcade: { title: "Arcade extras" },
+          analytics: {
+            title: "Website insights",
+            description:
+              "Optional page statistics and performance measurements. Advertising features stay off.",
+          },
+          externalServices: {
+            title: "Shop information",
+            description:
+              "Choose whether to load local weather and the Google map from their providers.",
+          },
+          arcade: {
+            title: "Arcade extras",
+            description: "Internet radio is optional. Games work without turning it on.",
+          },
         },
         googleAnalytics: {
           title: "Google Analytics 4",
