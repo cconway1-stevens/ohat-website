@@ -876,8 +876,8 @@
     padding-block: 0.45rem;
   }
   .brand img {
-    width: 104px;
-    height: 58px;
+    width: 90px;
+    height: auto;
   }
   .nav-wrap > .button-small {
     display: none;
