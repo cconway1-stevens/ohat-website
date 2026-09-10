@@ -583,8 +583,7 @@ export function ChatWidget() {
       });
   }
 
-  /** Reads a bubble aloud with the browser's built-in voice — fully local,
-   *  same "no data leaves your device" promise as the rest of the widget.
+  /** Reads a bubble aloud with the browser voice, which may be local or remote.
    *  Clicking the speaker again while it's talking stops it. */
   function toggleSpeak(id: number, text: string) {
     const synth = window.speechSynthesis;
@@ -604,7 +603,7 @@ export function ChatWidget() {
 
   /** Speech-to-text capture for the input. Tapping the mic again stops the
    *  recognizer instead of stacking a second one. Web Speech is browser-native
-   *  — no network, no model, no bundle weight — but it can fail for honest
+   *  and may send audio to a remote recognition service. It can fail for honest
    *  reasons (blocked permission, no mic, insecure origin), so every failure
    *  path surfaces a note instead of leaving thinking dots that never resolve. */
   function startListening() {
@@ -745,7 +744,7 @@ export function ChatWidget() {
                   )}
                 </span>
               </strong>
-              <span>Local answers · no data leaves your device</span>
+              <span>Typed chat stays here · voice may use online services</span>
             </div>
             <div className="chat-actions">
               <button

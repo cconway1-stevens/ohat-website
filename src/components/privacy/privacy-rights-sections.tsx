@@ -18,17 +18,18 @@ export function PrivacyRightsSections() {
             <p>
               The first-visit prompt offers <strong>Allow all optional services</strong>,{" "}
               <strong>Use essential services only</strong>, and <strong>Choose my services</strong>.
-              The detailed panel controls Google Analytics, Vercel Web Analytics, and shop weather
-              separately.
+              The detailed panel separately controls Google Analytics, Vercel Web Analytics, Vercel
+              Speed Insights, shop weather, Google Maps, and arcade internet radio. Save your
+              choices to apply them to this browser.
             </p>
           </div>
           <PrivacySettingsButton placement="page" />
         </div>
         <ul>
           <li>
-            <strong>Global Privacy Control (GPC):</strong> if your browser sends a GPC signal, both
-            visitor-analytics services stay off automatically. Shop weather remains a separate
-            non-tracking choice. Learn more at{" "}
+            <strong>Global Privacy Control (GPC):</strong> if your browser exposes an enabled GPC signal to this site,
+            Google Analytics, Vercel Web Analytics, and Vercel Speed Insights stay off, even if you
+            allow them in the panel. Weather, the map, and radio remain separate opt-in choices. Learn more at{" "}
             <a href="https://globalprivacycontrol.org/" target="_blank" rel="noreferrer">
               globalprivacycontrol.org
               <span className="sr-only"> (opens in a new tab)</span>
@@ -77,8 +78,9 @@ export function PrivacyRightsSections() {
             <p className="privacy-section-number">Privacy request</p>
             <h3>Use the method that is easiest for you.</h3>
             <p>
-              The Termly request form opens on Termly&rsquo;s site. No request information is sent
-              there unless you choose to submit the form.
+              The Termly request form opens on Termly&rsquo;s site, which receives ordinary connection
+              information when it opens and the details you choose to submit. You can email or
+              call the shop instead; no Termly account is needed to contact us directly.
             </p>
           </div>
           <div className="privacy-request-actions">
@@ -106,7 +108,15 @@ export function PrivacyRightsSections() {
           agent&rsquo;s permission. Information supplied for verification is used for that purpose
           and fraud prevention. If applicable law gives you a right to appeal a denied request,
           email us with the subject &ldquo;Privacy appeal.&rdquo; We will explain the decision and
-          the available next step in writing.
+          the available next step in writing. You do not need to create an account to request help.
+        </p>
+        <p>
+          Where the New Jersey Data Privacy Act applies, its response period is 45 days, with an
+          additional 45 days when permitted and explained within the initial period. An appeal
+          receives a written response within 45 days. If an appeal is denied, you may submit a
+          complaint to the <a href="https://njconsumeraffairs.nj.gov/file-a-complaint/">New Jersey
+          Division of Consumer Affairs</a>. These statutory periods are separate from accessibility
+          support requests.
         </p>
       </section>
 
@@ -131,7 +141,17 @@ export function PrivacyRightsSections() {
           This site is for people arranging vehicle service and is not directed to children under
           13. It knowingly collects no names or contact details from children. The arcade asks for
           no account and keeps scores on the device. Contact us if you believe a child supplied
-          personal information to the business so it can be reviewed.
+          personal information to the business so it can be reviewed. Optional analytics, maps,
+          and radio involve provider requests even without an account; a lack of names does not
+          mean those services process no personal data.
+        </p>
+
+        <h3>Where information is processed</h3>
+        <p>
+          The shop provides vehicle services locally in New Jersey. Website providers may process
+          information in the United States or other countries where they operate. Turning off a
+          service stops its future use by this site; it does not automatically delete information
+          a provider has already received. Contact us about information held by the shop.
         </p>
 
         <h3>Policy updates</h3>

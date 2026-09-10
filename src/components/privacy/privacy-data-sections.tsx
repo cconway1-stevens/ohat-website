@@ -37,8 +37,9 @@ export function PrivacyDataSections() {
         <h2>What the website processes</h2>
         <p>
           There is no contact form, booking form, account, checkout, or online payment on this
-          website. You cannot type personal details into the site. Technical data is processed only
-          to deliver and protect the site or, with your choice, to understand how it is used.
+          website. The contact-page chat does accept text and stores a limited history in this
+          browser. Its answer matching runs on your device; typed messages are not sent to the
+          shop or an AI provider. Please do not enter sensitive information into chat.
         </p>
 
         <div
@@ -85,8 +86,8 @@ export function PrivacyDataSections() {
               <tr>
                 <th scope="row">Vercel Speed Insights</th>
                 <td>
-                  Page path plus anonymous load-time and Core Web Vitals measurements, with no
-                  cookie or identifier
+                  Page URL, performance measurements, network speed, browser, device, operating
+                  system, country, and event time. The request also exposes an IP address to Vercel
                 </td>
                 <td>Find and fix slow pages</td>
                 <td>Only after consent</td>
@@ -107,6 +108,18 @@ export function PrivacyDataSections() {
                 <td>Only after consent</td>
               </tr>
               <tr>
+                <th scope="row">Open-Meteo shop weather</th>
+                <td>Shop coordinates, IP address, and request details received by Open-Meteo</td>
+                <td>Show weather at the shop, not your location</td>
+                <td>Only after consent</td>
+              </tr>
+              <tr>
+                <th scope="row">Chat voice features</th>
+                <td>Microphone audio for dictation or message text for read-aloud</td>
+                <td>Your browser or operating system provides speech services, which may use remote servers</td>
+                <td>Only when you use a voice control; microphone access is subject to browser permission</td>
+              </tr>
+              <tr>
                 <th scope="row">Local browser storage</th>
                 <td>
                   Privacy choices, arcade scores and settings, chat history, display preferences,
@@ -120,7 +133,7 @@ export function PrivacyDataSections() {
         </div>
 
         <div className="privacy-callout">
-          <strong>We do not process sensitive personal information through this website.</strong>
+          <strong>We do not ask you for sensitive personal information.</strong>
           <p>
             We do not request precise location, financial details, government IDs, biometrics,
             health data, or information about race, religion, or sexual orientation. Approximate
@@ -128,6 +141,21 @@ export function PrivacyDataSections() {
             IP address; the site never asks for GPS or browser location access.
           </p>
         </div>
+
+        <h3>Chat, voice, and your device</h3>
+        <p>
+          Chat is an automated information tool, not a message to a staff member. Its local log
+          holds up to 200 entries; reopening the panel restores up to 20 recent entries from the
+          last day. Older entries are not deleted just because they are no longer shown. Use
+          Clear chat or clear this site&rsquo;s browser storage to remove the saved conversation.
+          Downloading a transcript creates a file on your device.
+        </p>
+        <p>
+          Dictation and read-aloud use browser speech features. Depending on your browser and
+          selected voice, audio or text may be sent to a browser or operating-system provider for
+          processing. These features are activated by their own controls, not by Klaro. You can
+          type instead, stop read-aloud, or revoke microphone permission in browser settings.
+        </p>
 
         <h3>How we use information</h3>
         <p>Website information is used only to:</p>
