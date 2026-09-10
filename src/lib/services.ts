@@ -845,6 +845,13 @@ export const services: Service[] = [
       },
     ],
     related: ["advanced-diagnostics", "engine-cooling", "oil-maintenance"],
+    resources: [
+      {
+        label: "Mays Landing MVC Inspection Center",
+        href: "https://www.nj.gov/mvc/locations/inspection.htm",
+        note: "Ocean Heights does not issue NJ inspection stickers. The state inspection is free at 1477 19th St, Mays Landing, NJ 08330.",
+      },
+    ],
   },
 ];
 

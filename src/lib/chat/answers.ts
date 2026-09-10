@@ -97,6 +97,12 @@ const hoursChip: ChatChip = {
   href: "/hours",
   kind: "link",
 };
+
+const cityWideTowingChip: ChatChip = {
+  label: "City Wide Towing · (609) 428-7071",
+  href: "https://www.actow.com/",
+  kind: "link",
+};
 const serviceChip = (slug: string, name: string): ChatChip => ({
   label: name,
   href: `/services/${slug}`,
@@ -624,14 +630,15 @@ const INTENTS: {
       // to roadside/911, never to a chat widget.
       if (reachableNow) {
         return {
-          text: `Okay — first things first: if you're in live traffic, or anything is smoking or on fire, call 911 before anything else. If you're safe: call the shop right now at ${shop.phone.display} — a person picks up, not a phone tree — and tell us where you are and what happened, and we'll tell you what's doable today. We don't run our own tow truck, but we work with local roadside partners and can point you to one. If — and only if — the vehicle is safe to drive, you're welcome to bring it to us at ${shop.address.full}; customer parking is right out front.`,
-          chips: [callChip, directionsChip, saveChip],
+          text: `Okay — first things first: if you're in live traffic, or anything is smoking or on fire, call 911 before anything else. If you're safe: call the shop right now at ${shop.phone.display} — a person picks up, not a phone tree — and tell us where you are and what happened. We do not offer towing. For towing or roadside help, we recommend City Wide Towing at (609) 428-7071. If — and only if — the vehicle is safe to drive, you're welcome to bring it to us at ${shop.address.full}; customer parking is right out front.`,
+          chips: [callChip, cityWideTowingChip, directionsChip],
         };
       }
       return {
-        text: `Okay — first things first: if you're in live traffic, or anything is smoking or on fire, call 911 before anything else. If you're safe: the shop is closed right now (${status.label}), so the phone may not be answered immediately. Line up a roadside or flatbed partner for the tow — we don't run a truck ourselves. Save our number below so the details are one tap away, and if — and only if — the vehicle is safe to drive, the secure night drop is available around the clock, so the car is here when doors open. Call the shop line and leave the details and we'll call you back first thing.`,
+        text: `Okay — first things first: if you're in live traffic, or anything is smoking or on fire, call 911 before anything else. If you're safe: the shop is closed right now (${status.label}), so the phone may not be answered immediately. We do not offer towing. For towing or roadside help, we recommend City Wide Towing at (609) 428-7071. Our secure night drop is available around the clock once your vehicle arrives, and we'll call you back when the shop opens.`,
         chips: [
           callChip,
+          cityWideTowingChip,
           saveChip,
           { label: "Night drop details", href: "/vehicle-drop-off", kind: "link" },
         ],
@@ -892,10 +899,19 @@ const INTENTS: {
   },
   {
     id: "tow",
-    triggers: ["tow", "towing", "towed", "roadside", "roadside assistance", "flatbed"],
+    triggers: [
+      "tow",
+      "towing",
+      "towed",
+      "tow truck",
+      "tow company",
+      "roadside",
+      "roadside assistance",
+      "flatbed",
+    ],
     build: () => ({
-      text: "We don't run a tow truck ourselves, but we work with local roadside partners and can usually point you to one. If you've already broken down, save our number for the next stop and we'll get you on the schedule.",
-      chips: [saveChip, callChip],
+      text: "We do not offer towing. For towing or roadside assistance in Atlantic County, we recommend City Wide Towing at (609) 428-7071. Contact them directly to confirm availability, timing, and price. Once the vehicle is headed here, call us so we can plan for its arrival.",
+      chips: [cityWideTowingChip, callChip, saveChip],
     }),
   },
   {
