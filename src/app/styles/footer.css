@@ -647,10 +647,12 @@
     list-style: none;
     padding: 0.8rem 1rem;
     background: var(--yellow);
-    border: 3px solid var(--ink);
+    border: 2px solid var(--yellow);
+    border-radius: 6px;
     color: var(--ink);
-    font-weight: 950;
-    text-transform: uppercase;
+    font-weight: 750;
+    text-transform: none;
+    min-height: 48px;
   }
   .mobile-menu summary::-webkit-details-marker {
     display: none;
@@ -684,10 +686,14 @@
     width: min(370px, calc(100vw - 28px));
     display: grid;
     padding: 0.75rem;
+    max-height: calc(100dvh - 190px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 8px;
     background: var(--paper);
     color: var(--ink);
     border: 3px solid var(--ink);
-    box-shadow: 8px 8px 0 var(--yellow);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 25%);
   }
   .mobile-menu nav > a {
     display: grid;
@@ -695,15 +701,6 @@
     padding: 0.7rem 0.8rem;
     border-bottom: 1px solid var(--line);
     font-weight: 850;
-  }
-  .mobile-menu nav > a:nth-child(3n + 1) {
-    border-left: 5px solid var(--red);
-  }
-  .mobile-menu nav > a:nth-child(3n + 2) {
-    border-left: 5px solid var(--yellow);
-  }
-  .mobile-menu nav > a:nth-child(3n) {
-    border-left: 5px solid var(--blue);
   }
   .mobile-menu nav > a:hover,
   .mobile-menu nav > a:focus-visible {
@@ -720,7 +717,8 @@
     display: flex;
     align-items: baseline;
     gap: 0.5rem;
-    text-transform: uppercase;
+    text-transform: none;
+    font-size: 1rem;
   }
   .mobile-menu nav a small {
     color: var(--red);
@@ -729,7 +727,7 @@
   }
   .mobile-menu nav a em {
     color: var(--muted);
-    font-size: 0.69rem;
+    font-size: 0.875rem;
     font-style: normal;
     font-weight: 650;
   }

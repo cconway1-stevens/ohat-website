@@ -18,19 +18,18 @@ const logoHoldMs = 650;
 
 const primaryLinks = [
   {
-    number: "01",
     label: "Services",
     href: "/services",
     note: "Repairs, tires & diagnostics",
   },
-  { number: "02", label: "Our shop", href: "/our-shop", note: "Our family, shop & story" },
-  { number: "03", label: "Night drop", href: "/vehicle-drop-off", note: "After-hours key drop" },
-  { number: "04", label: "Reviews", href: "/reviews", note: "What local drivers say" },
-  { number: "05", label: "Deals", href: "/offers", note: "Current shop offers" },
+  { label: "Our shop", href: "/our-shop", note: "Our family, shop & story" },
+  { label: "Night drop", href: "/vehicle-drop-off", note: "After-hours key drop" },
+  { label: "Reviews", href: "/reviews", note: "What local drivers say" },
+  { label: "Deals", href: "/offers", note: "Current shop offers" },
   // Contact earns the last nav slot over the link tree: it is what people
   // come looking for. The link tree stays reachable from the footer and its
   // QR page, which is where a bio link points anyway.
-  { number: "06", label: "Contact", href: "/contact", note: "Call, email, map & hours" },
+  { label: "Contact", href: "/contact", note: "Call, email, map & hours" },
 ];
 
 export function BrandMark({
@@ -145,7 +144,7 @@ export function SiteHeader() {
                 className={isCurrent(item.href) ? "is-current" : undefined}
                 aria-current={isCurrent(item.href) ? "page" : undefined}
               >
-                <small>{item.number}</small> {item.label}
+                {item.label}
               </Link>
             ))}
           </nav>
@@ -154,7 +153,7 @@ export function SiteHeader() {
               ☎︎
             </span>
             <span>
-              <small>Mechanic on the line</small>
+              <small>Call the shop</small>
               <strong>{phoneDisplay}</strong>
             </span>
           </a>
@@ -181,10 +180,7 @@ export function SiteHeader() {
                   aria-current={isCurrent(item.href) ? "page" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span>
-                    <small>{item.number}</small>
-                    {item.label}
-                  </span>
+                  <span>{item.label}</span>
                   <em>{item.note}</em>
                 </Link>
               ))}
@@ -197,7 +193,7 @@ export function SiteHeader() {
                   ☎︎
                 </span>
                 <span>
-                  <small>Mechanic on the line</small>
+                  <small>Call the shop</small>
                   <strong>{phoneDisplay}</strong>
                 </span>
               </a>
@@ -214,7 +210,7 @@ export function SiteHeader() {
             ☎︎
           </span>
           <span className="booking-dock-copy">
-            <small>Mechanic on the line</small>
+            <small>Call the shop</small>
             <strong>{phoneDisplay}</strong>
           </span>
         </a>

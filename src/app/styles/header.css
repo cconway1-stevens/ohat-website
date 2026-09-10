@@ -449,15 +449,15 @@
    live on separate elements because `.shell` caps its own width at 1180px,
    so a background set on it stops short of the viewport edges. */
 .nav-band {
-  background: linear-gradient(90deg, rgba(23, 20, 18, 0.98), rgba(105, 12, 17, 0.96));
+  background: #211a18;
 }
 .nav-wrap {
-  width: min(1440px, calc(100% - 48px));
+  width: min(1320px, calc(100% - 40px));
   min-height: 112px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: 2rem;
   padding-block: 0.65rem;
 }
 .brand {
@@ -466,10 +466,10 @@
   flex-shrink: 0;
 }
 .brand img {
-  width: 136px;
+  width: 124px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.34));
+  filter: none;
   transform: none;
 }
 .desktop-nav {
@@ -482,15 +482,16 @@
 .desktop-nav a {
   position: relative;
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: center;
   gap: 0.36rem;
   min-height: 48px;
   padding: 0.8rem 0.7rem;
   border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
   white-space: nowrap;
 }
 .desktop-nav small {
@@ -501,18 +502,18 @@
 .desktop-nav a::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0.25rem;
-  height: 3px;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 0.15rem;
+  height: 2px;
   background: var(--yellow);
-  transform: skewX(-25deg) scaleX(0);
+  transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.2s ease;
 }
 .desktop-nav a:hover::after,
 .desktop-nav a:focus-visible::after {
-  transform: skewX(-25deg) scaleX(1);
+  transform: scaleX(1);
   transform-origin: left;
 }
 /* Where you are: the current page keeps the underline and the number chip
@@ -521,7 +522,7 @@
   color: var(--yellow);
 }
 .desktop-nav a.is-current::after {
-  transform: skewX(-25deg) scaleX(1);
+  transform: scaleX(1);
 }
 .mobile-menu {
   display: none;
@@ -791,7 +792,7 @@
 }
 
 .nav-band {
-  border-bottom: 2px solid rgb(246 189 56 / 45%);
+  border-bottom: 3px solid var(--red);
 }
 
 .desktop-nav a:hover,
@@ -810,5 +811,31 @@
 .nav-wrap > .retro-call-button {
   flex: 0 0 auto;
   border-width: 2px;
-  box-shadow: 3px 3px 0 var(--yellow);
+  border-color: var(--yellow);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  background: var(--yellow);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.nav-wrap > .retro-call-button:hover {
+  background: #ffcf58;
+  transform: none;
+  box-shadow: none;
+}
+
+.nav-wrap > .retro-call-button small {
+  color: var(--ink);
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-bottom: 0.2rem;
+}
+
+.nav-wrap > .retro-call-button .retro-phone-mark {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  animation: none;
 }
