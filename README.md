@@ -1,251 +1,150 @@
 # Ocean Heights Auto & Tire
 
 [![CI](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cconway1-stevens/ohat-website/actions/workflows/ci.yml)
-[![Production](https://img.shields.io/website?url=https%3A%2F%2Fohat-website.vercel.app%2F&up_message=online&down_message=offline&label=production)](https://ohat-website.vercel.app/)
-[![Node](https://img.shields.io/badge/node-24.x-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org)
-[![Hosted on Vercel](https://img.shields.io/badge/hosted-Vercel-000000?logo=vercel&logoColor=white)](https://ohat-website.vercel.app/)
 
-The website for a family-run auto repair shop at 1178 Ocean Heights Avenue, Egg
-Harbor Township, NJ — built as a retro service-catalog experience, *"Service &
-Repair Annual, Issue No. 1178"*, on a modern Next.js stack.
+Website for Ocean Heights Auto & Tire in Egg Harbor Township, New Jersey. Visitors can explore services, find hours and directions, and call **(609) 241-1546**.
 
-> **The primary conversion on every page is a phone call: (609) 241-1546.**
-> Every design and performance decision below serves that one goal.
+[Website](https://ohat-website.vercel.app/) · [CI runs](https://github.com/cconway1-stevens/ohat-website/actions) · [Open tasks](TODO.md) · [Contributor instructions](AGENTS.md)
 
-```mermaid
-flowchart LR
-  visitor([Visitor]) --> site[Static HTML<br/>pre-rendered, no JS needed to read]
-  site --> call[["📞 Call the shop"]]
-  site --> directions[Directions]
-  site --> hours[Live open/closed sign]
-  style call fill:#a8161c,stroke:#171412,stroke-width:3px,color:#fff
-```
+## Start here
 
----
-
-## Contents
-
-1. [Quick start](#quick-start) — get it running in three commands
-2. [Hosting](#hosting) — where this actually lives
-3. [Architecture](#architecture) — one codebase, two build targets
-4. [Testing](#testing) — three tiers, fastest first
-5. [CI pipeline](#ci-pipeline) — what gates a merge
-6. [Scripts](#scripts) — every command, generated from `package.json`
-7. [Site map](#site-map)
-8. [Design language](#design-language)
-9. [Project structure](#project-structure)
-10. [Quality bars](#quality-bars)
-11. [Content guardrails](#content-guardrails)
-
----
-
-## Quick start
-
-Requires **Node.js 24.x**. On Linux also `flock`, `curl`, and GNU `timeout`.
+Use **Node.js 24.x** and npm. Build and check scripts also require Bash, `flock`, `curl`, and GNU `timeout`; on Windows, use WSL or a suitably configured Bash environment.
 
 ```bash
-npm run install:ci   # one bounded lockfile install
-npm run dev          # Vite dev server → http://localhost:5173
-npm run test:unit    # the whole unit tier, ~2s, no build required
+git clone https://github.com/cconway1-stevens/ohat-website.git
+cd ohat-website
+npm run install:ci
+npm run dev
 ```
 
-That third command is the inner loop — it needs no build artifact, so it is the
-fastest honest signal that nothing is broken.
+Open **http://localhost:5173**. Run checks in a second terminal:
 
-<details>
-<summary><strong>Local gotchas worth knowing</strong></summary>
+```bash
+npm run test:unit
+npm run typecheck
+```
 
-- The dev server simulates Cloudflare bindings via `vite.config.ts`. There is no
-  `wrangler.jsonc`.
-- Google Fonts cache into `.vinext/fonts/`, which is **gitignored deliberately**:
-  the cached CSS bakes in absolute filesystem paths, so a committed cache 404s on
-  every machine except the one that generated it. It regenerates on first
-  build/dev, falling back to the Google CDN if the network is blocked.
-- The remote builder runs `npm run build` against the pushed commit — no need to
-  repeat install/build as a routine pre-push step.
+`npm run check` is the full local gate. It includes builds and browser checks, so it takes longer than the two commands above. Browser checks require Chrome or Chromium; use `CHROMIUM_PATH` for an existing installation or install the pinned Playwright browser:
 
-</details>
+```bash
+./node_modules/.bin/playwright install chromium
+npm run check:browser:preflight
+```
 
----
+## What is in the site?
 
-## Hosting
+| Area | Routes | Purpose |
+| --- | --- | --- |
+| Shop information | `/`, `/our-shop`, `/hours` | Shop introduction, story, hours, and closures |
+| Services | `/services`, `/services/[slug]` | Catalog and individual service pages |
+| Contact | `/contact`, `/vehicle-drop-off` | Phone, email, directions, local assistant, and night drop |
+| Reviews and offers | `/reviews`, `/offers` | Customer feedback and published offers |
+| Quick links | `/links`, `/links/qr`, `/contact-card.vcf` | Link hub, QR landing, and downloadable contact card |
+| Privacy and accessibility | `/privacy`, `/accessibility` | Data practices, consent choices, accessibility status, and support |
+| Optional extras | `/arcade`, `/agent` and their subroutes | Games and mascot/assistant development tools |
 
-Production is **Vercel**, serving the pre-rendered static export. The Cloudflare
-Worker build is exercised by CI on every run and is what the app is authored
-against; GitHub Pages is an optional mirror of the same static artifact.
+Legacy redirects and a custom 404 page are included. Route-discovery tests check emitted pages and sitemap consistency. Arcade and agent routes use noindex metadata; noindex is not access control.
+
+## Architecture and hosting
+
+The project uses **React and Next.js App Router conventions on vinext**, with Vite and a Cloudflare Worker entry. Tailwind and section styles provide the visual system.
+
+| Source | Responsibility |
+| --- | --- |
+| `src/app/` | Routes, layouts, styles, metadata, sitemap, and robots |
+| `src/components/` | Navigation, shop information, consent controls, chat, and games |
+| `src/lib/shop/shop.mjs` | Shared phone, email, address, hours, and other shop facts |
+| `src/lib/shop/shop-hours.mjs` | Open/closed calculations, holidays, exceptions, and forecasts |
+| `src/lib/services.ts` | Service descriptions, FAQs, and service-page data |
+| `src/lib/chat/answers.ts` | Local assistant matching and response rules |
+| `src/worker/index.ts` | Worker request handling and image endpoint |
+| `public/` | Static images, brand assets, icons, and other public files |
+| `dev/` | Build scripts, tests, audits, and contributor documentation |
+
+The same source supports a Worker build and a static export. Core informational content is rendered as HTML; interactive features still require JavaScript.
 
 <!-- AUTOGEN:hosting START -->
-| | Production (Vercel) | Cloudflare Worker | GitHub Pages |
+| Target | Vercel static site | Cloudflare Worker | GitHub Pages |
 | --- | --- | --- | --- |
-| **Status** | Live — the public site | Built and tested every run | Optional mirror |
+| **Role** | Configured static deployment | Alternate deployment target checked by CI | Optional manual deployment |
 | **Build command** | `npm run build:static` | `npm run build` | `npm run build:static` |
 | **Serves** | `dist/client` — pre-rendered HTML | Worker + Cloudflare Images | `dist/client` |
 | **Framework preset** | `none` — this repo owns its build | vinext (Vite + Workers) | none |
 | **Config** | [`vercel.json`](vercel.json) | [`src/worker/index.ts`](src/worker/index.ts) | `pages-package` + `pages-publish` jobs |
 <!-- AUTOGEN:hosting END -->
 
-Vercel needs no framework preset (`"framework": null`) because this repo owns its
-own build: `npm run build:static` emits a complete, self-contained tree and
-Vercel simply serves it. That also means **no Vercel-specific checks are
-required** — the artifact CI tests is byte-for-byte the artifact Vercel
-publishes, and `dev/tests/static/static-export.test.mjs` asserts `vercel.json`
-still points at the build the suite exercises, so the two cannot drift apart.
+The Vercel configuration specifies the build command and output directory; it does not prove that a deployment is live or that hosting waits for every GitHub check. Check the deployment provider and CI results separately.
 
-> **Note on GitHub Pages:** the Pages copy must be served from a **domain root**
-> — a custom domain or an `<owner>.github.io` repo. A project subpath
-> (`owner.github.io/repo/`) cannot work: vinext's prerenderer ignores `basePath`
-> and does not implement `assetPrefix`, so its runtime JS and CSS stay pinned to
-> the domain root. The build fails early with that explanation rather than
-> publishing a broken site. Canonical URLs still point at
-> `oceanheightsautorepair.com`, so a mirror never competes in search results.
+Static output must be served from a **domain root**. A GitHub Pages project subpath is unsupported by the current export pipeline. Canonical URLs come from the shared shop configuration.
 
----
+Important implementation details:
 
-## Architecture
+- `vite.config.ts` configures the local Worker environment; there is no `wrangler.jsonc`.
+- Optional `.openai/hosting.json` connects a Sites preview to its hosting identity and bindings. Reuse it when present.
+- Keep `.vinext/fonts/` out of Git: cached font CSS can contain machine-specific paths.
+- Use `SiteImage` for site imagery. It disables runtime image optimization so hydrated images continue to work on static hosting. The Worker also contains an image endpoint for supported requests.
+- Builds share the `dist/` output location. Do not run competing builds against the same checkout. If route tests report duplicate pages, investigate stale generated output and rebuild into a clean output directory.
 
-One source tree compiles to two deployable shapes. Everything a visitor reads is
-static HTML; JavaScript only enhances.
+## Privacy and the contact assistant
 
-```mermaid
-flowchart TB
-  src["src/ — App Router, components, lib"]
+Klaro controls six optional services: Google Analytics, Vercel Web Analytics, Vercel Speed Insights, shop weather, Google Maps, and arcade radio. These default off. The privacy settings button lets visitors change their choices. Global Privacy Control overrides the three measurement services.
 
-  src --> b1["npm run build<br/><i>Cloudflare Worker</i>"]
-  src --> b2["npm run build:static<br/><i>static export</i>"]
+The contact assistant is a **local matcher, not a generative AI model**. Typed questions are matched in the browser against shop information and service FAQs. It supports limited service-topic price follow-ups, but cannot diagnose a vehicle, access repair orders, quote live prices, or confirm appointments. Browser voice features may use remote processing as described on the privacy page.
 
-  b1 --> w["dist/server<br/>Worker + Cloudflare Images"]
-  b2 --> c["dist/client<br/>51 pages of plain HTML"]
+Do not add third-party requests without reviewing consent behavior, withdrawal handling, and the service inventory in `dev/privacy-services.json`.
 
-  c --> vercel["Vercel — production"]
-  c --> pages["GitHub Pages — optional mirror"]
+- [Privacy review and operational follow-ups](dev/docs/privacy-compliance.md)
+- [Contact assistant review](dev/docs/contact-assistant-review.md)
+- [Accessibility statement source](src/components/accessibility/accessibility-statement-sections.tsx)
 
-  shop["lib/shop/shop.mjs<br/><b>single source of truth</b><br/>hours · address · phone"]
-  shop -.-> src
-
-  style shop fill:#f6bd38,stroke:#171412,stroke-width:2px,color:#171412
-  style vercel fill:#171412,stroke:#171412,color:#fff
-```
-
-**Stack:** [Next.js](https://nextjs.org) App Router on
-[vinext](https://github.com/cloudflare/vinext) (Vite + Cloudflare Workers),
-Tailwind v4 as a base under a hand-rolled design system in `src/app/styles/`,
-Cloudflare Images for `next/image` optimization.
-
-Shop facts — hours, address, phone, closures — live only in
-`src/lib/shop/shop.mjs`. The open/closed sign, the notice banner, the chat
-answers, and the structured data all read from it. Never duplicate that data.
-
----
+Automated checks do not establish full accessibility conformance or legal compliance. The public statements distinguish implemented behavior from outstanding evaluation and business settings that need confirmation.
 
 ## Testing
 
-Tests are tiered by **what they need**, not by what they cover. The tier
-directory *is* the wiring: `npm test` runs `dev/tests/<tier>/*.test.mjs`, so a
-file outside a tier is a file nothing runs.
+Tests are organized by the artifacts they need. Add new tests under the appropriate tier so the npm scripts discover them.
 
 <!-- AUTOGEN:tests START -->
 | Tier | Command | Files | Needs a build? | Covers |
 | --- | --- | --- | --- | --- |
 | `unit` | `npm run test:unit` | 10 | **No** — pure logic only | shop hours, notices, chat answers, arcade, transcripts, suite wiring |
-| `server` | `npm run test:server` | 2 | Yes — `npm run build` → `dist/server` | server-rendered HTML, per-service SEO |
+| `server` | `npm run test:server` | 2 | Yes — `dist/server` from the Worker build or static-export pipeline | server-rendered HTML, per-service SEO |
 | `static` | `npm run test:static` | 2 | Yes — `npm run build:static` → `dist/client` | static export, route discovery and classification |
 
 `npm test` runs all three in order: `npm run test:unit && npm run build:static && npm run test:server && npm run test:static`.
 <!-- AUTOGEN:tests END -->
 
-```mermaid
-flowchart LR
-  u["test:unit<br/><b>~2s</b> · no build"] --> b1["npm run build"]
-  b1 --> s["test:server"]
-  s --> b2["npm run build:static"]
-  b2 --> st["test:static"]
-  style u fill:#1f9150,stroke:#171412,stroke-width:2px,color:#fff
-```
+The static-export pipeline also produces the server artifact used by server tests; `npm test` therefore does not need a separate Worker build before those tests. `npm run check` additionally validates the standalone Worker target and runs broader audits.
 
-The unit tier runs **before** any build, so a broken assertion fails in seconds
-rather than after two multi-minute builds. `dev/tests/unit/test-tiers.test.mjs`
-guards the arrangement itself: it fails if a test file sits outside a tier, if a
-tier has no npm script, or if a tier is empty. That guard exists because six chat
-test files once sat in `dev/tests/` for months while the gate ran a
-hand-maintained list that never mentioned them.
+For coverage, thresholds, page discovery, and scheduled checks, use the [test program](dev/docs/test-program.md). A passing unit suite does not replace browser testing.
 
-The canonical testing document is
-[`dev/docs/test-program.md`](dev/docs/test-program.md) — the master matrix,
-page-discovery rules, and which checks gate a PR versus run on a schedule. Any
-change to a `check:*` script's coverage must update it.
+## GitHub checks and releases
 
----
-
-## CI pipeline
-
-One workflow, [`.github/workflows/ci.yml`](.github/workflows/ci.yml), ordered
-cheapest and most decisive first.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) is the source of truth for jobs, dependencies, and event conditions. Some jobs intentionally skip events: Windows runs on PR/manual events, resilience checks run weekly or when requested manually, and GitHub Pages publishing requires a manual deployment request on main.
 
 <!-- AUTOGEN:ci START -->
-```mermaid
-flowchart LR
-  subgraph gate["Start immediately, in parallel"]
-    direction TB
-    source["Source · format, lint, types, unit tests"]
-    dependencies["Supply chain · dependency vulnerabilities"]
-    code_scan["Security · CodeQL scan"]
-    windows["Windows · build + all test tiers (PR/manual)"]
-    build_worker["Build · Cloudflare Worker artifact"]
-    build_site["Build · static site + export tests"]
-  end
-  browser["Browser · pages, assets, bundle, accessibility"]
-  lighthouse["Lighthouse · speed, SEO, accessibility — sharded"]
-  resilience["Resilience · slow network, memory, stable Lighthouse (weekly/manual)"]
-  pages_package["Release · package the tested site (manual)"]
-  pages_publish["Release · publish to GitHub Pages (manual)"]
-  build_site --> browser
-  build_site --> lighthouse
-  build_site --> resilience
-  source --> pages_package
-  build_worker --> pages_package
-  build_site --> pages_package
-  browser --> pages_package
-  lighthouse --> pages_package
-  dependencies --> pages_package
-  code_scan --> pages_package
-  pages_package --> pages_publish
-```
-
 | Job | Runs on | Waits for |
 | --- | --- | --- |
-| **Source · format, lint, types, unit tests** | push and PR | — |
-| **Supply chain · dependency vulnerabilities** | every push and PR | — |
-| **Security · CodeQL scan** | every push and PR | — |
+| **Source · format, lint, types, unit tests** | push, PR, manual | — |
+| **Supply chain · dependency vulnerabilities** | push, PR, weekly, manual | — |
+| **Security · CodeQL scan** | push, PR, weekly, manual | — |
 | **Windows · build + all test tiers (PR/manual)** | PRs + manual | — |
-| **Build · Cloudflare Worker artifact** | every push and PR | — |
-| **Build · static site + export tests** | every push and PR | — |
-| **Browser · pages, assets, bundle, accessibility** | push and PR | `build-site` |
-| **Lighthouse · speed, SEO, accessibility — sharded** | push and PR | `build-site` |
+| **Build · Cloudflare Worker artifact** | push, PR, weekly, manual | — |
+| **Build · static site + export tests** | push, PR, weekly, manual | — |
+| **Browser · pages, assets, bundle, accessibility** | push, PR, manual | `build-site` |
+| **Lighthouse · speed, SEO, accessibility — sharded** | push, PR, manual | `build-site` |
 | **Resilience · slow network, memory, stable Lighthouse (weekly/manual)** | weekly + manual | `build-site` |
-| **Release · package the tested site (manual)** | main only | `source`, `build-worker`, `build-site`, `browser`, `lighthouse`, `dependencies`, `code-scan` |
-| **Release · publish to GitHub Pages (manual)** | main only | `pages-package` |
+| **Release · package the tested site (manual)** | manual deploy on main | `source`, `build-worker`, `build-site`, `browser`, `lighthouse`, `dependencies`, `code-scan` |
+| **Release · publish to GitHub Pages (manual)** | manual deploy on main | `pages-package` |
 <!-- AUTOGEN:ci END -->
 
-Two jobs are worth calling out:
+A failed check identifies a problem; whether it blocks merging or publication also depends on repository protections and hosting settings. To diagnose a failure, open the failed job and step in [Actions](https://github.com/cconway1-stevens/ohat-website/actions). `npm run ci:report` can collect a local failure report when GitHub CLI access is configured.
 
-- **Source** carries the unit tier because that tier needs no build — the whole
-  tier costs about two seconds inside a job that was already installing
-  dependencies. It gates the same list, in the same order, as `npm run check`
-  locally; a check in only one of the two is a check that gets discovered late.
-- **Windows** runs the builds and all three test tiers rather than lint and
-  typecheck. Biome, ESLint and `tsc` reach the same verdict on either
-  OS; what genuinely differs on Windows is shell scripts, path separators, and
-  the tests' own path resolution.
+## Command reference
 
-To investigate a failure, open the badge, take the newest run, and open the
-failed step — each one is named after the check it runs.
+These tables are generated from `package.json`. Run `npm run readme` after changing scripts, workflow jobs, hosting configuration, or test-tier contents. The README consistency test catches stale generated blocks.
 
----
-
-## Scripts
-
-Generated from `package.json`, so this table cannot drift from what actually
-exists.
+<details>
+<summary>Expand all commands</summary>
 
 <!-- AUTOGEN:scripts START -->
 **Everyday**
@@ -299,115 +198,32 @@ exists.
 | `npm run check:a11y-statement` | `node dev/scripts/check-accessibility-statement.mjs` |
 | `npm run check:slow-network` | `node dev/scripts/check-slow-network.mjs` |
 | `npm run check:memory` | `node dev/scripts/check-memory.mjs` |
+
+**Other commands**
+
+| Command | Runs |
+| --- | --- |
+| `npm run install:ci` | `bash dev/scripts/install-ci.sh` |
+| `npm run format:check` | `biome format .` |
+| `npm run clean` | `node dev/scripts/clean.mjs` |
+| `npm run clean:deep` | `node dev/scripts/clean.mjs --deep` |
+| `npm run qa:production` | `node dev/scripts/production-readiness.mjs` |
+| `npm run ci:report` | `node dev/scripts/ci-report.mjs` |
+| `npm run validate:artifact` | `bash dev/scripts/validate-artifact.sh` |
+| `npm run lint:next` | `eslint .` |
 <!-- AUTOGEN:scripts END -->
 
-`npm run readme` regenerates the generated blocks in this file;
-`dev/tests/unit/readme.test.mjs` fails the unit tier if they are stale.
+</details>
 
----
+## Editing guide
 
-## Site map
+- Update shop facts in `src/lib/shop/shop.mjs`; do not copy phone numbers, hours, or addresses into unrelated components.
+- Update service content in `src/lib/services.ts`. Keep customer-facing claims supported by shop records.
+- Preserve the original logo proportions. Shared navigation lives in `src/components/layout/site-header.tsx`.
+- Use the tokens in `src/app/styles/base.css`. Fraunces is the display face; Geist is the body face. Keep text readable and respect reduced-motion preferences.
+- Keep consent gates around optional services and retain direct phone/email alternatives.
+- Keep assistant replies honest about their capabilities. Never turn a matched symptom or fault code into a claimed diagnosis.
+- Use the repository's installed tools and lockfile. Do not silently substitute newer tool versions while checking a change.
+- Update the [test program](dev/docs/test-program.md) when changing a check's coverage.
 
-| Route | Purpose |
-| --- | --- |
-| `/` | Catalog-cover homepage: hero, credentials, services, diagnostics, makes, reviews, visit |
-| `/services` | The service board — all 14 service categories |
-| `/services/[slug]` | Bay-ticket detail page per service (14 pages, data in `lib/services.ts`) |
-| `/our-shop` | Family story and shop photo gallery |
-| `/reviews` | Review themes plus CARFAX / Yelp / Facebook profiles |
-| `/offers` | Current offers and the preserved legacy coupon |
-| `/contact` | Call, visit, and after-hours contact options |
-| `/vehicle-drop-off` | Secure after-hours key-drop guide |
-| `/hours` | Hours & closures — full weekly schedule and posted closures |
-| `/links`, `/links/qr` | Link-tree hub for social bios (QR landing is noindex) |
-| `/privacy` | Privacy notice (noindex) |
-| `/arcade` (+ 15 games) | The Garage Arcade — easter-egg games, all noindex |
-| `/agent` | Dev playground for the pixel-crew mascot and chat brain (noindex) |
-| `/contact-card.vcf` | Downloadable vCard |
-| Legacy redirects | `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments` |
-
-A branded 404 ("Bay 404") handles everything else. `sitemap.xml` and `robots.txt`
-are generated from `app/sitemap.ts` and `app/robots.ts` — derived from the pages
-actually emitted, so they cannot drift.
-
----
-
-## Design language
-
-A vintage car-catalog system, *"The Modern Family Garage"*:
-
-- Cream paper surfaces, deep garage red, signal yellow, and gulf blue, with thick
-  ink borders and hard offset shadows.
-- Georgia serif display headlines with double-rule catalog mastheads; Geist for
-  body text.
-- Catalog artifacts throughout: cover-sheet hero, bay-numbered service cards,
-  proof-of-work tickets, rubber-stamp seals, a brand marquee, an animated
-  drive-off footer.
-- Every animation respects `prefers-reduced-motion`.
-
-Design tokens live in `:root` in `src/app/styles/base.css` — including the
-accessibility tints `--yellow-tint` / `--blue-tint` used on red and blue
-surfaces. The stylesheet is split per section under `src/app/styles/` and
-re-imported from `src/app/globals.css`.
-
----
-
-## Project structure
-
-```
-src/              Production source
-  app/              Routes (App Router), layout, styles, sitemap/robots
-  components/       React components by concern
-    layout/           site-header, site-footer, notice-banner
-    ui/               Shared widgets (site-image, directions, copy, share)
-    shop/             Hours status, almanac, service icons
-    arcade/           Game components
-  lib/              Non-UI logic and data
-    shop/             Single source of truth (shop.mjs + re-exports)
-    chat/             Local Q&A matcher behind the contact-page widget
-    arcade/           Game logic
-    services.ts       Service catalog (drives pages + sitemap)
-    seo.ts            Metadata builder
-  worker/           Cloudflare Worker entry (image optimization + app handler)
-public/           Static assets (brand SVGs, shop photos, favicon)
-dev/              Tooling — never shipped
-  scripts/          Install, build, QA, and README generation
-  tests/            unit/ · server/ · static/
-  docs/             Playbook, audits, test program
-  reports/          Lighthouse snapshots (gitignored)
-```
-
-[`dev/docs/project-playbook.md`](dev/docs/project-playbook.md) holds the rebuild
-goals, brand story, content inventory, and owner follow-ups.
-
----
-
-## Quality bars
-
-Maintained deliberately — please keep them green.
-
-| Bar | Standard |
-| --- | --- |
-| **Accessibility** | Zero axe-core WCAG 2.1 AA violations on every route; skip links, screen-reader annotations on external links, reduced-motion support |
-| **SEO** | Per-page titles, descriptions and canonicals; Open Graph + Twitter cards; `LocalBusiness`, `Service`, `BreadcrumbList` JSON-LD |
-| **Performance** | Responsive AVIF ladders, ~25 KB phone hero candidate, 6.5 KB AVIF masthead logo, self-hosted fonts, no external images on the homepage |
-| **Code health** | No dead files, exports or dependencies (`knip`); no file over its role-based line budget; JS+CSS under the byte budget |
-| **Resilience** | Every page loads within budget on throttled slow 3G; no DOM-node or heap growth across repeated navigation |
-| **Security** | `npm audit` fails on high/critical; CodeQL scans every push and PR |
-
-Lighthouse reports performance against a 60 reference floor with **80+ as the
-goal**; performance is advisory because shared-runner scores vary. The noindex
-tier (arcade, agent) has its own floor — those pages ship game code on purpose.
-
----
-
-## Content guardrails
-
-- Keep the phone number **(609) 241-1546** consistent everywhere.
-- Only make claims backed by the playbook's audit records — ASE certification,
-  CARFAX Top-Rated, 40+ years of parts experience.
-- Symptom answers in the chat brain must **never diagnose**. They mirror the
-  customer's words, hedge, and lead with the call chip;
-  `dev/tests/unit/chat-legal.test.mjs` enforces the banned-claims list.
-- Brand marks in `public/brands/` belong to their owners and are shown as
-  representative makes serviced.
+See [AGENTS.md](AGENTS.md) for implementation rules, the [project playbook](dev/docs/project-playbook.md) for background, and [TODO.md](TODO.md) for open work.

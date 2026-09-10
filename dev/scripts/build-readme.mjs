@@ -100,14 +100,14 @@ function displayName(job) {
 /** Plain-English trigger, read off the job's `if:` guard. */
 function triggerOf(job) {
   const cond = job.if;
-  if (!cond) return "every push and PR";
+  if (!cond) return "push, PR, weekly, manual";
   const scheduled = cond.includes("'schedule'") && !cond.includes("!=");
   const prOnly = cond.includes("pull_request") && !cond.includes("push");
   const mainOnly = cond.includes("refs/heads/main");
-  if (mainOnly) return "main only";
+  if (mainOnly) return "manual deploy on main";
   if (scheduled) return "weekly + manual";
   if (prOnly) return "PRs + manual";
-  if (cond.includes("!= 'schedule'")) return "push and PR";
+  if (cond.includes("!= 'schedule'")) return "push, PR, manual";
   return "conditional";
 }
 
@@ -118,29 +118,11 @@ const pkg = JSON.parse(read("package.json"));
 const jobs = parseWorkflow(read(".github", "workflows", "ci.yml"));
 
 function ciBlock() {
-  const out = ["```mermaid", "flowchart LR"];
-  const nodeId = (id) => id.replace(/-/g, "_");
+  const out = [];
   const label = (job) => {
     const { name, sharded } = displayName(job);
     return sharded ? `${name} — sharded` : name;
   };
-
-  const gates = jobs.filter((j) => j.needs.length === 0);
-  const dependents = jobs.filter((j) => j.needs.length > 0);
-
-  // "No `needs`" is the only claim this grouping can make honestly — some of
-  // these jobs build and some don't; what they share is starting immediately.
-  out.push('  subgraph gate["Start immediately, in parallel"]');
-  out.push("    direction TB");
-  for (const job of gates) out.push(`    ${nodeId(job.id)}["${label(job)}"]`);
-  out.push("  end");
-
-  for (const job of dependents) out.push(`  ${nodeId(job.id)}["${label(job)}"]`);
-  for (const job of dependents) {
-    for (const need of job.needs) out.push(`  ${nodeId(need)} --> ${nodeId(job.id)}`);
-  }
-  out.push("```");
-  out.push("");
   out.push("| Job | Runs on | Waits for |");
   out.push("| --- | --- | --- |");
   for (const job of jobs) {
@@ -160,7 +142,7 @@ const TIERS = [
   {
     dir: "server",
     script: "test:server",
-    needs: "`npm run build` → `dist/server`",
+    needs: "`dist/server` from the Worker build or static-export pipeline",
     covers: "server-rendered HTML, per-service SEO",
   },
   {
@@ -201,6 +183,8 @@ function scriptsBlock() {
     (name) => name.startsWith("check:") && !described.has(name),
   );
   groups.push(["Individual audits", audits]);
+  const listed = new Set(groups.flatMap(([, names]) => names));
+  groups.push(["Other commands", Object.keys(pkg.scripts).filter((name) => !listed.has(name))]);
 
   const out = [];
   for (const [heading, names] of groups) {
@@ -216,9 +200,9 @@ function scriptsBlock() {
 function hostingBlock() {
   const vercel = JSON.parse(read("vercel.json"));
   return [
-    "| | Production (Vercel) | Cloudflare Worker | GitHub Pages |",
+    "| Target | Vercel static site | Cloudflare Worker | GitHub Pages |",
     "| --- | --- | --- | --- |",
-    "| **Status** | Live — the public site | Built and tested every run | Optional mirror |",
+    "| **Role** | Configured static deployment | Alternate deployment target checked by CI | Optional manual deployment |",
     `| **Build command** | \`${vercel.buildCommand}\` | \`npm run build\` | \`${vercel.buildCommand}\` |`,
     `| **Serves** | \`${vercel.outputDirectory}\` — pre-rendered HTML | Worker + Cloudflare Images | \`${vercel.outputDirectory}\` |`,
     `| **Framework preset** | \`${vercel.framework ?? "none"}\` — this repo owns its build | vinext (Vite + Workers) | none |`,
