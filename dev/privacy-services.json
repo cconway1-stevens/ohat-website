@@ -1,0 +1,40 @@
+[
+  {
+    "service": "Google Analytics 4",
+    "domains": ["www.googletagmanager.com", "www.google-analytics.com"],
+    "activation": "klaro",
+    "klaroService": "googleAnalytics",
+    "sourceMarkers": ["googletagmanager.com/gtag/js", "enableGoogleAnalytics"],
+    "policyMarkers": ["Google Analytics 4", "blocked until you choose"]
+  },
+  {
+    "service": "Vercel Web Analytics",
+    "domains": ["/_vercel/insights"],
+    "activation": "klaro",
+    "klaroService": "vercelAnalytics",
+    "sourceMarkers": ["@vercel/analytics/react", "vercelAnalytics"],
+    "policyMarkers": ["Vercel Web Analytics", "blocked until you choose"]
+  },
+  {
+    "service": "Open-Meteo shop weather",
+    "domains": ["api.open-meteo.com"],
+    "activation": "klaro",
+    "klaroService": "shopWeather",
+    "sourceMarkers": ["api.open-meteo.com/v1/forecast", "weatherAllowed"],
+    "policyMarkers": ["Open-Meteo", "enable shop weather"]
+  },
+  {
+    "service": "Google Maps embed",
+    "domains": ["maps.google.com"],
+    "activation": "user-action",
+    "sourceMarkers": ["maps.google.com/maps", "Load Google Map"],
+    "policyMarkers": ["Load Google Map", "map stays blocked"]
+  },
+  {
+    "service": "Radio Browser and station streams",
+    "domains": ["de1.api.radio-browser.info", "dynamic radio stream host"],
+    "activation": "user-action",
+    "sourceMarkers": ["api.radio-browser.info/json/stations/search", "url_resolved"],
+    "policyMarkers": ["Radio-Browser", "actively choose a station"]
+  }
+]

@@ -22,9 +22,11 @@ const CLIENT = join(ROOT, "dist", "client");
 // then to 1760 for the 2D '57 Chevy radio dash — that rebuild deleted the
 // Three.js radio scene outright, but the hand-built chrome faceplate, dial,
 // and station guide cost more CSS than the scene it replaced saved here.
-// Three.js remains the largest lazy chunk. The ceiling should only move again
-// for a deliberate feature change.
-const BUDGET_KB = Number(process.env.BUDGET_KB ?? 1760);
+// Three.js remains the largest lazy chunk. Raised to 1980 for the deliberate
+// addition of the self-hosted Klaro consent-management UI (173 KB unminified
+// lazy chunk plus integration code). The ceiling should only move again for a
+// deliberate feature change.
+const BUDGET_KB = Number(process.env.BUDGET_KB ?? 1980);
 
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

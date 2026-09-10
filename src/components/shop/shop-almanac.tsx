@@ -17,6 +17,17 @@ const SOURCE_URL = "https://open-meteo.com/";
 // don't change faster than that, and neither should our API traffic.
 const CACHE_KEY = "ohat-almanac";
 const CACHE_TTL_MS = 30 * 60 * 1000;
+const PRIVACY_KEY = "ohat-klaro-consent-v1";
+
+function weatherAllowed() {
+  try {
+    const raw = window.localStorage.getItem(PRIVACY_KEY);
+    const consent = raw ? (JSON.parse(decodeURIComponent(raw)) as { shopWeather?: boolean }) : null;
+    return consent?.shopWeather === true;
+  } catch {
+    return false;
+  }
+}
 
 // WMO weather codes, condensed to masthead-length words.
 function describe(code: number): string {
@@ -114,12 +125,18 @@ export function ShopAlmanac() {
       delayTimer = setTimeout(fetchForecast, 3000);
     }
 
-    if (document.readyState === "complete") scheduleForecast();
-    else window.addEventListener("load", scheduleForecast, { once: true });
+    function beginIfAllowed() {
+      if (weatherAllowed()) scheduleForecast();
+    }
+
+    if (document.readyState === "complete") beginIfAllowed();
+    else window.addEventListener("load", beginIfAllowed, { once: true });
+    window.addEventListener("ohat-privacy-changed", beginIfAllowed);
 
     return () => {
       cancelled = true;
-      window.removeEventListener("load", scheduleForecast);
+      window.removeEventListener("load", beginIfAllowed);
+      window.removeEventListener("ohat-privacy-changed", beginIfAllowed);
       if (delayTimer) clearTimeout(delayTimer);
       controller.abort();
     };

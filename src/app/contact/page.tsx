@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ChatWidget } from "@/components/contact/chat-widget";
+import { ConsentMap } from "@/components/contact/consent-map";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { phoneDisplay, phoneHref, SiteHeader } from "@/components/layout/site-header";
 import { HoursCardNotice } from "@/components/shop/hours-card-notice";
@@ -174,12 +175,9 @@ export default function ContactPage() {
               <HoursCardNotice />
               <figure className="shop-map">
                 <div className="shop-map-frame">
-                  <iframe
+                  <ConsentMap
+                    address={shop.address.full}
                     title={`Map showing ${shop.name} at ${shop.address.full}`}
-                    src={`https://maps.google.com/maps?q=${encodeURIComponent(shop.address.full)}&z=15&output=embed`}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
                   />
                 </div>
                 <figcaption>

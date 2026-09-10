@@ -295,6 +295,7 @@ exists.
 | `npm run check:deadcode` | `knip` |
 | `npm run check:architecture` | `depcruise src dev --config .dependency-cruiser.cjs` |
 | `npm run check:pages` | `node dev/scripts/check-pages.mjs` |
+| `npm run check:privacy` | `node dev/scripts/check-privacy.mjs` |
 | `npm run check:slow-network` | `node dev/scripts/check-slow-network.mjs` |
 | `npm run check:memory` | `node dev/scripts/check-memory.mjs` |
 <!-- AUTOGEN:scripts END -->

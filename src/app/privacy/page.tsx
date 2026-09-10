@@ -19,7 +19,7 @@ export const metadata = pageMetadata({
  * a reader nothing, and the notice is supposed to record when the *practices*
  * last changed.
  */
-const lastUpdated = "August 1, 2026";
+const lastUpdated = "September 10, 2026";
 
 export default function PrivacyPage() {
   return (
@@ -46,10 +46,11 @@ export default function PrivacyPage() {
             <h2>What this policy covers</h2>
             <p>
               This policy is about <strong>this website</strong> — what it collects while you
-              browse, and who else your browser talks to while you are here. It does not describe
-              how the shop handles customer and vehicle records at the counter; that is the
-              business&rsquo;s own recordkeeping, and questions about it should go to the shop
-              directly using the details at the bottom of this page.
+              browse, the choices you can make before optional analytics load, and who else your
+              browser talks to while you are here. It does not describe how the shop handles
+              customer and vehicle records at the counter; that is the business&rsquo;s own
+              recordkeeping, and questions about it should go to the shop directly using the details
+              at the bottom of this page.
             </p>
 
             <h2>The short version</h2>
@@ -95,9 +96,9 @@ export default function PrivacyPage() {
             </ul>
             <p>
               We have deliberately turned off the advertising side of Google Analytics. Google
-              Signals, ad personalisation and advertising cookies are all disabled, and IP addresses
-              are anonymised. Nothing this site measures is used to target ads to you, here or
-              anywhere else.
+              Signals, ad personalisation and advertising cookies are all disabled. Google Analytics
+              and Vercel Web Analytics stay blocked until you choose them in the privacy prompt.
+              Nothing this site measures is used to target ads to you, here or anywhere else.
             </p>
 
             <h2>Other services your browser contacts</h2>
@@ -108,22 +109,37 @@ export default function PrivacyPage() {
             </p>
             <ul>
               <li>
-                <strong>Google</strong> hosts the analytics script and the site&rsquo;s typeface,
-                and supplies the embedded map on our <Link href="/contact">contact page</Link>. That
-                map is a Google Maps frame, so opening the contact page loads content from Google
-                and Google may set its own cookies for it. Every other &ldquo;get directions&rdquo;
-                control on this site is a plain link that does nothing until you click it.
+                <strong>Google</strong> hosts the optional analytics script and supplies the map on
+                our <Link href="/contact">contact page</Link>. The map stays blocked until you press
+                &ldquo;Load Google Map.&rdquo; Loading it sends your IP address and browser
+                information to Google and may allow Google to set its own cookies. Every other
+                &ldquo;get directions&rdquo; control is a plain link that does nothing until you
+                click it.
               </li>
               <li>
                 <strong>Open-Meteo</strong> supplies the current weather shown in the header. We ask
                 it for the weather at <em>the shop&rsquo;s</em> coordinates, never yours — your
-                location is not sent, looked up, or requested.
+                location is not sent, looked up, or requested. The request stays off until you
+                enable shop weather in Privacy settings.
               </li>
               <li>
                 <strong>Radio-Browser</strong> supplies station listings, and only on the
-                arcade&rsquo;s radio game. It is not contacted anywhere else on the site.
+                arcade&rsquo;s radio game. It is contacted only after you actively choose a station
+                category; the chosen station&rsquo;s own streaming server then receives the request.
+                Neither is contacted elsewhere on the site.
               </li>
             </ul>
+
+            <h2>Hosting and operational logs</h2>
+            <p>
+              The production site is hosted by Vercel. Like other web hosts, it necessarily
+              processes request information such as IP address, browser details, requested URL, and
+              timestamps to deliver and secure the site. A separate Cloudflare Worker build has
+              operational invocation logging enabled for debugging if that build is used. Cloudflare
+              observability is server logging, not a third visitor-analytics product, and cannot be
+              switched off from this page. We do not intentionally write names, phone numbers, email
+              addresses, or chat text into those logs.
+            </p>
 
             <h2>Things stored on your own device</h2>
             <p>
@@ -136,8 +152,18 @@ export default function PrivacyPage() {
             <ul>
               <li>
                 <strong>Global Privacy Control.</strong> If your browser or an extension sends a GPC
-                signal, this site sees it and turns off analytics storage automatically. There is
-                nothing for you to click, and we do not ask you to reconsider.
+                signal, Google Analytics stays off automatically. There is nothing for you to click,
+                and we do not ask you to reconsider that choice.
+              </li>
+              <li>
+                <strong>Privacy settings.</strong> The first-visit prompt offers Accept all,
+                Essential only, or Choose services. The detailed settings let you choose Google
+                Analytics, Vercel Web Analytics, and shop weather separately. The same settings link
+                appears in the footer on every page, so you can withdraw consent later. When Google
+                Analytics is turned off, this site deletes the Google Analytics cookies it can
+                access and stops future analytics collection. These choices are managed locally in
+                your browser by the self-hosted, open-source Klaro consent manager; Klaro itself
+                does not receive your information.
               </li>
               <li>
                 <strong>Browser settings.</strong> You can block or delete cookies for this site at
@@ -184,9 +210,9 @@ export default function PrivacyPage() {
 
             <h2>Retention</h2>
             <p>
-              This website stores nothing about you itself. The analytics described above are
-              retained by Google under its own schedule, and the items in your browser&rsquo;s local
-              storage stay until you clear them.
+              Your analytics choice, arcade high scores, game settings, chat history, and cached
+              weather are stored in your browser until you change them or clear browser data. The
+              analytics providers retain data under their own account settings and schedules.
             </p>
             <p>
               How long the shop keeps customer and vehicle records is a matter for the business

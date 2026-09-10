@@ -20,6 +20,7 @@
       "!**/public/media/rs",
       "!**/vercel.json",
       "!**/public/**/*.svg",
+      "!**/public/klaro-*.css",
       "!**/LICENSE",
       "!**/dev/reports"
     ]

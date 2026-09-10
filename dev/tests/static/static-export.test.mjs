@@ -213,16 +213,18 @@ test("only the latin font subset is preloaded", () => {
   assert.ok(preloadingPages > 20, `expected the full page set, got ${preloadingPages}`);
 });
 
-test("deferred third parties do not compete with critical requests", () => {
+test("optional third parties are absent before consent", () => {
   const html = readFileSync(join(outDir, "index.html"), "utf8");
+  const contactHtml = readFileSync(join(outDir, "contact/index.html"), "utf8");
   const origins = [...html.matchAll(/<link\b[^>]*rel="preconnect"[^>]*>/g)];
 
   assert.doesNotMatch(
     html,
     /rel="preconnect"[^>]*href="https:\/\/(?:api\.open-meteo\.com|www\.googletagmanager\.com)"/,
   );
-  assert.match(html, /document\.createElement\('script'\)/);
   assert.doesNotMatch(html, /<script[^>]+src="https:\/\/www\.googletagmanager\.com/);
+  assert.doesNotMatch(contactHtml, /<iframe[^>]+src="https:\/\/maps\.google\.com/);
+  assert.match(contactHtml, />Load Google Map</);
   // Past four, preconnects start competing with the requests they exist to
   // accelerate.
   assert.ok(origins.length <= 4, `${origins.length} preconnects is more than the guidance allows`);

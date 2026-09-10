@@ -222,6 +222,8 @@ jobs:
         run: npm run check:pages
       - name: Assets · Playwright
         run: npm run check:assets
+      - name: Privacy · inventory + consent gates
+        run: npm run check:privacy
       - name: Bundle size · Node
         run: npm run check:bundle
       - name: Accessibility · axe

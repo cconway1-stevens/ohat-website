@@ -40,6 +40,7 @@
     "check:deadcode": "knip",
     "check:architecture": "depcruise src dev --config .dependency-cruiser.cjs",
     "check:pages": "node dev/scripts/check-pages.mjs",
+    "check:privacy": "node dev/scripts/check-privacy.mjs",
     "check:slow-network": "node dev/scripts/check-slow-network.mjs",
     "check:memory": "node dev/scripts/check-memory.mjs",
     "check:all": "bash dev/scripts/check-all.sh",
@@ -47,6 +48,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
+    "klaro": "^0.7.18",
     "next": "16.3.4",
     "qrcode": "^1.5.4",
     "react": "19.2.8",

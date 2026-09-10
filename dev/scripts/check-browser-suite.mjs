@@ -8,6 +8,7 @@ const steps = [
   ["browser preflight", "check:browser:preflight"],
   ["page loading, links, runtime errors", "check:pages"],
   ["hydrated assets", "check:assets"],
+  ["privacy inventory and consent gates", "check:privacy"],
   ["bundle budget", "check:bundle"],
   ["Lighthouse", "check:lighthouse:fast"],
   ["accessibility", "check:a11y"],

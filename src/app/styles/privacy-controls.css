@@ -1,0 +1,65 @@
+/* Klaro is self-hosted from the npm package. These overrides keep every
+   first-layer choice equally prominent and match the site's visual system. */
+#ohat-klaro {
+  --green1: #6f0d12;
+  --green2: #570a0e;
+  --blue1: #6f0d12;
+  --blue2: #570a0e;
+  --dark1: #211c19;
+  --light1: #fffdf7;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+#ohat-klaro .cookie-notice,
+#ohat-klaro .cookie-modal .cm-modal {
+  border: 1px solid rgb(111 13 18 / 20%);
+  border-radius: 0.75rem;
+  box-shadow: 0 18px 60px rgb(20 12 8 / 24%);
+}
+
+#ohat-klaro .cn-body p,
+#ohat-klaro .cm-body p {
+  line-height: 1.55;
+}
+
+#ohat-klaro .cn-buttons,
+#ohat-klaro .cn-ok {
+  gap: 0.55rem;
+}
+
+#ohat-klaro .cn-buttons .cm-btn,
+#ohat-klaro .cn-ok .cm-btn,
+#ohat-klaro .cm-footer .cm-btn {
+  min-height: 2.75rem;
+  border: 2px solid #6f0d12;
+  border-radius: 999px;
+  background: #fffdf7;
+  color: #6f0d12;
+  font-weight: 750;
+  opacity: 1;
+}
+
+#ohat-klaro .cn-buttons .cm-btn:hover,
+#ohat-klaro .cn-buttons .cm-btn:focus-visible,
+#ohat-klaro .cn-ok .cm-btn:hover,
+#ohat-klaro .cn-ok .cm-btn:focus-visible,
+#ohat-klaro .cm-footer .cm-btn:hover,
+#ohat-klaro .cm-footer .cm-btn:focus-visible {
+  background: #6f0d12;
+  color: #fff;
+}
+
+.footer-privacy-button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.footer-privacy-button:hover,
+.footer-privacy-button:focus-visible {
+  color: var(--color-accent, #9f1820);
+}
