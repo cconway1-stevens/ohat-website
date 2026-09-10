@@ -228,12 +228,14 @@ test("routes wifi / amenity questions to the wifi intent", () => {
 });
 
 test("routes tow questions to the tow intent", () => {
-  const answer = answerQuestion("do you do towing?", TUESDAY_OPEN);
-  assert.notEqual(answer.fallback, true);
-  assert.match(answer.text, /do not offer towing/i);
-  assert.match(answer.text, /City Wide Towing/i);
-  assert.match(answer.text, /\(609\) 428-7071/i);
-  assert.ok(chipHrefs(answer).includes("https://www.actow.com/"));
+  for (const question of ["do you do towing?", "do you offer towing?", "can you arrange a tow?"]) {
+    const answer = answerQuestion(question, TUESDAY_OPEN);
+    assert.notEqual(answer.fallback, true, question);
+    assert.match(answer.text, /do not offer towing/i, question);
+    assert.match(answer.text, /City Wide Towing/i, question);
+    assert.match(answer.text, /\(609\) 428-7071/i, question);
+    assert.ok(chipHrefs(answer).includes("https://www.actow.com/"), question);
+  }
 });
 
 test("understands stranded and broken-down towing requests", () => {

@@ -127,18 +127,24 @@ export default function ServicesPage() {
         <section className="service-referrals" aria-labelledby="service-referrals-title">
           <div className="shell">
             <div className="service-referrals-heading">
-              <p className="eyebrow">Helpful local referrals</p>
-              <h2 id="service-referrals-title">Two services we do not provide.</h2>
-              <p>Here is exactly where we recommend going instead.</p>
+              <p className="eyebrow">Local partners we recommend</p>
+              <h2 id="service-referrals-title">Need help beyond our bays?</h2>
+              <p>
+                We handle diagnosis and repair in-house. For services outside our shop, these local
+                resources are the right next stop.
+              </p>
             </div>
             <div className="service-referral-grid">
               <article>
                 <span aria-hidden="true">01</span>
-                <p className="service-referral-kicker">Towing &amp; roadside help</p>
-                <h3>We do not offer towing.</h3>
+                <p className="service-referral-kicker">
+                  Local referral · Towing &amp; roadside help
+                </p>
+                <h3>City Wide Towing can get you moving.</h3>
                 <p>
-                  We recommend City Wide Towing for service in Atlantic County. Contact them
-                  directly to confirm availability, timing, and price.
+                  For towing or roadside help in Atlantic County, City Wide Towing is the provider
+                  we recommend. Towing is handled off-site rather than by our repair shop, so
+                  contact them directly to confirm availability, timing, and price.
                 </p>
                 <div className="service-referral-actions">
                   <a className="button button-primary" href="tel:+16094287071">
@@ -149,12 +155,13 @@ export default function ServicesPage() {
               </article>
               <article>
                 <span aria-hidden="true">02</span>
-                <p className="service-referral-kicker">NJ state inspection</p>
-                <h3>We do not issue inspection stickers.</h3>
+                <p className="service-referral-kicker">Local referral · NJ state inspection</p>
+                <h3>New Jersey MVC handles the inspection.</h3>
                 <p>
-                  The NJ MVC inspection is free. The closest state inspection center is at 1477 19th
-                  St, Mays Landing, NJ 08330. We can diagnose and repair emissions problems before
-                  you go; normal diagnostic charges apply.
+                  State inspections are handled by the MVC and are free. The closest center is at
+                  1477 19th St, Mays Landing, NJ 08330. The MVC issues the sticker; we can prepare
+                  your vehicle by diagnosing and repairing emissions problems before you go, with
+                  normal diagnostic charges applying.
                 </p>
                 <div className="service-referral-actions">
                   <a

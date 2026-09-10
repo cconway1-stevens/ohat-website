@@ -1236,6 +1236,17 @@ const NOISE_RE = /\b(making|makes)\s+(a\s+)?(\w+\s+){0,2}(sound|noise)s?\b/i;
 const QUESTIONISH_RE =
   /\?\s*$|^(how|what|when|where|which|who|why|do|does|did|can|could|should|is|are|will|would)\b/i;
 
+// A towing question contains the same words as the broad "services" intent
+// (for example, "do you offer towing"). Route it before token scoring so the
+// customer gets the referral instead of the general service catalogue.
+const TOWING_RE = /\b(tow|towing|towed|tow truck|tow company|roadside|flatbed)\b/i;
+
+// Keep ordinary brake or emissions questions on their service pages, while
+// making explicit NJ/MVC/sticker and "do you do inspections" questions land
+// on the honest state-inspection referral.
+const STATE_INSPECTION_RE =
+  /\b(nj|new jersey|mvc|state inspection|inspection station|inspection sticker|smog|emissions test)\b|\b(?:do|does|can|will|offer|provide|perform)\s+(?:you\s+)?(?:do|offer|provide|perform)?\s*inspections?\b/i;
+
 /**
  * More pure-stopword phrases the matcher can never see: "what can you do"
  * tokenizes to nothing, and "thank you" loses both words to the stopword
@@ -1319,6 +1330,14 @@ function resolve(input: string, now: Date, config: MatcherConfig = {}): Resolved
       text: `Tomorrow (${day.weekday}, ${day.dateLabel}): ${day.hours}.${day.why ? ` ${day.why.label}.` : ""} Times are local to the New Jersey shop. Call to confirm appointment availability.`,
       chips: [hoursChip, callChip],
     });
+  }
+  if (TOWING_RE.test(input)) {
+    const tow = INTENTS.find((intent) => intent.id === "tow")!;
+    return direct("tow", tow.build(now, persona));
+  }
+  if (STATE_INSPECTION_RE.test(input)) {
+    const inspection = INTENTS.find((intent) => intent.id === "state-inspection")!;
+    return direct("state-inspection", inspection.build(now, persona));
   }
   const previous = services.find((service) => service.slug === config.previousServiceSlug);
   if (
