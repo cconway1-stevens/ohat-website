@@ -449,71 +449,84 @@
    live on separate elements because `.shell` caps its own width at 1180px,
    so a background set on it stops short of the viewport edges. */
 .nav-band {
-  background: #211a18;
+  background: linear-gradient(90deg, rgba(23, 20, 18, 0.98), rgba(105, 12, 17, 0.96));
 }
 .nav-wrap {
-  width: min(1320px, calc(100% - 40px));
+  width: min(1680px, calc(100% - 32px));
   min-height: 112px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1.5rem;
   padding-block: 0.65rem;
 }
 .brand {
   display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
 }
 .brand img {
-  width: 124px;
-  height: auto;
+  width: 176px;
+  height: 92px;
   object-fit: contain;
-  filter: none;
-  transform: none;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.34));
+  transform: rotate(-1deg);
+  transform-origin: 50% 0%;
+}
+/* A faint hanging-sign sway — the same idea as the OPEN/CLOSED plate's
+   door-sign-sway, just for the badge over the door. Idle motion only, no
+   layout effect, so it can't disturb the masthead height. */
+@media (prefers-reduced-motion: no-preference) {
+  .brand img {
+    animation: brand-sway 4.2s ease-in-out infinite;
+  }
+}
+@keyframes brand-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
 }
 .desktop-nav {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.4rem, 1vw, 1rem);
+  gap: clamp(0.65rem, 1.5vw, 1.5rem);
 }
 .desktop-nav a {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: baseline;
   gap: 0.36rem;
-  min-height: 48px;
-  padding: 0.8rem 0.7rem;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: none;
+  padding: 0.75rem 0 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 .desktop-nav small {
-  display: none;
   color: var(--yellow);
   font-size: 0.56rem;
 }
 .desktop-nav a::after {
   content: "";
   position: absolute;
-  left: 0.7rem;
-  right: 0.7rem;
-  bottom: 0.15rem;
-  height: 2px;
+  left: 0;
+  right: 0;
+  bottom: 0.25rem;
+  height: 3px;
   background: var(--yellow);
-  transform: scaleX(0);
+  transform: skewX(-25deg) scaleX(0);
   transform-origin: right;
   transition: transform 0.2s ease;
 }
 .desktop-nav a:hover::after,
 .desktop-nav a:focus-visible::after {
-  transform: scaleX(1);
+  transform: skewX(-25deg) scaleX(1);
   transform-origin: left;
 }
 /* Where you are: the current page keeps the underline and the number chip
@@ -522,7 +535,7 @@
   color: var(--yellow);
 }
 .desktop-nav a.is-current::after {
-  transform: scaleX(1);
+  transform: skewX(-25deg) scaleX(1);
 }
 .mobile-menu {
   display: none;
@@ -789,53 +802,33 @@
   .garage-strip > span {
     font-size: clamp(0.68rem, 0.52vw, 1.05rem);
   }
-}
 
-.nav-band {
-  border-bottom: 3px solid var(--red);
-}
+  .nav-wrap {
+    width: 92vw;
+    min-height: clamp(112px, 6.5vw, 220px);
+  }
 
-.desktop-nav a:hover,
-.desktop-nav a:focus-visible,
-.desktop-nav a.is-current {
-  background: rgb(255 255 255 / 7%);
-  color: var(--yellow);
-}
+  .brand img {
+    width: clamp(176px, 9vw, 320px);
+    height: auto;
+    max-height: clamp(92px, 5.2vw, 184px);
+  }
 
-.desktop-nav a:focus-visible,
-.nav-wrap .brand:focus-visible {
-  outline: 2px solid var(--yellow);
-  outline-offset: 4px;
-}
+  .desktop-nav {
+    gap: clamp(1.5rem, 1.7vw, 4rem);
+  }
 
-.nav-wrap > .retro-call-button {
-  flex: 0 0 auto;
-  border-width: 2px;
-  border-color: var(--yellow);
-  border-radius: 6px;
-  padding: 0.75rem 1rem;
-  background: var(--yellow);
-  color: var(--ink);
-  box-shadow: none;
-}
+  .desktop-nav a {
+    font-size: clamp(0.74rem, 0.62vw, 1.25rem);
+  }
 
-.nav-wrap > .retro-call-button:hover {
-  background: #ffcf58;
-  transform: none;
-  box-shadow: none;
-}
+  .desktop-nav small {
+    font-size: clamp(0.56rem, 0.46vw, 0.95rem);
+  }
 
-.nav-wrap > .retro-call-button small {
-  color: var(--ink);
-  font-size: 0.75rem;
-  letter-spacing: 0;
-  text-transform: none;
-  margin-bottom: 0.2rem;
-}
-
-.nav-wrap > .retro-call-button .retro-phone-mark {
-  background: transparent;
-  box-shadow: none;
-  transform: none;
-  animation: none;
+  .nav-wrap > .button-small {
+    min-height: clamp(54px, 3.2vw, 96px);
+    padding-inline: clamp(1.1rem, 1.4vw, 2.8rem);
+    font-size: clamp(0.78rem, 0.64vw, 1.3rem);
+  }
 }

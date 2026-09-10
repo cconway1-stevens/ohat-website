@@ -18,18 +18,19 @@ const logoHoldMs = 650;
 
 const primaryLinks = [
   {
-    label: "Services",
+    number: "01",
+    label: "Service catalog",
     href: "/services",
     note: "Repairs, tires & diagnostics",
   },
-  { label: "Our shop", href: "/our-shop", note: "Our family, shop & story" },
-  { label: "Night drop", href: "/vehicle-drop-off", note: "After-hours key drop" },
-  { label: "Reviews", href: "/reviews", note: "What local drivers say" },
-  { label: "Deals", href: "/offers", note: "Current shop offers" },
+  { number: "02", label: "Meet the garage", href: "/our-shop", note: "Our family, shop & story" },
+  { number: "03", label: "Night drop", href: "/vehicle-drop-off", note: "After-hours key drop" },
+  { number: "04", label: "Shore reviews", href: "/reviews", note: "What local drivers say" },
+  { number: "05", label: "Deals", href: "/offers", note: "Current shop offers" },
   // Contact earns the last nav slot over the link tree: it is what people
   // come looking for. The link tree stays reachable from the footer and its
   // QR page, which is where a bio link points anyway.
-  { label: "Contact", href: "/contact", note: "Call, email, map & hours" },
+  { number: "06", label: "Contact us", href: "/contact", note: "Call, email, map & hours" },
 ];
 
 export function BrandMark({
@@ -78,9 +79,9 @@ export function BrandMark({
       onPointerUp={clearLogoHold}
     >
       <SiteImage
-        src="/media/logo-transparent.png"
-        width={315}
-        height={231}
+        src="/media/logo-transparent.avif"
+        width={176}
+        height={129}
         alt="Ocean Heights Auto and Tire"
         priority={priority}
       />
@@ -135,7 +136,8 @@ export function SiteHeader() {
       </div>
       <div className="nav-band">
         <div className="shell nav-wrap">
-          <BrandMark priority />
+          {/* Temporarily hidden at the owner's request. Keep BrandMark exported for the footer. */}
+          {/* <BrandMark priority /> */}
           <nav className="desktop-nav" aria-label="Primary navigation">
             {primaryLinks.map((item) => (
               <Link
@@ -144,7 +146,7 @@ export function SiteHeader() {
                 className={isCurrent(item.href) ? "is-current" : undefined}
                 aria-current={isCurrent(item.href) ? "page" : undefined}
               >
-                {item.label}
+                <small>{item.number}</small> {item.label}
               </Link>
             ))}
           </nav>
@@ -153,7 +155,7 @@ export function SiteHeader() {
               ☎︎
             </span>
             <span>
-              <small>Call the shop</small>
+              <small>Mechanic on the line</small>
               <strong>{phoneDisplay}</strong>
             </span>
           </a>
@@ -163,7 +165,7 @@ export function SiteHeader() {
             open={mobileMenuOpen}
             ref={mobileMenuRef}
           >
-            <summary>
+            <summary aria-label="Open navigation">
               <span className="menu-icon" aria-hidden="true">
                 <span />
                 <span />
@@ -180,7 +182,10 @@ export function SiteHeader() {
                   aria-current={isCurrent(item.href) ? "page" : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span>{item.label}</span>
+                  <span>
+                    <small>{item.number}</small>
+                    {item.label}
+                  </span>
                   <em>{item.note}</em>
                 </Link>
               ))}
@@ -193,7 +198,7 @@ export function SiteHeader() {
                   ☎︎
                 </span>
                 <span>
-                  <small>Call the shop</small>
+                  <small>Mechanic on the line</small>
                   <strong>{phoneDisplay}</strong>
                 </span>
               </a>
@@ -205,17 +210,21 @@ export function SiteHeader() {
         className={`booking-dock${pathname === "/contact" ? " booking-dock-contact" : ""}`}
         aria-label="Quick shop actions"
       >
-        <a className="booking-phone" href={phoneHref}>
+        <a
+          className="booking-phone"
+          href={phoneHref}
+          aria-label={`Call Ocean Heights Auto and Tire at ${phoneDisplay}`}
+        >
           <span className="retro-phone-mark" aria-hidden="true">
             ☎︎
           </span>
           <span className="booking-dock-copy">
-            <small>Call the shop</small>
+            <small>Mechanic on the line</small>
             <strong>{phoneDisplay}</strong>
           </span>
         </a>
         {pathname === "/contact" ? (
-          <DirectionsTrigger className="booking-links booking-directions">
+          <DirectionsTrigger className="booking-links booking-directions" label="Get directions">
             <span className="booking-dock-copy">
               <small>Route to the garage</small>
               <strong>Directions</strong>
