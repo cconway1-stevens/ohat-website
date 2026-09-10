@@ -1440,21 +1440,6 @@
   font-size: 0.82rem;
   line-height: 1.4;
 }
-.map-consent-settings {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.7rem;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-  cursor: pointer;
-}
-.map-consent-settings:hover,
-.map-consent-settings:focus-visible {
-  color: var(--red-dark);
-}
 .shop-map figcaption {
   display: flex;
   flex-wrap: wrap;

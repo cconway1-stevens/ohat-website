@@ -76,6 +76,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.3,
     },
     {
+      // Same reasoning as /privacy: an accessibility statement has to be
+      // findable to do its job, including by anyone auditing the site.
+      url: `${baseUrl}/accessibility`,
+      lastModified,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
       // A utility hub for social-profile bios, not a page meant to rank —
       // /contact and the service pages carry those queries.
       url: `${baseUrl}/links`,

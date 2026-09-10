@@ -149,35 +149,62 @@ try {
   await auditChoice("Allow all optional services");
   await auditChoice("Allow all optional services", true);
 
-  // The map has two independent gates: the stored Klaro choice, and the click.
-  // Declining consent must leave no way to reach Google at all; consenting must
-  // still hold the iframe back until the visitor presses the button.
-  const context = await browser.newContext();
-  const page = await context.newPage();
-  const mapRequests = [];
-  await page.route(/maps\.google\.com/, (route) => {
-    mapRequests.push(route.request().url());
-    return route.abort();
-  });
-  await page.goto(`${base}/contact/`, { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "Use essential services only", exact: true }).click();
-  await page.waitForTimeout(250);
-  if (mapRequests.length) failures.push("Google Map loaded before consent");
-  if (await page.getByRole("button", { name: "Load Google Map", exact: true }).count()) {
-    failures.push("Google Map offered a load button without consent");
+  // The stored Klaro choice is the map's only gate: declining must leave no way
+  // to reach Google at all, and consenting must load the map with no extra click.
+  for (const choice of ["Use essential services only", "Allow all optional services"]) {
+    const consented = choice === "Allow all optional services";
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const mapRequests = [];
+    await page.route(optional, (route) => {
+      if (/maps\.google\.com/.test(route.request().url())) mapRequests.push(route.request().url());
+      return route.abort();
+    });
+    await page.goto(`${base}/contact/`, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: choice, exact: true }).click();
+    await page.waitForTimeout(600);
+    const turnOnButton = page.getByRole("button", { name: "Turn on Google Maps", exact: true });
+    if (consented) {
+      if (!mapRequests.length) failures.push(`Google Map did not load automatically after "${choice}"`);
+      if ((await turnOnButton.count()) > 0) failures.push("Google Map gate still shown after consent");
+    } else {
+      if (mapRequests.length) failures.push(`Google Map loaded on its own after "${choice}"`);
+      if ((await turnOnButton.count()) === 0) {
+        failures.push(`Google Map gate missing its "Turn on Google Maps" control after "${choice}"`);
+      }
+    }
+    await context.close();
   }
-  await page.evaluate(() => {
-    window.localStorage.setItem(
-      "ohat-klaro-consent-v1",
-      JSON.stringify({ googleMaps: true, radioBrowser: true }),
-    );
-  });
-  await page.reload({ waitUntil: "networkidle" });
-  if (mapRequests.length) failures.push("Google Map loaded on consent alone, without the click");
-  await page.getByRole("button", { name: "Load Google Map", exact: true }).click();
-  await page.waitForTimeout(250);
-  if (!mapRequests.length) failures.push("Google Map did not load after consent and its click");
-  await context.close();
+
+  // The arcade radio reaches a public station directory and then whatever host
+  // that directory names, so declining must stop the lookup at the source.
+  {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    const radioRequests = [];
+    await page.route(optional, (route) => {
+      if (/radio-browser\.info/.test(route.request().url())) {
+        radioRequests.push(route.request().url());
+      }
+      return route.abort();
+    });
+    await page.goto(`${base}/arcade/garage-radio/`, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Use essential services only", exact: true }).click();
+    await page.getByRole("button", { name: "Live stations", exact: true }).click();
+    await page.waitForTimeout(400);
+    const band = page.getByRole("button", { name: /Top 40/ }).first();
+    if (await band.count()) {
+      await band.click();
+      await page.waitForTimeout(600);
+      if (radioRequests.length) {
+        failures.push(`Radio directory queried without consent: ${radioRequests[0]}`);
+      }
+    } else {
+      failures.push("Radio band buttons not found — the consent gate is unverified");
+    }
+    await context.close();
+  }
+
 } finally {
   await browser.close();
   server.close();

@@ -38,10 +38,10 @@
     "klaroService": "googleMaps",
     "sourceMarkers": [
       "maps.google.com/maps",
-      "Load Google Map",
+      "Turn on Google Maps",
       "useServiceConsent(\"googleMaps\")"
     ],
-    "policyMarkers": ["Load Google Map", "allow Google Maps in Privacy settings"]
+    "policyMarkers": ["Google Maps", "turn on Google Maps in Privacy settings"]
   },
   {
     "service": "Radio Browser and station streams",

@@ -63,11 +63,10 @@ export function PrivacyServicesSection() {
             <span className="privacy-service-state">Consent required</span>
           </div>
           <p>
-            The map stays blocked on our <Link href="/contact">contact page</Link> behind two
-            separate steps: it is blocked until you choose to allow Google Maps in Privacy settings,
-            and even then it loads only when you press &ldquo;Load Google Map.&rdquo; Google then
-            receives the network request and may use its own cookies. Ordinary directions links do
-            nothing until you choose them.
+            The map on our <Link href="/contact">contact page</Link> stays off until you{" "}
+            {"turn on Google Maps in Privacy settings."} Once you do, it loads automatically —
+            there is no separate button to press. Google then receives the network request and may
+            use its own cookies. Ordinary directions links do nothing until you choose them.
           </p>
         </article>
         <article>

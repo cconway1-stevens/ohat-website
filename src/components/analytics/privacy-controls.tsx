@@ -145,6 +145,7 @@ function createConfig() {
     translations: {
       en: {
         privacyPolicyUrl: "/privacy",
+        poweredBy: "Powered by Klaro",
         consentNotice: {
           title: "Your privacy, your choice",
           description:
@@ -234,14 +235,39 @@ function createConfig() {
   };
 }
 
+/**
+ * Expands the service's purpose group inside the open Klaro modal, scrolls it
+ * into view, and pulses an outline around it — so "turn this on" lands the
+ * visitor on the exact toggle instead of a modal full of unrelated switches.
+ * The modal mounts asynchronously after `.show()`, so this polls briefly
+ * rather than assuming the DOM is already there.
+ */
+function highlightService(service: ServiceName, attempt = 0) {
+  const input = document.getElementById(`service-item-${service}`);
+  if (!input) {
+    if (attempt < 20) setTimeout(() => highlightService(service, attempt + 1), 100);
+    return;
+  }
+  const row = input.closest("li.cm-service");
+  const content = input.closest("ul.cm-content");
+  const caret = content?.parentElement?.querySelector<HTMLAnchorElement>(".cm-caret a");
+  if (content && !content.classList.contains("expanded")) caret?.click();
+  row?.scrollIntoView({ block: "center", behavior: "smooth" });
+  row?.classList.add("cm-service-highlight");
+  setTimeout(() => row?.classList.remove("cm-service-highlight"), 2400);
+}
+
 export function PrivacyControls() {
   const vercelAllowed = useServiceConsent("vercelAnalytics");
   const speedInsightsAllowed = useServiceConsent("vercelSpeedInsights");
 
   useEffect(() => {
     let active = true;
-    const openSettings = () => {
-      if (klaroApi && klaroConfig) klaroApi.show(klaroConfig, true);
+    const openSettings = (event: Event) => {
+      if (!klaroApi || !klaroConfig) return;
+      klaroApi.show(klaroConfig, true);
+      const service = (event as CustomEvent<{ service?: ServiceName }>).detail?.service;
+      if (service) highlightService(service);
     };
     window.addEventListener(settingsEvent, openSettings);
 
@@ -268,6 +294,6 @@ export function PrivacyControls() {
   );
 }
 
-export function openPrivacySettings() {
-  window.dispatchEvent(new Event(settingsEvent));
+export function openPrivacySettings(service?: ServiceName) {
+  window.dispatchEvent(new CustomEvent(settingsEvent, { detail: { service } }));
 }

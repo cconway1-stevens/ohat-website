@@ -113,6 +113,9 @@ export function SiteFooter() {
           {/* Sitewide footer link because a privacy notice has to be
               "reasonably accessible" from anywhere on the site to count. */}
           <Link href="/privacy">Privacy</Link>
+          {/* Sitewide too: an accessibility statement is only useful if someone
+              hitting a barrier can find it from the page they are stuck on. */}
+          <Link href="/accessibility">Accessibility</Link>
           <PrivacySettingsButton />
         </div>
         {/* Watched by DockVisibility so the floating call dock steps aside

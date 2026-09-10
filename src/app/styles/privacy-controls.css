@@ -18,10 +18,12 @@
 #ohat-klaro .cookie-notice,
 #ohat-klaro .cookie-modal .cm-modal {
   overflow: hidden;
-  border: 2px solid #6f0d12;
-  border-radius: 1rem;
+  border: 3px solid var(--ink);
+  border-radius: 4px;
   background: #fffaf0;
-  box-shadow: 0 24px 80px rgb(20 12 8 / 32%);
+  box-shadow:
+    8px 8px 0 var(--yellow),
+    0 24px 80px rgb(20 12 8 / 32%);
 }
 
 #ohat-klaro .cookie-modal .cookie-modal-notice {
@@ -39,7 +41,7 @@
   margin-bottom: 0.7rem;
   color: #6f0d12;
   content: "Your privacy, your choice";
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-serif), Georgia, serif;
   font-size: clamp(1.7rem, 5vw, 2.45rem);
   font-weight: 800;
   letter-spacing: -0.025em;
@@ -84,7 +86,7 @@
   margin: 0;
   padding: 0.75rem 1rem;
   border: 2px solid #6f0d12;
-  border-radius: 999px;
+  border-radius: 3px;
   background: #6f0d12;
   color: #fffaf0;
   font-weight: 750;
@@ -93,8 +95,8 @@
 }
 
 #ohat-klaro .cn-buttons .cn-decline {
-  border-color: #332923;
-  background: #332923;
+  border-color: #6f0d12;
+  background: #6f0d12;
 }
 
 #ohat-klaro .cn-ok .cm-btn-lern-more {
@@ -121,7 +123,7 @@
 #ohat-klaro .cm-header h1,
 #ohat-klaro .cm-header h2,
 #ohat-klaro .cm-purpose-title {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-serif), Georgia, serif;
 }
 
 #ohat-klaro a {
@@ -158,4 +160,212 @@
 .footer-privacy-button:hover,
 .footer-privacy-button:focus-visible {
   color: var(--color-accent, #9f1820);
+}
+
+/* Draws the eye to the one toggle a deep link (e.g. "Turn on Google Maps")
+   opened the settings modal for, so it doesn't read as a wall of switches. */
+#ohat-klaro .cm-service-highlight {
+  border-radius: 4px;
+  outline: 3px solid var(--yellow, #f6bd38);
+  outline-offset: 3px;
+  animation: ohat-klaro-highlight-pulse 0.8s ease-in-out 2;
+}
+
+@keyframes ohat-klaro-highlight-pulse {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(246, 189, 56, 0.35);
+  }
+}
+
+/* The preference panel uses the same paper, ink and numbered-sheet rhythm
+   as the policy page. Its body scrolls independently of the action bar. */
+#ohat-klaro .cookie-modal .cm-modal.cm-klaro {
+  display: flex;
+  flex-direction: column;
+  width: min(760px, calc(100vw - 2rem));
+  max-width: 760px;
+  max-height: calc(100dvh - 3rem);
+  margin-inline: auto;
+}
+
+#ohat-klaro .cm-modal .cm-header {
+  flex-shrink: 0;
+  padding: 1.5rem 4rem 1.25rem 1.5rem;
+  border-bottom: 3px double var(--ink);
+  background: var(--yellow);
+}
+
+#ohat-klaro .cm-header h1.title {
+  color: var(--ink);
+  font-size: clamp(1.65rem, 4vw, 2.3rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+#ohat-klaro .cm-header p {
+  margin-bottom: 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+#ohat-klaro .cm-modal .hide {
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--paper);
+}
+
+#ohat-klaro .cm-modal .hide svg {
+  stroke: var(--ink);
+}
+
+#ohat-klaro .cm-modal .cm-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.25rem;
+  scrollbar-color: var(--red-dark) var(--cream);
+}
+
+#ohat-klaro .cm-body ul.cm-purposes > li.cm-purpose {
+  margin: 0 0 0.9rem;
+  padding: 1rem 1rem 1rem 76px;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background: var(--paper);
+}
+
+#ohat-klaro .cm-body ul.cm-purposes > li.cm-purpose:last-child {
+  margin-bottom: 0;
+}
+
+#ohat-klaro .cm-purpose > .cm-list-label .cm-switch,
+#ohat-klaro .cm-purpose > .cm-list-input {
+  top: 1rem;
+  left: 12px;
+}
+
+#ohat-klaro .cm-body .cm-list-title {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+#ohat-klaro .cm-body .cm-list-description {
+  margin-bottom: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+#ohat-klaro .cm-caret a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 0.5rem;
+  text-decoration: underline;
+}
+
+#ohat-klaro .cm-body .cm-content.expanded {
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+
+#ohat-klaro .cm-body .cm-content .cm-service {
+  margin-bottom: 1rem;
+}
+
+#ohat-klaro .cm-list-label .slider {
+  border: 2px solid var(--ink);
+  background: #77716a;
+  box-shadow: none;
+}
+
+#ohat-klaro .cm-list-input:focus-visible + .cm-list-label .slider,
+#ohat-klaro button:focus-visible,
+#ohat-klaro a:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 4px;
+}
+
+#ohat-klaro .cm-modal .cm-footer {
+  flex-shrink: 0;
+  padding: 1rem 1.25rem;
+  border-top: 3px double var(--ink);
+  background: var(--paper);
+}
+
+#ohat-klaro .cm-footer .cm-footer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+#ohat-klaro .cm-footer-buttons > .cm-btn,
+#ohat-klaro .cm-footer-buttons > div {
+  flex: 1 1 180px;
+}
+
+#ohat-klaro .cm-footer-buttons > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+#ohat-klaro .cm-footer-buttons > div .cm-btn {
+  flex: 1 1 150px;
+}
+
+#ohat-klaro .cm-footer .cm-powered-by {
+  padding-top: 0.75rem;
+}
+
+#ohat-klaro .cm-footer .cm-powered-by a {
+  color: var(--muted);
+}
+
+#ohat-klaro .cookie-modal-notice {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  border-top: 10px solid var(--yellow);
+}
+
+@media (max-width: 600px) {
+  #ohat-klaro .cookie-modal .cm-modal.cm-klaro {
+    width: calc(100vw - 1.5rem);
+    left: 0.75rem;
+    max-height: calc(100dvh - 2rem);
+  }
+
+  #ohat-klaro .cm-modal .cm-header {
+    padding: 1.25rem 4rem 1rem 1rem;
+  }
+
+  #ohat-klaro .cm-modal .cm-body {
+    padding: 0.75rem;
+  }
+
+  #ohat-klaro .cm-footer .cm-btn {
+    min-height: 44px;
+    padding: 0.65rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #ohat-klaro *,
+  #ohat-klaro *::before {
+    transition: none;
+    animation: none;
+  }
 }

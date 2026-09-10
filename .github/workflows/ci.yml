@@ -228,6 +228,8 @@ jobs:
         run: npm run check:bundle
       - name: Accessibility · axe
         run: npm run check:a11y
+      - name: Accessibility statement · claim drift
+        run: npm run check:a11y-statement
 
   lighthouse:
     name: Lighthouse · speed, SEO, accessibility (${{ matrix.shard_label }})

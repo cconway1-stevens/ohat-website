@@ -1,5 +1,10 @@
 /* Privacy center: the policy reads like a shop inspection sheet instead of a
-   wall of boilerplate, while the full legal detail remains in the document. */
+   wall of boilerplate, while the full legal detail remains in the document.
+
+   These privacy-* classes are the shared *policy page* layout — the hero and
+   inspection card, the numbered promises, the sidebar, the prose column and
+   the table wrapper. /accessibility reuses them verbatim so the two statement
+   pages stay visually identical for free; rename with that page in mind. */
 .privacy-hero {
   padding-bottom: 130px;
   background:
@@ -38,15 +43,14 @@
   padding: clamp(1.3rem, 3vw, 2.1rem);
   border: 4px solid var(--ink);
   background:
-    linear-gradient(rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.32)),
-    repeating-linear-gradient(0deg, transparent 0 31px, rgba(23, 20, 18, 0.07) 32px);
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(23, 20, 18, 0.07) 32px), var(--paper);
   box-shadow: 11px 11px 0 var(--yellow);
   color: var(--ink);
   transform: rotate(1deg);
 }
 
 .privacy-inspection::before {
-  content: "PASSED";
+  content: "AT A GLANCE";
   position: absolute;
   top: -1.1rem;
   right: 1rem;
@@ -442,6 +446,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.8rem;
+  flex-wrap: wrap;
   padding-bottom: 0.7rem;
   border-bottom: 1px solid var(--line);
 }
@@ -509,6 +514,14 @@
 
 .privacy-request-card h3 {
   margin-top: 0;
+}
+
+/* The eyebrow is --red everywhere else, but on this card's --yellow ground it
+   lands at 4.38:1 — under the 4.5:1 AA floor for text this small. --red-dark
+   is the same hue family at 7.03:1. Caught by axe on /privacy and
+   /accessibility; keep any restyling of this card above 4.5:1. */
+.privacy-request-card .privacy-section-number {
+  color: var(--red-dark) !important;
 }
 
 .privacy-request-card p:last-child {
@@ -648,4 +661,27 @@
   .privacy-hero > .shell {
     animation: none;
   }
+}
+
+.privacy-service-list article {
+  border-top: 5px solid var(--blue);
+  box-shadow: 4px 4px 0 var(--line);
+}
+
+.privacy-table-wrap tbody tr:nth-child(even) {
+  background: var(--cream);
+}
+
+.privacy-sidebar li a:focus-visible,
+.privacy-policy a:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 4px;
+}
+
+.privacy-sidebar li a:hover {
+  background: var(--cream);
+}
+
+#policy-details {
+  scroll-margin-top: calc(8rem + var(--notice-h, 0px));
 }

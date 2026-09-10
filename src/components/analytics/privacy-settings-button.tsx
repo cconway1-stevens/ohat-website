@@ -15,7 +15,7 @@ export function PrivacySettingsButton({ placement = "footer" }: PrivacySettingsB
           ? "button button-primary privacy-settings-cta"
           : "footer-privacy-button"
       }
-      onClick={openPrivacySettings}
+      onClick={() => openPrivacySettings()}
     >
       {placement === "page" ? "Review privacy choices" : "Privacy settings"}
     </button>

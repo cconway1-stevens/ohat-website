@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { openPrivacySettings, useServiceConsent } from "@/components/analytics/privacy-controls";
 
 type ConsentMapProps = {
@@ -9,28 +8,21 @@ type ConsentMapProps = {
 };
 
 export function ConsentMap({ address, title }: ConsentMapProps) {
-  // Two gates, because they answer different questions. The Klaro choice is the
-  // standing one — turn it off and the map stays off everywhere. The click is
-  // the per-visit one, so nobody who never scrolls to the map loads Google.
+  // Klaro is the only gate here — no separate per-visit click. Once the
+  // visitor has turned Google Maps on, the map just loads.
   const consented = useServiceConsent("googleMaps");
-  const [clicked, setClicked] = useState(false);
 
-  if (!consented || !clicked) {
+  if (!consented) {
     return (
       <div className="map-consent">
         <strong>Google Map is off</strong>
-        <p>Loading it shares your IP address and browser information with Google.</p>
-        {consented ? (
-          <button type="button" className="button button-primary" onClick={() => setClicked(true)}>
-            Load Google Map
-          </button>
-        ) : (
-          <button type="button" className="button button-primary" onClick={openPrivacySettings}>
-            Turn on Google Maps
-          </button>
-        )}
-        <button type="button" className="map-consent-settings" onClick={openPrivacySettings}>
-          Manage your other privacy choices
+        <p>Turn it on in your privacy settings to see the shop on the map.</p>
+        <button
+          type="button"
+          className="button button-primary"
+          onClick={() => openPrivacySettings("googleMaps")}
+        >
+          Turn on Google Maps
         </button>
       </div>
     );
@@ -41,7 +33,7 @@ export function ConsentMap({ address, title }: ConsentMapProps) {
       title={title}
       src={`https://maps.google.com/maps?q=${encodeURIComponent(address)}&z=15&output=embed`}
       loading="lazy"
-      referrerPolicy="no-referrer"
+      referrerPolicy="no-referrer-when-downgrade"
       allowFullScreen
     />
   );
