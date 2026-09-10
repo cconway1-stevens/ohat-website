@@ -144,6 +144,7 @@ try {
     return route.abort();
   });
   await page.goto(`${base}/contact/`, { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "Essential only", exact: true }).click();
   if (mapRequests.length) failures.push("Google Map loaded before its user action");
   await page.getByRole("button", { name: "Load Google Map", exact: true }).click();
   await page.waitForTimeout(250);

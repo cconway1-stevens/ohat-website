@@ -75,12 +75,15 @@
     "lighthouse": "13.4.1",
     "playwright": "^1.62.1",
     "react-server-dom-webpack": "19.2.8",
-    "sharp": "^0.35.3",
+    "sharp": "^0.35.4",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
     "vinext": "1.0.0-beta.9",
     "vite": "8.2.2",
     "wrangler": "4.129.0"
+  },
+  "overrides": {
+    "sharp": "^0.35.4"
   },
   "type": "module",
   "allowScripts": {
