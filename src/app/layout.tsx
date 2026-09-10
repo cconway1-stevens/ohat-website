@@ -87,7 +87,6 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
         <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="stylesheet" href="/klaro-0.7.18.css" />
       </head>
       <body className={`${geistSans.variable} ${fraunces.variable} antialiased`}>
         {children}
