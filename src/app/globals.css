@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../../public/klaro-0.7.18.css";
+@import "klaro/dist/klaro.css";
 
 @import "./styles/base.css";
 @import "./styles/header.css";

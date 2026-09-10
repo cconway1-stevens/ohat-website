@@ -24,6 +24,8 @@
 - [x] Correct the privacy summary: no customer accounts, rather than no forms.
 - [x] Pass TypeScript, lint, architecture, dead-code, and 162 unit tests.
 - [ ] Complete browser layout and consent interaction checks; local Chromium unavailable and download timed out.
-- [ ] Complete full build/check gate and review GitHub CI results.
+- [x] Pass static and Cloudflare builds plus server and static tests.
+- [x] Remove duplicate public Klaro CSS discovered by the bundle budget check.
+- [ ] Review GitHub CI and finish browser checks.
 - [ ] Business follow-up: confirm provider retention settings, weather commercial entitlement, and privacy-request routing (see dev/docs/privacy-compliance.md).
 - [ ] Complete human assistive-technology audit; no full conformance claim.
