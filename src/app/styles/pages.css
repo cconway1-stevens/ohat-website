@@ -638,6 +638,93 @@
   color: var(--blue-tint);
 }
 
+.service-referrals {
+  padding: clamp(4rem, 8vw, 7rem) 0;
+  background: var(--ink);
+  color: #fff;
+}
+.service-referrals-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.7fr);
+  gap: 1rem 3rem;
+  align-items: end;
+  margin-bottom: 2rem;
+}
+.service-referrals-heading .eyebrow {
+  grid-column: 1 / -1;
+  color: var(--yellow);
+}
+.service-referrals-heading h2 {
+  margin: 0;
+  max-width: 760px;
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+.service-referrals-heading > p:last-child {
+  margin: 0;
+  color: #e6dddd;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+.service-referral-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+.service-referral-grid article {
+  position: relative;
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+  background: var(--paper);
+  border: 3px solid #fff;
+  box-shadow: 8px 8px 0 var(--yellow);
+  color: var(--ink);
+}
+.service-referral-grid article > span {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.3rem;
+  color: var(--red);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+}
+.service-referral-kicker {
+  margin: 0 2.5rem 1.6rem 0;
+  color: var(--red);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.service-referral-grid h3 {
+  margin: 0 0 0.85rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1;
+}
+.service-referral-grid article > p:not(.service-referral-kicker) {
+  max-width: 650px;
+  line-height: 1.65;
+}
+.service-referral-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+.service-referral-actions > a:not(.button) {
+  color: var(--red);
+  font-weight: 900;
+}
+
+@media (max-width: 760px) {
+  .service-referrals-heading,
+  .service-referral-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Service work orders */
 .repair-ticket {
   background: #171412;
