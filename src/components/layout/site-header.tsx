@@ -19,18 +19,18 @@ const logoHoldMs = 650;
 const primaryLinks = [
   {
     number: "01",
-    label: "Service catalog",
+    label: "Services",
     href: "/services",
     note: "Repairs, tires & diagnostics",
   },
-  { number: "02", label: "Meet the garage", href: "/our-shop", note: "Our family, shop & story" },
+  { number: "02", label: "Our shop", href: "/our-shop", note: "Our family, shop & story" },
   { number: "03", label: "Night drop", href: "/vehicle-drop-off", note: "After-hours key drop" },
-  { number: "04", label: "Shore reviews", href: "/reviews", note: "What local drivers say" },
+  { number: "04", label: "Reviews", href: "/reviews", note: "What local drivers say" },
   { number: "05", label: "Deals", href: "/offers", note: "Current shop offers" },
   // Contact earns the last nav slot over the link tree: it is what people
   // come looking for. The link tree stays reachable from the footer and its
   // QR page, which is where a bio link points anyway.
-  { number: "06", label: "Contact us", href: "/contact", note: "Call, email, map & hours" },
+  { number: "06", label: "Contact", href: "/contact", note: "Call, email, map & hours" },
 ];
 
 export function BrandMark({
@@ -79,9 +79,9 @@ export function BrandMark({
       onPointerUp={clearLogoHold}
     >
       <SiteImage
-        src="/media/logo-transparent.avif"
-        width={176}
-        height={129}
+        src="/media/logo-transparent.png"
+        width={315}
+        height={231}
         alt="Ocean Heights Auto and Tire"
         priority={priority}
       />
