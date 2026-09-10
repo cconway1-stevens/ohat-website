@@ -287,7 +287,6 @@ const SERVICES = [
   "need new brake pads",
   "brake rotors",
   "my brakes feel soft",
-  "brake pedal goes to the floor",
   "brakes making noise",
   "replace my brake pads",
   "my brakes need checking",

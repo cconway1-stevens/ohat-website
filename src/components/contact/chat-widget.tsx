@@ -213,6 +213,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const serviceTopicRef = useRef<string | undefined>(undefined);
   const [emote, setEmote] = useState<MascotEmote>(null);
   const [sceneMounted, setSceneMounted] = useState(false);
   const [sceneFailed, setSceneFailed] = useState(false);
@@ -470,7 +471,11 @@ export function ChatWidget() {
       if (sessionRef.current !== session) return;
       getAnswers()
         .then(({ debugAnswer }) => {
-          const resolved = debugAnswer(trimmed);
+          if (sessionRef.current !== session) return;
+          const resolved = debugAnswer(trimmed, new Date(), {
+            previousServiceSlug: serviceTopicRef.current,
+          });
+          serviceTopicRef.current = resolved.answer.serviceSlug;
           const answer = resolved.answer;
           const id = nextId();
           setMessages((m) => [
@@ -502,6 +507,7 @@ export function ChatWidget() {
         .catch(() => {
           // The brain failed to load or run — never leave the visitor
           // staring at a thinking bubble. Be honest and point at the humans.
+          if (sessionRef.current !== session) return;
           const fallbackText =
             "My brain hiccuped loading my answers — please try again, or call the shop with the button at the top of the page.";
           const fid = nextId();
@@ -549,6 +555,7 @@ export function ChatWidget() {
    *  before the clear is discarded via the session guard in `send`. */
   function clearChat() {
     sessionRef.current += 1;
+    serviceTopicRef.current = undefined;
     window.speechSynthesis?.cancel();
     setSpeakingId(null);
     setThinking(false);

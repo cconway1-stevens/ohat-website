@@ -29,3 +29,11 @@
 - [ ] Review GitHub CI and finish browser checks.
 - [ ] Business follow-up: confirm provider retention settings, weather commercial entitlement, and privacy-request routing (see dev/docs/privacy-compliance.md).
 - [ ] Complete human assistive-technology audit; no full conformance claim.
+
+## Contact assistant
+
+- [x] Review actual matching behavior and document strengths and limits.
+- [x] Improve service questions, price follow-ups, tomorrow hours, repair status, booking, accents, fault-code routing, and urgent brake-failure responses.
+- [x] Prevent delayed answers reappearing after chat is cleared.
+- [x] Pass 87 chat regression tests.
+- [ ] Verify live browser interaction and assistive technology.
