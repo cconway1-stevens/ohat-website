@@ -224,7 +224,7 @@ test("optional third parties are absent before consent", () => {
   );
   assert.doesNotMatch(html, /<script[^>]+src="https:\/\/www\.googletagmanager\.com/);
   assert.doesNotMatch(contactHtml, /<iframe[^>]+src="https:\/\/maps\.google\.com/);
-  assert.match(contactHtml, />Load Google Map</);
+  assert.match(contactHtml, />Turn on Google Maps</);
   // Past four, preconnects start competing with the requests they exist to
   // accelerate.
   assert.ok(origins.length <= 4, `${origins.length} preconnects is more than the guidance allows`);

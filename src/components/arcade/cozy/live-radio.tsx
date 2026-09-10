@@ -1,7 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { openPrivacySettings, useServiceConsent } from "@/components/analytics/privacy-controls";
+import {
+  openPrivacySettings,
+  serviceAllowed,
+  useServiceConsent,
+} from "@/components/analytics/privacy-controls";
 import { cozyAudio } from "@/lib/arcade/garage-audio";
 
 /**
@@ -131,7 +135,7 @@ export function LiveRadio() {
 
   async function loadStations(label: string, tag: string, nextGenre?: Genre, nextDecade?: Decade) {
     cozyAudio.click();
-    if (!radioAllowed) {
+    if (!radioAllowed || !serviceAllowed("radioBrowser")) {
       setStatus("Turn on arcade internet radio in your privacy settings to pull in stations.");
       openPrivacySettings();
       return;
@@ -153,6 +157,7 @@ export function LiveRadio() {
       const response = await fetch(`${DIRECTORY}?${params}`);
       if (!response.ok) throw new Error("directory said no");
       const data = await response.json();
+      if (!serviceAllowed("radioBrowser")) return;
       const usable: Station[] = data
         .filter(
           (entry: { name?: string; url_resolved?: string }) => entry.name && entry.url_resolved,
@@ -202,7 +207,7 @@ export function LiveRadio() {
   }
 
   async function play(entry = station) {
-    if (!entry || !audioRef.current) return;
+    if (!entry || !audioRef.current || !serviceAllowed("radioBrowser")) return;
     wireGraph();
     const element = audioRef.current;
     element.src = entry.url;
@@ -210,6 +215,7 @@ export function LiveRadio() {
     setStatus(`Tuning in ${entry.name}…`);
     try {
       await element.play();
+      if (!serviceAllowed("radioBrowser")) return;
       setPlaying(true);
       setSignal(Math.max(2, Math.min(5, Math.round((entry.bitrate || 96) / 48))));
       setStatus(`On air: ${entry.name}`);
@@ -225,6 +231,8 @@ export function LiveRadio() {
   useEffect(() => {
     if (radioAllowed) return;
     audioRef.current?.pause();
+    audioRef.current?.removeAttribute("src");
+    audioRef.current?.load();
     setPlaying(false);
     setList([]);
     setSignal(0);

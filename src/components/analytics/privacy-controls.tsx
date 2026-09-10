@@ -48,6 +48,8 @@ function removeGoogleCookies() {
 }
 
 function enableGoogleAnalytics() {
+  Object.assign(window, { [`ga-disable-${gaMeasurementId}`]: false });
+  window.gtag?.("consent", "update", { analytics_storage: "granted" });
   if (document.querySelector(`script[data-ohat-ga="${gaMeasurementId}"]`)) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = (...args: unknown[]) => window.dataLayer?.push(args);
@@ -71,7 +73,9 @@ function enableGoogleAnalytics() {
 }
 
 function disableGoogleAnalytics() {
-  window.gtag?.("consent", "update", { analytics_storage: "denied" });
+  // Removing a script tag does not unload its code. Disable collection first;
+  // consent-mode denial alone can still produce cookieless pings.
+  Object.assign(window, { [`ga-disable-${gaMeasurementId}`]: true });
   document.querySelector(`script[data-ohat-ga="${gaMeasurementId}"]`)?.remove();
   removeGoogleCookies();
 }
@@ -252,7 +256,11 @@ function highlightService(service: ServiceName, attempt = 0) {
   const content = input.closest("ul.cm-content");
   const caret = content?.parentElement?.querySelector<HTMLAnchorElement>(".cm-caret a");
   if (content && !content.classList.contains("expanded")) caret?.click();
-  row?.scrollIntoView({ block: "center", behavior: "smooth" });
+  row?.scrollIntoView({
+    block: "center",
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+  });
+  input.focus({ preventScroll: true });
   row?.classList.add("cm-service-highlight");
   setTimeout(() => row?.classList.remove("cm-service-highlight"), 2400);
 }
@@ -288,8 +296,10 @@ export function PrivacyControls() {
 
   return (
     <>
-      {vercelAllowed ? <VercelAnalytics /> : null}
-      {speedInsightsAllowed ? <VercelSpeedInsights /> : null}
+      {vercelAllowed ? <VercelAnalytics canSend={() => serviceAllowed("vercelAnalytics")} /> : null}
+      {speedInsightsAllowed ? (
+        <VercelSpeedInsights canSend={() => serviceAllowed("vercelSpeedInsights")} />
+      ) : null}
     </>
   );
 }

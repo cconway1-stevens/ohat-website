@@ -25,9 +25,8 @@ export function AccessibilityStatementSections() {
         </p>
         <p>
           Accessibility here is a property of the site itself. We have not installed an
-          accessibility overlay, toolbar, or plugin that claims to fix a site from the outside.
-          We work on markup, contrast, focus behavior, and semantics in the
-          site&rsquo;s own code.
+          accessibility overlay, toolbar, or plugin that claims to fix a site from the outside. We
+          work on markup, contrast, focus behavior, and semantics in the site&rsquo;s own code.
         </p>
       </section>
 
@@ -44,9 +43,9 @@ export function AccessibilityStatementSections() {
         <div className="privacy-callout">
           <strong>Conformance status: not fully evaluated.</strong>
           <p>
-            Automated checks and focused browser reviews do not establish full WCAG conformance.
-            A complete evaluation across all pages, interactions, and assistive technologies has
-            not been completed. The limitations below describe areas that may be difficult to use.
+            Automated checks and focused browser reviews do not establish full WCAG conformance. A
+            complete evaluation across all pages, interactions, and assistive technologies has not
+            been completed. The limitations below describe areas that may be difficult to use.
           </p>
         </div>
 
@@ -84,8 +83,8 @@ export function AccessibilityStatementSections() {
               <tr>
                 <th scope="row">axe-core automated audit</th>
                 <td>
-                  Public pages discovered in the static build, excluding redirect stubs and the 404 page,
-                  checked with available WCAG 2.1 A and AA rules
+                  Public pages discovered in the static build, excluding redirect stubs and the 404
+                  page, checked with available WCAG 2.1 A and AA rules
                 </td>
                 <td>Pushes and pull requests to main</td>
               </tr>
@@ -116,9 +115,7 @@ export function AccessibilityStatementSections() {
 
         <h3>Accessibility features built into the site</h3>
         <ul>
-          <li>
-            a &ldquo;Skip to content&rdquo; link on the main informational pages;
-          </li>
+          <li>a &ldquo;Skip to content&rdquo; link on the main informational pages;</li>
           <li>visible focus styles for keyboard navigation;</li>
           <li>
             semantic headings, landmarks, and lists, so a screen reader can navigate by structure;
@@ -128,7 +125,8 @@ export function AccessibilityStatementSections() {
             technology;
           </li>
           <li>
-            reduced-motion styles for decorative animation; real-time games may still contain motion;
+            reduced-motion styles for decorative animation; real-time games may still contain
+            motion;
           </li>
           <li>
             wide-content tables that scroll within their own region and stay keyboard-reachable;
@@ -143,14 +141,15 @@ export function AccessibilityStatementSections() {
         <p className="privacy-section-number">04 · Known limitations</p>
         <h2>Where this site still falls short</h2>
         <p>
-          Please contact us if these features cause a barrier or if you find a problem not listed here.
+          Please contact us if these features cause a barrier or if you find a problem not listed
+          here.
         </p>
 
         <h3>Automated testing has limits</h3>
         <p>
-          Automated tools detect only some accessibility problems. Things like whether
-          alternative text is <em>meaningful</em>, whether a focus order is <em>logical</em>, or
-          whether a link makes sense out of context still require human judgment and assistive-technology testing.
+          Automated tools detect only some accessibility problems. Things like whether alternative
+          text is <em>meaningful</em>, whether a focus order is <em>logical</em>, or whether a link
+          makes sense out of context still require human judgment and assistive-technology testing.
         </p>
 
         <h3>The garage arcade</h3>
@@ -165,9 +164,9 @@ export function AccessibilityStatementSections() {
         <p>
           Some content comes from services we do not control and cannot fix directly: the optional
           Google Maps embed on the contact page and radio streams played inside the arcade. Live
-          radio does not include transcripts. The shop address and hours are available as text,
-          and directions links are available without loading the map. These alternatives help
-          with shop information; they do not make third-party content fully accessible.
+          radio does not include transcripts. The shop address and hours are available as text, and
+          directions links are available without loading the map. These alternatives help with shop
+          information; they do not make third-party content fully accessible.
         </p>
 
         <h3>Reporting anything else</h3>

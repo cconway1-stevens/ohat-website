@@ -41,8 +41,9 @@ export function PrivacyServicesSection() {
             <span className="privacy-service-state">Consent required</span>
           </div>
           <p>
-            Vercel measures how quickly pages load so slow pages can be found and fixed. It records performance and device information without a visitor-tracking cookie, but Vercel still receives your IP address
-            when it loads, so it is blocked until you choose to allow it.
+            Vercel measures how quickly pages load so slow pages can be found and fixed. It records
+            performance and device information without a visitor-tracking cookie, but Vercel still
+            receives your IP address when it loads, so it is blocked until you choose to allow it.
           </p>
         </article>
         <article>
@@ -63,9 +64,9 @@ export function PrivacyServicesSection() {
           </div>
           <p>
             The map on our <Link href="/contact">contact page</Link> stays off until you{" "}
-            {"turn on Google Maps in Privacy settings."} Once you do, it loads automatically —
-            there is no separate button to press. Google then receives the network request and may
-            use its own cookies. Ordinary directions links do nothing until you choose them.
+            {"turn on Google Maps in Privacy settings."} Once you do, it loads automatically — there
+            is no separate button to press. Google then receives the network request and may use its
+            own cookies. Ordinary directions links do nothing until you choose them.
           </p>
         </article>
         <article>
@@ -98,11 +99,16 @@ export function PrivacyServicesSection() {
 
       <p>
         Provider details: <a href="https://policies.google.com/privacy">Google privacy policy</a>,{" "}
-        <a href="https://policies.google.com/technologies/partner-sites">Google&rsquo;s use of partner-site data</a>,{" "}
+        <a href="https://policies.google.com/technologies/partner-sites">
+          Google&rsquo;s use of partner-site data
+        </a>
+        ,{" "}
         <a href="https://vercel.com/docs/analytics/privacy-policy">Vercel Web Analytics privacy</a>,{" "}
-        <a href="https://vercel.com/docs/speed-insights/privacy-policy">Vercel Speed Insights privacy</a>,{" "}
-        and <a href="https://open-meteo.com/en/terms">Open-Meteo terms and privacy</a>.
-        Radio streams are run by individual station operators with their own policies.
+        <a href="https://vercel.com/docs/speed-insights/privacy-policy">
+          Vercel Speed Insights privacy
+        </a>
+        , and <a href="https://open-meteo.com/en/terms">Open-Meteo terms and privacy</a>. Radio
+        streams are run by individual station operators with their own policies.
       </p>
 
       <h3>Cookies and device storage</h3>

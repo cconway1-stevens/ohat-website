@@ -104,17 +104,17 @@ covers dependency security locally.
 
 ## 2. Route census and classification
 
-Counted from `dist/client` (60 `.html` files). Classes are derived from each
+Counted from `dist/client` (61 `.html` files). Classes are derived from each
 page's own markup — never from a list in a test file.
 
 | Class              | Count | Routes                                                                                                                                                          | Detection rule                                             |
 | ------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| **Indexable**      | 24    | `/`, `/services`, 14 × `/services/[slug]`, `/our-shop`, `/reviews`, `/offers`, `/contact`, `/vehicle-drop-off`, `/hours`, `/links`, `/privacy`                  | Has `<h1>`, no `noindex`, no meta refresh                  |
+| **Indexable**      | 25    | `/`, `/services`, 14 × `/services/[slug]`, `/our-shop`, `/reviews`, `/offers`, `/contact`, `/vehicle-drop-off`, `/hours`, `/links`, `/privacy`, `/accessibility` | Has `<h1>`, no `noindex`, no meta refresh                  |
 | **Noindex pages**  | 27    | `/agent` + 8 agent tabs, `/arcade` + 16 arcade games, `/links/qr`                                                                                             | `<meta name="robots" content="noindex…">`, no meta refresh |
 | **Redirect stubs** | 9     | `/auto-repair`, `/contact-us`, `/coupons`, `/oil-changes`, `/tire-rotation`, `/alignments`, `/services/tires-alignments`, `/logo-match`, `/arcade/drag-strip`   | `<meta http-equiv="refresh">`                              |
 | **Error page**     | 1     | `/404`                                                                                                                                                          | filename `404.html`                                        |
 
-**Audited by browser page-level tests: 51 routes** (24 indexable + 27 noindex).
+**Audited by browser page-level tests: 52 routes** (25 indexable + 27 noindex).
 Redirect stubs are validated by `static-export.test.mjs` (stub exists, target
 exists, noindex present) — auditing a meta-refresh page in a browser tests
 nothing. The 404 page is validated by the rendered-HTML tests.
@@ -631,3 +631,18 @@ contact path, navigation, or a previously regressed behavior.
 | New page class appears (e.g. paginated archives) | Classifier returns an unknown shape         | Consistency test (step 7) fails CI; extend `routes.mjs` and this document together                    |
 | dependency-cruiser false positives               | A new rule flags legitimate code            | Add a narrow, documented `from`/`to` exception pair; never a blanket `circular: false`                 |
 | Biome rule churn on a new code pattern          | A Biome rule flags a legitimate idiom       | Document the exception in `biome.json` with a reason; do not disable a whole group to pass CI          |
+
+
+## Privacy and accessibility statement review
+
+`npm run check:a11y-statement` checks statement sections, contact wiring, audit
+configuration, and findability. It also prevents the unsupported “substantially
+conformant” status, universal deployment-blocking claim, and unapproved two-business-day
+response promise from returning. It is a source consistency check, not a full WCAG
+evaluation or verification of hosting settings. A stronger status requires a documented
+human evaluation and a corresponding update to this guard.
+
+For consent changes, additionally exercise withdrawal after approval, delayed weather
+requests, radio playback and late directory responses, and analytics callbacks retained
+after the React component unmounts. The first-visit inventory alone does not prove these
+states. See `privacy-compliance.md` for the research, scope, and outstanding operational checks.

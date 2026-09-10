@@ -165,12 +165,16 @@ try {
     await page.waitForTimeout(600);
     const turnOnButton = page.getByRole("button", { name: "Turn on Google Maps", exact: true });
     if (consented) {
-      if (!mapRequests.length) failures.push(`Google Map did not load automatically after "${choice}"`);
-      if ((await turnOnButton.count()) > 0) failures.push("Google Map gate still shown after consent");
+      if (!mapRequests.length)
+        failures.push(`Google Map did not load automatically after "${choice}"`);
+      if ((await turnOnButton.count()) > 0)
+        failures.push("Google Map gate still shown after consent");
     } else {
       if (mapRequests.length) failures.push(`Google Map loaded on its own after "${choice}"`);
       if ((await turnOnButton.count()) === 0) {
-        failures.push(`Google Map gate missing its "Turn on Google Maps" control after "${choice}"`);
+        failures.push(
+          `Google Map gate missing its "Turn on Google Maps" control after "${choice}"`,
+        );
       }
     }
     await context.close();
@@ -204,7 +208,6 @@ try {
     }
     await context.close();
   }
-
 } finally {
   await browser.close();
   server.close();

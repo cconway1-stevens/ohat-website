@@ -11,7 +11,7 @@ import { isVercelHost } from "@/lib/analytics";
  * `@vercel/speed-insights/react` rather than `/next`, for the same reason as
  * `vercel-analytics.tsx` — this project builds on vinext, not Next itself.
  */
-export function VercelSpeedInsights() {
+export function VercelSpeedInsights({ canSend }: { canSend: () => boolean }) {
   const enabled = typeof window !== "undefined" && isVercelHost(window.location.hostname);
-  return enabled ? <SpeedInsights /> : null;
+  return enabled ? <SpeedInsights beforeSend={(event) => (canSend() ? event : null)} /> : null;
 }

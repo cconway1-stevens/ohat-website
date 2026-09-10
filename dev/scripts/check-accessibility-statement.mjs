@@ -8,9 +8,9 @@
  * removed. That turns a good-faith statement into a false one, which is worse
  * than having published nothing.
  *
- * So every factual claim on /accessibility is asserted here against the thing
- * that makes it true: the audit script, the CI workflow, the stylesheets, and
- * the shop config. Weaken the testing without correcting the page and this
+ * Selected claims on /accessibility are checked against the audit script, CI
+ * workflow, stylesheets, and shop config. These source checks do not prove
+ * full accessibility, manual testing, or deployment enforcement. Weaken the testing without correcting the page and this
  * check fails.
  *
  * Source-only — no build required. Run with `npm run check:a11y-statement`.
@@ -66,30 +66,21 @@ if (statement.includes("WCAG 2.1 Level AA") || statement.includes("WCAG 2.1 AA")
   }
 }
 
-// "Every public page on the site" — the audit must discover routes from the
-// build rather than a hand-kept list that can silently shrink.
-claim(
-  statement.includes("Every public page") || statement.includes("every public page"),
-  "statement no longer claims full-site coverage — confirm that is intended",
-);
+// This check verifies repository wiring, not WCAG conformance or hosting settings.
 claim(
   a11yScript.includes("auditableRoutes"),
-  "statement claims every public page is tested, but check-a11y.mjs no longer discovers routes from the build",
+  "the accessibility audit no longer discovers routes from the static build",
 );
-
-// "a failure blocks the change from publishing" — the audit must exit non-zero
-// and CI must actually run it.
+claim(/process\.exit\(1\)/.test(a11yScript), "accessibility violations must fail the check");
+claim(ci.includes("npm run check:a11y"), "CI no longer runs the accessibility audit");
+claim(ci.includes("npm run check:lighthouse"), "CI no longer runs Lighthouse");
 claim(
-  /process\.exit\(1\)/.test(a11yScript),
-  "statement claims a violation blocks publishing, but check-a11y.mjs never exits non-zero",
-);
-claim(
-  ci.includes("npm run check:a11y"),
-  "statement claims the audit runs on every change, but CI does not run check:a11y",
+  statement.includes("Conformance status: not fully evaluated."),
+  "conformance status changed: supply a complete evaluation before publishing a stronger claim",
 );
 claim(
-  ci.includes("npm run check:lighthouse"),
-  "statement lists Lighthouse scoring, but CI does not run check:lighthouse",
+  !/substantially conformant|blocks anything that fails|two business days/i.test(statement),
+  "statement reintroduces an unsupported conformance, deployment, or response-time promise",
 );
 
 // "We have not installed an accessibility overlay" — the single most damaging
@@ -146,4 +137,6 @@ if (failures.length) {
   );
   process.exit(1);
 }
-console.log("Accessibility statement check passed: every published claim matches the code.");
+console.log(
+  "Accessibility statement source checks passed; full conformance and business practices are not verified.",
+);

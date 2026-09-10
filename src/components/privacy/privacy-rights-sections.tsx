@@ -27,9 +27,10 @@ export function PrivacyRightsSections() {
         </div>
         <ul>
           <li>
-            <strong>Global Privacy Control (GPC):</strong> if your browser exposes an enabled GPC signal to this site,
-            Google Analytics, Vercel Web Analytics, and Vercel Speed Insights stay off, even if you
-            allow them in the panel. Weather, the map, and radio remain separate opt-in choices. Learn more at{" "}
+            <strong>Global Privacy Control (GPC):</strong> if your browser exposes an enabled GPC
+            signal to this site, Google Analytics, Vercel Web Analytics, and Vercel Speed Insights
+            stay off, even if you allow them in the panel. Weather, the map, and radio remain
+            separate opt-in choices. Learn more at{" "}
             <a href="https://globalprivacycontrol.org/" target="_blank" rel="noreferrer">
               globalprivacycontrol.org
               <span className="sr-only"> (opens in a new tab)</span>
@@ -78,9 +79,9 @@ export function PrivacyRightsSections() {
             <p className="privacy-section-number">Privacy request</p>
             <h3>Use the method that is easiest for you.</h3>
             <p>
-              The Termly request form opens on Termly&rsquo;s site, which receives ordinary connection
-              information when it opens and the details you choose to submit. You can email or
-              call the shop instead; no Termly account is needed to contact us directly.
+              The Termly request form opens on Termly&rsquo;s site, which receives ordinary
+              connection information when it opens and the details you choose to submit. You can
+              email or call the shop instead; no Termly account is needed to contact us directly.
             </p>
           </div>
           <div className="privacy-request-actions">
@@ -114,9 +115,11 @@ export function PrivacyRightsSections() {
           Where the New Jersey Data Privacy Act applies, its response period is 45 days, with an
           additional 45 days when permitted and explained within the initial period. An appeal
           receives a written response within 45 days. If an appeal is denied, you may submit a
-          complaint to the <a href="https://njconsumeraffairs.nj.gov/file-a-complaint/">New Jersey
-          Division of Consumer Affairs</a>. These statutory periods are separate from accessibility
-          support requests.
+          complaint to the{" "}
+          <a href="https://njconsumeraffairs.nj.gov/file-a-complaint/">
+            New Jersey Division of Consumer Affairs
+          </a>
+          . These statutory periods are separate from accessibility support requests.
         </p>
       </section>
 
@@ -141,17 +144,17 @@ export function PrivacyRightsSections() {
           This site is for people arranging vehicle service and is not directed to children under
           13. It knowingly collects no names or contact details from children. The arcade asks for
           no account and keeps scores on the device. Contact us if you believe a child supplied
-          personal information to the business so it can be reviewed. Optional analytics, maps,
-          and radio involve provider requests even without an account; a lack of names does not
-          mean those services process no personal data.
+          personal information to the business so it can be reviewed. Optional analytics, maps, and
+          radio involve provider requests even without an account; a lack of names does not mean
+          those services process no personal data.
         </p>
 
         <h3>Where information is processed</h3>
         <p>
           The shop provides vehicle services locally in New Jersey. Website providers may process
           information in the United States or other countries where they operate. Turning off a
-          service stops its future use by this site; it does not automatically delete information
-          a provider has already received. Contact us about information held by the shop.
+          service stops its future use by this site; it does not automatically delete information a
+          provider has already received. Contact us about information held by the shop.
         </p>
 
         <h3>Policy updates</h3>

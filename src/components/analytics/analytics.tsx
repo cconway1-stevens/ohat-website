@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import { serviceAllowed } from "./privacy-controls";
 
 declare global {
   interface Window {
-    va?: (event: string, properties?: Record<string, unknown>) => void;
     gtag?: (...args: unknown[]) => void;
     dataLayer?: unknown[][];
   }
@@ -29,18 +29,20 @@ export function CallTracking() {
 
       const path = window.location.pathname;
 
-      window.va?.("event", {
-        name: "call_click",
-        data: { path },
-      });
+      if (serviceAllowed("vercelAnalytics"))
+        window.va?.("event", {
+          name: "call_click",
+          data: { path },
+        });
 
       // GA4 counts page views on its own; this is the event worth marking as
       // a conversion in the GA console, since a phone call is the only thing
       // this site is really trying to produce.
-      window.gtag?.("event", "call_click", {
-        page_path: path,
-        link_url: link.getAttribute("href"),
-      });
+      if (serviceAllowed("googleAnalytics"))
+        window.gtag?.("event", "call_click", {
+          page_path: path,
+          link_url: link.getAttribute("href"),
+        });
     }
 
     document.addEventListener("click", handleClick);

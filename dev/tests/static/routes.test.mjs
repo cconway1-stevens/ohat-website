@@ -26,7 +26,7 @@ test("every emitted page is discovered and classified", () => {
   }, {});
   // Pinned to the census in dev/docs/test-program.md §2. If the site grows a
   // new page class or a page changes tier, update both together.
-  assert.deepEqual(counts, { indexable: 24, noindex: 27, redirect: 9, error: 1 });
+  assert.deepEqual(counts, { indexable: 25, noindex: 27, redirect: 9, error: 1 });
 });
 
 test("known pages classify into the right tier", () => {

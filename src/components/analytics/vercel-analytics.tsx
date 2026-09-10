@@ -30,7 +30,7 @@ import { isVercelHost } from "@/lib/analytics";
  * Cookieless and aggregate-only, but still optional and loaded only after the visitor chooses it.
  * See dev/docs/privacy-compliance.md.
  */
-export function VercelAnalytics() {
+export function VercelAnalytics({ canSend }: { canSend: () => boolean }) {
   const enabled = typeof window !== "undefined" && isVercelHost(window.location.hostname);
-  return enabled ? <Analytics /> : null;
+  return enabled ? <Analytics beforeSend={(event) => (canSend() ? event : null)} /> : null;
 }

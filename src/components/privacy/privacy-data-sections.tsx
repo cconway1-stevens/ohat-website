@@ -38,8 +38,8 @@ export function PrivacyDataSections() {
         <p>
           There is no contact form, booking form, account, checkout, or online payment on this
           website. The contact-page chat does accept text and stores a limited history in this
-          browser. Its answer matching runs on your device; typed messages are not sent to the
-          shop or an AI provider. Please do not enter sensitive information into chat.
+          browser. Its answer matching runs on your device; typed messages are not sent to the shop
+          or an AI provider. Please do not enter sensitive information into chat.
         </p>
 
         <div
@@ -116,8 +116,14 @@ export function PrivacyDataSections() {
               <tr>
                 <th scope="row">Chat voice features</th>
                 <td>Microphone audio for dictation or message text for read-aloud</td>
-                <td>Your browser or operating system provides speech services, which may use remote servers</td>
-                <td>Only when you use a voice control; microphone access is subject to browser permission</td>
+                <td>
+                  Your browser or operating system provides speech services, which may use remote
+                  servers
+                </td>
+                <td>
+                  Only when you use a voice control; microphone access is subject to browser
+                  permission
+                </td>
               </tr>
               <tr>
                 <th scope="row">Local browser storage</th>
@@ -146,15 +152,15 @@ export function PrivacyDataSections() {
         <p>
           Chat is an automated information tool, not a message to a staff member. Its local log
           holds up to 200 entries; reopening the panel restores up to 20 recent entries from the
-          last day. Older entries are not deleted just because they are no longer shown. Use
-          Clear chat or clear this site&rsquo;s browser storage to remove the saved conversation.
+          last day. Older entries are not deleted just because they are no longer shown. Use Clear
+          chat or clear this site&rsquo;s browser storage to remove the saved conversation.
           Downloading a transcript creates a file on your device.
         </p>
         <p>
           Dictation and read-aloud use browser speech features. Depending on your browser and
           selected voice, audio or text may be sent to a browser or operating-system provider for
-          processing. These features are activated by their own controls, not by Klaro. You can
-          type instead, stop read-aloud, or revoke microphone permission in browser settings.
+          processing. These features are activated by their own controls, not by Klaro. You can type
+          instead, stop read-aloud, or revoke microphone permission in browser settings.
         </p>
 
         <h3>How we use information</h3>

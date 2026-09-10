@@ -96,15 +96,16 @@ export function ShopAlmanac() {
   useEffect(() => {
     // Cache hit (or snapshot not ready): nothing to fetch this page view.
     if (!initial || initial.reading) return;
-    const controller = new AbortController();
+    let controller = new AbortController();
     let cancelled = false;
     let delayTimer: ReturnType<typeof setTimeout> | undefined;
 
     function fetchForecast() {
+      if (!weatherAllowed()) return;
       fetch(FORECAST_URL, { signal: controller.signal })
         .then((response) => (response.ok ? response.json() : null))
         .then((data) => {
-          if (cancelled) return;
+          if (cancelled || !weatherAllowed()) return;
           const temperature = data?.current?.temperature_2m;
           const code = data?.current?.weather_code;
           if (typeof temperature === "number" && typeof code === "number") {
@@ -126,6 +127,9 @@ export function ShopAlmanac() {
     }
 
     function beginIfAllowed() {
+      if (delayTimer) clearTimeout(delayTimer);
+      controller.abort();
+      controller = new AbortController();
       if (weatherAllowed()) scheduleForecast();
     }
 

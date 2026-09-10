@@ -22,7 +22,8 @@ export function AccessibilitySupportSections() {
             <p>
               Please describe the barrier and tell us how you would prefer to be contacted. We will
               review your report and discuss a way to help you get the information or service you
-              need while we investigate. For time-sensitive shop questions, call during business hours.
+              need while we investigate. For time-sensitive shop questions, call during business
+              hours.
             </p>
           </div>
           <div className="privacy-request-actions">
@@ -54,9 +55,9 @@ export function AccessibilitySupportSections() {
         <div className="privacy-callout">
           <strong>You never have to use this website to get service from us.</strong>
           <p>
-            For help with shop services, call <a href={phoneHref}>{phoneDisplay}</a>{" "}
-            during business hours — hours, directions, pricing questions, scheduling, and the status
-            of your vehicle. You can also email us and describe a communication method that works for you.
+            For help with shop services, call <a href={phoneHref}>{phoneDisplay}</a> during business
+            hours — hours, directions, pricing questions, scheduling, and the status of your
+            vehicle. You can also email us and describe a communication method that works for you.
           </p>
         </div>
       </section>
@@ -94,8 +95,8 @@ export function AccessibilitySupportSections() {
         <p className="privacy-section-number">07 · How this was assessed</p>
         <h2>Internal review and ongoing improvements</h2>
         <p>
-          {shop.name} uses internal review and automated checks to improve this website. No independent
-          accessibility certification or complete conformance evaluation is claimed.
+          {shop.name} uses internal review and automated checks to improve this website. No
+          independent accessibility certification or complete conformance evaluation is claimed.
         </p>
         <p>
           The automated checks described above run in the repository workflow. Their results are
@@ -105,9 +106,9 @@ export function AccessibilitySupportSections() {
 
         <h3>Keeping this statement true</h3>
         <p>
-          A source check helps keep the testing descriptions aligned with the repository. It
-          cannot verify every accessibility claim or the experience of every visitor. We update
-          this statement when the practices or known limitations change.
+          A source check helps keep the testing descriptions aligned with the repository. It cannot
+          verify every accessibility claim or the experience of every visitor. We update this
+          statement when the practices or known limitations change.
         </p>
 
         <h3>Contact</h3>

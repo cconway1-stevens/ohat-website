@@ -12,7 +12,11 @@
  * band that pulls real streams from the public Radio Browser directory.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { openPrivacySettings, useServiceConsent } from "@/components/analytics/privacy-controls";
+import {
+  openPrivacySettings,
+  serviceAllowed,
+  useServiceConsent,
+} from "@/components/analytics/privacy-controls";
 import {
   ambience,
   BANDS,
@@ -346,15 +350,16 @@ export default function Radio3DGame() {
       const graph = audioRef.current;
       const plain = plainRef.current;
       const target = entry ?? liveStation;
-      if (!graph || !plain || !target) return;
+      if (!graph || !plain || !target || !serviceAllowed("radioBrowser")) return;
       const seq = ++tuneSeqRef.current;
-      const stale = () => tuneSeqRef.current !== seq;
+      const stale = () => tuneSeqRef.current !== seq || !serviceAllowed("radioBrowser");
       graph.pause();
       plain.pause();
       setLiveLoading(true);
       setStatus(`Tuning in ${target.name}…`);
 
       const start = async (element: HTMLAudioElement) => {
+        if (stale()) return;
         element.src = target.url;
         element.volume = stateRef.current.muted ? 0 : stateRef.current.volume;
         await element.play();
@@ -398,7 +403,7 @@ export default function Radio3DGame() {
 
   const fetchLive = useCallback(
     async (genreId: (typeof GENRES)[number]["id"]) => {
-      if (!radioAllowed) {
+      if (!radioAllowed || !serviceAllowed("radioBrowser")) {
         setStatus("Turn on arcade internet radio in your privacy settings to reach the LIVE band.");
         openPrivacySettings();
         return;
@@ -417,6 +422,7 @@ export default function Radio3DGame() {
         const response = await fetch(`${DIRECTORY}?${params}`);
         if (!response.ok) throw new Error("directory said no");
         const data = await response.json();
+        if (!serviceAllowed("radioBrowser")) return;
         const usable: LiveStation[] = data
           .filter((row: { name?: string; url_resolved?: string }) => row.name && row.url_resolved)
           .filter((row: { url_resolved: string }) => row.url_resolved.startsWith("https://"))
@@ -465,8 +471,13 @@ export default function Radio3DGame() {
   // station host keeps seeing this listener after they said no.
   useEffect(() => {
     if (radioAllowed) return;
-    audioRef.current?.pause();
-    plainRef.current?.pause();
+    tuneSeqRef.current += 1;
+    for (const element of [audioRef.current, plainRef.current]) {
+      element?.pause();
+      element?.removeAttribute("src");
+      element?.load();
+    }
+    setLiveLoading(false);
     setLivePlaying(false);
     setLiveList([]);
   }, [radioAllowed]);
